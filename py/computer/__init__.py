@@ -1,5 +1,5 @@
 
-from .cpu import (
+from cpu import (
     WeirdoCPU,
     PATH_ALU, PATH_MEM, PATH_BR,
     ALU_ADD, ALU_ADDI, ALU_SUB, ALU_AND, ALU_OR, ALU_XOR, ALU_SLL, ALU_SRL, ALU_SRA,

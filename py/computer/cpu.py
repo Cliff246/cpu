@@ -1,7 +1,7 @@
 import struct
 from dataclasses import dataclass
 from collections import deque
-
+from memory import Memory
 # --- ISA constants (flat bitfields; no micro-decode) ---
 PATH_ALU = 0x0
 PATH_MEM = 0x1
@@ -89,7 +89,7 @@ class WeirdoCPU:
 		# Map PC -> imm index (how many ImmFlag=1 before this PC)
 		self._IMM_INDEX_OF_PC: list[int] = []
 		# Simple linear data memory (word addressed for now)
-		self.MEM = [0] * 1000 if mem is None else mem
+		self.MEM =
 
 		# Predecoded stream and imm index (no-decode hot path)
 		self.UOPS: list[Uop] = []
