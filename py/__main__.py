@@ -1,4 +1,5 @@
 
+import tests
 
-from tests import test1
+tests.tests()
 

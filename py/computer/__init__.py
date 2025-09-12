@@ -1,8 +1,8 @@
+from computer.memory import (
+    Memory
+)
 
-from cpu import (
+from computer.cpu import (
     WeirdoCPU,
-    PATH_ALU, PATH_MEM, PATH_BR,
-    ALU_ADD, ALU_ADDI, ALU_SUB, ALU_AND, ALU_OR, ALU_XOR, ALU_SLL, ALU_SRL, ALU_SRA,
-    MEM_LD, MEM_ST,
-    BR_BEQ, BR_BNE, BR_JMP,
+    Flags
 )

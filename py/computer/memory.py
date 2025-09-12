@@ -6,13 +6,14 @@ class Memory:
 
 
 	def __init__(self, size: int ):
-		self.size = size
-		self.content = [0 for _ in range(size)]
+		self.sizemem = size
+		self.content = [0] * self.sizemem
 
-	def __getattribute__(self, name):
-		return self.load(name)
 
-	def __setattr__(self, name, value):
+	def __getitem__(self, instance):
+		return self.load(instance)
+
+	def __setitem__(self, name, value):
 		self.store(name, value)
 
 
@@ -31,13 +32,15 @@ class Memory:
 		if not isinstance(address, int):
 			print("address was of wrong python type")
 			exit(1)
-		if(address >= self.size or address < 0):
+		if(address >= self.sizemem or address < 0):
 			raise KeyError("address not in range")
 		value = self.content[address]
 		return value
 
 	def store(self, address, value):
-		if(address >= self.size or address < 0):
+		if(address >= self.sizemem or address < 0):
+			raise KeyError("address not in range")
+		else:
 			try:
 				if(self.check_in_range(value)):
 					self.content[address] = value
@@ -47,7 +50,7 @@ class Memory:
 			except TypeError:
 				print("value was of wrong python type")
 				exit(1)
-		else:
-			raise KeyError("address not in range")
 
 
+	def __len__(self):
+		return self.sizemem

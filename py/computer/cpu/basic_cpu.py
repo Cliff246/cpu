@@ -1,42 +1,12 @@
 import struct
 from dataclasses import dataclass
 from collections import deque
-from memory import Memory
+from ..memory import Memory
 # --- ISA constants (flat bitfields; no micro-decode) ---
-PATH_ALU = 0x0
-PATH_MEM = 0x1
-PATH_BR  = 0x2
 
-# ALU subops
-ALU_ADD  = 0x01
-ALU_ADDI = 0x02
-ALU_SUB  = 0x03
-ALU_AND  = 0x04
-ALU_OR   = 0x05
-ALU_XOR  = 0x06
-ALU_SLL  = 0x07  # logical left
-ALU_SRL  = 0x08  # logical right
-ALU_SRA  = 0x09  # arithmetic right
-
-# MEM subops
-MEM_LD   = 0x10
-MEM_ST   = 0x11
-
-# BRANCH subops
-BR_BEQ   = 0x20
-BR_BNE   = 0x21
-BR_JMP   = 0x22  # jump to rs1 (imm ignored)
-
-# SYS (system/control) subops
-PATH_SYS = 0x3
-
-SYS_PREFETCH_OFF = 0x30  # speculation barrier for cache prefetch
-SYS_PREFETCH_ON  = 0x31  # re-enable prefetch
-SYS_FENCE		= 0x32  # drain LPQ/frames before continuing (ordering)
-
-# --- I/Imm cache-line metadata (mask-based, no decode on hot path) ---
-IC_LINE_SIZE = 8  # number of 32-bit ops per I-cache line
-
+from .flags import Flags
+from .ALU import ALU
+from .registers import Registers
 @dataclass
 class ICacheLine:
 	start_pc: int		  # inclusive PC index of first op in this line
@@ -75,12 +45,20 @@ class LpqEntry:
 	eta: int	# cycles until "arrives"
 
 
+
+
 class WeirdoCPU:
+
+
 
 
 	def __init__(self, mem = None):
 		# General-purpose regs: 32 x 64-bit (Python int is unbounded; we mask on writes when needed)
-		self.REGS: list[int] = [0] * 32
+		self.REGS: list[int] = Registers("Register File")
+		self.alu_component = ALU("ALU")
+
+		self.components = {self.REGS, self.alu_component}
+
 		# Program counters (word-indexed)
 		self.INSTRUCT_PC = 0
 		# Instruction and immediate streams (set via load_program)
@@ -88,8 +66,8 @@ class WeirdoCPU:
 		self.IMM_TAPE: list[int] = []	 # 64-bit immediates
 		# Map PC -> imm index (how many ImmFlag=1 before this PC)
 		self._IMM_INDEX_OF_PC: list[int] = []
-		# Simple linear data memory (word addressed for now)
-		self.MEM =
+		# Memory that's word addressed
+		self.MEM = Memory(1000)
 
 		# Predecoded stream and imm index (no-decode hot path)
 		self.UOPS: list[Uop] = []
@@ -115,6 +93,7 @@ class WeirdoCPU:
 		# Frontend/preload controls
 		self.PREFETCH_ENABLED = True
 		self.FENCE_PENDING = False
+
 
 	@staticmethod
 	def decode(instr):
@@ -155,13 +134,7 @@ class WeirdoCPU:
 		self.UOPS = []
 		# Predecode to uops for no-decode hot path
 		for pc, ins in enumerate(self.INSTR):
-			path = (ins >> 28) & 0xF
-			subop = (ins >> 20) & 0xFF
-			rd   = (ins >> 15) & 0x1F
-			rs1  = (ins >> 10) & 0x1F
-			rs2  = (ins >> 5)  & 0x1F
-			aux  = (ins >> 1)  & 0xF
-			immf = ins & 0x1
+			path, subop, rd, rs1, rs2, aux, immf = self.decode(ins)
 			imm_idx = self._IMM_INDEX_OF_PC[pc] if immf else -1
 			self.UOPS.append(Uop(path, subop, rd, rs1, rs2, aux, immf, imm_idx))
 		# Reset frontend structures
@@ -172,7 +145,7 @@ class WeirdoCPU:
 		n = len(self.UOPS)
 		line_start = 0
 		while line_start < n:
-			line_end = min(n, line_start + IC_LINE_SIZE)
+			line_end = min(n, line_start + Flags.IC_LINE_SIZE)
 			imm_mask = 0
 			br_mask = 0
 			br_targets: dict[int, int] = {}
@@ -180,10 +153,10 @@ class WeirdoCPU:
 				u = self.UOPS[pc]
 				if u.immflag:
 					imm_mask |= (1 << i)
-				if u.path == PATH_BR and (u.subop in (BR_BEQ, BR_BNE, BR_JMP)):
+				if u.path == Flags.PATH_BR and (u.subop in (Flags.BR_BEQ, Flags.BR_BNE, Flags.BR_JMP)):
 					br_mask |= (1 << i)
 					# Resolve target PC using imm tape (PC-relative for BEQ/BNE; absolute for JMP via rs1)
-					if u.subop == BR_JMP:
+					if u.subop == Flags.BR_JMP:
 						# We cannot know rs1 at build time; mark with -1 to indicate "unknown"
 						br_targets[i] = -1
 					else:
@@ -209,7 +182,7 @@ class WeirdoCPU:
 		end_pc = min(end_pc, len(self.UOPS))
 		for pc in range(start_pc, end_pc):
 			u = self.UOPS[pc]
-			if u.path != PATH_MEM or u.subop != MEM_LD:
+			if u.path != Flags.PATH_MEM or u.subop != Flags.MEM_LD:
 				continue
 			base = self.REGS[u.rs1]
 			imm  = self._imm_at(u)
@@ -287,7 +260,7 @@ class WeirdoCPU:
 	def _ic_line_for_pc(self, pc: int) -> ICacheLine | None:
 		if not self.IC_LINES:
 			return None
-		idx = pc // IC_LINE_SIZE
+		idx = pc // Flags.IC_LINE_SIZE
 		if 0 <= idx < len(self.IC_LINES):
 			return self.IC_LINES[idx]
 		return None
@@ -305,42 +278,12 @@ class WeirdoCPU:
 		# Read operands
 		a = self.REGS[rs1]
 		b = self.REGS[rs2]
-		# Small immediate (aux) is wired directly from instr bits if you choose to use it later.
-		# For now, only the tape-based immediate is used when the opcode is an *I* form.
-
-		if subop == ALU_ADD:
-			self.REGS[rd] = (a + b) & ((1 << 64) - 1)
-		elif subop == ALU_ADDI:
-			self.REGS[rd] = (a + imm) & ((1 << 64) - 1)
-		elif subop == ALU_SUB:
-			self.REGS[rd] = (a - b) & ((1 << 64) - 1)
-		elif subop == ALU_AND:
-			self.REGS[rd] = a & b
-		elif subop == ALU_OR:
-			self.REGS[rd] = a | b
-		elif subop == ALU_XOR:
-			self.REGS[rd] = a ^ b
-		elif subop == ALU_SLL:
-			sh = (b & 0x3F)  # use low 6 bits of rs2 as shamt
-			self.REGS[rd] = (a << sh) & ((1 << 64) - 1)
-		elif subop == ALU_SRL:
-			sh = (b & 0x3F)
-			self.REGS[rd] = (a % (1 << 64)) >> sh
-		elif subop == ALU_SRA:
-			sh = (b & 0x3F)
-			# arithmetic right: sign-extend 64-bit a
-			if a & (1 << 63):
-				self.REGS[rd] = ((a | (~((1 << 64) - 1))) >> sh) & ((1 << 64) - 1)
-			else:
-				self.REGS[rd] = (a >> sh) & ((1 << 64) - 1)
-		else:
-			# Unknown ALU subop: no-op
-			pass
+		self.REGS[rd] = self.alu_component(subop, a, b, imm)
 
 	def memory(self, subop: int, rd: int, rs1: int, rs2: int, aux: int, imm: int):
 		addr = (self.REGS[rs1] + imm) % len(self.MEM)
 		cur_pc = self.INSTRUCT_PC
-		if subop == MEM_LD:
+		if subop == Flags.MEM_LD:
 			base_addr = addr & ~0x3
 			lane = addr & 0x3
 			fr = self.FRAMES.get(base_addr)
@@ -359,14 +302,14 @@ class WeirdoCPU:
 			else:
 				# Stall until frame is ready
 				return True
-		elif subop == MEM_ST:
+		elif subop == Flags.MEM_ST:
 			self.MEM[addr] = self.REGS[rs2]
 		else:
 			pass
 		return False
 
 	def branch(self, subop: int, rd: int, rs1: int, rs2: int, aux: int, imm: int) -> bool:
-		if subop == BR_BEQ:
+		if subop == Flags.BR_BEQ:
 			if self.REGS[rs1] == self.REGS[rs2]:
 				self.INSTRUCT_PC += imm
 				# redirect -> new generation
@@ -376,14 +319,14 @@ class WeirdoCPU:
 				# Cancel LPQ entries from older gens (keep as cache warmers by simply dropping them)
 				self.LPQ = deque(e for e in self.LPQ if e.gen == self.GEN)
 				return True
-		elif subop == BR_BNE:
+		elif subop == Flags.BR_BNE:
 			if self.REGS[rs1] != self.REGS[rs2]:
 				self.INSTRUCT_PC += imm
 				self.GEN += 1
 				self.FRAMES = {pc: fr for pc, fr in self.FRAMES.items() if fr.gen == self.GEN}
 				self.LPQ = deque(e for e in self.LPQ if e.gen == self.GEN)
 				return True
-		elif subop == BR_JMP:
+		elif subop == Flags.BR_JMP:
 			self.INSTRUCT_PC = self.REGS[rs1]
 			self.GEN += 1
 			self.FRAMES = {pc: fr for pc, fr in self.FRAMES.items() if fr.gen == self.GEN}
@@ -393,15 +336,15 @@ class WeirdoCPU:
 
 	def system(self, subop: int, rd: int, rs1: int, rs2: int, aux: int, imm: int):
 		# System/control path: toggle/speculate barrier and fences
-		if subop == SYS_PREFETCH_OFF:
+		if subop == Flags.SYS_PREFETCH_OFF:
 			self.PREFETCH_ENABLED = False
 			# write a simple status code to rd for visibility (1 = off)
 			self.REGS[rd] = 1
-		elif subop == SYS_PREFETCH_ON:
+		elif subop == Flags.SYS_PREFETCH_ON:
 			self.PREFETCH_ENABLED = True
 			# status code (0 = on)
 			self.REGS[rd] = 0
-		elif subop == SYS_FENCE:
+		elif subop == Flags.SYS_FENCE:
 			# Drain LPQ completely and invalidate any stale frames from older gens
 			# This models a memory-ordering fence that prevents further speculation.
 			while self.LPQ:
@@ -426,14 +369,14 @@ class WeirdoCPU:
 		imm = self._imm_at(u) if u.immflag else 0
 
 		taken = False
-		if u.path == PATH_ALU:
+		if u.path == Flags.PATH_ALU:
 			self.alu(u.subop, u.rd, u.rs1, u.rs2, u.aux, imm)
-		elif u.path == PATH_MEM:
+		elif u.path == Flags.PATH_MEM:
 			taken = self.memory(u.subop, u.rd, u.rs1, u.rs2, u.aux, imm)
 
-		elif u.path == PATH_BR:
+		elif u.path == Flags.PATH_BR:
 			taken = self.branch(u.subop, u.rd, u.rs1, u.rs2, u.aux, imm)
-		elif u.path == PATH_SYS:
+		elif u.path == Flags.PATH_SYS:
 			taken = self.system(u.subop, u.rd, u.rs1, u.rs2, u.aux, imm)
 		else:
 			pass
