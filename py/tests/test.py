@@ -60,11 +60,11 @@ def test2():
 		if imm is not None: imms.append(imm)
 
 	# r2 = base (100)
-	emit(enc(Flags.PATH_ALU, Flags.ALU_ADDI, r2, r0, 0, immflag=1), 100)
+	emit(enc(Flags.PATH_ALU, Flags.ALU_ADD, r2, r0, 0, immflag=1), 100)
 	# r3 = count (5)
-	emit(enc(Flags.PATH_ALU, Flags.ALU_ADDI, r3, r0, 0, immflag=1), 5)
+	emit(enc(Flags.PATH_ALU, Flags.ALU_ADD, r3, r0, 0, immflag=1), 5)
 	# r4 = 0 (accum)
-	emit(enc(Flags.PATH_ALU, Flags.ALU_ADDI, r4, r0, 0, immflag=1), 0)
+	emit(enc(Flags.PATH_ALU, Flags.ALU_ADD, r4, r0, 0, immflag=1), 0)
 
 	loop = len(instrs)
 
@@ -73,9 +73,9 @@ def test2():
 	# r4 += r5
 	emit(enc(Flags.PATH_ALU, Flags.ALU_ADD, r4, r4, r5))
 	# r2 += 1 (next element)
-	emit(enc(Flags.PATH_ALU, Flags.ALU_ADDI, r2, r2, 0, immflag=1), 1)
+	emit(enc(Flags.PATH_ALU, Flags.ALU_ADD, r2, r2, 0, immflag=1), 1)
 	# r3 += -1
-	emit(enc(Flags.PATH_ALU, Flags.ALU_ADDI, r3, r3, 0, immflag=1), -1)
+	emit(enc(Flags.PATH_ALU, Flags.ALU_ADD, r3, r3, 0, immflag=1), -1)
 	# if r3 != 0, branch back to loop
 	branch_pc = len(instrs)# the index this branch will sit at
 	back = loop - branch_pc

@@ -17,9 +17,9 @@ class ALU(Component):
 			case Flags.ALU_SUB:
 				return s1 - s2 - s3
 			case Flags.ALU_AND:
-				return s1 & s2 & s3
+				return s1 & s2
 			case Flags.ALU_OR:
-				return s1 | s2 | s3
+				return s1 | s2
 			case Flags.ALU_XOR:
 				return s1 ^ s2 ^ s3
 			#applies on s3
