@@ -23,13 +23,14 @@ class Flags:
 	ALU_REMU = 0x0C
 	ALU_DIVU = 0x0D
 	ALU_MULHI = 0x0E
-	ALU_MULLO = 0x0F
-	ALU_NOT = 0x10
-	ALU_SLT = 0x11
-	ALU_SLE = 0x12
-	ALU_SLTU = 0x13
-	ALU_SEQ = 0x14
-	ALU_SNE = 0x15
+	ALU_MULU = 0x0F
+	ALU_MULUS = 0x10
+	ALU_NOT = 0x11
+	ALU_SLT = 0x12
+	ALU_SLE = 0x13
+	ALU_SLTU = 0x14
+	ALU_SEQ = 0x15
+	ALU_SNE = 0x16
 	# MEM subops
 	MEM_LD   = 0x10
 	MEM_ST   = 0x11
@@ -45,7 +46,12 @@ class Flags:
 	SYS_PREFETCH_OFF = 0x30  # speculation barrier for cache prefetch
 	SYS_PREFETCH_ON  = 0x31  # re-enable prefetch
 	SYS_FENCE		= 0x32  # drain LPQ/frames before continuing (ordering)
+	SYS_GET_TIMER = 0x33
+	SYS_GET_RETIRED = 0x34
+	SYS_SET_JUMP = 0x35
+	SYS_GET_MODE = 0x36
+
 
 	# --- I/Imm cache-line metadata (mask-based, no decode on hot path) ---
-	IC_LINE_SIZE = 8  # number of 32-bit ops per I-cache line
+	IC_LINE_SIZE = 4  # number of 32-bit ops per I-cache line
 

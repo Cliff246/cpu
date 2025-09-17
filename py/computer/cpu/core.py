@@ -7,13 +7,8 @@ from ..memory import Memory
 from .flags import Flags
 from .ALU import ALU
 from .registers import Registers
-@dataclass
-class ICacheLine:
-	start_pc: int		  # inclusive PC index of first op in this line
-	end_pc: int			# exclusive PC index (start_pc + up to IC_LINE_SIZE)
-	imm_mask: int		  # bit i set => slot i consumes an imm-tape entry
-	br_mask: int		   # bit i set => slot i is a branch/jump
-	br_targets: dict[int, int]  # slot_index -> target_pc (PC-relative already resolved)
+from .cache import *
+
 
 @dataclass
 class Uop:
@@ -25,24 +20,7 @@ class Uop:
 	aux: int
 	immflag: int   # 0/1
 	imm_idx: int   # index into IMM_TAPE for this PC (or -1 if immflag=0)
-
-@dataclass
-class FrameLine:
-	valid: bool
-	gen: int
-	d0: int
-	d1: int
-	d2: int
-	d3: int
-
-@dataclass
-class LpqEntry:
-	pc_op: int
-	addr: int
-	size: int   # bytes (we'll treat as 32B for a 4x64b frame)
-	frame_pc: int
-	gen: int
-	eta: int	# cycles until "arrives"
+	imm_val: int
 
 
 
@@ -56,16 +34,16 @@ class WeirdoCPU:
 		# General-purpose regs: 32 x 64-bit (Python int is unbounded; we mask on writes when needed)
 		self.REGS: list[int] = Registers("Register File")
 		self.alu_component = ALU("ALU")
-
-		self.components = {self.REGS, self.alu_component}
+		self.dcache = DCache("DCache", 1000)
+		self.icache = ICacheSystem("ICache",1000)
+		self.components = {self.REGS, self.alu_component, self.dcache, self.icache}
 
 		# Program counters (word-indexed)
 		self.INSTRUCT_PC = 0
 		# Instruction and immediate streams (set via load_program)
 		self.INSTR: list[int] = []		# 32-bit instruction words
-		self.IMM_TAPE: list[int] = []	 # 64-bit immediates
 		# Map PC -> imm index (how many ImmFlag=1 before this PC)
-		self._IMM_INDEX_OF_PC: list[int] = []
+		# self._IMM_INDEX_OF_PC: list[int] = []
 		# Memory that's word addressed
 		self.MEM = Memory(1000)
 
@@ -76,7 +54,6 @@ class WeirdoCPU:
 		self.GEN: int = 0
 
 		# Simple frame-bank keyed by the load's PC (demo: 4 lanes of 64b)
-		self.FRAMES: dict[int, FrameLine] = {}
 
 		# Load prefetch queue (LPQ) to simulate runahead fetch; each entry completes after ETA steps
 		self.LPQ: deque[LpqEntry] = deque()
@@ -88,7 +65,7 @@ class WeirdoCPU:
 		self.PREFETCH_WINDOW = 8
 
 		# I-cache metadata lines (masks + pre-resolved branch targets)
-		self.IC_LINES: list[ICacheLine] = []
+		# self.IC_LINES: list[ICacheLine] = []
 
 		# Frontend/preload controls
 		self.PREFETCH_ENABLED = True
@@ -114,65 +91,85 @@ class WeirdoCPU:
 		path, subop, rd, rs1, rs2, aux, immflag = decoded
 		print("path: %d, subop: %d, rd: %d, rs1: %d, rs2: %d, aux: %d, immflag %d" % (path, subop, rd, rs1, rs2, aux, immflag))
 
-	@staticmethod
-	def _build_imm_index(instrs: list[int]) -> list[int]:
-		idx = [0] * (len(instrs) + 1)
-		c = 0
-		for pc, ins in enumerate(instrs):
-			idx[pc] = c
-			if (ins & 0x1) == 1:  # ImmFlag in bit 0
-				c += 1
-		idx[len(instrs)] = c
-		return idx
+	def load_program(self, binary):
+		instruction_table_set_base = binary[0]
+		instruction_table_set_length = binary[1]
+		inst_base = binary[2]
+		inst_length = binary[3]
+		imm_base = binary[4]
+		imm_length = binary[5]
+		
+		self.INSTR = binary[inst_base:inst_base+inst_length]
+		imms = binary[imm_base:imm_base+imm_length]
+		self.IMM_CHECKPOINTS = binary[instruction_table_set_base:instruction_table_set_base+instruction_table_set_length]
 
-	def load_program(self, instrs: list[int], imms: list[int]):
-		self.INSTR = instrs[:]
-		self.IMM_TAPE = imms[:]
-		self._IMM_INDEX_OF_PC = self._build_imm_index(self.INSTR)
+		# self.IMM_TAPE = imms[:]
+		# self._IMM_INDEX_OF_PC = self._build_imm_index(self.INSTR)
 		self.INSTRUCT_PC = 0
 		self.GEN = 0
 		self.UOPS = []
+		imm_counter = 0
 		# Predecode to uops for no-decode hot path
 		for pc, ins in enumerate(self.INSTR):
 			path, subop, rd, rs1, rs2, aux, immf = self.decode(ins)
-			imm_idx = self._IMM_INDEX_OF_PC[pc] if immf else -1
-			self.UOPS.append(Uop(path, subop, rd, rs1, rs2, aux, immf, imm_idx))
+			if immf:
+				imm_idx = imm_counter
+				imm_counter += 1
+			else:
+				imm_idx = -1
+			self.UOPS.append(Uop(path, subop, rd, rs1, rs2, aux, immf, imm_idx, 0))
 		# Reset frontend structures
-		self.FRAMES.clear()
+		self.dcache.clear()
 		self.LPQ.clear()
 		# Build I-cache line metadata (imm & branch masks + pre-resolved targets)
-		self.IC_LINES = []
+		self.icache.clear()
+		# Fill ICache with instructions by lines
 		n = len(self.UOPS)
 		line_start = 0
 		while line_start < n:
 			line_end = min(n, line_start + Flags.IC_LINE_SIZE)
-			imm_mask = 0
-			br_mask = 0
-			br_targets: dict[int, int] = {}
-			for i, pc in enumerate(range(line_start, line_end)):
-				u = self.UOPS[pc]
-				if u.immflag:
-					imm_mask |= (1 << i)
-				if u.path == Flags.PATH_BR and (u.subop in (Flags.BR_BEQ, Flags.BR_BNE, Flags.BR_JMP)):
-					br_mask |= (1 << i)
-					# Resolve target PC using imm tape (PC-relative for BEQ/BNE; absolute for JMP via rs1)
-					if u.subop == Flags.BR_JMP:
-						# We cannot know rs1 at build time; mark with -1 to indicate "unknown"
-						br_targets[i] = -1
-					else:
-						rel = self._imm_at(u)
-						br_targets[i] = pc + rel
-			self.IC_LINES.append(ICacheLine(start_pc=line_start, end_pc=line_end,
-											imm_mask=imm_mask, br_mask=br_mask, br_targets=br_targets))
+			if(line_end - line_start > Flags.IC_LINE_SIZE):
+				print("fucked")
+				exit()
+			# Fill instructions for this line
+			self.icache.fill_inst(line_start, self.INSTR[line_start:line_end])
 			line_start = line_end
+		# Fill immediates for entire program at once
+		self.IMM_CHECKPOINTS = []
+		self.icache.fill_imms(imms)
+
+		# Build a fixed checkpoint table once during load, not incrementally in-line
+		imm_counter = 0
+		for pc in range(0, len(self.UOPS), 128):
+			self.IMM_CHECKPOINTS.append((pc, imm_counter))
+			# Count how many immflags in this 128-instruction block
+			block_end = min(pc + 128, len(self.UOPS))
+			for i in range(pc, block_end):
+				if self.UOPS[i].immflag:
+					imm_counter += 1
+
+		print(self.icache.inst_cache.lines)
 
 	def _imm_at(self, u: Uop) -> int:
+		"""
+		Return the immediate value for this uop, consuming from imm_cache only once per uop.
+		If u.immflag == 0, always return 0.
+		Otherwise, if u.imm_val is already set (nonzero or via a marker), return it.
+		Else, consume from imm_cache, store in u.imm_val, and return.
+		"""
 		if u.immflag == 0:
 			return 0
-		idx = u.imm_idx
-		if idx < 0 or idx >= len(self.IMM_TAPE):
-			raise IndexError("IMM tape underflow/overflow")
-		return self.IMM_TAPE[idx]
+		# If imm_val has already been set (either by nonzero, or by a marker), return it.
+		# We use a special marker for valid zero, since imm_val is initialized to 0.
+		# We'll use a private attribute on the uop to mark if it was set.
+		if hasattr(u, "_imm_cached"):
+			return u.imm_val
+		val = self.icache.imm_cache.next(self.INSTRUCT_PC)
+		if val is None:
+			val = 0
+		u.imm_val = val
+		u._imm_cached = True
+		return val
 
 	def _enqueue_range(self, start_pc: int, end_pc: int):
 		"""
@@ -188,7 +185,7 @@ class WeirdoCPU:
 			imm  = self._imm_at(u)
 			addr = (base + imm) % len(self.MEM)
 			base_addr = addr & ~0x3
-			fr = self.FRAMES.get(pc)
+			fr = self.dcache.get(pc)
 			if fr and fr.valid and fr.gen == self.GEN:
 				continue
 			already = any((e.frame_pc == pc and e.gen == self.GEN) for e in self.LPQ)
@@ -198,7 +195,7 @@ class WeirdoCPU:
 	def _enqueue_prefetches(self, start_pc: int):
 		"""
 		Look ahead and enqueue prefetches for MEM_LD uops. Additionally:
-		- Prefetch the current I-cache line's loads.
+		- Prefetch the current -cache line's loads.
 		- Prefetch the next sequential line's loads.
 		- If the current line contains a branch with a statically-known target (BEQ/BNE rel),
 		  also prefetch that target line's loads.
@@ -226,11 +223,12 @@ class WeirdoCPU:
 			# Fallback: simple window-based lookahead
 			end_pc = min(len(self.UOPS), start_pc + self.PREFETCH_WINDOW)
 			self._enqueue_range(start_pc, end_pc)
-
+		#print("Prefetching line", line.start_pc, "for PC", start_pc)
+		#print("Also prefetching line", line.start_pc)
 	def _drain_lpq(self):
 		"""
 		Age LPQ, and when entries 'arrive', fill the frame bank (4x64b lanes).
-		Wrong-gen entries still warm the cache notionally but do not set frames valid.
+		Wrong-gen entries still warm the cache notionally but do not set dcache valid.
 		Draining can be invoked by SYS_FENCE to enforce ordering.
 		"""
 		if not self.LPQ:
@@ -252,17 +250,17 @@ class WeirdoCPU:
 				d2 = self.MEM[(e.addr + 2) % len(self.MEM)]
 				d3 = self.MEM[(e.addr + 3) % len(self.MEM)]
 				base_addr = e.addr & ~0x3
-				self.FRAMES[base_addr] = FrameLine(valid=True, gen=self.GEN, d0=d0, d1=d1, d2=d2, d3=d3)
+				self.dcache[base_addr] = FrameLine(valid=True, gen=self.GEN, data=[d0, d1, d2, d3],source_pc= e.frame_pc, seq_id=0)
 			else:
-				# Wrong-path arrival: ignore for frames; treat as a harmless cache warm (no state here).
+				# Wrong-path arrival: ignore for dcache; treat as a harmless cache warm (no state here).
 				pass
 
 	def _ic_line_for_pc(self, pc: int) -> ICacheLine | None:
-		if not self.IC_LINES:
+		if not self.icache.inst_cache.lines:
 			return None
 		idx = pc // Flags.IC_LINE_SIZE
-		if 0 <= idx < len(self.IC_LINES):
-			return self.IC_LINES[idx]
+		if 0 <= idx < len(self.icache.inst_cache.lines):
+			return self.icache.inst_cache.lines.get(idx)
 		return None
 
 	def _prefetch_by_line(self, start_pc: int):
@@ -274,67 +272,75 @@ class WeirdoCPU:
 			return
 		self._enqueue_range(line.start_pc, line.end_pc)
 
-	def alu(self, subop: int, rd: int, rs1: int, rs2: int, aux: int, imm: int):
+	def alu(self, subop: int, rd: int, rs1: int, rs2: int, aux: int, imm: int, immflag: bool):
 		# Read operands
 		a = self.REGS[rs1]
 		b = self.REGS[rs2]
-		self.REGS[rd] = self.alu_component(subop, a, b, imm)
+		self.REGS[rd] = self.alu_component(subop, a, b, imm, immflag)
 
-	def memory(self, subop: int, rd: int, rs1: int, rs2: int, aux: int, imm: int):
+	def memory(self, subop: int, rd: int, rs1: int, rs2: int, aux: int, imm: int, immflag: bool):
+		if(immflag == False):
+			imm = 0
 		addr = (self.REGS[rs1] + imm) % len(self.MEM)
+		print(addr)
 		cur_pc = self.INSTRUCT_PC
 		if subop == Flags.MEM_LD:
+			print("LOAD")
 			base_addr = addr & ~0x3
 			lane = addr & 0x3
-			fr = self.FRAMES.get(base_addr)
+			fr = self.dcache.get(base_addr)
 			if fr and fr.valid and fr.gen == self.GEN:
 				if lane == 0:
-					self.REGS[rd] = fr.d0
+					self.REGS[rd] = fr.data[0]
 				elif lane == 1:
-					self.REGS[rd] = fr.d1
+					self.REGS[rd] = fr.data[1]
 				elif lane == 2:
-					self.REGS[rd] = fr.d2
+					self.REGS[rd] = fr.data[2]
 				elif lane == 3:
-					self.REGS[rd] = fr.d3
+					self.REGS[rd] = fr.data[3]
 				else:
 					self.REGS[rd] = 0
 				return False
 			else:
 				# Stall until frame is ready
 				return True
+
 		elif subop == Flags.MEM_ST:
 			self.MEM[addr] = self.REGS[rs2]
 		else:
 			pass
 		return False
 
-	def branch(self, subop: int, rd: int, rs1: int, rs2: int, aux: int, imm: int) -> bool:
+	def branch(self, subop: int, rd: int, rs1: int, rs2: int, aux: int, imm: int, immflag: bool) -> bool:
 		if subop == Flags.BR_BEQ:
 			if self.REGS[rs1] == self.REGS[rs2]:
 				self.INSTRUCT_PC += imm
+				self.icache.imm_cache.jump_to(self.INSTRUCT_PC)
 				# redirect -> new generation
 				self.GEN += 1
-				# Invalidate frames from older gens
-				self.FRAMES = {pc: fr for pc, fr in self.FRAMES.items() if fr.gen == self.GEN}
+				# Invalidate dcache from older gens
+				self.dcache = {pc: fr for pc, fr in self.dcache.items() if fr.gen == self.GEN}
 				# Cancel LPQ entries from older gens (keep as cache warmers by simply dropping them)
 				self.LPQ = deque(e for e in self.LPQ if e.gen == self.GEN)
 				return True
 		elif subop == Flags.BR_BNE:
 			if self.REGS[rs1] != self.REGS[rs2]:
 				self.INSTRUCT_PC += imm
+				self.icache.imm_cache.jump_to(self.INSTRUCT_PC)
 				self.GEN += 1
-				self.FRAMES = {pc: fr for pc, fr in self.FRAMES.items() if fr.gen == self.GEN}
+				self.dcache = {pc: fr for pc, fr in self.dcache.items() if fr.gen == self.GEN}
 				self.LPQ = deque(e for e in self.LPQ if e.gen == self.GEN)
 				return True
 		elif subop == Flags.BR_JMP:
 			self.INSTRUCT_PC = self.REGS[rs1]
+			self.icache.imm_cache.jump_to(self.INSTRUCT_PC)
 			self.GEN += 1
-			self.FRAMES = {pc: fr for pc, fr in self.FRAMES.items() if fr.gen == self.GEN}
+			self.dcache = {pc: fr for pc, fr in self.dcache.items() if fr.gen == self.GEN}
 			self.LPQ = deque(e for e in self.LPQ if e.gen == self.GEN)
 			return True
 		return False
 
-	def system(self, subop: int, rd: int, rs1: int, rs2: int, aux: int, imm: int):
+	def system(self, subop: int, rd: int, rs1: int, rs2: int, aux: int, imm: int, imm_flag = 0):
 		# System/control path: toggle/speculate barrier and fences
 		if subop == Flags.SYS_PREFETCH_OFF:
 			self.PREFETCH_ENABLED = False
@@ -345,12 +351,12 @@ class WeirdoCPU:
 			# status code (0 = on)
 			self.REGS[rd] = 0
 		elif subop == Flags.SYS_FENCE:
-			# Drain LPQ completely and invalidate any stale frames from older gens
+			# Drain LPQ completely and invalidate any stale dcache from older gens
 			# This models a memory-ordering fence that prevents further speculation.
 			while self.LPQ:
 				self._drain_lpq()
-			# No architectural change to GEN; just ensure frames are current-gen only.
-			self.FRAMES = {pc: fr for pc, fr in self.FRAMES.items() if fr.gen == self.GEN}
+			# No architectural change to GEN; just ensure dcache are current-gen only.
+			self.dcache = {pc: fr for pc, fr in self.dcache.items() if fr.gen == self.GEN}
 			# Return 0 in rd to indicate fence completed
 			self.REGS[rd] = 0
 		else:
@@ -361,23 +367,26 @@ class WeirdoCPU:
 		if self.INSTRUCT_PC < 0 or self.INSTRUCT_PC >= len(self.UOPS):
 			return  # Halt when PC runs past program
 
-		# Lightweight frontend: look ahead and enqueue prefetches; drain LPQ to fill frames
+		# Lightweight frontend: look ahead and enqueue prefetches; drain LPQ to fill dcache
 		self._enqueue_prefetches(self.INSTRUCT_PC)
 		self._drain_lpq()
 
 		u = self.UOPS[self.INSTRUCT_PC]
-		imm = self._imm_at(u) if u.immflag else 0
+		if u.immflag == 1:
+			imm = self._imm_at(u)
+		else:
+			imm = 0
 
 		taken = False
 		if u.path == Flags.PATH_ALU:
-			self.alu(u.subop, u.rd, u.rs1, u.rs2, u.aux, imm)
+			self.alu(u.subop, u.rd, u.rs1, u.rs2, u.aux, imm, u.immflag)
 		elif u.path == Flags.PATH_MEM:
-			taken = self.memory(u.subop, u.rd, u.rs1, u.rs2, u.aux, imm)
+			taken = self.memory(u.subop, u.rd, u.rs1, u.rs2, u.aux, imm, u.immflag)
 
 		elif u.path == Flags.PATH_BR:
-			taken = self.branch(u.subop, u.rd, u.rs1, u.rs2, u.aux, imm)
+			taken = self.branch(u.subop, u.rd, u.rs1, u.rs2, u.aux, imm, u.immflag)
 		elif u.path == Flags.PATH_SYS:
-			taken = self.system(u.subop, u.rd, u.rs1, u.rs2, u.aux, imm)
+			taken = self.system(u.subop, u.rd, u.rs1, u.rs2, u.aux, imm, u.immflag)
 		else:
 			pass
 
@@ -393,10 +402,10 @@ class WeirdoCPU:
 			print("PC out of range:", self.INSTRUCT_PC)
 			return
 		u = self.UOPS[self.INSTRUCT_PC]
-		imm = self._imm_at(u) if u.immflag else 0
+		imm = u.imm_val if u.immflag else 0
 		print(f"PC={self.INSTRUCT_PC} GEN={self.GEN} | path={u.path} subop={u.subop} rd={u.rd} rs1={u.rs1} rs2={u.rs2} aux={u.aux} immf={u.immflag} imm={imm}")
 		# Show a compact register file view (first 8 registers)
 		regs_preview = " ".join(f"r{i}={self.REGS[i]}" for i in range(8))
 		print("REGS:", regs_preview)
 		# Show LPQ depth and outstanding frame PCs
-		print(f"LPQ depth={len(self.LPQ)} FRAMES={[pc for pc in self.FRAMES.keys()]}")
+		print(f"LPQ depth={len(self.LPQ)} dcache={[pc for pc in self.dcache.keys()]}")

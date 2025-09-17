@@ -9,3 +9,4 @@ class Component:
 	def get_component_name(self):
 		return self.component_type
 
+	

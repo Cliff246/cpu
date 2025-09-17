@@ -1,91 +1,82 @@
 from computer import *
-
+from .assembler_for_now import _assemble, instruction
 
 
 def test1():
 
-	def encode(path, subop, rd, rs1, rs2, aux=0, immflag=0):
-		"""Pack an instruction into your 32-bit layout"""
-		return ((path & 0xF) << 28) | ((subop & 0xFF) << 20) | ((rd & 0x1F) << 15) \
-			   | ((rs1 & 0x1F) << 10) | ((rs2 & 0x1F) << 5) | ((aux & 0xF) << 1) \
-			   | (immflag & 0x1)
-
 	# --- program ---
 	instrs = []
-	imms   = []
 
 	# r1 = MEM[100]
-	instrs.append(encode(Flags.PATH_MEM, Flags.MEM_LD, rd=1, rs1=0, rs2=0, immflag=1))
-	imms.append(100)
-
+	instrs.append(instruction(path=Flags.PATH_MEM, subop=Flags.MEM_LD, rd=1, rs1=0, rs2=0, aux=0,immflag=1, imm=100))
 	# r2 = MEM[101]
-	instrs.append(encode(Flags.PATH_MEM, Flags.MEM_LD, rd=2, rs1=0, rs2=0, immflag=1))
-	imms.append(101)
-
+	instrs.append(instruction(path=Flags.PATH_MEM, subop=Flags.MEM_LD, rd=2, rs1=0, rs2=0, aux=0, immflag=1, imm = 101))
 	# r3 = r1 + r2
-	instrs.append(encode(Flags.PATH_ALU, Flags.ALU_ADD, rd=3, rs1=1, rs2=2))
-
+	instrs.append(instruction(path=Flags.PATH_ALU, subop=Flags.ALU_ADD, rd=3, rs1=1, rs2=2, aux= 0))
 	# MEM[102] = r3
-	instrs.append(encode(Flags.PATH_MEM, Flags.MEM_ST, rd=0, rs1=0, rs2=3, immflag=1))
-	imms.append(102)
+	instrs.append(instruction(path=Flags.PATH_MEM, subop=Flags.MEM_ST, rd=0, rs1=0, rs2=3, aux = 0,immflag=1, imm= 102))
+
+	# immediates corresponding to instructions with immflag=1
+
+	# assemble instructions to binary
+	binary = _assemble(instrs)
 
 	# --- run it ---
 	cpu = WeirdoCPU()
-	cpu.load_program(instrs, imms)
+	cpu.load_program(binary)
 
 	# preload memory
 	cpu.MEM[100] = 7
 	cpu.MEM[101] = 5
-
-	while cpu.INSTRUCT_PC < len(cpu.INSTR):
+	I = 0
+	while I < 100:
 		cpu.step()
+		I += 1
 
 	print("MEM[102] =", cpu.MEM[102])  # expect 12
 	assert(cpu.MEM[102] == 12)
 
 
-
 def test2():
-	def enc(path, subop, rd, rs1, rs2, aux=0, immflag=0):
-		return ((path & 0xF)<<28) | ((subop & 0xFF)<<20) | ((rd & 0x1F)<<15) \
-			   | ((rs1 & 0x1F)<<10) | ((rs2 & 0x1F)<<5) | ((aux & 0xF)<<1) | (immflag & 1)
 
 	# registers
 	r0=0; r1=1; r2=2; r3=3; r4=4; r5=5; r6=6
 
-	instrs=[]; imms=[]
+	instrs = []
+	imms = []
 
-	def emit(i, imm=None):
-		instrs.append(i)
-		if imm is not None: imms.append(imm)
+	# Assembler handles encoding and binary layout
 
 	# r2 = base (100)
-	emit(enc(Flags.PATH_ALU, Flags.ALU_ADD, r2, r0, 0, immflag=1), 100)
+	instrs.append(instruction(path=Flags.PATH_ALU, subop=Flags.ALU_ADD, rd=r2, rs1=r0, rs2=0, aux=0,immflag=1, imm = 100))
 	# r3 = count (5)
-	emit(enc(Flags.PATH_ALU, Flags.ALU_ADD, r3, r0, 0, immflag=1), 5)
+	instrs.append(instruction(path=Flags.PATH_ALU, subop=Flags.ALU_ADD, rd=r3, rs1=r0, rs2=0,aux=0, immflag=1, imm = 5))
 	# r4 = 0 (accum)
-	emit(enc(Flags.PATH_ALU, Flags.ALU_ADD, r4, r0, 0, immflag=1), 0)
+	instrs.append(instruction(path=Flags.PATH_ALU, subop=Flags.ALU_ADD, rd=r4, rs1=r0, rs2=0,aux=0, immflag=1, imm = 0))
 
 	loop = len(instrs)
 
 	# LD r5, [r2 + 0]
-	emit(enc(Flags.PATH_MEM, Flags.MEM_LD, r5, r2, 0, immflag=1), 0)
+	instrs.append(instruction(path=Flags.PATH_MEM, subop=Flags.MEM_LD, rd=r5, rs1=r2, rs2=0, aux=0,immflag=0))
 	# r4 += r5
-	emit(enc(Flags.PATH_ALU, Flags.ALU_ADD, r4, r4, r5))
+	instrs.append(instruction(path=Flags.PATH_ALU, subop=Flags.ALU_ADD, rd=r4, rs1=r4, rs2=r5, aux= 0))
 	# r2 += 1 (next element)
-	emit(enc(Flags.PATH_ALU, Flags.ALU_ADD, r2, r2, 0, immflag=1), 1)
+	instrs.append(instruction(path=Flags.PATH_ALU, subop=Flags.ALU_ADD, rd=r2, rs1=r2, rs2=0, aux=0, immflag=1, imm = 1))
 	# r3 += -1
-	emit(enc(Flags.PATH_ALU, Flags.ALU_ADD, r3, r3, 0, immflag=1), -1)
+	instrs.append(instruction(path=Flags.PATH_ALU, subop=Flags.ALU_ADD, rd=r3, rs1=r3, rs2=0,aux=0, immflag=1, imm = -1))
 	# if r3 != 0, branch back to loop
-	branch_pc = len(instrs)# the index this branch will sit at
+	branch_pc = len(instrs)  # the index this branch will sit at
 	back = loop - branch_pc
-	emit(enc(Flags.PATH_BR, Flags.BR_BNE, 0, r3, r0, immflag=1), back)
+	instrs.append(instruction(path=Flags.PATH_BR, subop=Flags.BR_BNE, rd=0, rs1=r3, rs2=r0, aux=0,immflag=1, imm=back))
 
 	# store sum at MEM[200]
-	emit(enc(Flags.PATH_MEM, Flags.MEM_ST, 0, r6, r4, immflag=1), 0)
+	instrs.append(instruction(path=Flags.PATH_MEM, subop=Flags.MEM_ST, rd=0, rs1=r6, rs2=r4, aux=0, immflag=1, imm=0))
+
+	# assemble instructions to binary
+	binary = _assemble(instrs)
 
 	cpu = WeirdoCPU()
-	cpu.load_program(instrs, imms)
+	cpu.load_program(binary)
 
 	# data: MEM[100..104] = 3,1,4,1,5 ; r6 = 200
 	cpu.REGS[r6] = 200
@@ -94,8 +85,10 @@ def test2():
 		cpu.MEM[base+i] = v
 
 	# run
-	while cpu.INSTRUCT_PC < len(cpu.INSTR):
+	I = 0
+	while cpu.INSTRUCT_PC < len(instrs) and I < 100:
 		cpu.step()
+		I+=1
 
 	print("sum -> MEM[200] =", cpu.MEM[200])  # expect 14
 	assert(cpu.MEM[200] == 14)
