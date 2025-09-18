@@ -91,7 +91,8 @@ class WeirdoCPU:
 		imm_length = binary[5]
 
 		# Initialize MEM large enough to hold instructions and immediates
-		mem_size = max(inst_base + inst_length, imm_base + imm_length, 100000)
+		mem_size = min(inst_base + inst_length, imm_base + imm_length, 100000)
+		print(mem_size)
 		self.MEM = Memory(mem_size)
 		# Copy instructions into MEM at inst_base
 		count = 0
@@ -113,7 +114,6 @@ class WeirdoCPU:
 		self.GEN = 0
 		imm_counter = 0
 		# Predecode to uops for no-decode hot path
-		print(binary)
 		# Reset frontend structures
 		self.dcache.clear()
 		self.LPQ.clear()
@@ -200,7 +200,7 @@ class WeirdoCPU:
 		Look ahead and enqueue prefetches for MEM_LD ops. Additionally:
 		- Prefetch the current -cache line's loads.
 		- Prefetch the next sequential line's loads.
-		- If the current line contains a branch with a statically-known target (BEQ/BNE rel),
+		- If the current line contains a branch with a statically-known target (BEQ/BNE),
 		  also prefetch that target line's loads.
 		"""
 		if not self.PREFETCH_ENABLED:
@@ -330,7 +330,7 @@ class WeirdoCPU:
 			if(self.table_length > 2):
 
 				low = 0
-				high = (self.table_length // 2)
+				high = (self.table_length // 2) - 1
 				closet = 0
 
 				while(low <= high):
@@ -342,6 +342,7 @@ class WeirdoCPU:
 						low = closet + 1
 					else:
 						high = closet - 1
+
 			#print(closet + self.table_base)
 			#print("immedate_ptr %d" % self.MEM[closet + self.table_base + 1])
 			else:
@@ -352,10 +353,11 @@ class WeirdoCPU:
 			instruction_address = self.MEM[closet + self.table_base]
 			#print(instruction_address)
 			#immedate address that we are jumping too
-			immedate_address = self.MEM[closet + self.table_base + 1]
+			immedate_address = self.MEM[(closet * 2) + self.table_base + 1]
 			print(closet + self.table_base + 1)
 			#print(immedate_address)
-			while(1):
+
+			for _ in range(128):
 				#very stupid idea....
 				#but this is our basic 'well we can mask instructions fast idea' it's not complete but it works
 				instruction = self.MEM[instruction_address + self.inst_base]
