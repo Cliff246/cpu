@@ -12,6 +12,7 @@ class ICacheLine:
 	imm_mask: int		  # bit i set => slot i consumes an imm-tape entry
 	br_mask: int		   # bit i set => slot i is a branch/jump
 	br_targets: dict[int, int]  # slot_index -> target_pc (PC-relative already resolved)
+	data: list[int]        # instructions stored in this line
 
 
 
@@ -65,30 +66,26 @@ class InstCache(Cache):
 
 
 
+@dataclass
+class ImmCacheLine:
+	tag: int
+	data: list[int]
+
+
 class ImmCache(Cache):
 
 	def __init__(self, size):
 		super().__init__("ImmCache", size)
-		self.imms: list[int] = [0] * 10
-		self.bookmarks: dict[int, int] = {}
+		self.lines: dict[int, ImmCacheLine] = {}
 
-	def fill_tape(self ,imms: list[int]):
-		self.imms = imms
-		self.bookmarks.clear()
+	def fill_line(self, tag: int, data: list[int]):
+		self.lines[tag] = ImmCacheLine(tag, data)
 
-
-
-
-
-
-	def get_imm(self, imm_pc):
-		#print(self.imms)
-		return self.imms[imm_pc]
+	def get_line(self, tag: int) -> ImmCacheLine | None:
+		return self.lines.get(tag)
 
 	def clear(self):
-		self.imms.clear()
-		self.cursor = 0
-		self.bookmarks.clear()
+		self.lines.clear()
 
 
 class ICacheSystem(Component):
@@ -106,23 +103,24 @@ class ICacheSystem(Component):
 			# This method does not fill imm cache directly, user should call fill_imm_stream separately
 			pass
 
-	def fill_imm_stream(self, pc_imm: int, imms: list[int]):
-		self.imm_cache.fill_tape(pc_imm, imms)
+	def fill_imm_stream(self, tag: int, imms: list[int]):
+		self.imm_cache.fill_line(tag, imms)
 
-	def fetch_bundle(self, pc_op: int) -> tuple[ICacheLine | None, int | None]:
+	def fetch_bundle(self, pc_op: int) -> tuple[list[int] | None, int | None]:
 		line = self.inst_cache.get_line(pc_op)
 		if line is None:
 			return None, None
-		# Determine if an immediate is needed for first slot with imm_mask bit set
 		imm = None
 		if line.imm_mask != 0:
-			# Find first slot with imm_mask bit set
 			for slot in range(line.end_pc - line.start_pc):
 				if (line.imm_mask & (1 << slot)) != 0:
 					pc_imm = line.start_pc + slot
-					imm = self.imm_cache.fetch_imm(pc_imm)
+					tag = pc_imm  # For now, tag is pc_imm (could be line start, or other mapping)
+					imm_line = self.imm_cache.get_line(tag)
+					if imm_line and len(imm_line.data) > 0:
+						imm = imm_line.data[0]
 					break
-		return line, imm
+		return line.data, imm
 
 	def clear(self):
 		self.inst_cache.clear()
@@ -136,12 +134,12 @@ class ICacheSystem(Component):
 			line = ICacheLine(
 				start_pc + i,
 				start_pc + i + len(chunk),
-				0, 0, {}
+				0, 0, {}, chunk
 			)
 			self.inst_cache.fill_line(line)
 
-	def fill_imms(self, values):
-		self.imm_cache.fill_tape(values)
+	def fill_imms(self, tag: int, values: list[int]):
+		self.imm_cache.fill_line(tag, values)
 
 
 

@@ -10,18 +10,6 @@ from .registers import Registers
 from .cache import *
 
 
-@dataclass
-class Uop:
-	path: int
-	subop: int
-	rd: int
-	rs1: int
-	rs2: int
-	aux: int
-	immflag: int   # 0/1
-	imm_idx: int   # index into IMM_TAPE for this PC (or -1 if immflag=0)
-	imm_val: int
-
 
 
 
@@ -52,7 +40,6 @@ class WeirdoCPU:
 		self.MEM = Memory(1000)
 
 		# Predecoded stream and imm index (no-decode hot path)
-		self.UOPS: list[Uop] = []
 
 		# Frontend "generation" for mispredict recovery
 		self.GEN: int = 0
@@ -104,7 +91,7 @@ class WeirdoCPU:
 		imm_length = binary[5]
 
 		# Initialize MEM large enough to hold instructions and immediates
-		mem_size = max(inst_base + inst_length, imm_base + imm_length, 1000)
+		mem_size = max(inst_base + inst_length, imm_base + imm_length, 100000)
 		self.MEM = Memory(mem_size)
 		# Copy instructions into MEM at inst_base
 		count = 0
@@ -120,7 +107,6 @@ class WeirdoCPU:
 		self.imm_base = imm_base
 		self.imm_length = imm_length
 
-		self.IMM_CHECKPOINTS = binary[instruction_table_set_base:instruction_table_set_base+instruction_table_set_length]
 
 		self.INSTRUCT_PC = 0
 		self.IMMEDIATE_PC = 0
@@ -137,7 +123,7 @@ class WeirdoCPU:
 		n = inst_base + inst_length
 		line_start = inst_base
 		while line_start < n:
-			print(line_start)
+		#	print(line_start)
 			line_end = min(n, line_start + Flags.IC_LINE_SIZE)
 			if(line_end - line_start > Flags.IC_LINE_SIZE):
 				print("fucked")
@@ -153,27 +139,18 @@ class WeirdoCPU:
 			for i in range(width):
 				line.append(self.MEM[line_start + i])
 				count += 1
-			print("line: ", line)
+		#	print("line: ", line)
 			self.icache.fill_inst(line_start, line)
 			line_start = line_end
 		# Fill immediates for entire program at once from MEM slice
-		self.IMM_CHECKPOINTS = []
 		imm_line = []
-		for i in range(self.imm_length):
+		for i in range(Flags.IC_LINE_SIZE):
 			imm_line.append(self.MEM[self.imm_base + i])
-		self.icache.fill_imms(imm_line)
+		self.icache.fill_imms(0, imm_line)
 
-		# Build a fixed checkpoint table once during load, not incrementally in-line
-		imm_counter = 0
-		for pc in range(0, len(self.UOPS), 128):
-			self.IMM_CHECKPOINTS.append((pc, imm_counter))
-			# Count how many immflags in this 128-instruction block
-			block_end = min(pc + 128, len(self.UOPS))
-			for i in range(pc, block_end):
-				if self.UOPS[i].immflag:
-					imm_counter += 1
 
-		print(self.icache.inst_cache.lines)
+	#	print("imm cache ",self.icache.imm_cache.lines)
+	#	print("inst cache ",self.icache.inst_cache.lines)
 
 	def _imm_at(self) -> int:
 		"""
@@ -187,7 +164,9 @@ class WeirdoCPU:
 		# We'll use a private attribute on the uop to mark if it was set.
 
 		#print("immedate_pc changed", self.IMMEDIATE_PC)
-		val = self.icache.imm_cache.get_imm(self.IMMEDIATE_PC)
+		tag = self.IMMEDIATE_PC // Flags.IC_LINE_SIZE
+		val = self.icache.imm_cache.get_line(tag)
+		val = val.data[self.IMMEDIATE_PC % Flags.IC_LINE_SIZE]
 		self.imm_offset += 1
 		self.IMMEDIATE_PC += 1
 		if val is None:
@@ -341,42 +320,53 @@ class WeirdoCPU:
 		#print("jumpto", address)
 		#print("immedate_pc_before", self.IMMEDIATE_PC)
 		if self.INSTRUCT_PC in self.imm_bookmarks:
+			print("BOOK MARKED!", self.INSTRUCT_PC)
 			self.IMMEDIATE_PC = self.imm_bookmarks[self.INSTRUCT_PC]
 		else:
+			print("failed")
 			#TODO
 			#TO ADD FAILED CACHE SEARCH
-
-			low = self.table_base
-			high = (self.table_length // 2) + self.table_base
+			#binary search
+			low = 0
+			high = (self.table_length // 2)
 			closet = 0
 			while(low <= high):
-				mid = low + (high - low) // 2
-
-				if(self.MEM[mid * 2] == address):
-					closet = mid
-				if(self.MEM[mid * 2] < address):
-					low = mid + 1
+				print(closet)
+				closet = low + (high - low) // 2
+				if(self.MEM[self.table_base + closet * 2] == address):
+					closet = closet
+				if(self.MEM[self.table_base + closet * 2] < address):
+					low = closet + 1
 				else:
-					high = mid - 1
-
+					high = closet - 1
 			#print(closet + self.table_base)
 			#print("immedate_ptr %d" % self.MEM[closet + self.table_base + 1])
-			count = 0
+
+			#get the offset of the instruction address
 			instruction_address = self.MEM[closet + self.table_base]
+			#print(instruction_address)
+			#immedate address that we are jumping too
 			immedate_address = self.MEM[closet + self.table_base + 1]
-			stop = True
-			while(stop):
+			#print(immedate_address)
+			while(1):
+				#very stupid idea....
+				#but this is our basic 'well we can mask instructions fast idea' it's not complete but it works
 				instruction = self.MEM[instruction_address + self.inst_base]
 				#print(immedate_address, instruction_address)
-				p, so, rd, rs1,rs2,aux,immf = WeirdoCPU.decode(instruction)
+				#our 'mask'
+				p, so, rd, rs1, rs2, aux, immf = WeirdoCPU.decode(instruction)
+				#print(address, instruction_address)
+				#this caused so many problems... drop out before we update
 				if(address == instruction_address):
-					stop = False
-
+					break
 				if immf == 1:
 					#print("immedate")
 					immedate_address += 1
+				#increment the instruction address
 				instruction_address += 1
+			#set to new immedate address
 			self.IMMEDIATE_PC = immedate_address
+			#book mark this
 			self.imm_bookmarks[self.INSTRUCT_PC] = self.IMMEDIATE_PC
 
 			#self.imm_offset = 0
@@ -440,18 +430,32 @@ class WeirdoCPU:
 			return  # Halt when PC runs past program
 		#print("instruction(%d) immedate(%d)" %( self.IMMEDIATE_PC, self.INSTRUCT_PC))
 		# Lightweight frontend: look ahead and enqueue prefetches; drain LPQ to fill dcache
+
+
 		#self._enqueue_prefetches(self.INSTRUCT_PC)
 		#self._drain_lpq()
+
+
+		#decode 'ish'
 		ins = self.MEM[self.INSTRUCT_PC + self.inst_base]
 		path, subop, rd, rs1, rs2, aux, immf = self.decode(ins)
+
+		#debugging
+		self.print_registers()
 		WeirdoCPU.print_op_information(ins)
 
 		#print("path:%d subop:%d rd:%d rs1:%d rs2:%d aux:%d immf:%d" % (path,subop, rd, rs1, rs2, aux, immf))
 		#print("immaddress", self.IMMEDIATE_PC)
 
 		if immf == 1:
+			#fill cache line if not functional
+			if self.IMMEDIATE_PC // Flags.IC_LINE_SIZE not in self.icache.imm_cache.lines.keys():
+				tag = self.IMMEDIATE_PC // Flags.IC_LINE_SIZE
+				line_base = self.imm_base + (self.IMMEDIATE_PC // Flags.IC_LINE_SIZE) * Flags.IC_LINE_SIZE
+				print(line_base)
+				pull = [self.MEM[line_base + i] for i in range(Flags.IC_LINE_SIZE)]
+				self.icache.fill_imm_stream(tag, pull)
 			imm = self._imm_at()
-
 		else:
 			imm = 0
 
@@ -469,8 +473,6 @@ class WeirdoCPU:
 		else:
 			pass
 
-		# Insert trace after execution, before incrementing PC
-		#self.trace_state()
 
 		if(taken == False):
 			self.INSTRUCT_PC += 1
@@ -485,16 +487,3 @@ class WeirdoCPU:
 	def print_registers(self):
 		print("r1:%d r2:%d r3:%d r4:%d r5:%d r6:%d" % ( self.REGS[1], self.REGS[2], self.REGS[3], self.REGS[4], self.REGS[5], self.REGS[6]))
 
-
-	def trace_state(self):
-		if self.INSTRUCT_PC < 0 or self.INSTRUCT_PC >= len(self.UOPS):
-			print("PC out of range:", self.INSTRUCT_PC)
-			return
-		u = self.UOPS[self.INSTRUCT_PC]
-		imm = u.imm_val if u.immflag else 0
-		print(f"PC={self.INSTRUCT_PC} GEN={self.GEN} | path={u.path} subop={u.subop} rd={u.rd} rs1={u.rs1} rs2={u.rs2} aux={u.aux} immf={u.immflag} imm={imm}")
-		# Show a compact register file view (first 8 registers)
-		regs_preview = " ".join(f"r{i}={self.REGS[i]}" for i in range(8))
-		print("REGS:", regs_preview)
-		# Show LPQ depth and outstanding frame PCs
-		print(f"LPQ depth={len(self.LPQ)} dcache={[pc for pc in self.dcache.keys()]}")
