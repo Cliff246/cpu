@@ -50,7 +50,7 @@ class ALU(Component):
 		super().__init__(component_type)
 
 	def __call__(self, ctrlflags, s1, s2, s3, immflag):
-		print("ALU: rs1=%d rs2=%d imm=%d " % (s1, s2, s3))
+		#print("ALU: rs1=%d rs2=%d imm=%d " % (s1, s2, s3))
 		match(ctrlflags):
 			case Flags.ALU_ADD:
 					return s1 + s2 + s3

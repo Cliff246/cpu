@@ -51,18 +51,19 @@ def _assemble(code: list[instruction]):
 	pc = 0
 	for instr in code:
 		instructions.append(instr.enc())
+		if pc % checkpoint_interval == 0:
+			instruction_table_set.append(pc)
+			instruction_table_set.append(imm_counter)
 		if instr.has_immedate():
 			immedates.append(instr.imm)
 			imm_counter += 1
 
-		if pc % checkpoint_interval == 0:
-			instruction_table_set.append(pc)
-			instruction_table_set.append(imm_counter)
+
 		pc = pc + 1
 	# Build the immediate checkpoint table (instruction_table_set)
 	# This table is used by the CPU loader for quick jumps to immediates
 
-
+	print(instruction_table_set)
 
 	instruction_table_set_length = len(instruction_table_set)
 	inst_length = len(instructions)

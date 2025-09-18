@@ -30,6 +30,7 @@ class Memory:
 
 	def load(self, address) -> int:
 		if not isinstance(address, int):
+			print(type(address))
 			print("address was of wrong python type")
 			exit(1)
 		if(address >= self.sizemem or address < 0):

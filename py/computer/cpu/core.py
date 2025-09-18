@@ -38,10 +38,14 @@ class WeirdoCPU:
 		self.icache = ICacheSystem("ICache",1000)
 		self.components = {self.REGS, self.alu_component, self.dcache, self.icache}
 
+
+		self.imm_bookmarks: dict[int, int] = {}
 		# Program counters (word-indexed)
-		self.INSTRUCT_PC = 0
+		self.INSTRUCT_PC: int = 0
+		self.IMMEDIATE_PC: int = 0
+		self.imm_offset: int = 0
 		# Instruction and immediate streams (set via load_program)
-		self.INSTR: list[int] = []		# 32-bit instruction words
+		# self.INSTR: list[int] = []		# 32-bit instruction words
 		# Map PC -> imm index (how many ImmFlag=1 before this PC)
 		# self._IMM_INDEX_OF_PC: list[int] = []
 		# Memory that's word addressed
@@ -98,45 +102,66 @@ class WeirdoCPU:
 		inst_length = binary[3]
 		imm_base = binary[4]
 		imm_length = binary[5]
-		
-		self.INSTR = binary[inst_base:inst_base+inst_length]
-		imms = binary[imm_base:imm_base+imm_length]
+
+		# Initialize MEM large enough to hold instructions and immediates
+		mem_size = max(inst_base + inst_length, imm_base + imm_length, 1000)
+		self.MEM = Memory(mem_size)
+		# Copy instructions into MEM at inst_base
+		count = 0
+		for i in binary:
+			self.MEM[count] = i
+			count += 1
+
+
+		self.table_base = instruction_table_set_base
+		self.table_length = instruction_table_set_length
+		self.inst_base = inst_base
+		self.inst_length = inst_length
+		self.imm_base = imm_base
+		self.imm_length = imm_length
+
 		self.IMM_CHECKPOINTS = binary[instruction_table_set_base:instruction_table_set_base+instruction_table_set_length]
 
-		# self.IMM_TAPE = imms[:]
-		# self._IMM_INDEX_OF_PC = self._build_imm_index(self.INSTR)
 		self.INSTRUCT_PC = 0
+		self.IMMEDIATE_PC = 0
 		self.GEN = 0
-		self.UOPS = []
 		imm_counter = 0
 		# Predecode to uops for no-decode hot path
-		for pc, ins in enumerate(self.INSTR):
-			path, subop, rd, rs1, rs2, aux, immf = self.decode(ins)
-			if immf:
-				imm_idx = imm_counter
-				imm_counter += 1
-			else:
-				imm_idx = -1
-			self.UOPS.append(Uop(path, subop, rd, rs1, rs2, aux, immf, imm_idx, 0))
+
 		# Reset frontend structures
 		self.dcache.clear()
 		self.LPQ.clear()
 		# Build I-cache line metadata (imm & branch masks + pre-resolved targets)
 		self.icache.clear()
 		# Fill ICache with instructions by lines
-		n = len(self.UOPS)
-		line_start = 0
+		n = inst_base + inst_length
+		line_start = inst_base
 		while line_start < n:
+			print(line_start)
 			line_end = min(n, line_start + Flags.IC_LINE_SIZE)
 			if(line_end - line_start > Flags.IC_LINE_SIZE):
 				print("fucked")
 				exit()
-			# Fill instructions for this line
-			self.icache.fill_inst(line_start, self.INSTR[line_start:line_end])
+			# Fill instructions for this line from MEM slice
+			line = []
+			count = 0
+			width = 0
+			if(n - line_start < Flags.IC_LINE_SIZE):
+				width = n - line_start
+			else:
+				width = Flags.IC_LINE_SIZE
+			for i in range(width):
+				line.append(self.MEM[line_start + i])
+				count += 1
+			print("line: ", line)
+			self.icache.fill_inst(line_start, line)
 			line_start = line_end
-		# Fill immediates for entire program at once
+		# Fill immediates for entire program at once from MEM slice
 		self.IMM_CHECKPOINTS = []
-		self.icache.fill_imms(imms)
+		imm_line = []
+		for i in range(self.imm_length):
+			imm_line.append(self.MEM[self.imm_base + i])
+		self.icache.fill_imms(imm_line)
 
 		# Build a fixed checkpoint table once during load, not incrementally in-line
 		imm_counter = 0
@@ -150,39 +175,38 @@ class WeirdoCPU:
 
 		print(self.icache.inst_cache.lines)
 
-	def _imm_at(self, u: Uop) -> int:
+	def _imm_at(self) -> int:
 		"""
 		Return the immediate value for this uop, consuming from imm_cache only once per uop.
 		If u.immflag == 0, always return 0.
 		Otherwise, if u.imm_val is already set (nonzero or via a marker), return it.
 		Else, consume from imm_cache, store in u.imm_val, and return.
 		"""
-		if u.immflag == 0:
-			return 0
 		# If imm_val has already been set (either by nonzero, or by a marker), return it.
 		# We use a special marker for valid zero, since imm_val is initialized to 0.
 		# We'll use a private attribute on the uop to mark if it was set.
-		if hasattr(u, "_imm_cached"):
-			return u.imm_val
-		val = self.icache.imm_cache.next(self.INSTRUCT_PC)
+
+		#print("immedate_pc changed", self.IMMEDIATE_PC)
+		val = self.icache.imm_cache.get_imm(self.IMMEDIATE_PC)
+		self.imm_offset += 1
+		self.IMMEDIATE_PC += 1
 		if val is None:
 			val = 0
-		u.imm_val = val
-		u._imm_cached = True
 		return val
+
+
 
 	def _enqueue_range(self, start_pc: int, end_pc: int):
 		"""
 		Enqueue prefetches for MEM_LD uops in [start_pc, end_pc).
 		This is the primitive used by line- and target-based prefetch to avoid recursion.
 		"""
-		end_pc = min(end_pc, len(self.UOPS))
+		end_pc = min(end_pc, )
 		for pc in range(start_pc, end_pc):
-			u = self.UOPS[pc]
 			if u.path != Flags.PATH_MEM or u.subop != Flags.MEM_LD:
 				continue
 			base = self.REGS[u.rs1]
-			imm  = self._imm_at(u)
+			imm  = self._imm_at()
 			addr = (base + imm) % len(self.MEM)
 			base_addr = addr & ~0x3
 			fr = self.dcache.get(pc)
@@ -194,7 +218,7 @@ class WeirdoCPU:
 
 	def _enqueue_prefetches(self, start_pc: int):
 		"""
-		Look ahead and enqueue prefetches for MEM_LD uops. Additionally:
+		Look ahead and enqueue prefetches for MEM_LD ops. Additionally:
 		- Prefetch the current -cache line's loads.
 		- Prefetch the next sequential line's loads.
 		- If the current line contains a branch with a statically-known target (BEQ/BNE rel),
@@ -277,66 +301,114 @@ class WeirdoCPU:
 		a = self.REGS[rs1]
 		b = self.REGS[rs2]
 		self.REGS[rd] = self.alu_component(subop, a, b, imm, immflag)
+		return False
 
 	def memory(self, subop: int, rd: int, rs1: int, rs2: int, aux: int, imm: int, immflag: bool):
 		if(immflag == False):
 			imm = 0
 		addr = (self.REGS[rs1] + imm) % len(self.MEM)
-		print(addr)
-		cur_pc = self.INSTRUCT_PC
+		#print(addr)
 		if subop == Flags.MEM_LD:
-			print("LOAD")
-			base_addr = addr & ~0x3
-			lane = addr & 0x3
-			fr = self.dcache.get(base_addr)
-			if fr and fr.valid and fr.gen == self.GEN:
-				if lane == 0:
-					self.REGS[rd] = fr.data[0]
-				elif lane == 1:
-					self.REGS[rd] = fr.data[1]
-				elif lane == 2:
-					self.REGS[rd] = fr.data[2]
-				elif lane == 3:
-					self.REGS[rd] = fr.data[3]
-				else:
-					self.REGS[rd] = 0
-				return False
-			else:
+			self.REGS[rd] = self.MEM[self.REGS[rs1] + self.REGS[rs2] + imm]
+			#print("LOAD")
+			#base_addr = addr & ~0x3
+			#lane = addr & 0x3
+			#fr = self.dcache.get(base_addr)
+			#if fr and fr.valid and fr.gen == self.GEN:
+			#	if lane == 0:
+			#		self.REGS[rd] = fr.data[0]
+			#	elif lane == 1:
+			#		self.REGS[rd] = fr.data[1]
+			#	elif lane == 2:
+			#		self.REGS[rd] = fr.data[2]
+			#	elif lane == 3:
+			#		self.REGS[rd] = fr.data[3]
+			#	else:
+			#		self.REGS[rd] = 0
+			#	return False"""
+			#else:
 				# Stall until frame is ready
-				return True
+				#return True
 
 		elif subop == Flags.MEM_ST:
 			self.MEM[addr] = self.REGS[rs2]
+
 		else:
 			pass
 		return False
 
+	def jump_to(self, address):
+		#print("jumpto", address)
+		#print("immedate_pc_before", self.IMMEDIATE_PC)
+		if self.INSTRUCT_PC in self.imm_bookmarks:
+			self.IMMEDIATE_PC = self.imm_bookmarks[self.INSTRUCT_PC]
+		else:
+			#TODO
+			#TO ADD FAILED CACHE SEARCH
+
+			low = self.table_base
+			high = (self.table_length // 2) + self.table_base
+			closet = 0
+			while(low <= high):
+				mid = low + (high - low) // 2
+
+				if(self.MEM[mid * 2] == address):
+					closet = mid
+				if(self.MEM[mid * 2] < address):
+					low = mid + 1
+				else:
+					high = mid - 1
+
+			#print(closet + self.table_base)
+			#print("immedate_ptr %d" % self.MEM[closet + self.table_base + 1])
+			count = 0
+			instruction_address = self.MEM[closet + self.table_base]
+			immedate_address = self.MEM[closet + self.table_base + 1]
+			stop = True
+			while(stop):
+				instruction = self.MEM[instruction_address + self.inst_base]
+				#print(immedate_address, instruction_address)
+				p, so, rd, rs1,rs2,aux,immf = WeirdoCPU.decode(instruction)
+				if(address == instruction_address):
+					stop = False
+
+				if immf == 1:
+					#print("immedate")
+					immedate_address += 1
+				instruction_address += 1
+			self.IMMEDIATE_PC = immedate_address
+			self.imm_bookmarks[self.INSTRUCT_PC] = self.IMMEDIATE_PC
+
+			#self.imm_offset = 0
+		self.INSTRUCT_PC = address
+		self.print_registers()
+
+		#print("immedate_pc_after", self.IMMEDIATE_PC)
+
+
 	def branch(self, subop: int, rd: int, rs1: int, rs2: int, aux: int, imm: int, immflag: bool) -> bool:
 		if subop == Flags.BR_BEQ:
 			if self.REGS[rs1] == self.REGS[rs2]:
-				self.INSTRUCT_PC += imm
-				self.icache.imm_cache.jump_to(self.INSTRUCT_PC)
+				self.jump_to(imm)
 				# redirect -> new generation
 				self.GEN += 1
 				# Invalidate dcache from older gens
-				self.dcache = {pc: fr for pc, fr in self.dcache.items() if fr.gen == self.GEN}
+				#self.dcache = {pc: fr for pc, fr in self.dcache.items() if fr.gen == self.GEN}
 				# Cancel LPQ entries from older gens (keep as cache warmers by simply dropping them)
-				self.LPQ = deque(e for e in self.LPQ if e.gen == self.GEN)
+				#self.LPQ = deque(e for e in self.LPQ if e.gen == self.GEN)
 				return True
 		elif subop == Flags.BR_BNE:
 			if self.REGS[rs1] != self.REGS[rs2]:
-				self.INSTRUCT_PC += imm
-				self.icache.imm_cache.jump_to(self.INSTRUCT_PC)
+				self.jump_to(imm)
 				self.GEN += 1
-				self.dcache = {pc: fr for pc, fr in self.dcache.items() if fr.gen == self.GEN}
-				self.LPQ = deque(e for e in self.LPQ if e.gen == self.GEN)
+				#self.dcache = {pc: fr for pc, fr in self.dcache.items() if fr.gen == self.GEN}
+				#self.LPQ = deque(e for e in self.LPQ if e.gen == self.GEN)
 				return True
 		elif subop == Flags.BR_JMP:
-			self.INSTRUCT_PC = self.REGS[rs1]
-			self.icache.imm_cache.jump_to(self.INSTRUCT_PC)
+			self.jump_to(imm)
 			self.GEN += 1
-			self.dcache = {pc: fr for pc, fr in self.dcache.items() if fr.gen == self.GEN}
-			self.LPQ = deque(e for e in self.LPQ if e.gen == self.GEN)
+			#self.dcache = {pc: fr for pc, fr in self.dcache.items() if fr.gen == self.GEN}
+			#self.LPQ = deque(e for e in self.LPQ if e.gen == self.GEN)
 			return True
 		return False
 
@@ -361,40 +433,57 @@ class WeirdoCPU:
 			self.REGS[rd] = 0
 		else:
 			# Unknown SYS op: no state change
-			pass
+			return False
 
 	def step(self):
-		if self.INSTRUCT_PC < 0 or self.INSTRUCT_PC >= len(self.UOPS):
+		if self.INSTRUCT_PC < 0 or self.INSTRUCT_PC >= self.inst_length:
 			return  # Halt when PC runs past program
-
+		#print("instruction(%d) immedate(%d)" %( self.IMMEDIATE_PC, self.INSTRUCT_PC))
 		# Lightweight frontend: look ahead and enqueue prefetches; drain LPQ to fill dcache
-		self._enqueue_prefetches(self.INSTRUCT_PC)
-		self._drain_lpq()
+		#self._enqueue_prefetches(self.INSTRUCT_PC)
+		#self._drain_lpq()
+		ins = self.MEM[self.INSTRUCT_PC + self.inst_base]
+		path, subop, rd, rs1, rs2, aux, immf = self.decode(ins)
+		WeirdoCPU.print_op_information(ins)
 
-		u = self.UOPS[self.INSTRUCT_PC]
-		if u.immflag == 1:
-			imm = self._imm_at(u)
+		#print("path:%d subop:%d rd:%d rs1:%d rs2:%d aux:%d immf:%d" % (path,subop, rd, rs1, rs2, aux, immf))
+		#print("immaddress", self.IMMEDIATE_PC)
+
+		if immf == 1:
+			imm = self._imm_at()
+
 		else:
 			imm = 0
 
+		#print(imm)
 		taken = False
-		if u.path == Flags.PATH_ALU:
-			self.alu(u.subop, u.rd, u.rs1, u.rs2, u.aux, imm, u.immflag)
-		elif u.path == Flags.PATH_MEM:
-			taken = self.memory(u.subop, u.rd, u.rs1, u.rs2, u.aux, imm, u.immflag)
+		if path == Flags.PATH_ALU:
+			taken = self.alu(subop, rd, rs1, rs2, aux, imm, immf)
+		elif path == Flags.PATH_MEM:
+			taken = self.memory(subop,rd, rs1, rs2, aux, imm, immf)
 
-		elif u.path == Flags.PATH_BR:
-			taken = self.branch(u.subop, u.rd, u.rs1, u.rs2, u.aux, imm, u.immflag)
-		elif u.path == Flags.PATH_SYS:
-			taken = self.system(u.subop, u.rd, u.rs1, u.rs2, u.aux, imm, u.immflag)
+		elif path == Flags.PATH_BR:
+			taken = self.branch(subop, rd, rs1, rs2, aux, imm, immf)
+		elif path == Flags.PATH_SYS:
+			taken = self.system(subop, rd, rs1, rs2, aux, imm, immf)
 		else:
 			pass
 
 		# Insert trace after execution, before incrementing PC
-		self.trace_state()
+		#self.trace_state()
 
-		if not taken:
+		if(taken == False):
 			self.INSTRUCT_PC += 1
+
+	@staticmethod
+	def print_op_information(ins):
+		path, subop, rd, rs1, rs2, aux, immf = WeirdoCPU.decode(ins)
+		path_str = Flags.convert_to_string_path(path)
+		subop_str = Flags.convert_subop(path, subop)
+		print("%s %s %d %d %d %d %d" % (path_str, subop_str, rd, rs1, rs2, aux, immf))
+
+	def print_registers(self):
+		print("r1:%d r2:%d r3:%d r4:%d r5:%d r6:%d" % ( self.REGS[1], self.REGS[2], self.REGS[3], self.REGS[4], self.REGS[5], self.REGS[6]))
 
 
 	def trace_state(self):

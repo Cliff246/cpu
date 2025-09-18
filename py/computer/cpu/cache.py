@@ -69,35 +69,27 @@ class ImmCache(Cache):
 
 	def __init__(self, size):
 		super().__init__("ImmCache", size)
-		self.imms: list[int] = []
-		self.cursor: int = 0
+		self.imms: list[int] = [0] * 10
 		self.bookmarks: dict[int, int] = {}
 
 	def fill_tape(self ,imms: list[int]):
 		self.imms = imms
-		self.cursor = 0
 		self.bookmarks.clear()
 
-	def next(self, pc: int) -> int | None:
-		if self.cursor >= len(self.imms):
-			return None
-		imm = self.imms[self.cursor]
-		if pc not in self.bookmarks:
-			self.bookmarks[pc] = self.cursor
-		self.cursor += 1
-		return imm
 
-	def jump_to(self, pc: int):
-		if pc in self.bookmarks:
-			self.cursor = self.bookmarks[pc]
+
+
+
+
+	def get_imm(self, imm_pc):
+		#print(self.imms)
+		return self.imms[imm_pc]
 
 	def clear(self):
 		self.imms.clear()
 		self.cursor = 0
 		self.bookmarks.clear()
 
-	def fetch_imm(self, pc):
-		return self.next(pc)
 
 class ICacheSystem(Component):
 

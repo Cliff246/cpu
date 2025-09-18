@@ -24,6 +24,7 @@ def test1():
 	# --- run it ---
 	cpu = WeirdoCPU()
 	cpu.load_program(binary)
+	print(cpu.MEM.content)
 
 	# preload memory
 	cpu.MEM[100] = 7
@@ -35,7 +36,6 @@ def test1():
 
 	print("MEM[102] =", cpu.MEM[102])  # expect 12
 	assert(cpu.MEM[102] == 12)
-
 
 def test2():
 
@@ -66,7 +66,8 @@ def test2():
 	instrs.append(instruction(path=Flags.PATH_ALU, subop=Flags.ALU_ADD, rd=r3, rs1=r3, rs2=0,aux=0, immflag=1, imm = -1))
 	# if r3 != 0, branch back to loop
 	branch_pc = len(instrs)  # the index this branch will sit at
-	back = loop - branch_pc
+	back = loop
+
 	instrs.append(instruction(path=Flags.PATH_BR, subop=Flags.BR_BNE, rd=0, rs1=r3, rs2=r0, aux=0,immflag=1, imm=back))
 
 	# store sum at MEM[200]
@@ -74,11 +75,12 @@ def test2():
 
 	# assemble instructions to binary
 	binary = _assemble(instrs)
-
+	#print(binary[7:len(binary)])
+	#print(len(binary))
+	#breakpoint()
 	cpu = WeirdoCPU()
 	cpu.load_program(binary)
 
-	# data: MEM[100..104] = 3,1,4,1,5 ; r6 = 200
 	cpu.REGS[r6] = 200
 	base=100
 	for i,v in enumerate([3,1,4,1,5]):
@@ -93,7 +95,7 @@ def test2():
 	print("sum -> MEM[200] =", cpu.MEM[200])  # expect 14
 	assert(cpu.MEM[200] == 14)
 
-tests_list = [test1, test2]
+tests_list = [test1,test2]#, test2]
 
 def tests():
 	for t in tests_list:
