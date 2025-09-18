@@ -113,7 +113,7 @@ class WeirdoCPU:
 		self.GEN = 0
 		imm_counter = 0
 		# Predecode to uops for no-decode hot path
-
+		print(binary)
 		# Reset frontend structures
 		self.dcache.clear()
 		self.LPQ.clear()
@@ -327,26 +327,33 @@ class WeirdoCPU:
 			#TODO
 			#TO ADD FAILED CACHE SEARCH
 			#binary search
-			low = 0
-			high = (self.table_length // 2)
-			closet = 0
-			while(low <= high):
-				print(closet)
-				closet = low + (high - low) // 2
-				if(self.MEM[self.table_base + closet * 2] == address):
-					closet = closet
-				if(self.MEM[self.table_base + closet * 2] < address):
-					low = closet + 1
-				else:
-					high = closet - 1
+			if(self.table_length > 2):
+
+				low = 0
+				high = (self.table_length // 2)
+				closet = 0
+
+				while(low <= high):
+					print(low, high)
+					closet = low + (high - low) // 2
+					if(self.MEM[self.table_base + closet * 2] == address):
+						closet = closet
+					if(self.MEM[self.table_base + closet * 2] < address):
+						low = closet + 1
+					else:
+						high = closet - 1
 			#print(closet + self.table_base)
 			#print("immedate_ptr %d" % self.MEM[closet + self.table_base + 1])
+			else:
+				closet = 0
+			print("closest" ,closet)
 
 			#get the offset of the instruction address
 			instruction_address = self.MEM[closet + self.table_base]
 			#print(instruction_address)
 			#immedate address that we are jumping too
 			immedate_address = self.MEM[closet + self.table_base + 1]
+			print(closet + self.table_base + 1)
 			#print(immedate_address)
 			while(1):
 				#very stupid idea....
@@ -441,8 +448,8 @@ class WeirdoCPU:
 		path, subop, rd, rs1, rs2, aux, immf = self.decode(ins)
 
 		#debugging
-		self.print_registers()
-		WeirdoCPU.print_op_information(ins)
+		#self.print_registers()
+	#	WeirdoCPU.print_op_information(ins)
 
 		#print("path:%d subop:%d rd:%d rs1:%d rs2:%d aux:%d immf:%d" % (path,subop, rd, rs1, rs2, aux, immf))
 		#print("immaddress", self.IMMEDIATE_PC)
@@ -452,7 +459,7 @@ class WeirdoCPU:
 			if self.IMMEDIATE_PC // Flags.IC_LINE_SIZE not in self.icache.imm_cache.lines.keys():
 				tag = self.IMMEDIATE_PC // Flags.IC_LINE_SIZE
 				line_base = self.imm_base + (self.IMMEDIATE_PC // Flags.IC_LINE_SIZE) * Flags.IC_LINE_SIZE
-				print(line_base)
+			#	print(line_base)
 				pull = [self.MEM[line_base + i] for i in range(Flags.IC_LINE_SIZE)]
 				self.icache.fill_imm_stream(tag, pull)
 			imm = self._imm_at()
