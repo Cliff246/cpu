@@ -180,11 +180,12 @@ class WeirdoCPU:
 		Enqueue prefetches for MEM_LD uops in [start_pc, end_pc).
 		This is the primitive used by line- and target-based prefetch to avoid recursion.
 		"""
-		end_pc = min(end_pc, )
+		end_pc = min(end_pc, self.inst_length )
 		for pc in range(start_pc, end_pc):
-			if u.path != Flags.PATH_MEM or u.subop != Flags.MEM_LD:
+			path, subop, rd, rs1, rs2, aux, immflag = self.decode(self.MEM[self.inst_base + pc])
+			if path != Flags.PATH_MEM or subop != Flags.MEM_LD:
 				continue
-			base = self.REGS[u.rs1]
+			base = self.REGS[rs1]
 			imm  = self._imm_at()
 			addr = (base + imm) % len(self.MEM)
 			base_addr = addr & ~0x3
