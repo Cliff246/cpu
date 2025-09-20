@@ -16,6 +16,13 @@ size_t file_length(FILE *fp)
 
 	fseek(fp, 0, SEEK_END);
 	int eof = ftell(fp);
+	if(eof == 0)
+	{
+		perror("ftell failed");
+		errno = EACCES;
+		return 0;
+   	}
+
 	fseek(fp, current_seek, SEEK_SET);
 	return eof;
 }
@@ -29,6 +36,11 @@ char *file_load(const char *file_name)
 		return NULL;
 	}
 	int length = file_length(fp);
+	if(errno == EACCES)
+	{
+		fclose(fp);
+		return NULL;
+	}
 	char *content = (char *)calloc(length + 100, sizeof(char));
 	for( int i = 0; i < length; ++i)
 	{
@@ -38,6 +50,7 @@ char *file_load(const char *file_name)
 
 
 	}
+	fclose(fp);
 	return content;
 }
 
