@@ -35,6 +35,13 @@ class Flags:
 	# MEM subops
 	MEM_LD   = 0x10
 	MEM_ST   = 0x11
+	MEM_GET_SP = 0x12
+	MEM_SET_SP = 0x13
+	MEM_PUSH = 0x14
+	MEM_POP = 0x15
+	MEM_SET_SFP = 0x14
+	MEM_GET_SFP = 0x15
+
 
 	# BRANCH subops
 	BR_BEQ   = 0x20
@@ -50,6 +57,9 @@ class Flags:
 	SYS_GET_RETIRED = 0x34
 	SYS_SET_JUMP = 0x35
 	SYS_GET_MODE = 0x36
+	SYS_CALL = 0x37
+	SYS_BREAK = 0x38
+	SYS_FRAME_SET = 0x39
 
 
 	# --- I/Imm cache-line metadata (mask-based, no decode on hot path) ---
@@ -121,6 +131,19 @@ class Flags:
 				return "LOAD"
 			case Flags.MEM_ST:
 				return "STORE"
+			case Flags.MEM_PUSH:
+				return "PUSH"
+			case Flags.MEM_POP:
+				return "POP"
+			case Flags.MEM_GET_SFP:
+				return "GET SFP"
+			case Flags.MEM_SET_SFP:
+				return "SET SFP"
+			case Flags.MEM_GET_SP:
+				return "GET SP"
+			case Flags.MEM_SET_SP:
+				return "SET SP"
+
 			case _:
 				return "MEM INVALID"
 
@@ -153,6 +176,7 @@ class Flags:
 				return "PREFETCH ON"
 			case Flags.SYS_SET_JUMP:
 				return "SET JUMP"
+
 			case _:
 				return "SYS INVALID"
 

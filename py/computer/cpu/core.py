@@ -35,6 +35,12 @@ class WeirdoCPU:
 		# Instruction and immediate streams (set via load_program)
 		# self.INSTR: list[int] = []		# 32-bit instruction words
 		# Map PC -> imm index (how many ImmFlag=1 before this PC)
+
+		self.STACK_PTR: int = 0
+		self.STACK_FRAME: int = 0
+
+
+
 		# self._IMM_INDEX_OF_PC: list[int] = []
 		# Memory that's word addressed
 		self.MEM = Memory(1000)
@@ -111,6 +117,8 @@ class WeirdoCPU:
 
 		self.INSTRUCT_PC = 0
 		self.IMMEDIATE_PC = 0
+
+
 		self.GEN = 0
 		imm_counter = 0
 		# Predecode to uops for no-decode hot path
@@ -312,6 +320,18 @@ class WeirdoCPU:
 
 		elif subop == Flags.MEM_ST:
 			self.MEM[addr] = self.REGS[rs2]
+
+		elif subop == Flags.MEM_GET_SP:
+			self.REGS[rd] = self.STACK_PTR
+		elif subop == Flags.MEM_SET_SP:
+			self.STACK_PTR = self.REGS[rs1] + self.REGS[rs2] + imm
+		elif subop == Flags.MEM_PUSH:
+			self.MEM[self.STACK_PTR] = self.REGS[rs1]  # push value from rs1
+			self.STACK_PTR -= 1
+
+		elif subop == Flags.MEM_POP:
+			self.STACK_PTR += 1
+			self.REGS[rd] = self.MEM[self.STACK_PTR]
 
 		else:
 			pass
