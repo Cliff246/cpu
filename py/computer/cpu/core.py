@@ -130,6 +130,17 @@ class WeirdoCPU:
 		self.FENCE_PENDING = False
 
 
+	def get_current_stack_pointer(self):
+		if self.MODE == 0:
+			return self.K_STACK_PTR
+		else:
+			return self.STACK_PTR
+
+	def get_current_stack_frame(self):
+		if self.MODE == 0:
+			return self.K_STACK_FRAME
+		else:
+			return self.STACK_FRAME
 
 	def pull_fdt_from_mem(self, address: int):
 		"""
@@ -152,7 +163,7 @@ class WeirdoCPU:
 				return fdt.phys_base + offset_from_base
 		raise ValueError("address not in range")
 
-
+	
 
 	def pull_code_description(self):
 		if self.MODE == 0:
