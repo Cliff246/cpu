@@ -10,6 +10,19 @@ from .registers import Registers
 from .cache import *
 
 
+class FDT_Entry:
+	virt_base: int  #64bit
+	phys_base: int	#64bit
+	length: int		#64bit
+	perms: int		#32bit
+	frame_id: int	#32bit
+
+	def __init__(self, virt: int, phys: int, length: int, perm: int, fid: int):
+		self.virt_base = virt
+		self.phys_base = phys
+		self.length = length
+		self.perms = perm
+		self.frame_id = fid
 
 
 
@@ -31,14 +44,62 @@ class WeirdoCPU:
 		# Program counters (word-indexed)
 		self.INSTRUCT_PC: int = 0
 		self.IMMEDIATE_PC: int = 0
-		self.imm_offset: int = 0
+
 		# Instruction and immediate streams (set via load_program)
 		# self.INSTR: list[int] = []		# 32-bit instruction words
 		# Map PC -> imm index (how many ImmFlag=1 before this PC)
 
-		self.STACK_PTR: int = 0
-		self.STACK_FRAME: int = 0
 
+
+		self.MODE: int = 0 #the mode of the cpu
+
+
+		#kernal mode shit
+		#kernal mode stack, must be set by the kernal
+		self.K_STACK_PTR: int = 0	#kernal stack ptr(sp)
+		self.K_STACK_FRAME: int = 0 #kernal stack frame(sf)
+
+		self.K_CURRENT_CD_PTR: int = 0 #kernal current code descriptor
+		self.K_SHADOW_CD_PTR: int = 0 #kernal shadow code descriptor
+
+		#this is for the kernal to map it's self safely
+		self.K_FDT_PTR: int = 0 #kenral frame description ptr
+		self.K_FDT_LEN: int = 0 #kernal frame description length
+
+		#this is the user mode fdt, stores the current user's fdt
+		#only modifiable in kernal mode
+		self.U_FDT_PTR: int = 0 #user frame description ptr
+		self.U_FDT_LEN: int = 0 #user frame description len
+
+		#the syscall table as well as anything else.
+
+		self.K_FUNC_TABLE_PTR: int = 0 #kernal function table ptr
+		self.K_FUNC_TABLE_LEN: int = 0 #kernal function table len
+		#the current user mode frame
+		self.U_MODE_FRAME: int = 0
+
+		#USER mode shit
+		#all addresses are modified by the
+
+		#user mode shit, stores the relative offset from the current frame
+		self.STACK_PTR: int = 0	#stack pointer (sp)
+		#NOT RELATED TO FDT, just sf
+		self.STACK_FRAME: int = 0 #stack frame(sf)
+
+		#current code description of the cpu
+		#relative
+		self.CURRENT_CD_PTR: int = 0 #code descriptor ptr
+		self.SHADOW_CD_PTR: int = 0 #shadow code descriptor ptr
+
+		#the current function table, this maps calls to postions
+		#modifiable, by the user mode program, still relative.
+		self.FUNC_TABLE_PTR: int = 0
+		self.FUNC_TABLE_LEN: int = 0
+
+		#time spent in a mode
+		self.TIME: int = 0
+		#instructions retired
+		self.RETIRED: int = 0
 
 
 		# self._IMM_INDEX_OF_PC: list[int] = []
@@ -67,6 +128,51 @@ class WeirdoCPU:
 		# Frontend/preload controls
 		self.PREFETCH_ENABLED = True
 		self.FENCE_PENDING = False
+
+
+
+	def pull_fdt_from_mem(self, address: int):
+		"""
+		pull's an fdt from absolute memory
+		"""
+		virt = self.MEM[address]
+		phys = self.MEM[address + 1]
+		length = self.MEM[address + 2]
+		perms_id: int = self.MEM[address + 3]
+		perms = (perms_id ) & 0xffffffff
+		fid  = (perms_id >> 32) & 0xffffffff
+		return FDT_Entry(virt, phys, length, perms, fid)
+
+	def user_mode_current_address_abs(self, address):
+
+		for entry in range(0, self.U_FDT_LEN):
+			fdt = self.pull_fdt_from_mem((entry * 4) + self.U_FDT_PTR)
+			if address >= fdt.virt_base and address < fdt.virt_base + fdt.length:
+				offset_from_base = address - fdt.virt_base
+				return fdt.phys_base + offset_from_base
+		raise ValueError("address not in range")
+
+
+
+	def pull_code_description(self):
+		if self.MODE == 0:
+			tb = self.MEM[self.K_CURRENT_CD_PTR] #table base
+			tl = self.MEM[self.K_CURRENT_CD_PTR + 1] #table length
+			cb = self.MEM[self.K_CURRENT_CD_PTR + 2] #code base
+			cl = self.MEM[self.K_CURRENT_CD_PTR + 3] #code length
+			ib = self.MEM[self.K_CURRENT_CD_PTR + 4] #imm bass
+			il = self.MEM[self.K_CURRENT_CD_PTR + 5]
+			return (tb, tl, cb, cl, ib, il)
+		else:
+			tb = self.MEM[self.U_CURRENT_CD_PTR] #table base
+			tl = self.MEM[self.U_CURRENT_CD_PTR + 1] #table length
+			cb = self.MEM[self.U_CURRENT_CD_PTR + 2] #code base
+			cl = self.MEM[self.U_CURRENT_CD_PTR + 3] #code length
+			ib = self.MEM[self.U_CURRENT_CD_PTR + 4] #imm bass
+			il = self.MEM[self.U_CURRENT_CD_PTR + 5]
+			return (tb, tl, cb, cl, ib, il)
+
+
 
 
 	@staticmethod
@@ -117,6 +223,7 @@ class WeirdoCPU:
 
 		self.INSTRUCT_PC = 0
 		self.IMMEDIATE_PC = 0
+
 
 
 		self.GEN = 0

@@ -47,19 +47,47 @@ class Flags:
 	BR_BEQ   = 0x20
 	BR_BNE   = 0x21
 	BR_JMP   = 0x22  # jump to rs1 (imm ignored)
+	BR_CALL = 0x23
+	BR_RET = 0x24
 
 	# SYS (system/control) subops
+	#GETS
+	SYS_GET_TIMER = 0x33 #get a timer for the current proccess
+	SYS_GET_RETIRED = 0x34 #get retired for the current proccess
+	SYS_SET_JUMP = 0x35 #set the jump table for interupts. kernal and user mode can do this
+	SYS_GET_MODE = 0x37 #get the mode
 
+	#function table for a mode
+	SYS_SET_FUNC_TABLE = 0x06
+	SYS_GET_FUNC_TABLE = 0x09
+
+	SYS_ADD_FUNC = 0x07
+
+	#TOGGLES
 	SYS_PREFETCH_OFF = 0x30  # speculation barrier for cache prefetch
 	SYS_PREFETCH_ON  = 0x31  # re-enable prefetch
 	SYS_FENCE		= 0x32  # drain LPQ/frames before continuing (ordering)
-	SYS_GET_TIMER = 0x33
-	SYS_GET_RETIRED = 0x34
-	SYS_SET_JUMP = 0x35
-	SYS_GET_MODE = 0x36
-	SYS_CALL = 0x37
-	SYS_BREAK = 0x38
-	SYS_FRAME_SET = 0x39
+
+	#OS SHIT
+	SYS_CALL = 0x38 #call
+	SYS_BREAK = 0x39 #break
+
+	SYS_SET_FDT_PTR = 0x00 #set frame description table ptr
+	SYS_SET_FDT_LEN = 0x01 #set frame description table len
+
+	SYS_GET_FDT_PTR = 0x02 #get frame description table ptr
+	SYS_GET_FDT_LEN = 0x03 #get frame description table ptr
+
+	SYS_SET_PERM = 0x04
+	SYS_GET_PERM = 0x05
+
+	SYS_SET_CD_PTR = 0x46 #needed for execution, will set the current code description pointer
+	SYS_CALL_CD_PTR = 0x47 #jump to code description ptr
+
+	SYS_RET_CD_PTR = 0x48 #return to last code description ptr
+
+
+
 
 
 	# --- I/Imm cache-line metadata (mask-based, no decode on hot path) ---
