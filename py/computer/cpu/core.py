@@ -24,6 +24,14 @@ class FDT_Entry:
 		self.perms = perm
 		self.frame_id = fid
 
+	def can_read(self):
+		return self.perms & b'1'
+
+	def can_write(self):
+		return self.perms & b'10'
+
+	def can_execute(self):
+		return self.perms & b'100'
 
 
 class WeirdoCPU:
@@ -130,6 +138,58 @@ class WeirdoCPU:
 		self.FENCE_PENDING = False
 
 
+	def memory_load(self, address):
+		if self.MODE == 0:
+			return self.MEM[self.address(address)]
+		else:
+			fdt = self._look_up_fdt(address)
+
+			if(self._check_perms("R",fdt)):
+
+				return self.MEM[self.address(address)]
+			else:
+				raise ValueError("fucked at memory load for %d" % address)
+	def memory_store(self, address, value):
+		if self.MODE == 0:
+			self.MEM[self.address(address)] = value
+		else:
+			fdt = self._look_up_fdt(address)
+			if self._check_perms("W",fdt):
+				self.MEM[self.address(address)] = value
+			else:
+				raise ValueError("fucked at memory store for %d at %d" % (address, value))
+
+
+	def _look_up_fdt(self, address):
+		"""
+		takes correct mode address
+		"""
+		if self.MODE == 0:
+			self.pull_fdt_from_mem(address)
+			pass
+			#self.pull_fdt_from_mem(
+		else:
+			entry = self.pull_fdt_from_mem(address)
+			return entry
+
+	def _check_perms(self, wants, fdt: FDT_Entry):
+		total = 0
+		for char in wants:
+			match(char):
+				case 'R':
+					if fdt.can_read() == 1:
+						total += 1
+				case 'W':
+					if fdt.can_write() == 1:
+						total += 1
+
+				case 'E':
+					if fdt.can_execute() == 1:
+						total += 1
+		if(total == len(wants)):
+			return True
+		return False
+
 	def get_current_stack_pointer(self):
 		if self.MODE == 0:
 			return self.K_STACK_PTR
@@ -141,6 +201,12 @@ class WeirdoCPU:
 			return self.K_STACK_FRAME
 		else:
 			return self.STACK_FRAME
+
+	def set_current_stack_ptr(self, setto):
+		if self.MODE == 0:
+			self.K_STACK_PTR = setto
+		else:
+			self.STACK_PTR = setto
 
 	def pull_fdt_from_mem(self, address: int):
 		"""
@@ -154,16 +220,25 @@ class WeirdoCPU:
 		fid  = (perms_id >> 32) & 0xffffffff
 		return FDT_Entry(virt, phys, length, perms, fid)
 
-	def user_mode_current_address_abs(self, address):
-
+	def user_mode_relative_address_abs(self, address) -> int:
+		"""
+		user mode relative address to an absolute address
+		"""
 		for entry in range(0, self.U_FDT_LEN):
 			fdt = self.pull_fdt_from_mem((entry * 4) + self.U_FDT_PTR)
-			if address >= fdt.virt_base and address < fdt.virt_base + fdt.length:
-				offset_from_base = address - fdt.virt_base
-				return fdt.phys_base + offset_from_base
-		raise ValueError("address not in range")
+			if fdt.virt_base <= address < fdt.virt_base + fdt.length:
+				if not (fdt.perms & Flags.R):  # example check
+					return 0
+				offset = address - fdt.virt_base
+				return fdt.phys_base + offset
+		return 0
 
-	
+	def user_mode_abs_to_relative(self, address):
+		"""
+		user mode absolute address to relative address
+		"""
+		#TODO
+		pass
 
 	def pull_code_description(self):
 		if self.MODE == 0:
@@ -184,7 +259,35 @@ class WeirdoCPU:
 			return (tb, tl, cb, cl, ib, il)
 
 
+	def address(self, value: int) -> int:
+		"""
+		get's the actual address of a value
+		"""
+		if self.MODE == 0:
+			return value
+		else:
+			return self.user_mode_relative_address_abs(value)
 
+	def get_cd_info(self):
+		if self.MODE == 0:
+			return self.K_CURRENT_CD_PTR
+		else:
+			return self.CURRENT_CD_PTR
+
+	def get_codetable_info(self):
+		address = self.get_cd_info()
+		ptr = self.address(address)
+		return self.MEM[ptr], self.MEM[ptr + 1]
+
+	def get_code_info(self):
+		address = self.get_cd_info()
+		ptr = self.address(address)
+		return self.MEM[ptr+2], self.MEM[ptr + 3]
+
+	def get_imm_info(self):
+		address = self.get_cd_info()
+		ptr = self.address(address)
+		return self.MEM[ptr+4], self.MEM[ptr + 5]
 
 	@staticmethod
 	def decode(instr):
@@ -206,15 +309,7 @@ class WeirdoCPU:
 		print("path: %d, subop: %d, rd: %d, rs1: %d, rs2: %d, aux: %d, immflag %d" % (path, subop, rd, rs1, rs2, aux, immflag))
 
 	def load_program(self, binary):
-		instruction_table_set_base = binary[0]
-		instruction_table_set_length = binary[1]
-		inst_base = binary[2]
-		inst_length = binary[3]
-		imm_base = binary[4]
-		imm_length = binary[5]
-
-		# Initialize MEM large enough to hold instructions and immediates
-		mem_size = min(inst_base + inst_length, imm_base + imm_length, 100000)
+		mem_size = max(len(binary), 15000)
 		print(mem_size)
 		self.MEM = Memory(mem_size)
 		# Copy instructions into MEM at inst_base
@@ -223,17 +318,18 @@ class WeirdoCPU:
 			self.MEM[count] = i
 			count += 1
 
+		instruction_table_set_base,	instruction_table_set_length = self.get_codetable_info()
 
-		self.table_base = instruction_table_set_base
-		self.table_length = instruction_table_set_length
-		self.inst_base = inst_base
-		self.inst_length = inst_length
-		self.imm_base = imm_base
-		self.imm_length = imm_length
+		inst_base, inst_length = self.get_code_info()
+		imm_base, imm_length = self.get_imm_info()
+
+		# Initialize MEM large enough to hold instructions and immediates
 
 
-		self.INSTRUCT_PC = 0
-		self.IMMEDIATE_PC = 0
+
+
+
+
 
 
 
@@ -271,7 +367,7 @@ class WeirdoCPU:
 		# Fill immediates for entire program at once from MEM slice
 		imm_line = []
 		for i in range(Flags.IC_LINE_SIZE):
-			imm_line.append(self.MEM[self.imm_base + i])
+			imm_line.append(self.MEM[imm_base + i])
 		self.icache.fill_imms(0, imm_line)
 
 
@@ -293,7 +389,6 @@ class WeirdoCPU:
 		tag = self.IMMEDIATE_PC // Flags.IC_LINE_SIZE
 		val = self.icache.imm_cache.get_line(tag)
 		val = val.data[self.IMMEDIATE_PC % Flags.IC_LINE_SIZE]
-		self.imm_offset += 1
 		self.IMMEDIATE_PC += 1
 		if val is None:
 			val = 0
@@ -306,9 +401,10 @@ class WeirdoCPU:
 		Enqueue prefetches for MEM_LD uops in [start_pc, end_pc).
 		This is the primitive used by line- and target-based prefetch to avoid recursion.
 		"""
-		end_pc = min(end_pc, self.inst_length )
+		inst_base, inst_length = self.get_code_info()
+		end_pc = min(end_pc, inst_length )
 		for pc in range(start_pc, end_pc):
-			path, subop, rd, rs1, rs2, aux, immflag = self.decode(self.MEM[self.inst_base + pc])
+			path, subop, rd, rs1, rs2, aux, immflag = self.decode(self.MEM[inst_base + pc])
 			if path != Flags.PATH_MEM or subop != Flags.MEM_LD:
 				continue
 			base = self.REGS[rs1]
@@ -412,7 +508,7 @@ class WeirdoCPU:
 	def memory(self, subop: int, rd: int, rs1: int, rs2: int, aux: int, imm: int, immflag: bool):
 		if(immflag == False):
 			imm = 0
-		addr = (self.REGS[rs1] + imm) % len(self.MEM)
+		addr = self.address((self.REGS[rs1] + imm) % len(self.MEM))
 		#print(addr)
 		if subop == Flags.MEM_LD:
 			self.REGS[rd] = self.MEM[self.REGS[rs1] + self.REGS[rs2] + imm]
@@ -440,16 +536,16 @@ class WeirdoCPU:
 			self.MEM[addr] = self.REGS[rs2]
 
 		elif subop == Flags.MEM_GET_SP:
-			self.REGS[rd] = self.STACK_PTR
+			self.REGS[rd] = self.get_current_stack_pointer()
 		elif subop == Flags.MEM_SET_SP:
-			self.STACK_PTR = self.REGS[rs1] + self.REGS[rs2] + imm
+			self.set_current_stack_ptr(self.REGS[rs1] + self.REGS[rs2] + imm)
 		elif subop == Flags.MEM_PUSH:
-			self.MEM[self.STACK_PTR] = self.REGS[rs1]  # push value from rs1
+			self.MEM[self.get_current_stack_pointer()] = self.REGS[rs1]  # push value from rs1
 			self.STACK_PTR -= 1
 
 		elif subop == Flags.MEM_POP:
 			self.STACK_PTR += 1
-			self.REGS[rd] = self.MEM[self.STACK_PTR]
+			self.REGS[rd] = self.MEM[self.get_current_stack_pointer()]
 
 		else:
 			pass
@@ -466,18 +562,20 @@ class WeirdoCPU:
 			#TODO
 			#TO ADD FAILED CACHE SEARCH
 			#binary search
-			if(self.table_length > 2):
+			table_base, table_length = self.get_codetable_info()
+			inst_base, inst_length = self.get_code_info()
+			if(table_length > 2):
 
 				low = 0
-				high = (self.table_length // 2) - 1
+				high = (table_length // 2) - 1
 				closet = 0
 
 				while(low <= high):
 					print(low, high)
 					closet = low + (high - low) // 2
-					if(self.MEM[self.table_base + closet * 2] == address):
+					if(self.MEM[table_base + closet * 2] == address):
 						closet = closet
-					if(self.MEM[self.table_base + closet * 2] < address):
+					if(self.MEM[table_base + closet * 2] < address):
 						low = closet + 1
 					else:
 						high = closet - 1
@@ -489,17 +587,17 @@ class WeirdoCPU:
 			print("closest" ,closet)
 
 			#get the offset of the instruction address
-			instruction_address = self.MEM[closet + self.table_base]
+			instruction_address = self.MEM[closet + table_base]
 			#print(instruction_address)
 			#immedate address that we are jumping too
-			immedate_address = self.MEM[(closet * 2) + self.table_base + 1]
-			print(closet + self.table_base + 1)
+			immedate_address = self.MEM[(closet * 2) + table_base + 1]
+			print(closet + table_base + 1)
 			#print(immedate_address)
 
 			for _ in range(128):
 				#very stupid idea....
 				#but this is our basic 'well we can mask instructions fast idea' it's not complete but it works
-				instruction = self.MEM[instruction_address + self.inst_base]
+				instruction = self.MEM[instruction_address + inst_base]
 				#print(immedate_address, instruction_address)
 				#our 'mask'
 				p, so, rd, rs1, rs2, aux, immf = WeirdoCPU.decode(instruction)
@@ -527,7 +625,7 @@ class WeirdoCPU:
 	def branch(self, subop: int, rd: int, rs1: int, rs2: int, aux: int, imm: int, immflag: bool) -> bool:
 		if subop == Flags.BR_BEQ:
 			if self.REGS[rs1] == self.REGS[rs2]:
-				self.jump_to(imm)
+				self.jump_to(self.address(imm))
 				# redirect -> new generation
 				self.GEN += 1
 				# Invalidate dcache from older gens
@@ -537,13 +635,13 @@ class WeirdoCPU:
 				return True
 		elif subop == Flags.BR_BNE:
 			if self.REGS[rs1] != self.REGS[rs2]:
-				self.jump_to(imm)
+				self.jump_to(self.address(imm))
 				self.GEN += 1
 				#self.dcache = {pc: fr for pc, fr in self.dcache.items() if fr.gen == self.GEN}
 				#self.LPQ = deque(e for e in self.LPQ if e.gen == self.GEN)
 				return True
 		elif subop == Flags.BR_JMP:
-			self.jump_to(imm)
+			self.jump_to(self.address(imm))
 			self.GEN += 1
 			#self.dcache = {pc: fr for pc, fr in self.dcache.items() if fr.gen == self.GEN}
 			#self.LPQ = deque(e for e in self.LPQ if e.gen == self.GEN)
@@ -574,8 +672,7 @@ class WeirdoCPU:
 			return False
 
 	def step(self):
-		if self.INSTRUCT_PC < 0 or self.INSTRUCT_PC >= self.inst_length:
-			return  # Halt when PC runs past program
+
 		#print("instruction(%d) immedate(%d)" %( self.IMMEDIATE_PC, self.INSTRUCT_PC))
 		# Lightweight frontend: look ahead and enqueue prefetches; drain LPQ to fill dcache
 
@@ -583,9 +680,12 @@ class WeirdoCPU:
 		#self._enqueue_prefetches(self.INSTRUCT_PC)
 		#self._drain_lpq()
 
-
+		inst_base, inst_length = self.get_code_info()
+		imm_base, imm_length = self.get_imm_info()
+		if self.INSTRUCT_PC < 0 or self.INSTRUCT_PC >= inst_length:
+			return  # Halt when PC runs past program
 		#decode 'ish'
-		ins = self.MEM[self.INSTRUCT_PC + self.inst_base]
+		ins = self.MEM[self.INSTRUCT_PC + inst_base]
 		path, subop, rd, rs1, rs2, aux, immf = self.decode(ins)
 
 		#debugging
@@ -599,7 +699,7 @@ class WeirdoCPU:
 			#fill cache line if not functional
 			if self.IMMEDIATE_PC // Flags.IC_LINE_SIZE not in self.icache.imm_cache.lines.keys():
 				tag = self.IMMEDIATE_PC // Flags.IC_LINE_SIZE
-				line_base = self.imm_base + (self.IMMEDIATE_PC // Flags.IC_LINE_SIZE) * Flags.IC_LINE_SIZE
+				line_base = imm_base + (self.IMMEDIATE_PC // Flags.IC_LINE_SIZE) * Flags.IC_LINE_SIZE
 			#	print(line_base)
 				pull = [self.MEM[line_base + i] for i in range(Flags.IC_LINE_SIZE)]
 				self.icache.fill_imm_stream(tag, pull)
