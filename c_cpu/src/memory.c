@@ -13,7 +13,7 @@ memory_t *create_memory(int64_t length)
 	}
 	else
 	{
-		int64_t *buffer = (int64_t *)calloc(length, sizeof(int64_t)); 
+		int64_t *buffer = (int64_t *)calloc(length, sizeof(int64_t));
 		if(!buffer)
 		{
 			errno = ENOMEM;
@@ -22,7 +22,7 @@ memory_t *create_memory(int64_t length)
 		}
 		ptr->length = length;
 		ptr->content = buffer;
-		return ptr;	
+		return ptr;
 	}
 }
 
@@ -30,7 +30,7 @@ int64_t memory_read(memory_t *ptr, int64_t address)
 {
 	if(ptr->length > address && address >= 0)
 	{
-		return ptr->content[address]; 
+		return ptr->content[address];
 	}
 	else
 	{
@@ -50,5 +50,5 @@ void memory_write(memory_t *ptr, int64_t address, int64_t value)
 		errno = ERANGE;
 		return;
 	}
-	
+
 }

@@ -4,12 +4,14 @@
 #include <errno.h>
 #include <stdlib.h>
 
-
+//rd = rs1 + rs2 + imm
 void _alu_add(alu_t *alu)
 {
 	alu->regdest = alu->reg1 + alu->reg2 + alu->reg3;
 	alu->complete = 1;
 }
+//
+//rd = rs1 - rs2 - imm
 void _alu_sub(alu_t *alu)
 {
 	
@@ -21,6 +23,8 @@ void (*alu_fn[])(alu_t *alu) = {
 	_alu_add,
 	_alu_sub
 };
+
+
 
 alu_t *create_alu(void)
 {

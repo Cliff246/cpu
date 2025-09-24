@@ -9,14 +9,16 @@ typedef struct
 	int64_t regdest;
 	char flag;
 	char subpath;	
+	char aux;
 	int cycle;
 	int complete;
 }alu_t;
 
+void set_alu_instructions(void);
 
 alu_t *create_alu(void);
 
-void alu_submit(alu_t *alu, char subpath, int64_t rs1, int64_t rs2, int64_t imm, char immflag);
+void alu_submit(alu_t *alu, char subpath, int64_t rs1, int64_t rs2, int64_t imm, char immflag, char aux);
 
 void alu_step(alu_t *alu);
 

@@ -2,7 +2,10 @@ set(CPU_C_FILES ${CPU_C_FILES}
 	main.c
 	core.c
 	memory.c
-	alu.c
+	palu.c
+	psys.c
+	pmem.c
+	pjmp.c
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
