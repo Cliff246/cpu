@@ -3,6 +3,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+#include "flags.h"
+#include "assembler.h"
+#include "decoder.h"
 
 #define ARGUMENTS_COUNT 255
 
@@ -27,19 +30,19 @@ size_t file_length(FILE *fp)
 	return eof;
 }
 
-char *file_load(const char *file_name)
+int file_load(const char *file_name, char **ref)
 {
 	FILE *fp = fopen(file_name, "rb");
 	if(fp == NULL)
 	{
 		errno = EACCES;
-		return NULL;
+		return -1;
 	}
 	int length = file_length(fp);
 	if(errno == EACCES)
 	{
 		fclose(fp);
-		return NULL;
+		return -1;
 	}
 	char *content = (char *)calloc(length + 100, sizeof(char));
 	for( int i = 0; i < length; ++i)
@@ -50,14 +53,20 @@ char *file_load(const char *file_name)
 
 
 	}
+
 	fclose(fp);
-	return content;
+	*ref = content;
+	return length;
 }
+
 
 
 
 int main(int argc, char *argv[])
 {
+
+	create_instruction(argv[1], 0);
+	return 1;
 
 	errno = 0;
 	if(argc == 1)
@@ -68,7 +77,8 @@ int main(int argc, char *argv[])
 
 	if(argc == 2)
 	{
-		char *content = file_load(argv[1]);
+		char *content = NULL;
+	   	int length = file_load(argv[1], &content);
 		if(errno == EACCES && !content)
 		{
 			printf("bad file\n");
@@ -76,7 +86,8 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			printf("%s\n", content);
+			assemble(content, length);
+			//test(content, length);
 		}
 		return 0;
 	}
