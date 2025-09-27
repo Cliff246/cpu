@@ -16,4 +16,13 @@ void print_bin(long bin, char len, bool newline);
 void print_hex(char hex, bool newline);
 void print_str_hex(char *str, bool newline);
 void reverse(char *ary);
+
+int get_number_type(char *str);
+
+int64_t convert_to_hex(char *number);
+int64_t convert_to_oct(char *number);
+bool valid_name(char *name);
+
+
+
 #endif

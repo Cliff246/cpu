@@ -1,5 +1,6 @@
 
 #include "commons.h"
+#include <ctype.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -59,3 +60,166 @@ void reverse(char *ary)
     strcpy(ary, tstr);
 
 }
+
+
+
+int get_number_type(char *str)
+{
+	int const posint_type = 1, int_type = 2, hex_type = 3, oct_type = 4, no_type = 0; 
+	size_t len = strlen(str);
+	if(len > 0)
+	{
+		
+		bool isnumber = true;
+		
+		if(len == 1)
+		{
+			return (isdigit(str[0]))? posint_type: no_type;
+		}
+		else if(len > 1)
+		{
+			char c1 = str[0];
+			char c2 = str[1];
+			//standard integer number
+			if(isdigit(c1) && isdigit(c2) && c1 != '0')
+			{
+				for(int i = 2; i < len; ++i)
+				{
+					if(!isdigit(str[i]))
+						return no_type;
+					
+				}
+				return posint_type;
+			}
+			//standard hex number
+			else if(c1 == '0' && (c2 == 'x' || c2 == 'X'))
+			{
+				for(int i = 2; i < len; ++i)
+				{
+					if((str[i] >= 'a' && str[i] <= 'f') || (str[i] >= 'A' && str[i] <= 'F') || isdigit(str[i]))
+						continue;	
+					else
+						return no_type;
+					
+				}	
+				return hex_type;
+			}
+			else if(c1 == '-' && isdigit(c2))
+			{
+				for(int i = 2; i < len; ++i)
+				{
+					if(!isdigit(str[i]))
+						return no_type
+							;
+					
+				}
+				return int_type;
+			}
+			else if(c1 == '0' && isdigit(c2))
+			{
+				for(int i = 2; i < len; ++i)
+				{
+					if(str[i] < '0' || str[i] > 8)
+						return no_type;
+					
+				}
+				return oct_type;
+			}
+			
+			
+		}	
+
+	}
+	return no_type;
+
+}
+
+int64_t convert_to_hex(char *number)
+{
+	int64_t hexval  = 0;
+	char *rev = strdup(number);
+	reverse(rev); 
+	int count = 1;
+	int base = 1;
+	for(char *c = rev; *c; c++)
+	{
+		int val;
+		if(*c == 'X' || *c == 'x')
+		{
+			break;
+		}
+		if(isdigit(*c))
+		{
+		 	val = *c - '0';
+		}
+		if(*c >= 'A' && *c <= 'F')
+		{
+			val = *c - 'A' + 10;
+		}
+		if(*c >= 'a' && *c <= 'f')
+		{
+			val = *c - 'a' + 10;
+		}
+		val *= base;
+		hexval += val;
+		base *= 16;
+
+	}
+
+	free(rev);
+	return hexval;
+}
+
+
+int64_t convert_to_oct(char *number)
+{
+	int64_t hexval  = 0;
+	char *rev = strdup(number);
+	reverse(rev); 
+	int count = 1;
+	int base = 1;
+	for(char *c = rev; *c; c++)
+	{
+		int val;
+		
+		if(*c >= '0' && *c <= '8')
+		{
+		 	val = *c - '0';
+		}
+
+		val *= base;
+		hexval += val;
+		base *= 8;
+
+	}
+
+	free(rev);
+	return hexval;
+}
+
+
+bool valid_name(char *name)
+{
+	if(*name == 0)
+	{
+		return false;
+	}
+	char *ch = name;
+	if(isalpha(*ch))
+	{
+		ch++;
+		for(;*ch; ch++)
+		{
+			if(!isalnum(*ch))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
+
+
+

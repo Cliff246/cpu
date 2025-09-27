@@ -6,8 +6,11 @@ set(ASMFILES ${ASM_C_FILES}
 	main.c
 	decoder.c
 	commons.c
+	hashmap.c
 )
-
+set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
+set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
+set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 add_executable(asm ${ASMFILES})

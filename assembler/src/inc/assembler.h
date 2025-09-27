@@ -19,7 +19,9 @@ typedef struct
 {
 	char *str;
 	size_t line;
+	uint64_t address;
 }reference_t;
+
 
 void test(char *content, size_t length);
 void assemble(char *content, size_t length);

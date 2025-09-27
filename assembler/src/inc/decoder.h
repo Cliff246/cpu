@@ -22,14 +22,14 @@ typedef struct instruction
 	
 	uint64_t line;
 	uint64_t imm;
-
+	char *immref;
 	errinst_t err;
 }inst_t;
 
 
 int get_path(char *keyword);
 
-
+void print_inst(inst_t *inst);
 int get_subpath(int path,char *keyword);
 
 int get_alu_subpath(char *keyword);

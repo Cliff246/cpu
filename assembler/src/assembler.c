@@ -4,11 +4,13 @@
 #include <string.h>
 
 #include "assembler.h"
+#include "decoder.h"
+#include "commons.h"
 #include <stdint.h>
 #include <stdbool.h>
 
 
-
+#include "hashmap.h"
 
 void set_context_instruction(context_t *context, size_t index, uint32_t inst)
 {
@@ -241,10 +243,16 @@ struct asm_first_stage_context first_stage(char *content, size_t length)
 		//reference counting		
 		// get current delta	
 		int delta = (*line) - last; 
+		if(delta == 0)
+		{
+			continue;
+		}
 		//buffer for strdup
+		printf("%d\n", delta);
 		char current[delta + 1];
 		memset(current, 0, delta + 1);
 		memcpy(current, content + last + 1, delta - 1);
+
 		if(freferences[iref] == last) 
 		{
 			//resize 
@@ -335,38 +343,116 @@ struct asm_first_stage_context first_stage(char *content, size_t length)
 
 typedef enum
 {
-	instruction,
+	invalid,
 	reference,
 	comment,
-	invalid,
+	instruction,
 }codeline_t;
 
-void second_stage(struct asm_first_stage_context *ptr)
+
+void free_reference(void *ref)
+{
+	reference_t *ptr = (reference_t *)ref;
+	free(ptr->str);
+	free(ptr);
+}
+
+void second_stage(context_t *context, struct asm_first_stage_context *ptr)
 {
 	int current_ref = 0;
-	codeline_t *codeline = (codeline_t *)malloc(sizeof(codeline_t) * ptr->sp_len);
+	codeline_t *codeline = (codeline_t *)calloc(ptr->sp_len, sizeof(codeline_t));
+	int icount =0 ;	
+
+	hashtable_t *table = new_hash_table(ptr->ref_len, free_reference);
+	
+
+	for(int entry = 0; entry < ptr->ref_len; ++entry)
+	{
+		addto_hash_table(table, ptr->refs[entry].str, &ptr->refs[entry]);
+	}
+
 	for(int i = 0; i < ptr->sp_len; ++i)
 	{
+		if(ptr->sp[i] == NULL)
+			continue;
 		if(ptr->sp[i][0] == 0)
 			codeline[i] = comment;
 		if(ptr->refs[current_ref].line == i)
 		{	
 			codeline[i] = reference;
+			ptr->refs[current_ref].address = icount;
+			current_ref++;
+
 		}
 		else if(ptr->sp[i][0] == '\t' )
 		{
+			icount++;
 			codeline[i] = instruction;
+			printf("codeline %d\n", i);
+			printf("%s\n", ptr->sp[i]);
 		}
 		else if(ptr->sp[i][0] == '#')
 		{
 			codeline[i] = comment;
 		}
+		
+		else
+		{
+			codeline[i] = invalid;
+		}
 	}
+	inst_t *inary = calloc(icount, sizeof(inst_t));
+	uint64_t *immary = calloc(icount, sizeof(uint64_t)); 
 
+	//reusing this
+	current_ref = 0;
+	
 
+	int immind = 0;
+	int iind = 0;
+	
+	for(int x = 0; x < ptr->sp_len; ++x)
+	{
+		printf("%d %s\n", x,ptr->sp[x]);
+		if(codeline[x] == instruction)
+		{
+			
+			//printf("immind %d\n", immind);	
+			//printf("inst %d\n", iind);	
+			
+			//printf("%d\n", x);
+			//printf("%s\n", ptr->sp[x]);
+			//printf("x: %d\n", x);
+			
+			inst_t temp = create_instruction(ptr->sp[x], x);
+			
+					printf("trying\n");
+			if(temp.immflag || temp.immref)
+			{
+				printf("%p\n", temp.immref);
+				if(temp.immref != NULL)
+				{
+					reference_t *ref = (reference_t *)getdata_from_hash_table(table, temp.immref); 
+					temp.imm = ref->address;
+				}
 
+				immary[immind] = temp.imm;
+			}
+			inary[iind] = temp;
 
+			set_context_instruction(context, iind, encode_inst(&temp));
+			
+			set_context_immedates(context, immind, temp.imm);
 
+					printf("trying\n");
+			iind++;
+			immind++;
+		}
+	}	
+	
+
+		
+	
 }
 
 
@@ -390,7 +476,8 @@ void assemble(char *content, size_t length)
 	}	
 	context.immedates_alloc = alloc_init;
 	context.instructions_alloc = alloc_init;
-
+	printf("stage1\n");
 	struct asm_first_stage_context stage1 = first_stage(content, length);	
-
+	printf("stage2\n");
+	second_stage(&context, &stage1);
 }

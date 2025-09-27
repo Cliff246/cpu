@@ -2,11 +2,18 @@
 #include "decoder.h"
 
 #include "commons.h"
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define ARYSIZE(ary) sizeof(ary)/sizeof(*ary)
+
+
+void print_inst(inst_t *inst)
+{
+	printf("path:%d subpath %d: rd: %d, rs1: %d, rs2: %d, aux: %d, immf: %d\n", inst->path, inst->subpath, inst->rd, inst->rs1, inst->rs2, inst->aux, inst->immflag);
+}
 
 inst_t decode_inst(int32_t instr)
 {
@@ -56,6 +63,7 @@ int determine_code(char *keyword, const char *const mnemonics[], int length)
 		
 		for(int pool = 0; pool < length; ++pool)
 		{
+			//printf("op:%s n:%d\n", mnemonics[pool], keycount[pool]);
 			if(keyword[pool] == -1)
 			{
 				continue;
@@ -78,6 +86,7 @@ int determine_code(char *keyword, const char *const mnemonics[], int length)
 		{
 			max = keycount[k];
 			index = k;
+			
 		}
 	}
 	
@@ -114,16 +123,16 @@ int split_str(const char *string, char ***ptr, const char *delims)
 	
 	size_t slength = strlen(string);
 	size_t dlength = strlen(delims);
-	char *where = (char *)malloc(sizeof(char) * slength);
-	memset(where, 0, slength * sizeof(int)); 
-	int splits = 0;
+	char *where = (char *)calloc(slength, sizeof(char));
+	memset(where, 0, slength * sizeof(char)); 
+	int splits =0;
 	
-	printf("%d\n", slength);
-	bool  wasspliting = false, didsplit;
+	bool  wasspliting = true, didsplit;
 	int last = 0;
 	for(int x = 0; x < slength; ++x)
 	{
 		
+		printf("x: %d\n", x);
 		didsplit = false;
 		for(int y = 0; y < dlength; ++y)
 		{
@@ -159,10 +168,20 @@ int split_str(const char *string, char ***ptr, const char *delims)
 		printf("%c %d\n", string[i],where[i]);
 	}
 	char **splitary = calloc(splits, sizeof(char *));
-	char *buffer = malloc(slength + 1);	
+	if(splitary == NULL)
+	{
+		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
+		exit(1);
+	}
+	char *buffer = calloc(slength + 1, sizeof(char));	
+	if(!buffer)
+	{
+		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
+		exit(1);
+	}
 	int ibuf = 0;
 	int last_good = 0;
-	bool back_to_back = false;
+	bool back_to_back = (where[0]>0)? true : false;
 	int current = 0;
 	for(int i = 0, cur; i < slength; ++i, ++cur)
 	{
@@ -192,7 +211,7 @@ int split_str(const char *string, char ***ptr, const char *delims)
 	{
 		int delta = (slength - 1) - last_good;
 		splitary[current++] = strdup(buffer);
-		printf("%s\n", splitary[current - 1]);
+		//printf("%s\n", splitary[current - 1]);
 		ibuf = 0;
 		memset(buffer, 0, slength + 1);
 	}
@@ -200,7 +219,7 @@ int split_str(const char *string, char ***ptr, const char *delims)
 	{
 		int delta = (slength - 2) - last_good;
 		splitary[current++] = strdup(buffer);
-		printf("%s\n", splitary[current - 1]);
+		//printf("%s\n", splitary[current - 1]);
 		ibuf = 0;
 		memset(buffer, 0, slength + 1);
 
@@ -215,36 +234,33 @@ int split_str(const char *string, char ***ptr, const char *delims)
 inst_t create_instruction(char *line, int linen)
 {
 
-	int size = strlen(line);
-	char *buffer = (malloc(size + 1));
-	strcpy(buffer, line);	
-
-	//path, subpath, rd, rs1, rs2, imm	
-	char *settings[6];
-
+	printf("line: %s\n", line);
 	char **splits = NULL; 
-	printf("he\n");
-	int splits_len = split_str(line, &splits, " ,."); 
+	int splits_len = split_str(line, &splits, " ,.\t"); 
 
 	inst_t inst;
 	inst.line = linen;
-	if(splits_len != 6 || splits_len != 5)
+	if(splits_len != 6 && splits_len != 5)
 	{
-
+		printf("not valid: %d\n", splits_len);
 		inst.err = not_valid ;
-		
+		inst.immref = NULL;	
+		return inst;
 	}	
 	else if(splits_len == 5)
 	{
+
+		printf("no immedates\n");
 		int path = get_path(splits[0]);	
-		inst.path = path; 
 		if(path == -1)
 		{
+			free(splits);
 			inst.err = not_valid;
 			return inst;
 		}
 		
-		int subpath = get_subpath(inst.path,splits[1]);	
+		printf("path %d\n", path);
+		int subpath = get_subpath(inst.path, splits[1]);	
 		inst.subpath = subpath; 
 
 		int rd = get_register(splits[2]);
@@ -254,18 +270,22 @@ inst_t create_instruction(char *line, int linen)
 		inst.rd =rd;
 		inst.rs1= rs1;
 		inst.rs2= rs2;
+		inst.aux = 0;
 
 		inst.err = valid;
 		inst.imm = 0;
 		inst.immflag = 0;	
-		
+		inst.immref = NULL;
+		return inst;			
 	}
 	else if(splits_len == 6)
 	{
+		printf("immedates\n");
 		int path = get_path(splits[0]);	
 		inst.path = path; 
 		if(path == -1)
 		{
+			free(splits);
 			inst.err = not_valid;
 			return inst;
 		}
@@ -280,13 +300,46 @@ inst_t create_instruction(char *line, int linen)
 		inst.rd =rd;
 		inst.rs1= rs1;
 		inst.rs2= rs2;
-		uint64_t imm = atoi(splits[4]);
 
-		inst.imm = imm; 
+		int type = get_number_type(splits[5]);
+		uint64_t imm = 0; 
+		if(type == 1 || type == 2)
+		{
+
+			imm = atoi(splits[5]);
+		}
+		if(type == 2)
+		{
+			imm = convert_to_hex(splits[5]);	
+		}
+		if(type == 3)
+		{
+			imm = convert_to_oct(splits[5]);
+		}
+
+		if(type == 0)
+		{
+			if(valid_name(splits[5]))
+			{
+				char *dup = strdup(splits[5]);
+				printf("dup %s\n", dup);
+				inst.immref = dup; 
+			}
+			else
+			{
+				free(splits);
+				inst.err = not_valid;
+				return inst;
+			}
+		}
+		
+			
+		inst.imm = 0; 
 		inst.immflag = 1;	
 		inst.err = valid;
 
 	}
+	free(splits);
 	return inst;
 }
 
@@ -315,7 +368,7 @@ int get_register(char *keyword)
 	}
 	else
 	{
-		printf("not a code %s\n", keyword);
+		printf("not a valid register code %s\n", keyword);
 		exit(1);
 	}
 }
@@ -334,6 +387,7 @@ int get_alu_subpath(char *keyword)
 		"sll",
 		"srl",
 		"sra",
+		"div",
 		"mul",
 		"rem",
 		"mulhi",
@@ -383,7 +437,7 @@ int get_alu_subpath(char *keyword)
 	}
 	else
 	{
-		printf("not a code %s\n", keyword);
+		printf("not a valid alu code %s\n", keyword);
 		exit(1);
 	}
 		
@@ -503,7 +557,7 @@ int get_path(char *keyword)
 	int code = determine_code(keyword, pathwords, ARYSIZE(pathwords));
 	if(code == -1)
 	{
-		printf("not a code\n");
+		printf("not a path code\n");
 		return -1;
 	}
 	if(keyword[0] == '\0')
