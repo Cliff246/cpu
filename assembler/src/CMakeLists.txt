@@ -7,6 +7,8 @@ set(ASMFILES ${ASM_C_FILES}
 	decoder.c
 	commons.c
 	hashmap.c
+	error.c
+	asm_str_stuff.c
 )
 set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")

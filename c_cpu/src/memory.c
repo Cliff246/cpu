@@ -1,6 +1,7 @@
 #include "memory.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <errno.h>
 
 memory_t *create_memory(int64_t length)
@@ -52,3 +53,20 @@ void memory_write(memory_t *ptr, int64_t address, int64_t value)
 	}
 
 }
+
+
+void memory_print(memory_t *memory, uint64_t start, uint64_t stop)
+{
+	if(stop < start)
+		return;
+	uint64_t diff = stop - start;
+	if(memory->length < stop)
+		return;
+	for(uint64_t i = start; i < stop; ++i)
+	{	
+		printf("%4lld 0x%.8llx %llu\n", i, memory->content[i], memory->content[i]);
+	}	
+	
+}
+
+

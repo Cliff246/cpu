@@ -7,7 +7,7 @@
 #include "assembler.h"
 #include "decoder.h"
 #include "commons.h"
-
+#include "error.h"
 #define ARGUMENTS_COUNT 255
 
 
@@ -65,6 +65,7 @@ int file_load(const char *file_name, char **ref)
 
 int main(int argc, char *argv[])
 {
+	setup_errors();
 	errno = 0;
 	if(argc == 1)
 	{
@@ -84,7 +85,7 @@ int main(int argc, char *argv[])
 		else
 		{
 			printf("assemble\n");
-			assemble(content, length);
+			assemble(content, length, "bin");
 			//test(content, length);
 		}
 		return 0;

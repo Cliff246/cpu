@@ -2,7 +2,9 @@
 #include "flags.h"
 #include "palu.h"
 #include "psys.h"
+
 #include "pjmp.h"
+#include "debug.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -28,6 +30,92 @@ cpu_t *create_cpu(void)
 	return ptr;
 }
 
+uint64_t get_ipc(void)
+{
+	return (CCPU(mode) == KERNAL)? CCPU(k_cd.ipc) : CCPU(u_cd.ipc);
+}
+uint64_t get_pc(void)
+{
+	return (CCPU(mode) == KERNAL)? CCPU(k_cd.pc) : CCPU(u_cd.pc);
+}
+
+void set_ipc(uint64_t set)
+{
+	if(CCPU(mode) == KERNAL)
+		CCPU(k_cd.ipc) = set;
+	else
+		CCPU(u_cd.ipc) = set;
+}
+
+void set_pc(uint64_t set)
+{
+	if(CCPU(mode) == KERNAL)
+		CCPU(k_cd.pc) = set;
+	else
+		CCPU(u_cd.ipc) = set;
+	//printf("%d should be | is %d\n", set, CCPU(k_pc));
+}
+
+void inc_ipc(uint64_t inc)
+{
+	if(CCPU(mode) == KERNAL)
+		CCPU(k_cd.ipc) += inc;
+	else
+		CCPU(u_cd.ipc) += inc;
+}
+
+void inc_pc(uint64_t inc)
+{
+	if(CCPU(mode) == KERNAL)
+		CCPU(k_cd.pc) += inc;
+	else
+		CCPU(u_cd.pc) += inc;
+
+}
+
+uint64_t get_pc_offset(void)
+{
+	return (CCPU(mode) == KERNAL)? CCPU(k_cd.pc_ptr) : CCPU(u_cd.pc_ptr);
+
+}
+uint64_t get_ipc_offset(void)
+{
+
+	return (CCPU(mode) == KERNAL)? CCPU(k_cd.ipc_ptr) : CCPU(u_cd.ipc_ptr);
+}
+
+uint64_t get_pc_len(void)
+{
+
+	return (CCPU(mode) == KERNAL)? CCPU(k_cd.pc_len) : CCPU(u_cd.pc_len);
+}
+uint64_t get_ipc_len(void)
+{
+
+	return (CCPU(mode) == KERNAL)? CCPU(k_cd.ipc_len) : CCPU(u_cd.ipc_len);
+}
+
+
+
+cd_frame_t get_frame(pmode_t mode)
+{
+	return (mode == KERNAL)? CCPU(k_cd) : CCPU(u_cd);
+}
+
+void set_frame(pmode_t mode, cd_frame_t frame)
+{
+	if(mode == KERNAL)
+	{
+		CCPU(k_cd) = frame;
+	}
+	else
+	{
+		CCPU(u_cd) = frame;
+	}
+}
+
+
+
 uint64_t stream_in[255] = {0};
 uint64_t stream_out[255] = {0};
 
@@ -42,6 +130,7 @@ uint64_t load(uint64_t address)
 		return memory_read(components.mem, address );
 	}
 }
+
 void store(uint64_t address, int64_t value)
 {
 	if(memtype == ldst_fake)
@@ -57,14 +146,8 @@ void store(uint64_t address, int64_t value)
 void step_cpu(void)
 {
 	static int cycles = 0;
-	if(CCPU(imm_pc_start) + CCPU(imm_pc_limit) < CCPU(imm_pc))
-	{
-		return;
-	}
-	if(CCPU(inst_pc_start) + CCPU(inst_pc_limit) < CCPU(inst_pc))
-	{
-		return;
-	}
+
+	//printf("stage: %d\n", CCPU(stage));
 
 	switch(CCPU(stage))
 	{
@@ -87,7 +170,6 @@ void step_cpu(void)
 
 	if(CCPU(stage) == WRITEBACK)
 	{
-		//printf("%d\n", CCPU(stage));
 
 		CCPU(stage) = FETCH;
 	}
@@ -101,27 +183,34 @@ void step_cpu(void)
 
 void startup_cpu(void)
 {
-
+	CCPU(stage) = 0;
 	sys_call_cd_ptr(components.cpu, 0);
+
+	CCPU(stage) = 0;
 }
 
 
 void fetch_cpu(void)
 {
-	CCPU(curins) = MEMLD(CCPU(inst_pc));
-	CCPU(curimm) = MEMLD(CCPU(imm_pc));
-
+	uint64_t pc = get_pc() + get_pc_offset();
+	uint64_t ipc = get_ipc() + get_ipc_offset();
+#if DEBUG_MODE == 1
+	printf("pc: %llu ipc: %llu\n", pc, ipc);
+	printf("fpc: %llu fipc: %llu\n", get_pc(), get_ipc());
+#endif
+	CCPU(curins) = MEMLD(pc);
+	CCPU(curimm) = MEMLD(ipc);
 }
 void decode_cpu(void)
 {
 	inst_t inst = decode_inst(CCPU(curins));
-
+#if DEBUG_MODE == 1
 	print_inst(&inst);
+#endif
 }
 void execute_cpu(void)
 {
 	inst_t inst = decode_inst(CCPU(curins));
-
 	if(inst.path == PATH_ALU)
 	{
 		alu_submit(components.alu, inst.subpath, get_reg(inst.rs1), get_reg(inst.rs2), CCPU(curimm), inst.immflag, inst.aux);
@@ -132,6 +221,8 @@ void execute_cpu(void)
 			alu_step(components.alu);
 		}
 		CCPU(co) = components.alu->regdest;
+
+		set_reg(inst.rd, CCPU(co));
 	}
 	if(inst.path == PATH_SYS)
 	{
@@ -156,16 +247,12 @@ void writeback_cpu(void)
 {
 
 	inst_t inst = decode_inst(CCPU(curins));
-	printf("%d\n", CCPU(inst_pc));
-
-	set_reg(inst.rd, CCPU(co));
 	if(inst.path != PATH_JMP)
 	{
-		CCPU(inst_pc) ++;
-		CCPU(imm_pc) += (inst.immflag)? 1:0;
 
+		inc_pc(1);
+		inc_ipc((inst.immflag)? 1:0);
 	}
-
 
 }
 
@@ -214,11 +301,11 @@ inst_t decode_inst(int32_t instr)
 {
 	inst_t in;
 	in.path = (instr >> 28) & 0xF;
-	in.subpath = (instr >> 20) & 0xFF;
-	in.rd = (instr >> 15) & 0x1F;
-	in.rs1 = (instr >> 10) & 0x1F;
-	in.rs2 = (instr >> 5) & 0x1F;
-	in.aux = (instr >> 2) & 0x8;
+	in.subpath = (instr >> 21) & 0x7F;
+	in.rd = (instr >> 16) & 0x1F;
+	in.rs1 = (instr >> 11) & 0x1F;
+	in.rs2 = (instr >> 6) & 0x1F;
+	in.aux = (instr >> 2) & 0xF;
 	in.immflag = instr & 0x3;
 	return in;
 }
@@ -226,14 +313,13 @@ inst_t decode_inst(int32_t instr)
 int32_t encode_inst(inst_t *inst)
 {
 
-	return ((inst->path << 28) | (inst->subpath << 20) | (inst->rd << 15) | (inst->rs1 << 10) | (inst->rs2 << 5) | (inst->aux << 2) | inst->immflag);
+	return ((inst->path << 28) | (inst->subpath << 21) | (inst->rd << 16) | (inst->rs1 << 11) | (inst->rs2 << 6) | (inst->aux << 2) | inst->immflag);
 
 }
 
 uint64_t encode(uint64_t path, uint64_t subpath, uint64_t rd, uint64_t rs1, uint64_t rs2, uint64_t aux, uint64_t immf)
 {
-	uint64_t inst = ( (path & 0xF) << 28) | ((subpath &0xff) << 20) | ((rd &0x1f) << 15) | ((rs1 &0x1f) << 10) | ((rs2 &0x1f) << 5) | ((aux & 0x8) << 2) | (immf);
-	printf("%d\n", inst);
+	uint64_t inst = ( (path & 0xF) << 28) | ((subpath &0x7F) << 21) | ((rd &0x1f) << 16) | ((rs1 &0x1f) << 11) | ((rs2 &0x1f) << 6) | ((aux & 0xf) << 2) | (immf);
 	print_bin(inst, 32, 1);
 	return inst;
 }
@@ -274,10 +360,7 @@ void free_components(void)
 void print_cpu_state(cpu_t *cpu)
 {
 
-	printf("inst pc: %d, imm pc: %d\n", cpu->inst_pc, cpu->imm_pc);
-
-	printf("kernal code description ptr = %d\n", cpu->k_cd_ptr);
-	printf("user code description ptr = %d\n", cpu->u_cd_ptr);
+	printf("inst pc: %llu, imm pc: %llu\n", get_pc(), get_ipc());
 
 }
 
@@ -292,58 +375,3 @@ void print_regs(void)
 	}
 }
 
-void print_bin(long bin, char len, bool newline)
-{
-#define BUFSIZE 65
-    char buffer[BUFSIZE] = {0};
-    for (int i = 0, b = len - 1; i < len; i++, b--)
-    {
-        char bit = GETBIT(bin, b);
-        buffer[i] = (char)(bit + '0');
-    }
-    printf("%s", buffer);
-    if(newline)
-    {
-        printf("\n");
-    }
-}
-void print_hex(char hex, bool newline)
-{
-    printf("0x%02hhx%c", hex, (newline)? '\n':0x00);
-}
-
-void print_str_hex(char *str, bool newline)
-{
-
-    for(char *temp = str; *temp != 0; temp++)
-    {
-        print_hex(*temp, false);
-        if(*temp == '\n')
-            printf("->'%s' ", "\\n");
-        else
-            printf("->'%c' ", *temp);
-    }
-    if(newline)
-        printf("\n");
-
-}
-
-
-//Maybe return new length
-void reverse(char *ary)
-{
-    size_t len = strlen(ary);
-    char tstr[len + 1];
-    memset(tstr, 0, len + 1);
-    strcpy(tstr, ary);
-    int initial = 0, end = len - 1;
-    for (int i = initial; i < end; i++)
-    {
-        char temp = tstr[i];
-        tstr[i] = tstr[end];
-        tstr[end] = temp;
-        end--;
-    }
-    strcpy(ary, tstr);
-
-}

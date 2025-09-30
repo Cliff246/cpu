@@ -16,6 +16,6 @@ memory_t *create_memory(int64_t length);
 int64_t memory_read(memory_t *ptr, int64_t address);
 void memory_write(memory_t *ptr, int64_t address, int64_t value);
 
-
+void memory_print(memory_t *memory, uint64_t start, uint64_t stop);
 
 #endif

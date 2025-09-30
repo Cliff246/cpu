@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "asm_str_stuff.h"
 
 #define ARYSIZE(ary) sizeof(ary)/sizeof(*ary)
 
@@ -19,325 +20,150 @@ inst_t decode_inst(int32_t instr)
 {
 	inst_t in;
 	in.path = (instr >> 28) & 0xF;
-	in.subpath = (instr >> 20) & 0xFF;
-	in.rd = (instr >> 15) & 0x1F;
-	in.rs1 = (instr >> 10) & 0x1F;
-	in.rs2 = (instr >> 5) & 0x1F;
-	in.aux = (instr >> 2) & 0x7;
+	in.subpath = (instr >> 21) & 0x7F;
+	in.rd = (instr >> 16) & 0x1F;
+	in.rs1 = (instr >> 11) & 0x1F;
+	in.rs2 = (instr >> 6) & 0x1F;
+	in.aux = (instr >> 2) & 0xf;
 	in.immflag = instr & 0x3;
 	return in;
 }
 
-int32_t encode_inst(inst_t *inst)
+uint32_t encode_inst(inst_t *inst)
 {
 
-	return ((inst->path << 28) | (inst->subpath << 20) | (inst->rd << 15) | (inst->rs1 << 10) | (inst->rs2 << 5) | (inst->aux << 2) | inst->immflag);
-
+	return ((inst->path << 28) | (inst->subpath << 21) | (inst->rd << 16) | (inst->rs1 << 11) | (inst->rs2 << 6) | (inst->aux << 2 & 0x7) | inst->immflag);
 }
 
 uint64_t encode(uint64_t path, uint64_t subpath, uint64_t rd, uint64_t rs1, uint64_t rs2, uint64_t aux, uint64_t immf)
 {
-	uint64_t inst = ( (path & 0xF) << 28) | ((subpath &0xff) << 20) | ((rd &0x1f) << 15) | ((rs1 &0x1f) << 10) | ((rs2 &0x1f) << 5) | ((aux & 0x8) << 2) | (immf);
+	uint64_t inst = ( (path & 0xF) << 28) | ((subpath &0x7f) << 21) | ((rd &0x1f) << 16) | ((rs1 &0x1f) << 11) | ((rs2 &0x1f) << 6) | ((aux & 0xf) << 2) | (immf);
 	print_bin(inst, 32, 1);
 	return inst;
 }
 
 
-
-
-int determine_code(char *keyword, const char *const mnemonics[], int length)
+void invalid_inst(char **splits, int length, inst_t *inst)
 {
-	
-
-	int *keycount = calloc(length, sizeof(int));
-	if(keycount == 0)
-	{
-		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
-		exit(1);
-	}
-
-	
-	int i = 0;
-	for(char *ch = keyword; *ch; ++ch, ++i)
-	{
-		
-		for(int pool = 0; pool < length; ++pool)
-		{
-			//printf("op:%s n:%d\n", mnemonics[pool], keycount[pool]);
-			if(keyword[pool] == -1)
-			{
-				continue;
-			}
-			if(mnemonics[pool][i] == '\0')
-			{
-				keycount[pool] = -1;
-			}
-			else if(mnemonics[pool][i] == *ch)
-				keycount[pool] += 1;
-			else
-				keycount[pool] = -1;
-		}	
-	}	
-	
-	int max = 0, index = 0;
-	for(int k = 0; k < length; ++k)
-	{
-		if(keycount[k] > max)
-		{
-			max = keycount[k];
-			index = k;
-			
-		}
-	}
-	
-	free(keycount);
-
-	if(strlen(mnemonics[index]) == max)
-	{
-		return index;
-	}	
-	return -1;
-}
-
-
-char *clear_whitespace(char *str)
-{
-	int length = strlen(str);
-	char temp[length + 1];
-	memset(temp, 0, length + 1);
-	int count = 0;
-	for(char *ch = str; *ch; ch++)
-	{
-		if(*ch != ' ')
-		{
-			temp[count++] = *ch;
-		}
-	}
-	return strdup(temp);	
 
 }
 
-
-int split_str(const char *string, char ***ptr, const char *delims)
+void inst_no_imm(char **splits, int length, inst_t *inst)
 {
-	
-	size_t slength = strlen(string);
-	size_t dlength = strlen(delims);
-	char *where = (char *)calloc(slength, sizeof(char));
-	memset(where, 0, slength * sizeof(char)); 
-	int splits =0;
-	
-	bool  wasspliting = true, didsplit;
-	int last = 0;
-	for(int x = 0; x < slength; ++x)
+	int path = get_path(splits[0]);	
+	if(path == -1)
 	{
-		
-		printf("x: %d\n", x);
-		didsplit = false;
-		for(int y = 0; y < dlength; ++y)
+		inst->err = not_valid;
+		return;
+	}
+
+	//printf("path %d\n", path);
+	inst->path = path;
+	int subpath = get_subpath(path, splits[1]);	
+	inst->subpath = subpath; 
+
+	int rd = get_register(splits[2]);
+	int rs1 = get_register(splits[3]);
+	int rs2 = get_register(splits[4]);
+	inst->rd =rd;
+	inst->rs1= rs1;
+	inst->rs2= rs2;
+	inst->aux = 0;
+
+	inst->err = valid;
+	inst->imm = 0;
+	inst->immflag = 0;	
+	inst->immref = NULL;
+}
+
+void inst_imm(char **splits, int length, inst_t *inst)
+{
+	int path = get_path(splits[0]);	
+	inst->path = path; 
+	if(path == -1)
+	{
+		inst->err = not_valid;
+		return;
+	}
+
+	int subpath = get_subpath(inst->path,splits[1]);	
+	inst->subpath = subpath; 
+
+	int rd = get_register(splits[2]);
+	int rs1 = get_register(splits[3]);
+	int rs2 = get_register(splits[4]);
+
+	inst->rd =rd;
+	inst->rs1= rs1;
+	inst->rs2= rs2;
+
+	int type = get_number_type(splits[5]);
+	uint64_t imm = 0; 
+	if(type == 1 || type == 2)
+	{
+		imm = atoi(splits[5]);
+	}
+	if(type == 2)
+	{
+		imm = convert_to_hex(splits[5]);	
+	}
+	if(type == 3)
+	{
+		imm = convert_to_oct(splits[5]);
+	}
+
+	if(type == 0)
+	{
+		if(valid_name(splits[5]))
 		{
-			if(string[x] == delims[y])
-			{	
-				didsplit = true;
-				where[x] = string[x];
-				continue;
-			}	
-		}
-		if(didsplit)
-		{
-			if(wasspliting == false)
-			{
-				wasspliting = true;
-			}
+			char *dup = strdup(splits[5]);
+			inst->immref = dup; 
 		}
 		else
 		{
-			//did not split
-			if(wasspliting == true)
-			{
-				splits++;
-				wasspliting = false;
-			}
-		}
-		
-	}
-
-	for(int i = 0; i < slength; ++i)
-	{
-
-		printf("%c %d\n", string[i],where[i]);
-	}
-	char **splitary = calloc(splits, sizeof(char *));
-	if(splitary == NULL)
-	{
-		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
-		exit(1);
-	}
-	char *buffer = calloc(slength + 1, sizeof(char));	
-	if(!buffer)
-	{
-		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
-		exit(1);
-	}
-	int ibuf = 0;
-	int last_good = 0;
-	bool back_to_back = (where[0]>0)? true : false;
-	int current = 0;
-	for(int i = 0, cur; i < slength; ++i, ++cur)
-	{
-		if(where[i] == 0)
-		{
-			if(back_to_back == true)
-			{
-				last_good = i;
-				back_to_back = false;
-			}
-			buffer[ibuf++] = string[i];
-		}			
-		else
-		{
-			if(!back_to_back)
-			{
-				int delta = (i - 1) - last_good;
-				splitary[current++] = strdup(buffer);
-				printf("%s\n", splitary[current - 1]);
-				ibuf = 0;
-				memset(buffer, 0, slength + 1);
-				back_to_back = true;
-			}
+			inst->err = not_valid;
+	
 		}
 	}
-	if(where[slength] == 0)
-	{
-		int delta = (slength - 1) - last_good;
-		splitary[current++] = strdup(buffer);
-		//printf("%s\n", splitary[current - 1]);
-		ibuf = 0;
-		memset(buffer, 0, slength + 1);
-	}
-	else
-	{
-		int delta = (slength - 2) - last_good;
-		splitary[current++] = strdup(buffer);
-		//printf("%s\n", splitary[current - 1]);
-		ibuf = 0;
-		memset(buffer, 0, slength + 1);
 
-	}
-	free(buffer);
-	free(where);
-	*ptr = splitary;
-	return splits;
+
+	inst->imm = imm; 
+	inst->immflag = 1;	
+	inst->err = valid;
 }
+
+
+
 
 
 inst_t create_instruction(char *line, int linen)
 {
 
-	printf("line: %s\n", line);
+	//printf("line: %s\n", line);
 	char **splits = NULL; 
 	int splits_len = split_str(line, &splits, " ,.\t"); 
 
 	inst_t inst;
+	//clear this
+	memset(&inst, 0, sizeof(inst_t));
+
+
 	inst.line = linen;
+	inst.linestr = strdup(line);
+	
+
+
 	if(splits_len != 6 && splits_len != 5)
 	{
-		printf("not valid: %d\n", splits_len);
-		inst.err = not_valid ;
-		inst.immref = NULL;	
-		return inst;
+		invalid_inst(splits, splits_len, &inst);	
 	}	
 	else if(splits_len == 5)
 	{
-
-		printf("no immedates\n");
-		int path = get_path(splits[0]);	
-		if(path == -1)
-		{
-			free(splits);
-			inst.err = not_valid;
-			return inst;
-		}
-		
-		printf("path %d\n", path);
-		int subpath = get_subpath(inst.path, splits[1]);	
-		inst.subpath = subpath; 
-
-		int rd = get_register(splits[2]);
-		int rs1 = get_register(splits[3]);
-		int rs2 = get_register(splits[4]);
-
-		inst.rd =rd;
-		inst.rs1= rs1;
-		inst.rs2= rs2;
-		inst.aux = 0;
-
-		inst.err = valid;
-		inst.imm = 0;
-		inst.immflag = 0;	
-		inst.immref = NULL;
-		return inst;			
+		inst_no_imm(splits, splits_len, &inst);
 	}
 	else if(splits_len == 6)
 	{
-		printf("immedates\n");
-		int path = get_path(splits[0]);	
-		inst.path = path; 
-		if(path == -1)
-		{
-			free(splits);
-			inst.err = not_valid;
-			return inst;
-		}
-		
-		int subpath = get_subpath(inst.path,splits[1]);	
-		inst.subpath = subpath; 
-
-		int rd = get_register(splits[2]);
-		int rs1 = get_register(splits[3]);
-		int rs2 = get_register(splits[4]);
-
-		inst.rd =rd;
-		inst.rs1= rs1;
-		inst.rs2= rs2;
-
-		int type = get_number_type(splits[5]);
-		uint64_t imm = 0; 
-		if(type == 1 || type == 2)
-		{
-
-			imm = atoi(splits[5]);
-		}
-		if(type == 2)
-		{
-			imm = convert_to_hex(splits[5]);	
-		}
-		if(type == 3)
-		{
-			imm = convert_to_oct(splits[5]);
-		}
-
-		if(type == 0)
-		{
-			if(valid_name(splits[5]))
-			{
-				char *dup = strdup(splits[5]);
-				printf("dup %s\n", dup);
-				inst.immref = dup; 
-			}
-			else
-			{
-				free(splits);
-				inst.err = not_valid;
-				return inst;
-			}
-		}
-		
-			
-		inst.imm = 0; 
-		inst.immflag = 1;	
-		inst.err = valid;
-
+		inst_imm(splits, splits_len, &inst);
 	}
 	free(splits);
 	return inst;
@@ -363,7 +189,7 @@ int get_register(char *keyword)
 	int code = determine_code(keyword, reg_mnemonics, ARYSIZE(reg_mnemonics));
 	if(code != -1)
 	{
-			
+
 		return regvalue[code];
 	}
 	else
@@ -376,7 +202,7 @@ int get_register(char *keyword)
 
 int get_alu_subpath(char *keyword)
 {
-			
+
 
 	const char *const alu_mnemonics[] = {
 		"add",
@@ -401,7 +227,7 @@ int get_alu_subpath(char *keyword)
 		"cne",
 		"ceq"
 	};
-	
+
 	const int opvalue[] = {
 		ALU_ADD,
 		ALU_SUB,
@@ -429,10 +255,10 @@ int get_alu_subpath(char *keyword)
 
 
 	int code = determine_code(keyword, alu_mnemonics, ARYSIZE(alu_mnemonics));
-	
+
 	if(code != -1)
 	{
-			
+
 		return opvalue[code];
 	}
 	else
@@ -440,7 +266,7 @@ int get_alu_subpath(char *keyword)
 		printf("not a valid alu code %s\n", keyword);
 		exit(1);
 	}
-		
+
 
 }
 int get_mem_subpath(char *keyword)
@@ -455,7 +281,7 @@ int get_mem_subpath(char *keyword)
 		"get_sfp",
 		"set_sfp"
 	};
-	
+
 	const int opvalue[] = {
 		MEM_LD,
 		MEM_SD,
@@ -466,15 +292,15 @@ int get_mem_subpath(char *keyword)
 		MEM_GET_SFP,
 		MEM_GET_SFP
 
-		
+
 	};
 
 
 	int code = determine_code(keyword, mem_mnemonics, ARYSIZE(mem_mnemonics));
-	
+
 	if(code != -1)
 	{
-			
+
 		return opvalue[code];
 	}
 	else
@@ -494,7 +320,7 @@ int get_jmp_subpath(char *keyword)
 		"call",
 		"ret",
 	};
-	
+
 	const int opvalue[] = {
 		JP_JMP,
 		JP_BNE,
@@ -507,7 +333,7 @@ int get_jmp_subpath(char *keyword)
 	int code = determine_code(keyword, jmp_mnemonics, ARYSIZE(jmp_mnemonics));
 	if(code != -1)
 	{
-			
+
 		return opvalue[code];
 	}
 	else
@@ -530,7 +356,7 @@ int get_sys_subpath(char *keyword)
 	int code = determine_code(keyword, sys_mnemonics, ARYSIZE(sys_mnemonics));
 	if(code != -1)
 	{
-			
+
 		return opvalue[code];
 	}
 	else
@@ -545,26 +371,29 @@ int get_sys_subpath(char *keyword)
 
 int get_path(char *keyword)
 {	
-	
+
 
 	const char *const pathwords[] = {
 		"alu",
-		"sys",
 		"mem",
-		"jmp"	
+		"jmp",	
+		"sys",
 	};
 
+	const int pathvalue[] = {
+		PATH_ALU,
+		PATH_MEM,
+		PATH_JMP,
+		PATH_SYS,
+
+	};
 	int code = determine_code(keyword, pathwords, ARYSIZE(pathwords));
 	if(code == -1)
 	{
 		printf("not a path code\n");
 		return -1;
-	}
-	if(keyword[0] == '\0')
-	{
-		return 0;
 	}	
-	return code;
+	return pathvalue[code];
 }
 
 
@@ -572,16 +401,22 @@ int get_path(char *keyword)
 
 int get_subpath(int path, char *keyword)
 {
+	//printf("path: %d\n", path);
 	switch(path)
 	{
+
 		case PATH_ALU:
 			return get_alu_subpath(keyword);
+			break;
 		case PATH_JMP:
 			return get_jmp_subpath(keyword);
+			break;
 		case PATH_MEM:
 			return get_mem_subpath(keyword);
+			break;
 		case PATH_SYS:
 			return get_sys_subpath(keyword);
+			break;
 		default:
 			return -1;
 	}

@@ -9,7 +9,14 @@
 #define GETBIT(n, k) (1 & (n >> k))
 
 
+void *safe_calloc(size_t size, size_t type_size); 
 
+void *safe_realloc(void *ptr, size_t size, int type_size);
+
+#define SIZEOF(x) sizeof(x)
+
+#define REALLOC(ptr, size, type) safe_realloc(ptr, size, SIZEOF(type))
+#define CALLOC(size, type) safe_calloc(size, SIZEOF(type))
 
 void print_bin(long bin, char len, bool newline);
 

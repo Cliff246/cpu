@@ -7,13 +7,24 @@
 typedef struct 
 {
 	uint32_t *instructions;
-	uint64_t *immedates;
+	int64_t *immedates;
 	
 	size_t immedates_len;
 	size_t instructions_len;
 
 	size_t immedates_alloc, instructions_alloc;	
+
+
+	uint64_t table_len;
+	uint64_t *table;
 }context_t;
+
+
+typedef enum reference_type
+{
+	REF_INVAL,
+	REF_
+}reference_type_t;
 
 typedef struct 
 {
@@ -23,6 +34,7 @@ typedef struct
 }reference_t;
 
 
+
 void test(char *content, size_t length);
-void assemble(char *content, size_t length);
+void assemble(char *content, size_t length, char *file_name);
 #endif

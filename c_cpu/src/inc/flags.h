@@ -1,6 +1,9 @@
 #ifndef __FLAGS__
 #define __FLAGS__
 
+
+//clone of c_cpu flags since i am lazy
+
 //current paths
 
 //alu path
@@ -21,9 +24,11 @@
 
 
 //instruction convention is always
-
-//[31:29] [28:21] [20:16] [15:11] [10:6] [5:2] [1:0]
+//4			7		5		5		5	 3		2
+//[31:28] [27:21] [20:16] [15:11] [10:6] [5:2] [1:0]
 //path    subpath  rd      rs1     rs2   aux    immf
+
+#define STR(x) #x
 
 //immf 00 = NONE
 #define IMMF_EMPTY 		0
@@ -34,6 +39,14 @@
 #define IMMF_HALF		2
 //immf 11 = FULL PULL
 #define IMMF_FULL		3
+
+
+//AUX FLAGS
+//
+#define AUX_ZERO		0
+#define AUX_RELATIVE	1
+#define AUX_
+
 
 
 //rd = rs1 + rs2 + imm
@@ -97,21 +110,31 @@
 #define MEM_SET_SFP	0x07
 
 
-//JMP
-
 //branch equal
 #define JP_BEQ 		0x01
 //branch not equal
 #define JP_BNE		0x02
 //jump jmp
 #define JP_JMP		0x03
+//jmp branch less than
+#define JP_BLT		0x04
+//jmp branch less than equal
+#define JP_BLE		0x05
 
 //CALLS
 //call function
 //
-#define JP_CALL		0x04
+#define JP_CALL		0x06
 //return from function
-#define JP_RET		0x05
+#define JP_RET		0x07
+
+//relative jmps 	
+#define JP_REL_BEQ 	0x08
+#define JP_REL_BNE 	0x09
+#define JP_REL_JMP 	0x0a
+#define JP_REL_BLT	0x0b
+#define JP_REL_BLE	0x0c
+
 
 //SYS
 
@@ -185,7 +208,11 @@
 #define SYS_SET_INTERUPT_TIMER 	0x1b
 
 
-
+//these are the realloc ptr's that set dest address as hashes resolved by the vpu
+#define SYS_REL_BIND_PTR		0x1c
+#define SYS_REL_UNBIND_PTR		0x1d
+#define SYS_REL_QUERY_PTR		0x1e
+#define SYS_REL_CHECK_PTR		0x1f
 
 //FPU
 
@@ -327,6 +354,5 @@
 *		String path for 8 bit addressing simply
 *
 */
-
 
 #endif

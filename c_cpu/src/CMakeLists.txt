@@ -6,6 +6,9 @@ set(CPU_C_FILES ${CPU_C_FILES}
 	psys.c
 	pmem.c
 	pjmp.c
+	common.c
+	debug.c
+	coreutils.c
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

@@ -5,15 +5,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "common.h"
 #include "memory.h"
 #include "palu.h"
 
 
 #define BOOKMARKS_MAX 128
-
-#define SETBIT(n, k) (1 | (n << k))
-#define CLRBIT(n, k) (n & ~(1 << k))
-#define GETBIT(n, k) (1 & (n >> k))
 
 
 typedef enum
@@ -37,8 +34,40 @@ typedef struct
 {
     uint64_t inst_addr;
     uint64_t imm_addr;
+	uint64_t cd_addr;
     int      valid;
 } bookmark_t;
+
+typedef struct cd_frame
+{
+	//code description ptr
+	uint64_t cd_ptr;
+	//pc_ptr
+	uint64_t pc_ptr, pc_len;
+	//ipc
+	uint64_t ipc_ptr, ipc_len;
+	//code description table
+	uint64_t ct_ptr, ct_len;
+
+	//frame pc, frame ipc
+	uint64_t pc, ipc;
+}cd_frame_t;
+
+typedef struct regstack
+{
+	//stack ptr,
+	//stack frame
+	uint64_t sp, sf;
+	//stack code description
+	uint64_t scd;
+}regstack_t;
+
+typedef struct interreg
+{
+	uint64_t rpc, ripc, gp, tp;
+}interreg_t;
+
+
 
 typedef struct
 {
@@ -50,17 +79,19 @@ typedef struct
 	int64_t kregs[32];
 
 	//instruction pc and imm_pc
-	uint64_t inst_pc, imm_pc;
-	uint64_t inst_pc_limit, imm_pc_limit;
-	uint64_t inst_pc_start, imm_pc_start;
-	uint64_t swap_inst_pc, swap_imm_pc;
 	//kernal stack pointer and stack frame
-	uint64_t k_sp, k_sf, sf, sp;
+	regstack_t u_stack, k_stack;
+	//kernal/user mode return pc and ipc
+	//kernal/user mode general ptr
+	//kernal/user mode thread ptr
+	interreg_t u_ireg, k_ireg;
 	//cpu mode
 	pmode_t mode;
 	//kernal and usr stack code description ptr
-	uint64_t k_cd_ptr, u_cd_ptr;
-	uint64_t k_cd_len, u_cd_len;
+
+	//
+	cd_frame_t u_cd, k_cd;
+
 	//kernal frame data table ptr and length
 	uint64_t k_fdt_ptr, k_fdt_len;
 	//user frame data table ptr and len
@@ -95,12 +126,12 @@ void print_cpu_state(cpu_t *cpu);
 
 typedef struct instruction
 {
-	uint32_t path : 4;
-	uint32_t subpath : 8;
-	uint32_t rd : 5;
-	uint32_t rs1 : 5;
-	uint32_t rs2 : 5;
-	uint32_t aux : 3;
+	uint32_t path;
+	uint32_t subpath;
+	uint32_t rd ;
+	uint32_t rs1 ;
+	uint32_t rs2 ;
+	uint32_t aux ;
 	uint32_t immflag;
 }inst_t;
 
@@ -109,6 +140,22 @@ typedef struct instruction
 //create cpu
 cpu_t *create_cpu(void);
 
+uint64_t get_ipc(void);
+uint64_t get_pc(void);
+
+void set_ipc(uint64_t set);
+void set_pc(uint64_t set);
+
+void inc_ipc(uint64_t inc);
+void inc_pc(uint64_t inc);
+
+
+uint64_t get_pc_offset(void);
+uint64_t get_ipc_offset(void);
+
+
+uint64_t get_pc_len(void);
+uint64_t get_ipc_len(void);
 
 //step the cpu forward
 void step_cpu(void);
@@ -123,6 +170,10 @@ void writeback_cpu(void);
 //get the right address for memory
 uint64_t address(uint64_t addr);
 
+cd_frame_t get_frame(pmode_t mode);
+void set_frame(pmode_t mode, cd_frame_t frame);
+
+
 typedef enum
 {
 	ldst_mem,
@@ -136,6 +187,9 @@ inst_t decode_inst(int32_t code);
 int32_t encode_inst(inst_t *inst);
 uint64_t encode(uint64_t path, uint64_t subpath, uint64_t rd, uint64_t rs1, uint64_t rs2, uint64_t aux, uint64_t immf);
 
+uint64_t load(uint64_t address);
+
+void store(uint64_t address, int64_t value);
 //register get
 int64_t get_reg(int reg);
 //register set
@@ -143,6 +197,7 @@ void set_reg(int reg, int64_t content);
 
 void print_inst(inst_t *inst);
 void print_regs(void);
+
 typedef struct
 {
 	memory_t *mem;
@@ -154,10 +209,5 @@ typedef struct
 void init_components(void);
 void free_components(void);
 extern components_t components;
-void print_bin(long bin, char len, bool newline);
-
-void print_hex(char hex, bool newline);
-void print_str_hex(char *str, bool newline);
-void reverse(char *ary);
 
 #endif

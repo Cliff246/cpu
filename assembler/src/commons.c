@@ -1,8 +1,46 @@
 
 #include "commons.h"
+#include "error.h"
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
+#include <errno.h>
+
+
+
+void *safe_calloc(size_t size, size_t type_size)
+{
+	void *ptr = calloc(size, type_size);
+	//printf("calloc(%lu,%lu)\n", size, type_size);
+	if(!ptr)
+	{
+		ERR(ENOMEM, "calloc failed");	
+		exit(1);
+	}
+	return ptr;
+	
+}	
+
+void *safe_realloc(void *ptr, size_t size, int type_size)
+{
+	if(ptr == NULL)
+	{
+		ERR(EINVAL, "realloc argument was NULL");
+		return NULL;	
+	}	
+	else
+	{
+		void *temp = realloc(ptr, size * type_size);
+		if(temp == NULL)
+		{
+			ERR(ENOMEM, "realloc failed");	
+			exit(1);
+		}
+		ptr = temp;
+		return ptr;
+	}
+}
+
 
 void print_bin(long bin, char len, bool newline)
 {

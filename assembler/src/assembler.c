@@ -6,12 +6,14 @@
 #include "assembler.h"
 #include "decoder.h"
 #include "commons.h"
+#include "error.h"
+#include <errno.h>
 #include <stdint.h>
 #include <stdbool.h>
 
 
 #include "hashmap.h"
-
+int step = 0;
 void set_context_instruction(context_t *context, size_t index, uint32_t inst)
 {
 	if(index > context->instructions_len)
@@ -31,26 +33,19 @@ void set_context_instruction(context_t *context, size_t index, uint32_t inst)
 		
 		if(changed)
 		{
-			uint32_t *temp = realloc(context->instructions, context->instructions_alloc * sizeof(uint32_t));
-			if(temp == NULL)
-			{
-				//die
-				printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
-				exit(1);	
-			}
-			context->instructions = temp;
+			context->instructions = REALLOC(context->instructions, context->instructions_alloc, uint32_t);
 		}
 	}
 			
 	context->instructions[index] = inst;		
-	if(index > context->instructions_len)
-		context->instructions_len = index;
+	if(index >= context->instructions_len)
+		context->instructions_len = index + 1;
 }
 
 
-void set_context_immedates(context_t *context, size_t index, uint64_t imm)
+void set_context_immedates(context_t *context, size_t index, int64_t imm)
 {
-	if(index > context->instructions_len)
+	if(index > context->immedates_len)
 	{
 		size_t diff_needed = index -  context->immedates_len;	
 		bool changed = false;
@@ -67,28 +62,21 @@ void set_context_immedates(context_t *context, size_t index, uint64_t imm)
 		
 		if(changed)
 		{
-			uint64_t *temp = realloc(context->immedates, context->immedates_alloc * sizeof(uint64_t));
-			if(temp == NULL)
-			{
-				//die
-				printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
-				exit(1);	
-			}
-			context->immedates = temp;
+			context->immedates = REALLOC(context->immedates, context->immedates_alloc, int64_t);
 		}
 	}
-			
 	context->immedates[index] = imm;		
-	if(index > context->instructions_len)
-		context->instructions_len = index;
-
+	if(index >= context->immedates_len)
+	{
+		context->immedates_len = index + 1;
+	}
 }
 
 
 int *collect_lines(char *content, size_t length)
 {
 	size_t alloc = 100;
-	int *lines = (int *)calloc(alloc, sizeof(int)); 
+	int *lines = (int *)CALLOC(alloc, int); 
 	if(!lines)
 	{
 		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
@@ -103,13 +91,8 @@ int *collect_lines(char *content, size_t length)
 			if(index + 1 >= alloc)
 			{
 				alloc *= 2;
-				int *temp = realloc(lines, alloc * sizeof(int));	
-				if(!temp)
-				{
-					printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
-					exit(1);
-				}
-				lines= temp;
+				
+				lines = REALLOC(lines, alloc, int);
 			}
 			lines[index++] = i;	
 			
@@ -120,13 +103,7 @@ int *collect_lines(char *content, size_t length)
 	if(index >= alloc)
 	{
 		alloc += 10;
-		int *temp = realloc(lines, alloc * sizeof(int));	
-		if(!temp)
-		{
-			printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
-			exit(1);
-		}
-		lines = temp;
+		lines = REALLOC(lines, alloc, int);
 	}	
 	lines[index] = -1;
 	return lines;
@@ -137,7 +114,7 @@ int *collect_references(char *content, size_t length)
 {
 
 	size_t alloc = 100;
-	int *references = (int *)calloc(alloc, sizeof(int)); 
+	int *references = (int *)CALLOC(alloc, int); 
 	if(!references)
 	{
 		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
@@ -156,13 +133,7 @@ int *collect_references(char *content, size_t length)
 				if(index + 1 == alloc)
 				{
 					alloc *= 2;
-					int *temp = realloc(references, alloc * sizeof(int));	
-					if(!temp)
-					{
-						printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
-						exit(1);
-					}
-					references = temp;
+					references = REALLOC(references, alloc, int);
 				}
 				references[index++] = last_line;	
 			}
@@ -178,13 +149,7 @@ int *collect_references(char *content, size_t length)
 	if(index + 1 == alloc)
 	{
 		alloc += 10;
-		int *temp = realloc(references, alloc * sizeof(int));	
-		if(!temp)
-		{
-			printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
-			exit(1);
-		}
-		references = temp;
+		references = REALLOC(references, alloc, int);
 	}	
 	references[index] = -1;
 	return references;
@@ -195,7 +160,7 @@ void test(char *content, size_t length)
 	int *lines = collect_lines(content, length);
 	for(int *index = lines; *index >= 0; index++)
 	{
-		printf("%d\n", *index);
+		//printf("%d\n", *index);
 	}
 }
 
@@ -221,7 +186,7 @@ struct asm_first_stage_context first_stage(char *content, size_t length)
 	//reserve buffer
 	size_t sl_alloc = alloc_init;	
 	//all lines
-	char **splitlines = (char **)calloc(sl_alloc, sizeof(char *));
+	char **splitlines = (char **)CALLOC(sl_alloc, char *);
 	if(!splitlines)
 	{
 		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
@@ -229,7 +194,7 @@ struct asm_first_stage_context first_stage(char *content, size_t length)
 	}
 
 	size_t r_alloc = alloc_init;	
-	reference_t *refs = (reference_t *)calloc(r_alloc, sizeof(reference_t)); 
+	reference_t *refs = (reference_t *)CALLOC(r_alloc, reference_t); 
 	if(!refs)
 	{
 		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
@@ -248,7 +213,7 @@ struct asm_first_stage_context first_stage(char *content, size_t length)
 			continue;
 		}
 		//buffer for strdup
-		printf("%d\n", delta);
+		//printf("%d\n", delta);
 		char current[delta + 1];
 		memset(current, 0, delta + 1);
 		memcpy(current, content + last + 1, delta - 1);
@@ -259,13 +224,7 @@ struct asm_first_stage_context first_stage(char *content, size_t length)
 			if(iref >= r_alloc)
 			{
 				r_alloc *= 2;
-				reference_t *temp = (reference_t *)realloc(refs, r_alloc * sizeof(reference_t));	
-				if(!temp)
-				{
-					printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
-					exit(1);
-				}
-				refs = temp;
+				refs = (reference_t *)REALLOC(refs, r_alloc, reference_t);	
 			}
 			
 			char *after = strchr(current, ':');
@@ -304,17 +263,8 @@ struct asm_first_stage_context first_stage(char *content, size_t length)
 		}
 		//save it
 		if(ilines >= sl_alloc)
-		{
-			sl_alloc *= 2;
-			char **temp = (char **)realloc(splitlines, sl_alloc * sizeof(char *));	
-			if(!temp)
-			{
-				printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
-				exit(1);
-			}
-			splitlines = temp;
+			splitlines = REALLOC(splitlines, sl_alloc, char *);
 
-		}
 		splitlines[ilines] = split;
 		//printf("%s\n", splitlines[ilines]);
 		last = *line;
@@ -323,11 +273,11 @@ struct asm_first_stage_context first_stage(char *content, size_t length)
 	size_t nlines = ilines; 
 	size_t nrefs = iref;
 	
-	for(int i = 0; i < nrefs; ++i)
-	{
+	//for(int i = 0; i < nrefs; ++i)
+	//{
 		//printf("%s\n", refs[i].str);
-		printf("%s\n", splitlines[refs[i].line]);
-	}
+		//printf("%s\n", splitlines[refs[i].line]);
+	//}
 	free(freferences);
 	free(flines);
 
@@ -357,17 +307,29 @@ void free_reference(void *ref)
 	free(ptr);
 }
 
-void second_stage(context_t *context, struct asm_first_stage_context *ptr)
+
+struct asm_lines
 {
+	int current_ref;
+	int icount;	
+	hashtable_t *table;
+
+	codeline_t *codeline; 
+};
+
+
+struct asm_lines determine_lines(context_t *context, struct asm_first_stage_context *ptr)
+{
+	struct asm_lines al; 
+	int icount = 0;
 	int current_ref = 0;
-	codeline_t *codeline = (codeline_t *)calloc(ptr->sp_len, sizeof(codeline_t));
-	int icount =0 ;	
+	codeline_t *codeline = (codeline_t *)CALLOC(ptr->sp_len, codeline_t);
 
 	hashtable_t *table = new_hash_table(ptr->ref_len, free_reference);
 	
-
-	for(int entry = 0; entry < ptr->ref_len; ++entry)
+	for(int entry = 0; entry < ptr->ref_len; entry++)
 	{
+		printf("refs[%d].address = %llu\n", entry, ptr->refs[entry].address );
 		addto_hash_table(table, ptr->refs[entry].str, &ptr->refs[entry]);
 	}
 
@@ -379,6 +341,7 @@ void second_stage(context_t *context, struct asm_first_stage_context *ptr)
 			codeline[i] = comment;
 		if(ptr->refs[current_ref].line == i)
 		{	
+			
 			codeline[i] = reference;
 			ptr->refs[current_ref].address = icount;
 			current_ref++;
@@ -386,10 +349,11 @@ void second_stage(context_t *context, struct asm_first_stage_context *ptr)
 		}
 		else if(ptr->sp[i][0] == '\t' )
 		{
-			icount++;
+					
 			codeline[i] = instruction;
-			printf("codeline %d\n", i);
-			printf("%s\n", ptr->sp[i]);
+			icount++;
+			//printf("codeline %d\n", i);
+			printf("%x: %s\n",i , ptr->sp[i]);
 		}
 		else if(ptr->sp[i][0] == '#')
 		{
@@ -401,83 +365,175 @@ void second_stage(context_t *context, struct asm_first_stage_context *ptr)
 			codeline[i] = invalid;
 		}
 	}
-	inst_t *inary = calloc(icount, sizeof(inst_t));
-	uint64_t *immary = calloc(icount, sizeof(uint64_t)); 
+	
+	al.table = table;
+	al.codeline = codeline;
+	al.current_ref = current_ref;
+	al.icount = icount;
+	return al;
+}
 
+uint64_t second_stage(context_t *context, struct asm_first_stage_context *ptr)
+{
+
+	struct asm_lines al = determine_lines(context, ptr);
+
+	codeline_t *codeline = al.codeline; 
+	hashtable_t *table = al.table; 	
+	
+	const int icount = al.icount;
+
+	const uint64_t cd_table_len = (icount / 128) + 1;
+	
+	inst_t *inary = CALLOC(icount, inst_t);
+	uint64_t *immary = CALLOC(icount, uint64_t); 
+	printf("icount: %d %d\n", icount, icount / 128 + 1);
+	uint64_t *cd_table_offsets = CALLOC(cd_table_len, uint64_t);
 	//reusing this
-	current_ref = 0;
 	
-
+	const uint64_t instrptr_start = (cd_table_len * 2) + 6;
+	printf("instr_ptr start:%llu\n", instrptr_start);
+	
+	//immediate index
 	int immind = 0;
+	//instruction index
 	int iind = 0;
-	
+	//code description count
+	int cd_offset_count = 0;
 	for(int x = 0; x < ptr->sp_len; ++x)
 	{
-		printf("%d %s\n", x,ptr->sp[x]);
 		if(codeline[x] == instruction)
 		{
-			
-			//printf("immind %d\n", immind);	
-			//printf("inst %d\n", iind);	
-			
-			//printf("%d\n", x);
-			//printf("%s\n", ptr->sp[x]);
-			//printf("x: %d\n", x);
+			if(iind % 128 == 0)
+			{
+				cd_table_offsets[cd_offset_count++] = immind;
+				printf("immoffsets[%d]=%llu\n",cd_offset_count - 1 ,cd_table_offsets[cd_offset_count-1]);
+			}
 			
 			inst_t temp = create_instruction(ptr->sp[x], x);
 			
-					printf("trying\n");
 			if(temp.immflag || temp.immref)
 			{
-				printf("%p\n", temp.immref);
 				if(temp.immref != NULL)
 				{
 					reference_t *ref = (reference_t *)getdata_from_hash_table(table, temp.immref); 
+					if(ref == NULL)
+					{
+						printf("ref key '%s' not found in table\n", temp.immref);
+						print_hash_table(table);
+						exit(1);
+					}
 					temp.imm = ref->address;
+					printf("address = %llu\n", ref->address);
+					
 				}
-
-				immary[immind] = temp.imm;
+				
+				set_context_immedates(context, immind++, temp.imm);
 			}
 			inary[iind] = temp;
-
+			//printf("instruction is: at: %.4x %.8x: ", iind, encode_inst(&temp));
+			//print_inst(&temp);
 			set_context_instruction(context, iind, encode_inst(&temp));
-			
-			set_context_immedates(context, immind, temp.imm);
+						
+			//printf("imm: %d %llu\n", immind, temp.imm);
 
-					printf("trying\n");
+			//printf("trying\n");
 			iind++;
-			immind++;
 		}
 	}	
 	
+	context->table = cd_table_offsets;
+	context->table_len = cd_table_len; 	
 
-		
+	int table_total_len = context->table_len * 2;
+	int code_size = context->immedates_len + context->instructions_len;
 	
+	int total_size = code_size + table_total_len + 6;
+	return total_size;
 }
 
 
-void assemble(char *content, size_t length)
+void final_stage(context_t *context, int length, char *file_name)
+{
+	
+	uint64_t *bin = (uint64_t *)CALLOC(length, uint64_t);
+	
+	
+	const uint64_t ct_actual_len = context->table_len * 2;
+	//table
+	int offset = 0;
+	bin[offset = 0] = 6;
+	bin[offset = 1] = ct_actual_len;
+	//code table actual length
+	//inst ptr
+	const uint64_t instr_ptr = (context->table_len * 2) + 6;
+	const uint64_t instr_len = context->instructions_len; 
+	bin[offset = 2] = instr_ptr; 
+	bin[offset = 3] = instr_len;
+	//imm ptr
+	const uint64_t imm_ptr = (context->table_len * 2)+ context->instructions_len + 6;
+	const uint64_t imm_len = context->immedates_len;
+	bin[offset = 4] = imm_ptr;
+	bin[offset = 5] = imm_len;
+	//just buffering by 1
+	offset = offset + 1;
+	for(int table = 0; table < context->table_len; table++, offset+=2)
+	{
+		printf("table[%d]=%llu\n",table, context->table[table]);
+		bin[offset] = (64 * table);
+		bin[offset + 1] =  context->table[table];
+	}
+	for(int c = 0; c < context->instructions_len; ++c)
+	{
+		//inst_t i = decode_inst(context->instructions[c]);
+		//print_inst(&i);
+		bin[offset++] = context->instructions[c];
+	}
+	for(int i = 0; i <= context->immedates_len; ++i)
+	{
+		bin[offset++] = context->immedates[i];
+	}
+	if(offset <= length)
+	{
+		//fuck
+		ERR(ERANGE, "offset is off");	
+		exit(1);
+	}
+	FILE *fp = fopen(file_name, "w");
+	if(fp == NULL)
+	{
+		ERR(EBADF, "could not load file");
+		exit(1);
+	}
+	char *c = (char *)bin;
+	for(int i = 0; i < offset * sizeof(int64_t); i++)
+	{
+		if(i % sizeof(int64_t) == 0)
+		{
+
+			printf("%.3d: %.8llx %llu\n", i/8, bin[i / 8], bin[i / 8]);
+		}
+		fputc(c[i], fp);
+	}
+	fclose(fp);
+}
+
+
+void assemble(char *content, size_t length, char *file_name)
 {
 	
 	static context_t context = {0};
 	const size_t alloc_init = 100;
-	context.immedates = calloc(alloc_init, sizeof(uint64_t)); 
-	context.instructions = calloc(alloc_init, sizeof(uint32_t)); 
-	if(!context.immedates)
-	{
-		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
-		exit(1);
-	}
-	if(!context.instructions)
-	{
-
-		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
-		exit(1);
-	}	
+	printf("step%d\n", step);
+	context.immedates = CALLOC(alloc_init, uint64_t); 
+	context.instructions = CALLOC(alloc_init, uint32_t); 
+	printf("step%d\n", step);
 	context.immedates_alloc = alloc_init;
 	context.instructions_alloc = alloc_init;
-	printf("stage1\n");
+	printf("step%d\n", step);
 	struct asm_first_stage_context stage1 = first_stage(content, length);	
-	printf("stage2\n");
-	second_stage(&context, &stage1);
+	printf("step%d\n", step);
+	uint64_t size = second_stage(&context, &stage1);
+	printf("step%d\n", step);
+	final_stage(&context, size, file_name);
 }
