@@ -3,13 +3,15 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdint.h>
+
 
 #define SETBIT(n, k) (1 | (n << k))
 #define CLRBIT(n, k) (n & ~(1 << k))
 #define GETBIT(n, k) (1 & (n >> k))
 
 
-void *safe_calloc(size_t size, size_t type_size); 
+void *safe_calloc(size_t size, size_t type_size);
 
 void *safe_realloc(void *ptr, size_t size, int type_size);
 

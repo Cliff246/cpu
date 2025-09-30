@@ -1,18 +1,17 @@
 {
     "configurations": [
-		{
-            "name": "windows",
+        {
+            "name": "Win32",
             "includePath": [
                 "${default}",
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/inc"
             ],
             "defines": [
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE"
             ],
-            "windowsSdkVersion": "10.0.26100.0",
-            "compilerPath": "C:/msys64/mingw64/bin/gcc.exe"
+            "windowsSdkVersion": "10.0.26100.0"
         }
     ],
     "version": 4

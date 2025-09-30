@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
-
+#include <stdint.h>
 
 
 void *safe_calloc(size_t size, size_t type_size)
@@ -14,26 +14,26 @@ void *safe_calloc(size_t size, size_t type_size)
 	//printf("calloc(%lu,%lu)\n", size, type_size);
 	if(!ptr)
 	{
-		ERR(ENOMEM, "calloc failed");	
+		ERR(ENOMEM, "calloc failed");
 		exit(1);
 	}
 	return ptr;
-	
-}	
+
+}
 
 void *safe_realloc(void *ptr, size_t size, int type_size)
 {
 	if(ptr == NULL)
 	{
 		ERR(EINVAL, "realloc argument was NULL");
-		return NULL;	
-	}	
+		return NULL;
+	}
 	else
 	{
 		void *temp = realloc(ptr, size * type_size);
 		if(temp == NULL)
 		{
-			ERR(ENOMEM, "realloc failed");	
+			ERR(ENOMEM, "realloc failed");
 			exit(1);
 		}
 		ptr = temp;
@@ -103,13 +103,13 @@ void reverse(char *ary)
 
 int get_number_type(char *str)
 {
-	int const posint_type = 1, int_type = 2, hex_type = 3, oct_type = 4, no_type = 0; 
+	int const posint_type = 1, int_type = 2, hex_type = 3, oct_type = 4, no_type = 0;
 	size_t len = strlen(str);
 	if(len > 0)
 	{
-		
+
 		bool isnumber = true;
-		
+
 		if(len == 1)
 		{
 			return (isdigit(str[0]))? posint_type: no_type;
@@ -125,7 +125,7 @@ int get_number_type(char *str)
 				{
 					if(!isdigit(str[i]))
 						return no_type;
-					
+
 				}
 				return posint_type;
 			}
@@ -135,11 +135,11 @@ int get_number_type(char *str)
 				for(int i = 2; i < len; ++i)
 				{
 					if((str[i] >= 'a' && str[i] <= 'f') || (str[i] >= 'A' && str[i] <= 'F') || isdigit(str[i]))
-						continue;	
+						continue;
 					else
 						return no_type;
-					
-				}	
+
+				}
 				return hex_type;
 			}
 			else if(c1 == '-' && isdigit(c2))
@@ -149,7 +149,7 @@ int get_number_type(char *str)
 					if(!isdigit(str[i]))
 						return no_type
 							;
-					
+
 				}
 				return int_type;
 			}
@@ -159,13 +159,13 @@ int get_number_type(char *str)
 				{
 					if(str[i] < '0' || str[i] > 8)
 						return no_type;
-					
+
 				}
 				return oct_type;
 			}
-			
-			
-		}	
+
+
+		}
 
 	}
 	return no_type;
@@ -176,7 +176,7 @@ int64_t convert_to_hex(char *number)
 {
 	int64_t hexval  = 0;
 	char *rev = strdup(number);
-	reverse(rev); 
+	reverse(rev);
 	int count = 1;
 	int base = 1;
 	for(char *c = rev; *c; c++)
@@ -213,13 +213,13 @@ int64_t convert_to_oct(char *number)
 {
 	int64_t hexval  = 0;
 	char *rev = strdup(number);
-	reverse(rev); 
+	reverse(rev);
 	int count = 1;
 	int base = 1;
 	for(char *c = rev; *c; c++)
 	{
 		int val;
-		
+
 		if(*c >= '0' && *c <= '8')
 		{
 		 	val = *c - '0';

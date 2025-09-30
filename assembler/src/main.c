@@ -33,7 +33,7 @@ size_t file_length(FILE *fp)
 
 int file_load(const char *file_name, char **ref)
 {
-	FILE *fp = fopen(file_name, "rb");
+	FILE *fp = fopen(file_name, "r");
 	if(fp == NULL)
 	{
 		errno = EACCES;

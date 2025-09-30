@@ -2,6 +2,7 @@
 #include "flags.h"
 #include "palu.h"
 #include "psys.h"
+#include "cpumemory.h"
 
 #include "pjmp.h"
 #include "debug.h"
@@ -230,6 +231,7 @@ void execute_cpu(void)
 	}
 	if(inst.path == PATH_JMP)
 	{
+		
 		jump_submit(components.cpu, inst.subpath, 0, get_reg(inst.rs1), get_reg(inst.rs2), CCPU(curimm), inst.immflag);
 
 

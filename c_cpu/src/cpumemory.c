@@ -1,5 +1,6 @@
-#include "memory.h"
+#include "cpumemory.h"
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
@@ -63,10 +64,10 @@ void memory_print(memory_t *memory, uint64_t start, uint64_t stop)
 	if(memory->length < stop)
 		return;
 	for(uint64_t i = start; i < stop; ++i)
-	{	
+	{
 		printf("%4lld 0x%.8llx %llu\n", i, memory->content[i], memory->content[i]);
-	}	
-	
+	}
+
 }
 
 

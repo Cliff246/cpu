@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "asm_str_stuff.h"
+#include "strtools.h"
 
 #define ARYSIZE(ary) sizeof(ary)/sizeof(*ary)
 
@@ -50,7 +50,7 @@ void invalid_inst(char **splits, int length, inst_t *inst)
 
 void inst_no_imm(char **splits, int length, inst_t *inst)
 {
-	int path = get_path(splits[0]);	
+	int path = get_path(splits[0]);
 	if(path == -1)
 	{
 		inst->err = not_valid;
@@ -59,8 +59,8 @@ void inst_no_imm(char **splits, int length, inst_t *inst)
 
 	//printf("path %d\n", path);
 	inst->path = path;
-	int subpath = get_subpath(path, splits[1]);	
-	inst->subpath = subpath; 
+	int subpath = get_subpath(path, splits[1]);
+	inst->subpath = subpath;
 
 	int rd = get_register(splits[2]);
 	int rs1 = get_register(splits[3]);
@@ -72,22 +72,22 @@ void inst_no_imm(char **splits, int length, inst_t *inst)
 
 	inst->err = valid;
 	inst->imm = 0;
-	inst->immflag = 0;	
+	inst->immflag = 0;
 	inst->immref = NULL;
 }
 
 void inst_imm(char **splits, int length, inst_t *inst)
 {
-	int path = get_path(splits[0]);	
-	inst->path = path; 
+	int path = get_path(splits[0]);
+	inst->path = path;
 	if(path == -1)
 	{
 		inst->err = not_valid;
 		return;
 	}
 
-	int subpath = get_subpath(inst->path,splits[1]);	
-	inst->subpath = subpath; 
+	int subpath = get_subpath(inst->path,splits[1]);
+	inst->subpath = subpath;
 
 	int rd = get_register(splits[2]);
 	int rs1 = get_register(splits[3]);
@@ -98,14 +98,14 @@ void inst_imm(char **splits, int length, inst_t *inst)
 	inst->rs2= rs2;
 
 	int type = get_number_type(splits[5]);
-	uint64_t imm = 0; 
+	uint64_t imm = 0;
 	if(type == 1 || type == 2)
 	{
 		imm = atoi(splits[5]);
 	}
 	if(type == 2)
 	{
-		imm = convert_to_hex(splits[5]);	
+		imm = convert_to_hex(splits[5]);
 	}
 	if(type == 3)
 	{
@@ -117,18 +117,18 @@ void inst_imm(char **splits, int length, inst_t *inst)
 		if(valid_name(splits[5]))
 		{
 			char *dup = strdup(splits[5]);
-			inst->immref = dup; 
+			inst->immref = dup;
 		}
 		else
 		{
 			inst->err = not_valid;
-	
+
 		}
 	}
 
 
-	inst->imm = imm; 
-	inst->immflag = 1;	
+	inst->imm = imm;
+	inst->immflag = 1;
 	inst->err = valid;
 }
 
@@ -140,8 +140,8 @@ inst_t create_instruction(char *line, int linen)
 {
 
 	//printf("line: %s\n", line);
-	char **splits = NULL; 
-	int splits_len = split_str(line, &splits, " ,.\t"); 
+	char **splits = NULL;
+	int splits_len = split_str(line, &splits, " ,.\t");
 
 	inst_t inst;
 	//clear this
@@ -150,13 +150,13 @@ inst_t create_instruction(char *line, int linen)
 
 	inst.line = linen;
 	inst.linestr = strdup(line);
-	
+
 
 
 	if(splits_len != 6 && splits_len != 5)
 	{
-		invalid_inst(splits, splits_len, &inst);	
-	}	
+		invalid_inst(splits, splits_len, &inst);
+	}
 	else if(splits_len == 5)
 	{
 		inst_no_imm(splits, splits_len, &inst);
@@ -164,6 +164,10 @@ inst_t create_instruction(char *line, int linen)
 	else if(splits_len == 6)
 	{
 		inst_imm(splits, splits_len, &inst);
+	}
+	for(size_t free_i = 0; free_i < splits_len; ++free_i)
+	{
+		free(splits[free_i]);
 	}
 	free(splits);
 	return inst;
@@ -231,7 +235,7 @@ int get_alu_subpath(char *keyword)
 	const int opvalue[] = {
 		ALU_ADD,
 		ALU_SUB,
-		ALU_AND,		
+		ALU_AND,
 		ALU_OR,
 		ALU_XOR,
 		ALU_SLL,
@@ -327,7 +331,7 @@ int get_jmp_subpath(char *keyword)
 		JP_BLT,
 		JP_BEQ,
 		JP_CALL,
-		JP_RET	
+		JP_RET
 	};
 
 	int code = determine_code(keyword, jmp_mnemonics, ARYSIZE(jmp_mnemonics));
@@ -370,13 +374,13 @@ int get_sys_subpath(char *keyword)
 
 
 int get_path(char *keyword)
-{	
+{
 
 
 	const char *const pathwords[] = {
 		"alu",
 		"mem",
-		"jmp",	
+		"jmp",
 		"sys",
 	};
 
@@ -392,7 +396,7 @@ int get_path(char *keyword)
 	{
 		printf("not a path code\n");
 		return -1;
-	}	
+	}
 	return pathvalue[code];
 }
 
@@ -420,4 +424,30 @@ int get_subpath(int path, char *keyword)
 		default:
 			return -1;
 	}
+}
+
+
+bool valid_reference(char **str, int length)
+{
+	//
+	if(str == NULL)
+		return false;
+	if(length < 0)
+		return false;
+
+
+	return true;
+}
+bool valid_instruction(char **str, int length)
+{
+	if(str == NULL)
+		return false;
+	if(length < 0)
+		return false;
+
+
+
+
+
+	return true;
 }

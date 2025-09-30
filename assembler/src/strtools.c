@@ -1,4 +1,4 @@
-#include "asm_str_stuff.h"
+#include "strtools.h"
 #include "commons.h"
 #include <string.h>
 #include <stdlib.h>
@@ -18,35 +18,35 @@ char *clear_whitespace(char *str)
 			temp[count++] = *ch;
 		}
 	}
-	return strdup(temp);	
+	return strdup(temp);
 
 }
 
 
 int split_str(const char *string, char ***ptr, const char *delims)
 {
-	
+
 	size_t slength = strlen(string);
 	size_t dlength = strlen(delims);
 	char *where = (char *)CALLOC(slength, char);
-	memset(where, 0, slength * sizeof(char)); 
+	memset(where, 0, slength * sizeof(char));
 	int splits =0;
-	
+
 	bool  wasspliting = true, didsplit;
 	int last = 0;
 	for(int x = 0; x < slength; ++x)
 	{
-		
+
 		//printf("x: %d\n", x);
 		didsplit = false;
 		for(int y = 0; y < dlength; ++y)
 		{
 			if(string[x] == delims[y])
-			{	
+			{
 				didsplit = true;
 				where[x] = string[x];
 				continue;
-			}	
+			}
 		}
 		if(didsplit)
 		{
@@ -64,7 +64,7 @@ int split_str(const char *string, char ***ptr, const char *delims)
 				wasspliting = false;
 			}
 		}
-		
+
 	}
 
 	//for(int i = 0; i < slength; ++i)
@@ -72,13 +72,13 @@ int split_str(const char *string, char ***ptr, const char *delims)
 
 		//printf("%c %d\n", string[i],where[i]);
 	}
-	char **splitary = CALLOC(splits, char *);
+	char **splitary = CALLOC(splits + 1, char *);
 	if(splitary == NULL)
 	{
 		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
 		exit(1);
 	}
-	char *buffer = CALLOC(slength + 1, char);	
+	char *buffer = CALLOC(slength + 1, char);
 	if(!buffer)
 	{
 		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
@@ -98,7 +98,7 @@ int split_str(const char *string, char ***ptr, const char *delims)
 				back_to_back = false;
 			}
 			buffer[ibuf++] = string[i];
-		}			
+		}
 		else
 		{
 			if(!back_to_back)
@@ -112,6 +112,11 @@ int split_str(const char *string, char ***ptr, const char *delims)
 			}
 		}
 	}
+	if (current != splits)
+	{
+    	fprintf(stderr, "Token count mismatch: predicted %d, actual %d\n", splits, current);
+	}
+
 	if(where[slength] == 0)
 	{
 		int delta = (slength - 1) - last_good;
@@ -137,7 +142,7 @@ int split_str(const char *string, char ***ptr, const char *delims)
 
 int determine_code(char *keyword, const char *const mnemonics[], int length)
 {
-	
+
 	//printf("'%s'\n", keyword);
 	int *keycount = CALLOC(length, int);
 	if(keycount == 0)
@@ -146,11 +151,11 @@ int determine_code(char *keyword, const char *const mnemonics[], int length)
 		exit(1);
 	}
 
-	
+
 	int i = 0;
 	for(char *ch = keyword; *ch; ++ch, ++i)
 	{
-		
+
 		for(int pool = 0; pool < length; ++pool)
 		{
 			//printf("op:%s n:%d\n", mnemonics[pool], keycount[pool]);
@@ -166,9 +171,9 @@ int determine_code(char *keyword, const char *const mnemonics[], int length)
 				keycount[pool] += 1;
 			else
 				keycount[pool] = -1;
-		}	
-	}	
-	
+		}
+	}
+
 	int max = 0, index = 0;
 	for(int k = 0; k < length; ++k)
 	{
@@ -176,41 +181,17 @@ int determine_code(char *keyword, const char *const mnemonics[], int length)
 		{
 			max = keycount[k];
 			index = k;
-			
+
 		}
 	}
-	
+
 	free(keycount);
 
 	if(strlen(mnemonics[index]) == max)
 	{
 		return index;
-	}	
+	}
 	return -1;
 }
 
 
-bool valid_reference(char **str, int length)
-{
-	//
-	if(str == NULL)
-		return false;
-	if(length < 0)
-		return false;
-
-	
-	return true;
-}
-bool valid_instruction(char **str, int length)
-{
-	if(str == NULL)
-		return false;
-	if(length < 0)
-		return false;
-
-
-	
-
-
-	return true;
-}

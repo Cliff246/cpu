@@ -147,11 +147,11 @@ void jump_to(cpu_t *cpu, uint64_t address)
 {
 	uint64_t imm = find_immedate_from_rel_table(cpu, address);
 
-	//printf("jumpto pc=%d ipc=%d\n", address - 1, imm);
+	printf("jumpto pc=%d ipc=%d\n", address - 1, imm);
 	//jump to
 	set_pc(address);
 	set_ipc(imm);
-	
+
 
 }
 

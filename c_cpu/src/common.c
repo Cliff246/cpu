@@ -1,7 +1,9 @@
 
 #include "common.h"
+#include <stdint.h>
 #include <string.h>
 #include <stdio.h>
+
 
 void print_bin(long bin, char len, bool newline)
 {

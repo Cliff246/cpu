@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 #include "common.h"
-#include "memory.h"
+#include "cpumemory.h"
 #include "palu.h"
 
 

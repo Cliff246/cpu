@@ -1,6 +1,6 @@
 
 #include "psys.h"
-#include "memory.h"
+#include "cpumemory.h"
 #include "core.h"
 #include "coreutils.h"
 #include <stdio.h>

@@ -1,7 +1,7 @@
 set(CPU_C_FILES ${CPU_C_FILES}
 	main.c
 	core.c
-	memory.c
+	cpumemory.c
 	palu.c
 	psys.c
 	pmem.c

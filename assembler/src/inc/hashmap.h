@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <string.h>
+#include <stdint.h>
+
 
 
 size_t hash_to_position(int64_t hash, size_t pos);
