@@ -13,7 +13,7 @@ void fill_binary(uint64_t *bin, size_t length)
 
 	for(size_t i = 0; i < length; ++i)
 	{
-		printf("%.2d %llu\n",i, bin[i]);
+
 		memory_write(components.mem, i, bin[i] );
 	}
 }
@@ -46,10 +46,7 @@ void load_file(const char *file_name)
 
 	char *bytes = (char *)calloc(len, sizeof(char));
 
-	for(int i = 0; i < len; ++i)
-	{
-		bytes[i] = fgetc(fp);
-	}
+	fread(bytes, 8, len / 8, fp);
 	uint64_t *bin = (uint64_t *)bytes;
 
 	fill_binary(bin, len / sizeof(uint64_t));

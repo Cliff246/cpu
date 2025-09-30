@@ -505,7 +505,6 @@ void final_stage(context_t *context, int length, char *file_name)
 		ERR(EBADF, "could not load file");
 		exit(1);
 	}
-	char *c = (char *)bin;
 	for(int i = 0; i < offset * sizeof(int64_t); i++)
 	{
 		if(i % sizeof(int64_t) == 0)
@@ -513,8 +512,9 @@ void final_stage(context_t *context, int length, char *file_name)
 
 			printf("%.3d: %.8llx %llu\n", i/8, bin[i / 8], bin[i / 8]);
 		}
-		fputc(c[i], fp);
+
 	}
+	fwrite(bin, sizeof(int64_t), offset, fp);
 	fclose(fp);
 }
 

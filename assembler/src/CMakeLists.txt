@@ -9,6 +9,7 @@ set(ASMFILES ${ASM_C_FILES}
 	hashmap.c
 	error.c
 	strtools.c
+	fileio.c
 )
 set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
