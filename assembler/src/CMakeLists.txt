@@ -20,5 +20,5 @@ add_executable(asm ${ASMFILES})
 
 include_directories(asm
 	inc
-	../../c_cpu/src/inc/flags.h
+	${CMAKE_SOURCE_DIR}/flags/
 )
