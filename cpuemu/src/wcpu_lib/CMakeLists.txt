@@ -16,7 +16,7 @@ add_library(wcpu_lib ${CPU_C_FILES})
 
 include_directories(wcpu_lib
 	${CMAKE_SOURCE_DIR}/flags/
-	inc
+	${CMAKE_CURRENT_SOURCE_DIR}/inc
 )
 target_include_directories(wcpu_lib PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/inc

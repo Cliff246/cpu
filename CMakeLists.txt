@@ -4,4 +4,4 @@ project(WEIRD_CPU)
 
 
 add_subdirectory(assembler)
-add_subdirectory(wcpu)
+add_subdirectory(cpuemu)
