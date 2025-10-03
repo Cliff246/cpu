@@ -8,7 +8,6 @@
 #include <string.h>
 #include "strtools.h"
 
-#define ARYSIZE(ary) sizeof(ary)/sizeof(*ary)
 
 
 void print_inst(inst_t *inst)

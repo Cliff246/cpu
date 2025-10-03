@@ -9,6 +9,7 @@
 #define SETBIT(n, k) (1 | (n << k))
 #define CLRBIT(n, k) (n & ~(1 << k))
 #define GETBIT(n, k) (1 & (n >> k))
+#define ARYSIZE(ary) sizeof(ary)/sizeof(*ary)
 
 
 void *safe_calloc(size_t size, size_t type_size);

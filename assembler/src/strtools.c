@@ -22,6 +22,28 @@ char *clear_whitespace(char *str)
 
 }
 
+void clean_string(char *str)
+{
+#define MAX_CLEAN 1024
+	int length = strlen(str);
+	char temp[MAX_CLEAN + 1] = {0};
+	if(length > MAX_CLEAN)
+	{
+
+		printf("do clean string better\n");
+		exit(1);
+	}
+	memset(temp, 0, length);
+	int count = 0;
+	for(char *ch = str; *ch && count < length; ch++)
+	{
+		if(*ch != ' ' && *ch != '\n' || *ch != '\t')
+		{
+			temp[count++] = *ch;
+		}
+	}
+	strncpy(str, temp, length);
+}
 
 int split_str(const char *string, char ***ptr, const char *delims)
 {
@@ -195,3 +217,31 @@ int determine_code(char *keyword, const char *const mnemonics[], int length)
 }
 
 
+
+int get_starting_tabs_count(char *str, int tabsize)
+{
+	int count = 0;
+	int spaces = 0;
+
+	for(char* scroll = str; *str; scroll++)
+	{
+		if(*scroll = '\t')
+		{
+			count++;
+		}
+		else if(*scroll == ' ')
+		{
+			spaces++;
+		}
+		else
+		{
+			return count;
+		}
+		if(spaces == tabsize)
+		{
+			spaces = 0;
+			count++;
+		}
+	}
+	return count;
+}

@@ -13,11 +13,13 @@ char *clear_whitespace(char *str);
 int determine_code(char *keyword, const char *const mnemonics[], int length);
 
 
+void clean_string(char *str);
+
 
 bool valid_reference(char **str, int length);
 bool valid_instruction(char **str, int length);
 
-
+int get_starting_tabs_count(char *str, int tabsize);
 
 #endif
 

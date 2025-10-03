@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			printf("assemble\n");
+			//printf("assemble\n");
 			assemble(content, length, "bin");
 			//test(content, length);
 		}

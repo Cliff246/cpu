@@ -9,7 +9,7 @@
 typedef enum error_code_inst
 {
 	valid,
-	not_valid,	
+	not_valid,
 	path_err,
 	subpath_err,
 	ref_err,
@@ -24,7 +24,7 @@ typedef struct instruction
 	uint32_t rs2;
 	uint32_t aux;
 	uint32_t immflag;
-	
+
 	uint64_t line;
 
 	int64_t imm;
@@ -33,6 +33,18 @@ typedef struct instruction
 	errinst_t err;
 }inst_t;
 
+typedef struct metaop
+{
+	uint64_t metaop;
+	uint64_t arg1;
+	uint64_t arg2;
+	uint64_t line_number;
+	char **mop_str;
+	uint64_t mop_str_len;
+}metaop_t;
+
+
+metaop_t decode_mop(char *line, int ln);
 
 void invalid_inst(char **splits, int length, inst_t *inst);
 void inst_no_imm(char **splits, int length, inst_t *inst);
@@ -63,6 +75,7 @@ void print_inst(inst_t *inst);
 inst_t decode_inst(int32_t code);
 uint32_t encode_inst(inst_t *inst);
 uint64_t encode(uint64_t path, uint64_t subpath, uint64_t rd, uint64_t rs1, uint64_t rs2, uint64_t aux, uint64_t immf);
+
 
 
 #endif

@@ -1,19 +1,14 @@
 {
     "configurations": [
         {
-            "name": "Win32",
+            "name": "Mac",
             "includePath": [
-                "${default}"
+                "${default}",
+                "${workspaceFolder}/**"
             ],
-            "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
-            ],
-            "windowsSdkVersion": "10.0.26100.0",
-            "intelliSenseMode": "windows-gcc-x86",
-            "cStandard": "c23",
-            "compilerPath": "C:/msys64/usr/bin/gcc.exe"
+            "defines": [],
+            "intelliSenseMode": "macos-clang-arm64",
+            "compilerPath": "/usr/bin/gcc"
         }
     ],
     "version": 4

@@ -133,22 +133,25 @@ p_hashelem_t new_hash_element(const char *str, void *data)
 {
 	if (str)
 	{
-		p_hashelem_t elem = (p_hashelem_t)malloc(sizeof(hashelem_t));
+		p_hashelem_t elem = (p_hashelem_t)calloc(1,sizeof(hashelem_t));
 		if (elem)
 		{
 			// ew
-			size_t len = strlen(str);
-			char *copy = (char *)calloc(len + 1, sizeof(char));
+			char *copy = strdup(str);
 			if (copy)
 			{
 
 				// i feel safe using strcpy cause really it should have broken earlier
 				// if it fails
-				strcpy(copy, str);
 				elem->p_data = data;
 				elem->p_key = copy;
 				elem->p_next = NULL;
+
 				return elem;
+			}
+			else
+			{
+				printf("copy failed at hashmap %d\n", __LINE__);
 			}
 		}
 	}
@@ -187,9 +190,12 @@ int64_t add_element_to_hashtable(p_hashtable_t table, p_hashelem_t elem)
 		int64_t keyhash = hash(elem->p_key);
 		size_t position = hash_to_position(keyhash, table->tablesize);
 		p_hashelem_t current = table->p_tablelist[position];
+
 		if (current == NULL)
 		{
 			table->p_tablelist[position] = elem;
+			//printf("%d, %s str\n", position, elem->p_key);
+
 		}
 		else
 		{
@@ -235,9 +241,16 @@ p_hashelem_t get_from_hash_table(p_hashtable_t table, const char *key)
 {
 	if (table)
 	{
+		if(table->tablesize == 0)
+		{
+			return NULL;
+		}
 		int64_t keyhash = hash(key);
 		size_t position = hash_to_position(keyhash, table->tablesize);
+
 		p_hashelem_t element = table->p_tablelist[position];
+		//printf("key is: %s %d\n", element->p_key, position);
+
 		if (element)
 		{
 			if (strcmp(element->p_key, key) == 0)
