@@ -1,9 +1,0 @@
-{
-	"C_Cpp.default.compilerPath": "",
-	"C_Cpp.errorSquiggles": "enabled",
-	"files.associations": {
-		"Makefile": "makefile",
-		"*.ez80": "asm-intel-x86-generic",
-		"sstream": "c"
-	}
-}
