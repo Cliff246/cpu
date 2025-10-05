@@ -3,11 +3,6 @@
 
 #include <stdlib.h>
 
-typedef struct token
-{
-	char *text;
-	int type;
-}token_t;
 
 typedef struct analyzer_node
 {

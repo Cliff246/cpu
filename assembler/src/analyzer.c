@@ -6,4 +6,3 @@
 
 
 
-int analyzer(const char *str, char **tokens, size_t len);
