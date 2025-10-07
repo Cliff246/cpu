@@ -245,3 +245,153 @@ int get_starting_tabs_count(char *str, int tabsize)
 	}
 	return count;
 }
+
+
+char *to_string(char val)
+{
+	char *str = CALLOC(2, char);
+	str[0] = val;
+}
+
+
+int *collect_lines(char *content, size_t length)
+{
+	size_t alloc = 100;
+	int *lines = (int *)CALLOC(alloc, int);
+	if(!lines)
+	{
+		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
+		exit(1);
+	}
+
+	int index = 0;
+	for(int i = 0; i < length - 1; ++i)
+	{
+		if(content[i] == '\n')
+		{
+			if(index + 1 >= alloc)
+			{
+				alloc *= 2;
+
+				lines = REALLOC(lines, alloc, int);
+			}
+			lines[index++] = i;
+		}
+
+	}
+
+	if(index >= alloc)
+	{
+		alloc += 10;
+		lines = REALLOC(lines, alloc, int);
+	}
+	lines[index] = -1;
+	return lines;
+
+}
+
+int *collect_references(char *content, size_t length)
+{
+
+	size_t alloc = 100;
+	int *references = (int *)CALLOC(alloc, int);
+	if(!references)
+	{
+		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
+		exit(1);
+	}
+
+	int last_line = 0;
+	int index = 0;
+	bool hasref = false;
+	for(int i = 0; i < length; ++i)
+	{
+		if(content[i] == '\n')
+		{
+			if(hasref == true)
+			{
+				if(index + 1 == alloc)
+				{
+					alloc *= 2;
+					references = REALLOC(references, alloc, int);
+				}
+				references[index++] = last_line;
+			}
+			last_line = i;
+			hasref = false;
+		}
+		else if(content[i] == ':')
+		{
+			hasref = true;
+		}
+	}
+	if(hasref == true)
+	{
+		references[index++] = last_line;
+	}
+
+	if(index + 1 == alloc)
+	{
+		alloc += 10;
+		references = REALLOC(references, alloc, int);
+	}
+	references[index] = -1;
+	return references;
+}
+
+int *collect_segments(char *content, size_t length)
+{
+
+	size_t alloc = 100;
+	int *segments = (int *)CALLOC(alloc, int);
+	if(!segments)
+	{
+		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
+		exit(1);
+	}
+
+	int last_line = 0;
+	int index = 0;
+	bool hasseg = false;
+	bool newline = true;
+	for(int i = 0; i < length; ++i)
+	{
+		if(content[i] == '\n')
+		{
+			newline = true;
+			if(hasseg == true)
+			{
+				if(index + 1 == alloc)
+				{
+					alloc *= 2;
+					segments = REALLOC(segments, alloc, int);
+				}
+				segments[index++] = last_line;
+			}
+			last_line = i;
+			hasseg = false;
+		}
+		else if(newline == true && content[i] == '.')
+		{
+			hasseg = true;
+			newline = false;
+		}
+		else
+		{
+			newline = false;
+		}
+	}
+	if(hasseg == true)
+	{
+		segments[index++] = last_line;
+
+	}
+
+	if(index + 1 == alloc)
+	{
+		alloc += 10;
+		segments = REALLOC(segments, alloc, int);
+	}
+	segments[index] = -1;
+	return segments;
+}

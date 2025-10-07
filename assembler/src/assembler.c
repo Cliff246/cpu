@@ -14,6 +14,7 @@
 
 
 #include "hashmap.h"
+#include <flags.h>
 
 
 int step = 0;
@@ -78,147 +79,7 @@ void set_binary_immedates(asmbinary_t *binary, size_t index, int64_t imm)
 }
 
 
-int *collect_lines(char *content, size_t length)
-{
-	size_t alloc = 100;
-	int *lines = (int *)CALLOC(alloc, int);
-	if(!lines)
-	{
-		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
-		exit(1);
-	}
 
-	int index = 0;
-	for(int i = 0; i < length - 1; ++i)
-	{
-		if(content[i] == '\n')
-		{
-			if(index + 1 >= alloc)
-			{
-				alloc *= 2;
-
-				lines = REALLOC(lines, alloc, int);
-			}
-			lines[index++] = i;
-		}
-
-	}
-
-	if(index >= alloc)
-	{
-		alloc += 10;
-		lines = REALLOC(lines, alloc, int);
-	}
-	lines[index] = -1;
-	return lines;
-
-}
-
-int *collect_references(char *content, size_t length)
-{
-
-	size_t alloc = 100;
-	int *references = (int *)CALLOC(alloc, int);
-	if(!references)
-	{
-		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
-		exit(1);
-	}
-
-	int last_line = 0;
-	int index = 0;
-	bool hasref = false;
-	for(int i = 0; i < length; ++i)
-	{
-		if(content[i] == '\n')
-		{
-			if(hasref == true)
-			{
-				if(index + 1 == alloc)
-				{
-					alloc *= 2;
-					references = REALLOC(references, alloc, int);
-				}
-				references[index++] = last_line;
-			}
-			last_line = i;
-			hasref = false;
-		}
-		else if(content[i] == ':')
-		{
-			hasref = true;
-		}
-	}
-	if(hasref == true)
-	{
-		references[index++] = last_line;
-	}
-
-	if(index + 1 == alloc)
-	{
-		alloc += 10;
-		references = REALLOC(references, alloc, int);
-	}
-	references[index] = -1;
-	return references;
-}
-
-int *collect_segments(char *content, size_t length)
-{
-
-	size_t alloc = 100;
-	int *segments = (int *)CALLOC(alloc, int);
-	if(!segments)
-	{
-		printf("could not allocate enough memory line: %d, file %s \n", __LINE__, __FILE__);
-		exit(1);
-	}
-
-	int last_line = 0;
-	int index = 0;
-	bool hasseg = false;
-	bool newline = true;
-	for(int i = 0; i < length; ++i)
-	{
-		if(content[i] == '\n')
-		{
-			newline = true;
-			if(hasseg == true)
-			{
-				if(index + 1 == alloc)
-				{
-					alloc *= 2;
-					segments = REALLOC(segments, alloc, int);
-				}
-				segments[index++] = last_line;
-			}
-			last_line = i;
-			hasseg = false;
-		}
-		else if(newline == true && content[i] == '.')
-		{
-			hasseg = true;
-			newline = false;
-		}
-		else
-		{
-			newline = false;
-		}
-	}
-	if(hasseg == true)
-	{
-		segments[index++] = last_line;
-
-	}
-
-	if(index + 1 == alloc)
-	{
-		alloc += 10;
-		segments = REALLOC(segments, alloc, int);
-	}
-	segments[index] = -1;
-	return segments;
-}
 
 
 
@@ -469,7 +330,7 @@ codeline_t enscribe_line(context_t *ctx, char *line, codeline_t last)
 {
 	int mode = 0;
 
-	
+
 }
 
 
@@ -582,7 +443,7 @@ void init_asm_decode(context_t *ctx)
 
 	const int icount = al.lines_size;
 
-	ctx->decode.table_bin_len = (icount / 128) + 1;
+	ctx->decode.table_bin_len = (icount / CODE_DESC_STRIDE) + 1;
 	ctx->decode.instr_ary = CALLOC(icount, inst_t);
 	ctx->decode.imm_ary = CALLOC(icount, uint64_t);
 
@@ -601,7 +462,7 @@ void instruction_pull(context_t *ctx, int index)
 {
 
 	asmdecode_t *dec = &ctx->decode;
-	if(dec->instr_iter % 128 == 0)
+	if(dec->instr_iter % CODE_DESC_STRIDE == 0)
 	{
 
 		dec->table_offsets_ary[dec->table_offsets_iter++] = dec->imm_iter;
@@ -719,7 +580,7 @@ uint64_t second_stage(context_t *context)
 	context->binary->table = context->decode.table_offsets_ary;
 	context->binary->table_len = context->decode.table_offsets_iter;
 
-	int table_total_len = context->decode.table_offsets_len * 2;
+	int table_total_len = context->decode.table_offsets_len;
 	int code_size = context->decode.imm_len + context->decode.instr_len;
 	int total_size = code_size + table_total_len + 6;
 	return total_size;
@@ -732,29 +593,28 @@ void final_stage(asmbinary_t *binary, int length, char *file_name)
 	uint64_t *bin = (uint64_t *)CALLOC(length, uint64_t);
 
 
-	const uint64_t ct_actual_len = binary->table_len * 2;
+	const uint64_t ct_actual_len = binary->table_len;
 	//table
 	int offset = 0;
 	bin[offset = 0] = 6;
 	bin[offset = 1] = ct_actual_len;
 	//code table actual length
 	//inst ptr
-	const uint64_t instr_ptr = (binary->table_len * 2) + 6;
+	const uint64_t instr_ptr = (binary->table_len) + 6;
 	const uint64_t instr_len = binary->instructions_len;
 	bin[offset = 2] = instr_ptr;
 	bin[offset = 3] = instr_len;
 	//imm ptr
-	const uint64_t imm_ptr = (binary->table_len * 2)+ binary->instructions_len + 6;
+	const uint64_t imm_ptr = (binary->table_len)+ binary->instructions_len + 6;
 	const uint64_t imm_len = binary->immedates_len;
 	bin[offset = 4] = imm_ptr;
 	bin[offset = 5] = imm_len;
 	//just buffering by 1
 	offset = offset + 1;
-	for(int table = 0; table < binary->table_len; table++, offset+=2)
+	for(int table = 0; table < binary->table_len; table++, offset++)
 	{
 		//printf("table[%d]=%llu\n",table, binary->table[table]);
-		bin[offset] = (64 * table);
-		bin[offset + 1] = binary->table[table];
+		bin[offset] = binary->table[table];
 	}
 	for(int c = 0; c < binary->instructions_len; ++c)
 	{

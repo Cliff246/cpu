@@ -3,28 +3,45 @@
 
 #include <stdlib.h>
 
-typedef enum 
+typedef enum
 {
-    TOK_IDENT, TOK_NUMBER, TOK_STRING, TOK_DIRECTIVE,
-    TOK_COLON, TOK_COMMA,
-    TOK_PLUS, TOK_MINUS, TOK_STAR, TOK_SLASH,
-    TOK_LPAREN, TOK_RPAREN,
-    TOK_NEWLINE, TOK_EOF
+    TOK_INVAL,
+	TOK_IDENT, TOK_NUMBER, TOK_STRING, TOK_DIRECTIVE, TOK_REFERENCE,
+    TOK_COLON, TOK_COMMA, TOK_DOT,
+	TOK_SYMBOL,
+    TOK_NEWLINE, TOK_EOF,
+	TOK_COMMENT,
 } tok_type_t;
 
-typedef struct 
+typedef struct locale
+{
+	size_t row, col, file;
+}locale_t;
+
+typedef struct
 {
     tok_type_t type;
     char *lexeme;
-    size_t line, col, file;
-
+	locale_t locale;
 } tok_t;
 
-typedef struct tokstream
+
+typedef struct
 {
 	tok_t *toks;
-	size_t len;
+	size_t count, capacity;
 
-}tokstream_t;
+	const char *src;
+	size_t src_len;
+
+
+
+	size_t pos;
+	locale_t locale;
+
+}lexer_ctx_t;
+
+lexer_ctx_t *create_token_stream(char *src, size_t file_id);
+void print_token(tok_t *tok);
 
 #endif

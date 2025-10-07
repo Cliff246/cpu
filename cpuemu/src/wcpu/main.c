@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 
 		startup_cpu();
 
-		for(int i = 0; i < (10) + 5; ++i)
+		for(int i = 0; i < (100) + 5; ++i)
 		{
 
 			step_cpu();

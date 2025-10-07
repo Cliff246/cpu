@@ -13,4 +13,4 @@ again:
 	alu.add x10, x5, x0, again
 open:
 	alu.add x0, x0, x0
-	jmp.jmp x0, x0, x0, SUMMER_TIME
+	jmp.jmp x0, x0, x0, again

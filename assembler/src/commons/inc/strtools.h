@@ -21,5 +21,9 @@ bool valid_instruction(char **str, int length);
 
 int get_starting_tabs_count(char *str, int tabsize);
 
-#endif
+char *to_string(char val);
+int *collect_lines(char *content, size_t length);
+int *collect_references(char *content, size_t length);
+int *collect_segments(char *content, size_t length);
 
+#endif

@@ -33,6 +33,7 @@ uint64_t get_from_bookmark(cpu_t *cpu, uint64_t rel_address, uint64_t cd_ptr)
 
 uint64_t closest_rel(cpu_t *cpu, uint64_t ct_addr, uint64_t ct_len, uint64_t rel_address)
 {
+	/*
 	int64_t closest = 0;
 	int64_t low = 0;
 	int64_t high = (ct_len / 2) - 1;
@@ -49,6 +50,12 @@ uint64_t closest_rel(cpu_t *cpu, uint64_t ct_addr, uint64_t ct_len, uint64_t rel
 			high = closest - 1;
 	}
 	return closest;
+	*/
+	int64_t closest = rel_address / CODE_DESC_STRIDE;
+
+	uint64_t relative = load(ct_addr + closest);
+	printf("c:%ld r:%ld\n", closest, relative);
+	return relative;
 }
 
 //does binary search on table and adds to cache if missing
@@ -84,7 +91,7 @@ uint64_t find_immedate_from_rel_table(cpu_t *cpu, uint64_t address)
 	///
 
 
-	if(ct_len < 2)
+	if(ct_len < 1)
 	{
 		closest = 0;
 	}
@@ -93,10 +100,10 @@ uint64_t find_immedate_from_rel_table(cpu_t *cpu, uint64_t address)
 		//does binary search on the table
 		closest =  closest_rel(cpu, ct_address, ct_len, address);
 	}
-	uint64_t inst_addr = load((closest * 2) + ct_address);
-	uint64_t imm_addr = load((closest * 2) + ct_address + 1);
+	uint64_t inst_addr = (address / CODE_DESC_STRIDE);
+	uint64_t imm_addr = load(closest + ct_address);
 
-	for(int i = 0; i < 64 && i < get_pc_len(); ++i)
+	for(int i = 0; i < CODE_DESC_STRIDE && i < get_pc_len(); ++i)
 	{
 		uint32_t instruction = load(inst_addr);
 
@@ -147,7 +154,7 @@ void jump_to(cpu_t *cpu, uint64_t address)
 {
 	uint64_t imm = find_immedate_from_rel_table(cpu, address);
 
-	printf("jumpto pc=%d ipc=%d\n", address - 1, imm);
+	printf("jumpto pc=%d ipc=%d\n", address, imm);
 	//jump to
 	set_pc(address);
 	set_ipc(imm);

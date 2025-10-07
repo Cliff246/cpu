@@ -285,8 +285,7 @@ void map_mop(context_t *ctx, char *line, int segment_index);
 
 void print_reference(reference_t *ref);
 
-int *collect_lines(char *content, size_t length);
-int *collect_references(char *content, size_t length);
+
 
 void first_stage(context_t *context, char *content, size_t length);
 asmbinary_t *init_binary_buffer(size_t alloc_init);

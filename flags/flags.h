@@ -128,7 +128,7 @@
 //return from function
 #define JP_RET		0x07
 
-//relative jmps 	
+//relative jmps
 #define JP_REL_BEQ 	0x08
 #define JP_REL_BNE 	0x09
 #define JP_REL_JMP 	0x0a
@@ -197,7 +197,7 @@
 #define SYS_SET_CD_PTR			0x16
 //call to code description ptr
 #define SYS_CALL_CD_PTR			0x17
-//return code description ptr 
+//return code description ptr
 #define SYS_RET_CD_PTR			0x18
 //poke at the user reg file
 #define SYS_POKE_USER			0x19
@@ -354,5 +354,7 @@
 *		String path for 8 bit addressing simply
 *
 */
+
+#define CODE_DESC_STRIDE 128
 
 #endif
