@@ -8,16 +8,25 @@
 typedef enum
 {
     NODE_PROGRAM, NODE_LABEL, NODE_DIRECTIVE, NODE_INSTR, NODE_EXPR
-} node_kind_t;
+} parse_node_kind_t;
 
-typedef struct node
+typedef struct parse_node
 {
-    node_kind_t kind;
+    parse_node_kind_t kind;
     tok_t *tok;
-    struct node **children;
+    struct parse_node **children;
     size_t child_count;
-} node_t;
+} parse_node_t;
 
-node_t *get_node_from_ctx_offset(lexer_ctx_t *ctx, int start);
+
+
+typedef struct parser_context
+{
+	lexer_ctx_t *lexer_ctx_t;
+	size_t pos;
+}parser_ctx_t;
+
+
+parse_node_t *get_node_from_ctx_offset(lexer_ctx_t *ctx, int start);
 
 #endif

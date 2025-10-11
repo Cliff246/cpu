@@ -34,8 +34,6 @@ typedef struct
 	const char *src;
 	size_t src_len;
 
-
-
 	size_t pos;
 	locale_t locale;
 

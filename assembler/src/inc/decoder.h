@@ -15,6 +15,7 @@ typedef enum error_code_inst
 	ref_err,
 }errinst_t;
 
+
 typedef struct instruction
 {
 	uint32_t path;
@@ -32,6 +33,7 @@ typedef struct instruction
 	char *immref;
 	errinst_t err;
 }inst_t;
+
 
 typedef struct metaop
 {
