@@ -334,24 +334,6 @@ codeline_t enscribe_line(context_t *ctx, char *line, codeline_t last)
 }
 
 
-void map_ref(context_t *ctx, int address, int segment_index)
-{
-
-}
-void map_seg(context_t *ctx, int segment_index)
-{
-
-}
-void map_inst(context_t *ctx)
-{
-
-}
-
-void map_mop(context_t *ctx, char *line, int segment_index)
-{
-
-}
-
 asmlines_t determine_lines(context_t *ctx)
 {
 	asmlines_t al;
@@ -469,7 +451,7 @@ void instruction_pull(context_t *ctx, int index)
 		//printf("immoffsets[%d]=%llu\n",dec->table_offsets_iter - 1 ,dec->table_offsets_ary[dec->table_offsets_iter-1]);
 	}
 
-	inst_t temp = create_instruction(ctx->splitlines[index], index);
+	inst_t temp = {};//create_instruction(ctx->splitlines[index], index);
 	if(temp.immflag || temp.immref)
 	{
 		if(temp.immref != NULL)

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <stdio.h>
+#include "commons.h"
 
 size_t file_length(FILE *fp)
 {
@@ -21,14 +22,10 @@ size_t file_length(FILE *fp)
 	return eof;
 }
 
-int file_load(const char *file_name, char **ref)
+
+int get_content(FILE *fp, char **ref)
 {
-	FILE *fp = fopen(file_name, "r");
-	if(fp == NULL)
-	{
-		errno = EACCES;
-		return -1;
-	}
+
 	int length = file_length(fp);
 	if(errno == EACCES)
 	{
@@ -37,7 +34,53 @@ int file_load(const char *file_name, char **ref)
 	}
 	char *content = (char *)calloc(length + 100, sizeof(char));
 	fread(content, 1, length, fp);
-	fclose(fp);
 	*ref = content;
+}
+
+int file_load(const char *file_name, char **ref)
+{
+	FILE *fp = fopen(file_name, "r");
+	if(fp == NULL)
+	{
+		errno = EACCES;
+		return -1;
+	}
+	int length = get_content(fp, ref);
+	fclose(fp);
 	return length;
+}
+
+
+
+
+file_desc_t *get_fdesc(const char *file_name)
+{
+	file_desc_t *desc = CALLOC(1, file_desc_t);
+	char *ref = NULL;
+
+	FILE *fp = fopen(file_name, "r");
+	if(fp == NULL)
+	{
+		errno = EACCES;
+		exit(1);
+	}
+	int length = get_content(fp, &ref);
+	if(length > 0)
+	{
+		desc->fp = fp;
+		desc->isclosed = true;
+		desc->src = ref;
+		desc->length = length;
+		fclose(fp);
+
+		desc->isclosed = true;
+		return desc;
+	}
+	else
+	{
+		free(desc);
+		perror("failed descriptor");
+		return NULL;
+	}
+
 }

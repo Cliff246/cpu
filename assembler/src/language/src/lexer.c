@@ -8,7 +8,11 @@
 #include <ctype.h>
 #include <errno.h>
 
-
+void free_token(tok_t *ptr)
+{
+	free(ptr->lexeme);
+	free(ptr);
+}
 
 void lexer_emit(lexer_ctx_t *ctx, tok_type_t type, const char *lexme)
 {
@@ -162,7 +166,6 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 			if (GETCHAR == ':')
 			{
 				EMIT(TOK_REFERENCE, lexeme);
-				ADVANCE;
 			}
 			else
 			{
@@ -273,5 +276,10 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 
 	}
 	EMIT(TOK_EOF, to_string(0));
+
+	for(int i = 0; i < ctx->count; ++i)
+	{
+		print_token(&ctx->toks[i]);
+	}
 	return ctx;
 }

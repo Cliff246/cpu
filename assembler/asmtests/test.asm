@@ -9,3 +9,17 @@ again:
 open:
 	alu.add x0, x0, x0
 	jmp.jmp x0, x0, x0, again
+
+.data
+ref:
+	dc test s
+fun:
+
+
+
+
+.text
+
+
+continue:
+	jmp.jmp x0, x0, x0, continue;

@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-
+#include "parser.h"
 
 typedef enum error_code_inst
 {
@@ -37,24 +37,19 @@ typedef struct instruction
 
 typedef struct metaop
 {
-	uint64_t metaop;
-	uint64_t arg1;
-	uint64_t arg2;
-	uint64_t line_number;
-	char **mop_str;
-	uint64_t mop_str_len;
-}metaop_t;
+	uint64_t mop;
+
+	char *mop_str;
+}mop_t;
 
 
-metaop_t decode_mop(char *line, int ln);
-
-void invalid_inst(char **splits, int length, inst_t *inst);
-void inst_no_imm(char **splits, int length, inst_t *inst);
-void inst_imm(char **splits, int length, inst_t *inst);
+void invalid_inst(parse_node_t *node, inst_t *inst);
 
 
+void inst_no_imm(parse_node_t *node, inst_t *inst);
 
 
+void inst_imm(parse_node_t *node, inst_t *inst);
 
 int get_path(char *keyword);
 int get_subpath(int path,char *keyword);
@@ -68,8 +63,8 @@ int get_sys_subpath(char *keyword);
 
 int get_register(char *keyword);
 
-
-inst_t create_instruction(char *line, int linen);
+mop_t create_mop(parse_node_t *node);
+inst_t create_instruction(parse_node_t *node);
 void free_inst(inst_t *inst);
 void print_inst(inst_t *inst);
 

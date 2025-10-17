@@ -7,12 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include "strtools.h"
-
+#include "parser.h"
 
 
 void print_inst(inst_t *inst)
 {
-	printf("path:%d subpath %d: rd: %d, rs1: %d, rs2: %d, aux: %d, immf: %d\n", inst->path, inst->subpath, inst->rd, inst->rs1, inst->rs2, inst->aux, inst->immflag);
+	printf("path:%d subpath %d: rd: %d, rs1: %d, rs2: %d, aux: %d, immf: %d [reference: %s]\n", inst->path, inst->subpath, inst->rd, inst->rs1, inst->rs2, inst->aux, inst->immflag, inst->immref);
 }
 
 inst_t decode_inst(int32_t instr)
@@ -42,14 +42,14 @@ uint64_t encode(uint64_t path, uint64_t subpath, uint64_t rd, uint64_t rs1, uint
 }
 
 
-void invalid_inst(char **splits, int length, inst_t *inst)
+void invalid_inst(parse_node_t *node, inst_t *inst)
 {
 
 }
 
-void inst_no_imm(char **splits, int length, inst_t *inst)
+void inst_no_imm(parse_node_t *node, inst_t *inst)
 {
-	int path = get_path(splits[0]);
+	int path = get_path(node->children[0]->tok->lexeme);
 	if(path == -1)
 	{
 		inst->err = not_valid;
@@ -58,12 +58,12 @@ void inst_no_imm(char **splits, int length, inst_t *inst)
 
 	//printf("path %d\n", path);
 	inst->path = path;
-	int subpath = get_subpath(path, splits[1]);
+	int subpath = get_subpath(path, node->children[1]->tok->lexeme);
 	inst->subpath = subpath;
 
-	int rd = get_register(splits[2]);
-	int rs1 = get_register(splits[3]);
-	int rs2 = get_register(splits[4]);
+	int rd = get_register(node->children[2]->tok->lexeme);
+	int rs1 = get_register(node->children[3]->tok->lexeme);
+	int rs2 = get_register(node->children[4]->tok->lexeme);
 	inst->rd =rd;
 	inst->rs1= rs1;
 	inst->rs2= rs2;
@@ -75,53 +75,54 @@ void inst_no_imm(char **splits, int length, inst_t *inst)
 	inst->immref = NULL;
 }
 
-void inst_imm(char **splits, int length, inst_t *inst)
+void inst_imm(parse_node_t *node, inst_t *inst)
 {
-	int path = get_path(splits[0]);
+	int path = get_path(node->children[0]->tok->lexeme);
 	inst->path = path;
 	if(path == -1)
 	{
 		inst->err = not_valid;
 		return;
 	}
+	print_depth(node, 0);
 
-	int subpath = get_subpath(inst->path,splits[1]);
+	int subpath = get_subpath(inst->path, node->children[1]->tok->lexeme);
 	inst->subpath = subpath;
 
-	int rd = get_register(splits[2]);
-	int rs1 = get_register(splits[3]);
-	int rs2 = get_register(splits[4]);
+	int rd = get_register(node->children[2]->tok->lexeme);
+	int rs1 = get_register(node->children[3]->tok->lexeme);
+	int rs2 = get_register(node->children[4]->tok->lexeme);
 
 	inst->rd =rd;
 	inst->rs1= rs1;
 	inst->rs2= rs2;
+	char *final = node->children[5]->tok->lexeme;
 
-	int type = get_number_type(splits[5]);
+	int type = get_number_type(final);
 	uint64_t imm = 0;
 	if(type == 1 || type == 2)
 	{
-		imm = atoi(splits[5]);
+		imm = atoi(final);
 	}
 	if(type == 2)
 	{
-		imm = convert_to_hex(splits[5]);
+		imm = convert_to_hex(final);
 	}
 	if(type == 3)
 	{
-		imm = convert_to_oct(splits[5]);
+		imm = convert_to_oct(final);
 	}
 
 	if(type == 0)
 	{
-		if(valid_name(splits[5]))
+		if(valid_name(final))
 		{
-			char *dup = strdup(splits[5]);
+			char *dup = strdup(final);
 			inst->immref = dup;
 		}
 		else
 		{
 			inst->err = not_valid;
-
 		}
 	}
 
@@ -132,46 +133,46 @@ void inst_imm(char **splits, int length, inst_t *inst)
 }
 
 
+mop_t create_mop(parse_node_t *node)
+{
+	mop_t mop;
+	return mop;
+}
 
 
-
-inst_t create_instruction(char *line, int linen)
+inst_t create_instruction(parse_node_t *node)
 {
 
 	//printf("line: %s\n", line);
-	char **splits = NULL;
-	int splits_len = split_str(line, &splits, " ,.\t");
+
 
 	inst_t inst;
 	//clear this
 	memset(&inst, 0, sizeof(inst_t));
 
 
-	inst.line = linen;
-	inst.linestr = strdup(line);
+	inst.line = node->tok->locale.row;
 
 
+	if(node->child_count != 6 && node->child_count!= 5)
+	{
+		printf("invalid\n");
+		invalid_inst(node, &inst);
+	}
+	else if(node->child_count == 5)
+	{
+		printf("no imm");
 
-	if(splits_len != 6 && splits_len != 5)
-	{
-		invalid_inst(splits, splits_len, &inst);
+		inst_no_imm(node, &inst);
 	}
-	else if(splits_len == 5)
+	else if(node->child_count == 6)
 	{
-		inst_no_imm(splits, splits_len, &inst);
+		printf("imm\n");
+
+		inst_imm(node, &inst);
 	}
-	else if(splits_len == 6)
-	{
-		inst_imm(splits, splits_len, &inst);
-	}
-	for(size_t free_i = 0; free_i < splits_len; ++free_i)
-	{
-		free(splits[free_i]);
-	}
-	free(splits);
 	return inst;
 }
-
 
 int get_register(char *keyword)
 {

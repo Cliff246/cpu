@@ -117,113 +117,19 @@ typedef struct asmbinary
 	uint64_t *table;
 }asmbinary_t;
 
-/*typedef enum asmval_type
+
+
+typedef struct asminter
 {
-	AV_T_UNKNOWN,
-	AV_T_INTEGER,
-	AV_T_FLOAT,
-	AV_T_PTR,
-}asmval_type_t;
+	segment_t *seg_ary;
+	reference_t *ref_ary;
 
-typedef struct asmval_type_content
-{
+	size_t seg_ary_size;
+	size_t ref_ary_size;
+}asminter_t;
 
-}asmval_type_content_t;
 
-typedef enum asmval_sign
-{
-	AV_S_UNKNOWN,
-	AV_S_SIGNED,
-	AV_S_UNSIGNED,
-}asmval_sign_t;
 
-typedef struct asmval_sign_content
-{
-
-}asmval_sign_content_t;
-
-typedef enum asmval_descriptor
-{
-	AV_D_UNKNOWN,
-	AV_D_ARRAY,
-	AV_D_STRING,
-	AV_D_FUNC_PTR,
-	AV_D_REFERENCE,
-}asmval_descriptor_t;
-
-typedef struct asmval_descriptor_content
-{
-
-}asmval_descriptor_content_t;
-
-typedef enum asmval_size
-{
-	AV_8BIT,
-	AV_16BIT,
-	AV_32BIT,
-	AV_64BIT,
-}asmval_size_t;
-
-typedef enum asmval_size_content
-{
-
-}asmval_size_content_t;
-
-typedef enum asmval_modifier
-{
-	AV_M_UNKNOWN,
-	AV_M_EMPTY,
-	AV_M_CONST,
-	AV_M_REALLOC,
-	AV_M_VIOLATILE,
-	AV_M_MUTABLE,
-	AV_M_EXTERN,
-}asmval_modifier_t;
-
-typedef struct asmval_modifier_content
-{
-	asmval_modifier_t modifier;
-	union
-	{
-		struct
-		{
-
-		}m_empty;
-		struct
-		{
-
-		}m_constant;
-		struct
-		{
-
-		}m_realloc;
-		struct
-		{
-			uint64_t
-		}m_volatile;
-		struct
-		{
-			uint64_t segment;
-		}m_mutable;
-		struct
-		{
-			char *id;
-		}m_extern;
-	};
-}asmval_modifier_content_t;
-
-#define MAX_MODIFIERS 3
-
-typedef struct asmval_intrinsic
-{
-	asmval_modifier_t mod;
-	asmval_size_t size;
-	asmval_type_t type;
-	asmval_descriptor_t descptior;
-	struct asmval_intrinsic *depth;
-
-}asmval_intrinsic_t;
-*/
 typedef struct entry
 {
 	//type of entry

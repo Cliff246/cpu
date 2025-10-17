@@ -10,7 +10,6 @@ add_subdirectory(language)
 set(ASMFILES ${ASM_C_FILES}
 	assembler.c
 	main.c
-	decoder.c
 )
 set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
@@ -24,13 +23,13 @@ include_directories(asm
 	${CMAKE_SOURCE_DIR}/flags/
 )
 
-target_link_libraries(asm 
+target_link_libraries(asm
 	PUBLIC
 	ASM_LANG
 	ASM_COMMONS
 )
 
-target_include_directories(asm 
+target_include_directories(asm
 	PUBLIC
    	ASM_LANG
 	ASM_COMMONS

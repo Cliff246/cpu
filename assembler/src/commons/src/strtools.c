@@ -251,6 +251,7 @@ char *to_string(char val)
 {
 	char *str = CALLOC(2, char);
 	str[0] = val;
+	return str;
 }
 
 

@@ -39,6 +39,8 @@ typedef struct
 
 }lexer_ctx_t;
 
+
+void free_token(tok_t *ptr);
 lexer_ctx_t *create_token_stream(char *src, size_t file_id);
 void print_token(tok_t *tok);
 

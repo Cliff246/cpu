@@ -7,7 +7,14 @@
 
 typedef enum
 {
-    NODE_PROGRAM, NODE_LABEL, NODE_DIRECTIVE, NODE_INSTR, NODE_EXPR
+    NODE_PROGRAM, NODE_REFERENCE, NODE_SEGMENT, NODE_INSTR, NODE_EXPR,
+	NODE_METAOP,
+	NODE_LITERAL,
+	NODE_PATH,
+	NODE_SUBPATH,
+	NODE_RD,
+	NODE_RS1,
+	NODE_RS2
 } parse_node_kind_t;
 
 typedef struct parse_node
@@ -18,15 +25,19 @@ typedef struct parse_node
     size_t child_count;
 } parse_node_t;
 
+void free_parse_node(parse_node_t *ptr);
 
 
 typedef struct parser_context
 {
-	lexer_ctx_t *lexer_ctx_t;
+	lexer_ctx_t *lex_ctx;
 	size_t pos;
 }parser_ctx_t;
 
+void print_depth(parse_node_t *node, int depth);
 
-parse_node_t *get_node_from_ctx_offset(lexer_ctx_t *ctx, int start);
+parser_ctx_t *create_context(lexer_ctx_t *ctx);
+
+parse_node_t *parse_program(parser_ctx_t *p);
 
 #endif

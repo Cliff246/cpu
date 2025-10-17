@@ -9,8 +9,10 @@
 #include "commons.h"
 #include "error.h"
 #include "lexer.h"
+#include "parser.h"
+#include "encoder.h"
 #define ARGUMENTS_COUNT 255
-
+#include "inter.h"
 #include "fileio.h"
 
 
@@ -22,13 +24,10 @@ int main(int argc, char *argv[])
 {
 	char *content = NULL;
 	int length = file_load(argv[1], &content);
-	lexer_ctx_t *ctx = create_token_stream(content, 0);
-	printf("step\n");
+	icontext_t *context = load_context(argv[1]);
+	context_resolve(context);
 
-	for(int i = 0; i < ctx->count; ++i)
-	{
-		print_token(&ctx->toks[i]);
-	}
+	resolve_addresses(context);	
 
 	return 0;
 	setup_errors();
