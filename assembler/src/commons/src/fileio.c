@@ -3,25 +3,25 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <stdio.h>
+#include "string.h"
 #include "commons.h"
 
 size_t file_length(FILE *fp)
 {
 	int current_seek = ftell(fp);
 
-	fseek(fp, 0, SEEK_END);
+	int seek1 = fseek(fp, 0, SEEK_END);
 	int eof = ftell(fp);
-	if(eof == 0)
+	if(eof <= 0)
 	{
 		perror("ftell failed");
 		errno = EACCES;
 		return 0;
    	}
 
-	fseek(fp, current_seek, SEEK_SET);
-	return eof;
+	int seek2 = fseek(fp, current_seek, SEEK_SET);
+	return (size_t)eof;
 }
-
 
 int get_content(FILE *fp, char **ref)
 {
@@ -35,6 +35,7 @@ int get_content(FILE *fp, char **ref)
 	char *content = (char *)calloc(length + 100, sizeof(char));
 	fread(content, 1, length, fp);
 	*ref = content;
+	return length;
 }
 
 int file_load(const char *file_name, char **ref)
@@ -65,7 +66,7 @@ file_desc_t *get_fdesc(const char *file_name)
 		exit(1);
 	}
 	int length = get_content(fp, &ref);
-	if(length > 0)
+	if(length >= 0)
 	{
 		desc->fp = fp;
 		desc->isclosed = true;
@@ -76,11 +77,20 @@ file_desc_t *get_fdesc(const char *file_name)
 		desc->isclosed = true;
 		return desc;
 	}
+	else if(errno == EACCES)
+	{
+		free(desc);
+		fclose(fp);
+		fprintf(stderr, "%d: %s\n", errno, strerror(errno));
+		perror("failed descriptor");
+		return NULL;
+	}
 	else
 	{
 		free(desc);
+		fprintf(stderr, "%d: %s\n", errno, strerror(errno));
 		perror("failed descriptor");
-		return NULL;
+		exit(1);
 	}
 
 }

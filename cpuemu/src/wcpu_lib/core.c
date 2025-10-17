@@ -53,7 +53,7 @@ void set_pc(uint64_t set)
 	if(CCPU(mode) == KERNAL)
 		CCPU(k_cd.pc) = set;
 	else
-		CCPU(u_cd.ipc) = set;
+		CCPU(u_cd.pc) = set;
 	//printf("%d should be | is %d\n", set, CCPU(k_pc));
 }
 
@@ -231,7 +231,7 @@ void execute_cpu(void)
 	}
 	if(inst.path == PATH_JMP)
 	{
-		
+
 		jump_submit(components.cpu, inst.subpath, 0, get_reg(inst.rs1), get_reg(inst.rs2), CCPU(curimm), inst.immflag);
 
 

@@ -30,6 +30,7 @@ void *safe_realloc(void *ptr, size_t size, int type_size)
 	}
 	else
 	{
+		//printf("realloc: %zu\n", size * type_size);
 		void *temp = realloc(ptr, size * type_size);
 		if(temp == NULL)
 		{
@@ -84,18 +85,12 @@ void print_str_hex(char *str, bool newline)
 void reverse(char *ary)
 {
     size_t len = strlen(ary);
-    char tstr[len + 1];
-    memset(tstr, 0, len + 1);
-    strcpy(tstr, ary);
-    int initial = 0, end = len - 1;
-    for (int i = initial; i < end; i++)
+    for (int i = 0, j = len -1; i < j; i++, j--)
     {
-        char temp = tstr[i];
-        tstr[i] = tstr[end];
-        tstr[end] = temp;
-        end--;
+        char temp = ary[i];
+        ary[i] = ary[j];
+        ary[j] = temp;
     }
-    strcpy(ary, tstr);
 
 }
 
@@ -220,7 +215,7 @@ int64_t convert_to_oct(char *number)
 	{
 		int val;
 
-		if(*c >= '0' && *c <= '8')
+		if(*c >= '0' && *c <= '7')
 		{
 		 	val = *c - '0';
 		}

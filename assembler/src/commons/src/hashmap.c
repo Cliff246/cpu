@@ -93,9 +93,10 @@ p_hashelem_t remove_from_hash_table(p_hashtable_t table, const char *key)
 			{
 
 				// loop through nexts
-
-				for (p_hashelem_t prev = NULL; current; current = current->p_next)
+				p_hashelem_t prev  = NULL;
+				for (; current; current = current->p_next)
 				{
+					prev = current;
 					if (strcmp(key, current->p_key) == 0)
 					{
 						if (current->p_next != NULL)
@@ -201,7 +202,8 @@ int64_t add_element_to_hashtable(p_hashtable_t table, p_hashelem_t elem)
 		{
 			if (strcmp(elem->p_key, current->p_key) == 0)
 			{
-				free_hash_element(elem, table->freedata);
+				free(elem->p_key);
+				free(elem);
 				return -1;
 			}
 			for (; current->p_next != NULL; current = current->p_next)

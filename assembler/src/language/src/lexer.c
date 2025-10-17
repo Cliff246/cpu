@@ -129,6 +129,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 	char ch = 1;
 	size_t start = 0;
 	int index = 0;
+	bool seperator = false;
 	while (ch != 0)
 	{
 		ch = GETCHAR;
@@ -143,6 +144,11 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 
 			if (ch == '\n')
 				EMIT(TOK_NEWLINE, to_string('\\'));
+			else if(seperator == false)
+			{
+				seperator = true;
+				EMIT(TOK_IDENT, to_string(' '));
+			}
 			ADVANCE;
 			continue;
 		}
@@ -169,8 +175,9 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 			}
 			else
 			{
-				EMIT(TOK_IDENT, lexeme);
+				EMIT(TOK_TOKEN, lexeme);
 			}
+			seperator = false;
 			continue;
 		}
 
@@ -187,7 +194,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 
 			EMIT(TOK_NUMBER, SLICE(start, ctx->pos));
 			ADVANCE;
-
+			seperator = false;
 			continue;
 		}
 
@@ -199,7 +206,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 			start = ctx->pos;
 			while ( ADVANCE);
 			EMIT(TOK_COMMENT, SLICE(start, ctx->pos) );
-
+			seperator = false;
 			continue;
 		}
 
@@ -213,8 +220,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 			ADVANCE;
 			ADVANCE; // consume closing "
 			EMIT(TOK_STRING, SLICE(start, ctx->pos));
-			ADVANCE;
-
+			seperator = false;
 			continue;
 		}
 
@@ -232,11 +238,13 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 		else if(ch == ':')
 		{
 			EMIT(TOK_COLON, to_string(ch));
+			seperator = false;
 			ADVANCE;
 		}
 		else if(ch == ',')
 		{
 			EMIT(TOK_COMMA, to_string(ch));
+			seperator = true;
 			ADVANCE;
 		}
 		else if(ch == '.')
@@ -258,19 +266,45 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 				char *lexeme = SLICE(start, ctx->pos);
 
 				EMIT(TOK_DIRECTIVE, lexeme);
+
 			}
 			else
 			{
 				EMIT(TOK_DOT, to_string(ch));
+				ADVANCE;
 
 			}
-			ADVANCE;
+			seperator = false;
+		}
+		else if(ch == '@')
+		{
+
+			if(isalpha(PEEK))
+			{
+				start = ctx->pos;
+
+				while(isalnum(PEEK) || PEEK == '_')
+				{
+					//printf("%d %c\n", index, ch);
+
+					ADVANCE;
+				}
+				ADVANCE;
+
+				char *lexeme = SLICE(start, ctx->pos);
+
+				EMIT(TOK_TOKEN, lexeme);
+
+			}
+			seperator = false;
+
 		}
 		else
 		{
 
 			perror("Unknown character");
 			ADVANCE;
+			seperator = false;
 		}
 
 

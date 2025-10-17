@@ -15,6 +15,12 @@ typedef enum error_code_inst
 	ref_err,
 }errinst_t;
 
+typedef enum inst_ref_type
+{
+	INST_REF_NONE,
+	INST_REF_LOCAL,
+	INST_REF_GLOBAL
+}inst_ref_type_t;
 
 typedef struct instruction
 {
@@ -30,17 +36,60 @@ typedef struct instruction
 
 	int64_t imm;
 	char *linestr;
+
 	char *immref;
+	inst_ref_type_t ref_type;
 	errinst_t err;
 }inst_t;
 
 
+typedef enum metaop_id
+{
+	MOP_UNKNOWN,
+	MOP_I64,
+	MOP_I32,
+	MOP_I16,
+	MOP_I8,
+	MOP_FLOAT,
+	MOP_DOUBLE,
+	MOP_ALIGN,
+	MOP_STRING,
+	MOP_MEM,
+	MOP_PTR,
+
+}mop_id_t;
+
+
+typedef struct data_holder
+{
+
+	uint64_t *words;
+	size_t words_len;
+}data_holder_t;
+
+
+data_holder_t decode_string(parse_node_t *head);
+data_holder_t decode_integer(parse_node_t *head);
+
+
+
+data_holder_t create_data_holder(parse_node_t *node);
+
+
 typedef struct metaop
 {
-	uint64_t mop;
+	mop_id_t mop;
 
-	char *mop_str;
+	char *mop_id;
+
+	parse_node_t **expressions;
+	size_t expressions_len;
+
+	data_holder_t holder;
+
 }mop_t;
+
+
 
 
 void invalid_inst(parse_node_t *node, inst_t *inst);
@@ -59,6 +108,11 @@ int get_mem_subpath(char *keyword);
 int get_jmp_subpath(char *keyword);
 int get_sys_subpath(char *keyword);
 
+
+
+
+
+mop_id_t get_mop_code(char *keyword);
 
 
 int get_register(char *keyword);

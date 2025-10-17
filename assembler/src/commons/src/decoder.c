@@ -17,7 +17,7 @@ void print_inst(inst_t *inst)
 
 inst_t decode_inst(int32_t instr)
 {
-	inst_t in;
+	inst_t in = {0};
 	in.path = (instr >> 28) & 0xF;
 	in.subpath = (instr >> 21) & 0x7F;
 	in.rd = (instr >> 16) & 0x1F;
@@ -31,7 +31,7 @@ inst_t decode_inst(int32_t instr)
 uint32_t encode_inst(inst_t *inst)
 {
 
-	return ((inst->path << 28) | (inst->subpath << 21) | (inst->rd << 16) | (inst->rs1 << 11) | (inst->rs2 << 6) | (inst->aux << 2 & 0x7) | inst->immflag);
+	return ((inst->path << 28) | (inst->subpath << 21) | (inst->rd << 16) | (inst->rs1 << 11) | (inst->rs2 << 6) | (inst->aux << 2) | inst->immflag);
 }
 
 uint64_t encode(uint64_t path, uint64_t subpath, uint64_t rd, uint64_t rs1, uint64_t rs2, uint64_t aux, uint64_t immf)
@@ -40,7 +40,11 @@ uint64_t encode(uint64_t path, uint64_t subpath, uint64_t rd, uint64_t rs1, uint
 	print_bin(inst, 32, 1);
 	return inst;
 }
+void free_inst(inst_t *inst)
+{
+	free(inst->immref);
 
+}
 
 void invalid_inst(parse_node_t *node, inst_t *inst)
 {
@@ -84,7 +88,7 @@ void inst_imm(parse_node_t *node, inst_t *inst)
 		inst->err = not_valid;
 		return;
 	}
-	print_depth(node, 0);
+	//rint_depth(node, 0);
 
 	int subpath = get_subpath(inst->path, node->children[1]->tok->lexeme);
 	inst->subpath = subpath;
@@ -115,10 +119,28 @@ void inst_imm(parse_node_t *node, inst_t *inst)
 
 	if(type == 0)
 	{
-		if(valid_name(final))
+
+		if(final[0] == '@')
+		{
+			if(valid_name(final + 1))
+			{
+
+				//faking the valid names
+				char *dup = strdup(final + 1);
+				inst->immref = dup;
+				inst->ref_type = INST_REF_LOCAL;
+			}
+			else
+			{
+				inst->err = not_valid;
+			}
+		}
+
+		else if(valid_name(final))
 		{
 			char *dup = strdup(final);
 			inst->immref = dup;
+			inst->ref_type = INST_REF_GLOBAL;
 		}
 		else
 		{
@@ -133,9 +155,135 @@ void inst_imm(parse_node_t *node, inst_t *inst)
 }
 
 
+data_holder_t decode_string(parse_node_t *head)
+{
+	size_t buffer_alloc = 100, buffer_size = 0;
+	data_holder_t holder = {0};
+
+	uint8_t *buffer = CALLOC(buffer_alloc, uint8_t);
+
+	//the prefill into a long string
+	for(int i = 0; i < head->child_count; ++i)
+	{
+		parse_node_t *child = head->children[i];
+		if(child->kind == NODE_LITERAL)
+		{
+			if(child->tok->type == TOK_STRING)
+			{
+				int size = strlen(child->tok->lexeme);
+				//fill in string
+				for(int i = 1; i < size - 1; ++i)
+				{
+
+					if(buffer_size + 1 > buffer_alloc)
+					{
+						buffer = REALLOC(buffer, buffer_alloc *= 2, uint8_t);
+					}
+					buffer[buffer_size++] = child->tok->lexeme[i];
+				}
+
+
+
+			}
+			else
+			{
+				printf("parse node is not a string %s\n", child->tok->lexeme);
+			}
+		}
+	}
+
+	if(buffer_alloc <= buffer_size + 1)
+	{
+		buffer = REALLOC(buffer, buffer_alloc *= 2, uint64_t);
+
+	}
+	buffer[buffer_size++] = 0;
+
+	//printf("buffer: %s\n", buffer);
+	size_t mod = buffer_size % 8;
+	size_t len = buffer_size / 8;
+	if(mod > 0)
+	{
+		len++;
+	}
+
+	uint64_t *actual_data = CALLOC(len, uint64_t);
+
+	memcpy(actual_data, buffer, buffer_size);
+	free(buffer);
+	holder.words = actual_data;
+	holder.words_len = len;
+	return holder;
+}
+
+data_holder_t decode_integer(parse_node_t *head)
+{
+	data_holder_t holder = {0};
+	size_t word_size = head->child_count;
+	holder.words = CALLOC(word_size, uint64_t);
+	holder.words_len = word_size;
+
+	for(int i = 0; i < word_size; ++i)
+	{
+
+		char *tok = head->children[i]->tok->lexeme;
+		int type = get_number_type(tok);
+		int64_t imm = 0;
+		if(type == 0 || type == 2)
+		{
+			imm = atoi(tok);
+		}
+		if(type == 2)
+		{
+			imm = convert_to_hex(tok);
+		}
+		if(type == 3)
+		{
+			imm = convert_to_oct(tok);
+		}
+
+		holder.words[i] = imm;
+	}
+
+	return holder;
+
+}
+
 mop_t create_mop(parse_node_t *node)
 {
 	mop_t mop;
+
+	char *mop_tok_id = strdup(node->tok->lexeme);
+
+	mop.mop = get_mop_code(mop_tok_id);
+	mop.mop_id = mop_tok_id;
+	mop.expressions = node->children;
+	mop.expressions_len = node->child_count;
+
+
+	switch(mop.mop)
+	{
+		case MOP_STRING:
+			mop.holder = decode_string(node);
+			break;
+		case MOP_I16:
+			mop.holder = decode_integer(node);
+			break;
+		case MOP_I32:
+			mop.holder = decode_integer(node);
+
+			break;
+		case MOP_I8:
+			mop.holder = decode_integer(node);
+
+			break;
+		case MOP_I64:
+			mop.holder = decode_integer(node);
+			break;
+		default:
+			break;
+	}
+
 	return mop;
 }
 
@@ -146,28 +294,26 @@ inst_t create_instruction(parse_node_t *node)
 	//printf("line: %s\n", line);
 
 
-	inst_t inst;
+	inst_t inst = {0};
 	//clear this
-	memset(&inst, 0, sizeof(inst_t));
-
-
 	inst.line = node->tok->locale.row;
-
+	inst.err = not_valid;
+	inst.ref_type = INST_REF_NONE;
 
 	if(node->child_count != 6 && node->child_count!= 5)
 	{
-		printf("invalid\n");
+		//printf("invalid\n");
 		invalid_inst(node, &inst);
 	}
 	else if(node->child_count == 5)
 	{
-		printf("no imm");
+		//printf("no imm");
 
 		inst_no_imm(node, &inst);
 	}
 	else if(node->child_count == 6)
 	{
-		printf("imm\n");
+		//printf("imm\n");
 
 		inst_imm(node, &inst);
 	}
@@ -203,6 +349,46 @@ int get_register(char *keyword)
 	}
 }
 
+mop_id_t get_mop_code(char *keyword)
+{
+	const char *const mops[] = {
+		"I64",
+		"I32",
+		"I16",
+		"I8",
+		"FLOAT",
+		"DOUBLE",
+		"ALIGN",
+		"STRING",
+		"MEM",
+		"PTR",
+	};
+
+	mop_id_t ids[] = {
+		MOP_I64,
+		MOP_I32,
+		MOP_I16,
+		MOP_I8,
+		MOP_FLOAT,
+		MOP_DOUBLE,
+		MOP_ALIGN,
+		MOP_STRING,
+		MOP_MEM,
+		MOP_PTR,
+	};
+
+	int code = determine_code(keyword, mops, ARYSIZE(mops));
+	if(code != -1)
+	{
+
+		return ids[code];
+	}
+	else
+	{
+		printf("not a valid mop code %s\n", keyword);
+		exit(1);
+	}
+}
 
 int get_alu_subpath(char *keyword)
 {
@@ -294,7 +480,7 @@ int get_mem_subpath(char *keyword)
 		MEM_GET_SP,
 		MEM_SET_SP,
 		MEM_GET_SFP,
-		MEM_GET_SFP
+		MEM_SET_SFP
 
 
 	};
@@ -319,8 +505,8 @@ int get_jmp_subpath(char *keyword)
 		"jmp",
 		"bne",
 		"blt",
+		"beq"
 		"ble",
-		"beq",
 		"call",
 		"ret",
 	};
@@ -330,6 +516,7 @@ int get_jmp_subpath(char *keyword)
 		JP_BNE,
 		JP_BLT,
 		JP_BEQ,
+		JP_BLE,
 		JP_CALL,
 		JP_RET
 	};

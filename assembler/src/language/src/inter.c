@@ -11,13 +11,14 @@ void entry_instruction(ientry_t *entry)
 	entry->entry.inst = inst;
 	entry->type = IE_INST;
 
-	print_inst(&entry->entry.inst);
+	//print_inst(&entry->entry.inst);
 
 }
 
 void entry_mop(ientry_t *entry)
 {
 	mop_t mop = create_mop(entry->node);
+	print_depth(entry->node, 0);
 	entry->entry.mop = mop;
 	entry->type = IE_MOP;
 }
@@ -27,7 +28,7 @@ ientry_t *create_entry(parse_node_t *node, iscope_t *scope)
 	ientry_t *entry = CALLOC(1, ientry_t);
 
 	entry->node = node;
-	entry->offset = scope->segment_offset;
+	entry->offset = scope->offset;
 	//TODO
 	if(scope->entries_alloc == scope->entries_count)
 	{
@@ -37,15 +38,21 @@ ientry_t *create_entry(parse_node_t *node, iscope_t *scope)
 	if(node->kind == NODE_INSTR)
 	{
 		entry_instruction(entry);
+		scope->offset ++;
+
 
 	}
 	else if(node->kind == NODE_METAOP)
 	{
 		entry_mop(entry);
+		scope->offset += entry->entry.mop.holder.words_len;
+
+	}
+	else
+	{
 
 	}
 	scope->entries[scope->entries_count++] = entry;
-	scope->segment_offset ++;
 
 
 	return entry;
@@ -95,11 +102,16 @@ iref_t *create_reference(parse_node_t *head, iscope_t *scope, char *name)
 	{
 		scope->refs = REALLOC(scope->refs, scope->refs_alloc *= 2, iref_t *);
 	}
+
 	scope->refs[scope->refs_count++] = ptr_ref;
-	ptr_ref->ref_string = head->tok->lexeme;
 	ptr_ref->resolved = false;
 	ptr_ref->resolved_address = false;
+	ptr_ref->offset = scope->offset;
 	ptr_ref->segment_id = scope->segment->segment_id;
+	ptr_ref->ref_string = head->tok->lexeme;
+
+	//TODO
+	//TEMP way of doing segments
 
 	return ptr_ref;
 }
@@ -116,7 +128,7 @@ void fill_scope(iscope_t *scope, iseg_t *segment)
 	scope->refs = CALLOC(scope->refs_alloc, iref_t *);
 
 	scope->segment = segment;
-	scope->segment_offset = 0;
+	scope->offset = 0;
 }
 
 
@@ -147,9 +159,9 @@ void free_iseg(void *ptr)
 //gives a temporary string for look up
 char *segment_id_to_string(size_t segid)
 {
-	const int size = 33;
-	static char number[size] = {0};
-	memset(number, 0, size * sizeof(char));
+
+	static char number[33] = {0};
+	memset(number, 0, 33 * sizeof(char));
  	sprintf(number, "%lu", segid);
 	return number;
 }
@@ -192,7 +204,6 @@ icontext_t *load_context(const char *path)
 
 void context_resolve(icontext_t *ctx)
 {
-	print_depth(ctx->head, 0);
 	//current semgents
 	for(int s = 0; s < ctx->head->child_count; ++s)
 	{
@@ -216,7 +227,8 @@ void context_resolve(icontext_t *ctx)
 			if(check != NULL)
 			{
 				//duplicate's in the hash table
-
+				printf("duplicate reference %s\n", name);
+				exit(1);
 			}
 
 			iref_t *ref = create_reference(subcur,scope, name);

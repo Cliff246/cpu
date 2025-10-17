@@ -110,7 +110,7 @@ int split_str(const char *string, char ***ptr, const char *delims)
 	int last_good = 0;
 	bool back_to_back = (where[0]>0)? true : false;
 	int current = 0;
-	for(int i = 0, cur; i < slength; ++i, ++cur)
+	for(int i = 0, cur = 0; i < slength; ++i, ++cur)
 	{
 		if(where[i] == 0)
 		{
@@ -181,7 +181,7 @@ int determine_code(char *keyword, const char *const mnemonics[], int length)
 		for(int pool = 0; pool < length; ++pool)
 		{
 			//printf("op:%s n:%d\n", mnemonics[pool], keycount[pool]);
-			if(keyword[pool] == -1)
+			if(keycount[pool] == -1)
 			{
 				continue;
 			}

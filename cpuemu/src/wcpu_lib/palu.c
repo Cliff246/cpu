@@ -7,6 +7,18 @@
 
 //just some nice macros
 //
+
+static uint64_t arithmetic_shift_right(uint64_t value, uint64_t shift)
+{
+	uint64_t mask = 0;
+	if (value & (1ULL << 63))
+	{ // if sign bit set
+		mask = (~0ULL) << (64 - shift);
+	}
+	return (value >> shift) | mask;
+}
+
+
 #define INST(x) static void _alu_ ## x(alu_t *alu)
 
 #define DONE alu->complete = 1; return
@@ -59,18 +71,8 @@ INST(SRL)
 }
 INST(SRA)
 {
-	uint64_t shift = FLAG(RS2, IMM) & 0x3F;
-	if (RS1 & (1ul << 63))
-	{
-		DEST = ((RS1 | (~(0x7fffffffffffffff - 1))) >> shift) & (0x7fffffffffffffff - 1);
-		DONE;
-	}
-	else
-	{
-		DEST = (RS1 >> shift) & (0x7fffffffffffffff - 1);
-		DONE;
-	}
-
+	DEST = arithmetic_shift_right(RS1, FLAG(RS2, IMM) & 0x3F);
+	DONE;
 
 }
 INST(DIV)
@@ -98,22 +100,22 @@ INST(REM)
 INST(MULHI)
 {
 	uint64_t 	other = FLAG(RS2, IMM);
-	uint64_t    a_lo = (uint32_t)RS1;
-	uint64_t    a_hi = RS1 >> 32;
-	uint64_t    b_lo = (uint32_t)other;
-	uint64_t    b_hi = other >> 32;
+	uint64_t	a_lo = (uint32_t)RS1;
+	uint64_t	a_hi = RS1 >> 32;
+	uint64_t	b_lo = (uint32_t)other;
+	uint64_t	b_hi = other >> 32;
 
-	uint64_t    a_x_b_hi =  a_hi * b_hi;
-	uint64_t    a_x_b_mid = a_hi * b_lo;
-	uint64_t    b_x_a_mid = b_hi * a_lo;
-	uint64_t    a_x_b_lo =  a_lo * b_lo;
-	uint64_t    carry_bit = ((uint64_t)(uint32_t)a_x_b_mid +
-                         (uint64_t)(uint32_t)b_x_a_mid +
-                         (a_x_b_lo >> 32) ) >> 32;
+	uint64_t	a_x_b_hi =  a_hi * b_hi;
+	uint64_t	a_x_b_mid = a_hi * b_lo;
+	uint64_t	b_x_a_mid = b_hi * a_lo;
+	uint64_t	a_x_b_lo =  a_lo * b_lo;
+	uint64_t	carry_bit = ((uint64_t)(uint32_t)a_x_b_mid +
+						 (uint64_t)(uint32_t)b_x_a_mid +
+						 (a_x_b_lo >> 32) ) >> 32;
 
-	uint64_t    multhi = a_x_b_hi +
-                     (a_x_b_mid >> 32) + (b_x_a_mid >> 32) +
-                     carry_bit;
+	uint64_t	multhi = a_x_b_hi +
+					 (a_x_b_mid >> 32) + (b_x_a_mid >> 32) +
+					 carry_bit;
 	DEST = multhi;
 	DONE;
 }
@@ -128,9 +130,8 @@ INST(DIVU)
 	}
 	else
 	{
-		uint64_t a = RS1 & (0x7fffffffffffffff - 1);
-
-		uint64_t b = other &  (0x7ffffffffffffff - 1);
+		uint64_t a = RS1 & 0x7FFFFFFFFFFFFFFFULL;
+		uint64_t b = other & 0x7FFFFFFFFFFFFFFFULL;
 		DEST = a / b;
 		DONE;
 	}

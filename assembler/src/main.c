@@ -27,7 +27,8 @@ int main(int argc, char *argv[])
 	icontext_t *context = load_context(argv[1]);
 	context_resolve(context);
 
-	resolve_addresses(context);	
+	output_t *output = emit(context);
+	write_out(output, "bin.bin");
 
 	return 0;
 	setup_errors();

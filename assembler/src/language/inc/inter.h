@@ -33,6 +33,7 @@ iseg_t *create_segment(parse_node_t *head);
 typedef struct ireference
 {
 	char *ref_string;
+	uint64_t offset;
 	uint64_t segment_id;
 	bool resolved;
 	uint64_t resolved_address;
@@ -64,7 +65,7 @@ typedef struct
 
 typedef struct iscope
 {
-	int segment_offset;
+	int offset;
 	ientry_t **entries;
 
 	size_t entries_count;

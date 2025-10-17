@@ -4,7 +4,9 @@
             "name": "Win32",
             "includePath": [
                 "${default}",
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/assembler/src/language/inc",
+                "${workspaceFolder}/assembler/src/commons/src"
             ],
             "defines": [
                 "_DEBUG",
