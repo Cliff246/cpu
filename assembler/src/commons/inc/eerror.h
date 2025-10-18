@@ -4,16 +4,27 @@
 
 #include <stdlib.h>
 
+typedef enum error_type
+{
+	UNKNOWN_ERROR,
+	TOKEN_ERROR,
+	PARSE_ERROR,
+	KEY_ERROR,
+}error_type_t;
 
-typedef struct error 
+
+
+
+
+typedef struct error
 {
 	//error type
-	int ertp;
+	error_type_t ertp;
 	//message
 	char *msg;
 	//extra ptr
 	void *extra;
-	void (*err_fn )(struct error *err); 
+	void (*err_fn )(struct error *err);
 }error_t;
 
 typedef void (*err_fn_t )(error_t *err);
@@ -21,7 +32,7 @@ typedef void (*err_fn_t )(error_t *err);
 void setup_errors(void);
 
 
-void emit_error(int type, const char *msg, void *extra, err_fn_t fn);
+void emit_error(error_type_t, const char *msg, void *extra, err_fn_t fn);
 
 void print_error(int i);
 void print_errors(void);

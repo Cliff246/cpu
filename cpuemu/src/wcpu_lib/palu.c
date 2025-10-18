@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 //just some nice macros
 //
@@ -24,7 +25,7 @@ static uint64_t arithmetic_shift_right(uint64_t value, uint64_t shift)
 #define DONE alu->complete = 1; return
 #define CYCLE alu->cycle += 1
 
-#define FLAG(x,y) (alu->flag)? x : y
+#define FLAG(x,y) ((alu->flag)? x : y)
 
 #define DEST alu->regdest
 #define RS1 alu->reg1
@@ -32,7 +33,7 @@ static uint64_t arithmetic_shift_right(uint64_t value, uint64_t shift)
 #define IMM alu->reg3
 
 #define TRI(op) DEST = RS1 op RS2 op IMM; DONE
-#define OPT(op) DEST = RS1 op FLAG( RS2 , IMM); DONE
+#define OPT(op) DEST = RS1 op FLAG( IMM , RS2); DONE
 #define BIN(op1, op2) DEST = RS1 op1 RS2 op2 IMM; DONE
 
 INST(ADD)
@@ -49,7 +50,9 @@ INST(SUB)
 
 INST(AND)
 {
+	//printf("%lld %lld %lld\n", RS1, RS2, RS1 & RS2);
 	OPT(&);
+	//printf("%lld\n", DEST);
 }
 INST(OR)
 {
@@ -77,7 +80,10 @@ INST(SRA)
 }
 INST(DIV)
 {
-	uint64_t divident = FLAG(RS2, IMM);
+	printf("divide\n");
+	uint64_t divident = FLAG(IMM, RS2);
+	printf("divide %d %d %d\n", RS1, divident, RS1 / divident);
+
 	if(divident == 0)
 	{
 		DEST = 0;
@@ -200,8 +206,8 @@ void set_alu_instructions(void)
 	SET(SLL);
 	SET(SRL);
 	SET(SRA);
-	SET(MUL);
 	SET(DIV);
+	SET(MUL);
 	SET(REM);
 	SET(MULHI);
 	SET(MULU);
@@ -266,7 +272,11 @@ void alu_submit(alu_t *alu, char subpath, int64_t rs1, int64_t rs2, int64_t imm,
 //step through the alu
 void alu_step(alu_t *alu)
 {
+	//printf("%lld %lld %lld\n", alu->reg1, alu->reg2, alu->reg3);
+
 	alu_fn[alu->subpath](alu);
+	//printf("dest: %d\n", alu->regdest);
+
 }
 
 //poll the alu

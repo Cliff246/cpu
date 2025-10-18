@@ -1,7 +1,8 @@
 
-#include "error.h"
 #include "commons.h"
 #include <errno.h>
+#include "eerror.h"
+#include "lexer.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
@@ -22,7 +23,8 @@ void setup_errors(void)
 }
 
 
-void emit_error(int type, const char *msg, void *extra, err_fn_t fn)
+
+void emit_error(error_type_t type, const char *msg, void *extra, err_fn_t fn)
 {
 
 	if(_e_length == _e_alloc)
@@ -66,6 +68,38 @@ void print_errors(void)
 	}
 }
 
+
+
+
+//takes error with tok_t as error
+void error_token_error(error_t *err)
+{
+	tok_t *token = err->extra;
+
+	//TODO replace file with a string look up for name
+	fprintf(stderr,"error at: f:%d line:%s col:%d\n", token->locale.file, token->locale.row, token->locale.col);
+	fprintf(stderr, "type:%d msg:\'%s\'\n", err->ertp, err->msg);
+
+}
+
+void error_unknown_error(error_t *err)
+{
+
+}
+
+
+
+err_fn_t error_class_allocate(error_type_t type)
+{
+
+	err_fn_t funcs[] = {
+		error_unknown_error,
+		error_token_error,
+	};
+
+	return *funcs[type];
+
+}
 
 void inline_error(int code, const char *error, const char *filename, size_t line)
 {

@@ -62,7 +62,10 @@ void memory_print(memory_t *memory, uint64_t start, uint64_t stop)
 		return;
 	uint64_t diff = stop - start;
 	if(memory->length < stop)
+	{
+		printf("bad length%d\n", memory->length);
 		return;
+	}
 	for(uint64_t i = start; i < stop; ++i)
 	{
 		printf("%4lld 0x%.8llx %llu\n", i, memory->content[i], memory->content[i]);

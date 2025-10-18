@@ -14,8 +14,8 @@ typedef struct output
 
 typedef struct segout_txt
 {
-	uint64_t *inst;
-	uint64_t *imm;
+	int64_t *inst;
+	int64_t *imm;
 	//table is inst_len / 128 + 1
 	uint64_t *table;
 

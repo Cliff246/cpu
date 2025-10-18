@@ -1,6 +1,6 @@
 
 #include "commons.h"
-#include "error.h"
+#include "eerror.h"
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
@@ -96,9 +96,9 @@ void reverse(char *ary)
 
 
 
-int get_number_type(char *str)
+number_type_t get_number_type(char *str)
 {
-	int const posint_type = 1, int_type = 2, hex_type = 3, oct_type = 4, no_type = 0;
+
 	size_t len = strlen(str);
 	if(len > 0)
 	{
@@ -107,7 +107,7 @@ int get_number_type(char *str)
 
 		if(len == 1)
 		{
-			return (isdigit(str[0]))? posint_type: no_type;
+			return (isdigit(str[0]))? NUM_INT: NUM_NONE;
 		}
 		else if(len > 1)
 		{
@@ -119,10 +119,10 @@ int get_number_type(char *str)
 				for(int i = 2; i < len; ++i)
 				{
 					if(!isdigit(str[i]))
-						return no_type;
+						return NUM_NONE;
 
 				}
-				return posint_type;
+				return NUM_INT;
 			}
 			//standard hex number
 			else if(c1 == '0' && (c2 == 'x' || c2 == 'X'))
@@ -132,38 +132,38 @@ int get_number_type(char *str)
 					if((str[i] >= 'a' && str[i] <= 'f') || (str[i] >= 'A' && str[i] <= 'F') || isdigit(str[i]))
 						continue;
 					else
-						return no_type;
+						return NUM_NONE;
 
 				}
-				return hex_type;
+				return NUM_HEX;
 			}
 			else if(c1 == '-' && isdigit(c2))
 			{
 				for(int i = 2; i < len; ++i)
 				{
 					if(!isdigit(str[i]))
-						return no_type
+						return NUM_NONE
 							;
 
 				}
-				return int_type;
+				return NUM_INT;
 			}
 			else if(c1 == '0' && isdigit(c2))
 			{
 				for(int i = 2; i < len; ++i)
 				{
 					if(str[i] < '0' || str[i] > 8)
-						return no_type;
+						return NUM_NONE;
 
 				}
-				return oct_type;
+				return NUM_OCT;
 			}
 
 
 		}
 
 	}
-	return no_type;
+	return NUM_NONE;
 
 }
 
@@ -243,7 +243,7 @@ bool valid_name(char *name)
 		ch++;
 		for(;*ch; ch++)
 		{
-			if(!isalnum(*ch))
+			if(!isalnum(*ch) && *ch != '_')
 			{
 				return false;
 			}

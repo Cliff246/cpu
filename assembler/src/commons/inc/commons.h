@@ -5,6 +5,13 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+typedef enum number_type
+{
+	NUM_NONE,
+	NUM_INT,
+	NUM_HEX,
+	NUM_OCT
+}number_type_t;
 
 #define SETBIT(n, k) (1 | (n << k))
 #define CLRBIT(n, k) (n & ~(1 << k))
@@ -27,7 +34,7 @@ void print_hex(char hex, bool newline);
 void print_str_hex(char *str, bool newline);
 void reverse(char *ary);
 
-int get_number_type(char *str);
+number_type_t get_number_type(char *str);
 
 int64_t convert_to_hex(char *number);
 int64_t convert_to_oct(char *number);

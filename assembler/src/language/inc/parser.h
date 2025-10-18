@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include "lexer.h"
 
-
 typedef enum
 {
     NODE_PROGRAM,
@@ -19,12 +18,22 @@ typedef enum
 	NODE_RS2
 } parse_node_kind_t;
 
+typedef enum
+{
+	NO_ERROR,
+	UNKNOWN_TOKEN,
+	INVALID_TOKEN,
+	EXPECTED_TOKEN,
+
+}parse_error_t;
+
 typedef struct parse_node
 {
     parse_node_kind_t kind;
     tok_t *tok;
     struct parse_node **children;
     size_t child_count;
+	parse_error_t err;
 } parse_node_t;
 
 void free_parse_node(parse_node_t *ptr);

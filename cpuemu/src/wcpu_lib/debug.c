@@ -24,7 +24,7 @@ const char *get_alu_inst_str(int i)
 		ALU_CASE(SUB);
 		ALU_CASE(AND);
 		ALU_CASE(OR);
-		
+
 		ALU_CASE(XOR);
 		ALU_CASE(NOT);
 		ALU_CASE(SLL);
@@ -33,7 +33,7 @@ const char *get_alu_inst_str(int i)
 
 		ALU_CASE(DIV);
 		ALU_CASE(DIVU);
-		ALU_CASE(MUL);	
+		ALU_CASE(MUL);
 		ALU_CASE(MULU);
 		ALU_CASE(MULUS);
 		ALU_CASE(MULHI);
@@ -70,10 +70,8 @@ const char *get_mem_inst_str(int i)
 		MEM_CASE(SD);
 		MEM_CASE(PUSH);
 		MEM_CASE(POP);
-		MEM_CASE(GET_SP);
-		MEM_CASE(SET_SP);
-		MEM_CASE(GET_SFP);
-		MEM_CASE(SET_SFP);
+		MEM_CASE(SP);
+		MEM_CASE(SFP);
 		DEFAULT;
 	}
 }

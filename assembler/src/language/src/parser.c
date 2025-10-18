@@ -131,27 +131,87 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	//printf("instruction\n");
 
 	parse_node_t *n = make_node(NODE_INSTR, peek(ctx));
+	tok_t *path =  expect(ctx, TOK_TOKEN);
+	if(!path)
+	{
+		//TODO expected token error
+		//emit error recover
+	}
+	add_child(n, make_node(NODE_PATH, path));
+	tok_t *dot = expect(ctx, TOK_DOT);
 
-	add_child(n, make_node(NODE_PATH, expect(ctx, TOK_TOKEN)));
-	expect(ctx, TOK_DOT);
+	if(!dot)
+	{
+		//TODO expected token error
+		//emit error recover
+	}
 
-	add_child(n, make_node(NODE_SUBPATH, expect(ctx, TOK_TOKEN)));
+	tok_t *subpath =  expect(ctx, TOK_TOKEN);
+	if(!subpath)
+	{
+		//TODO expected token error
+		//emit error and recover
+	}
+	add_child(n, make_node(NODE_SUBPATH, subpath));
 
-	expect(ctx, TOK_IDENT);
+	tok_t *sep = expect(ctx, TOK_IDENT);
+	if(!sep)
+	{
+		//TODO expected token error
+		//emit error and recover
+	}
 
-	add_child(n, make_node(NODE_RD, expect(ctx, TOK_TOKEN)));
+	tok_t *rd = expect(ctx, TOK_TOKEN);
+	if(!rd)
+	{
+		//TODO token error
+		//emit error and recover
+	}
 
-	expect(ctx, TOK_COMMA);
-	add_child(n, make_node(NODE_RS1, expect(ctx, TOK_TOKEN)));
+	add_child(n, make_node(NODE_RD, rd));
 
-	expect(ctx, TOK_COMMA);
 
-	add_child(n, make_node(NODE_RS2, expect(ctx, TOK_TOKEN)));
+	tok_t *comma1 = expect(ctx, TOK_COMMA);
+	if(!comma1)
+	{
+		//TODO expected token error
+		//emit error and recover
+	}
 
-	if(peek(ctx) && peek(ctx)->type == TOK_COMMA)
+	tok_t *rs1 =  expect(ctx, TOK_TOKEN);
+	if(!rs1)
+	{
+		//TODO expected token error
+		//emit error and recover
+	}
+	add_child(n, make_node(NODE_RS1, rs1));
+
+	tok_t *comma2 = expect(ctx, TOK_COMMA);
+	if(!comma2)
+	{
+		//TODO expected token error
+		//emit error and recover
+	}
+
+	tok_t *rs2 = expect(ctx, TOK_TOKEN );
+	if(!rs2)
+	{
+		//TODO expected token error
+		//emit error and recover
+	}
+
+
+	add_child(n, make_node(NODE_RS2, rs2));
+	if(!peek(ctx))
+	{
+		return n;
+	}
+	if(peek(ctx)->type == TOK_COMMA)
 	{
 
 		next(ctx);
+		//TODO fix this
+		//this should actually compute an expression
 		add_child(n, make_node(NODE_EXPR, peek(ctx) ));
 	}
 	return n;
@@ -168,15 +228,36 @@ parser_ctx_t *create_context(lexer_ctx_t *ctx)
 
 parse_node_t *parse_reference(parser_ctx_t *p)
 {
-    parse_node_t *n = make_node(NODE_REFERENCE, expect(p, TOK_REFERENCE));
-    expect(p, TOK_COLON);
+
+	tok_t *reference = expect(p, TOK_REFERENCE);
+	if(!(reference))
+	{
+		//TODO emit expected token error
+		//emit error and recover
+	}
+    parse_node_t *n = make_node(NODE_REFERENCE, reference);
+
+
+	tok_t *colon = expect(p, TOK_COLON);
+	if(!colon)
+	{
+		//TODO
+		//this should be a colon if not that's bad
+	}
+	//TODO fill more
+
     return n;
 }
 
 parse_node_t *parse_segment(parser_ctx_t *p)
 {
 
-    parse_node_t *n = make_node(NODE_SEGMENT, expect(p, TOK_DIRECTIVE));
+	tok_t *segment = expect(p, TOK_DIRECTIVE);
+	if(!segment)
+	{
+		//TODO expected token error
+	}
+    parse_node_t *n = make_node(NODE_SEGMENT,segment );
     // optionally collect args until newline
 	//next(p);
     return n;
@@ -232,13 +313,16 @@ parse_node_t *parse_internal(parser_ctx_t *p)
 			child = parse_instruction(p);
 			break;
 		case TOK_IDENT:
-			printf("mop\n");
 			child = parse_metaop(p);
 			break;
 		default:
-
+			//emit error and skip to next valid internal consuming all
 			break;
-		}
+	}
+
+	//should try to skip this if child is bad
+
+
 	return child;
 }
 
@@ -269,6 +353,9 @@ parse_node_t *parse_program(parser_ctx_t *p)
 
         else if (t->type == TOK_DIRECTIVE)
 		{
+
+
+
             child = parse_segment(p);
 
 			seg_root = child;
@@ -278,6 +365,13 @@ parse_node_t *parse_program(parser_ctx_t *p)
 		}
         else if (t->type == TOK_REFERENCE)
 		{
+
+			if(!seg_root)
+			{
+				//TODO segment is not defined before instruction, must exit
+				//EMIT instruction and try to find a segment.
+			}
+
 			//printf("label\n");
 			child = parse_reference(p);
 
@@ -289,9 +383,21 @@ parse_node_t *parse_program(parser_ctx_t *p)
         }
 		else if (t->type == TOK_IDENT && newline)
 		{
+			if(!seg_root)
+			{
+				//TODO should try to skip to next valid segment and emit error
+			}
+			if(!ref_root)
+			{
+				//TODO should try to skip to next valid reference and emit error
+
+			}
+
+
+
 			if(p->pos + 1 >= p->lex_ctx->count) break;
 			tok_t *nexttok = &p->lex_ctx->toks[p->pos + 1];
-			printf("%s %d\n", nexttok->lexeme, nexttok->type);
+			//printf("%s %d\n", nexttok->lexeme, nexttok->type);
 			if(nexttok->type == TOK_TOKEN)
 			{
 				next(p);
@@ -299,10 +405,6 @@ parse_node_t *parse_program(parser_ctx_t *p)
 				child = parse_internal(p);
 				add_child(ref_root, child);
 
-			}
-			else
-			{
-				perror("token is invalid");
 			}
 			newline = false;
 			continue;

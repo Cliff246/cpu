@@ -4,7 +4,7 @@
 #include "flags.h"
 
 
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0
 
 
 const char *get_alu_inst_str(int i);

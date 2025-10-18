@@ -72,12 +72,12 @@ int main(int argc, char *argv[])
 
 		startup_cpu();
 
-		for(int i = 0; i < (100) + 5; ++i)
+		for(int i = 0; i < (1000); ++i)
 		{
 
 			step_cpu();
 		}
-
+		print_regs();
 	}
 	else
 	{

@@ -181,7 +181,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 			continue;
 		}
 
-		else if (isdigit(ch))
+		else if (isdigit(ch) || ch == '-')
 		{
 			//printf("2, index: %d %d\n", index, ctx->pos);
 
@@ -189,11 +189,14 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 			start = ctx->pos;
 			bool onef = false;
 			while (isxdigit(PEEK) || PEEK == 'x')
+			{
+				//printf("peek: %d %c\n", PEEK, PEEK);
+
 				ADVANCE;
+			}
 			ADVANCE;
 
 			EMIT(TOK_NUMBER, SLICE(start, ctx->pos));
-			ADVANCE;
 			seperator = false;
 			continue;
 		}
@@ -204,7 +207,9 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 			//printf("3, index: %d %d\n", index, ctx->pos);
 
 			start = ctx->pos;
-			while ( ADVANCE);
+			while ( PEEK != '\n' && PEEK != EOF )
+				ADVANCE;
+			ADVANCE;
 			EMIT(TOK_COMMENT, SLICE(start, ctx->pos) );
 			seperator = false;
 			continue;
@@ -225,7 +230,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 		}
 
 		// symbols
-		else if (strchr("[]()+-{}", ch))
+		else if (strchr("[]()+{}", ch))
 		{
 			//printf("5, index: %d %c\n",ch, ch);
 
@@ -313,7 +318,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 
 	for(int i = 0; i < ctx->count; ++i)
 	{
-		print_token(&ctx->toks[i]);
+		//print_token(&ctx->toks[i]);
 	}
 	return ctx;
 }

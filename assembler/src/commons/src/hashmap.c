@@ -251,7 +251,7 @@ p_hashelem_t get_from_hash_table(p_hashtable_t table, const char *key)
 		size_t position = hash_to_position(keyhash, table->tablesize);
 
 		p_hashelem_t element = table->p_tablelist[position];
-		//printf("key is: %s %d\n", element->p_key, position);
+		printf("key is: %s %d\n", key, position);
 
 		if (element)
 		{

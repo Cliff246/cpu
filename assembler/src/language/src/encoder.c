@@ -2,7 +2,7 @@
 
 #include "string.h"
 #include "commons.h"
-#include "error.h"
+#include "eerror.h"
 
 
 uint64_t text_resolve(iscope_t *txt)
@@ -72,8 +72,8 @@ segout_txt_t create_segout_txt(icontext_t *ctx, iscope_t *scope, style_t *style)
 	const size_t table_size = inst_len/ 128 + 1;
 	uint64_t *table = CALLOC(table_size, uint64_t);
 	//oversized
-	uint64_t *imm = CALLOC(inst_len, uint64_t);
-	uint64_t *inst = CALLOC(inst_len, uint64_t);
+	int64_t *imm = CALLOC(inst_len, int64_t);
+	int64_t *inst = CALLOC(inst_len, int64_t);
 
 
 	segout_txt_t txt = {0};
@@ -82,9 +82,11 @@ segout_txt_t create_segout_txt(icontext_t *ctx, iscope_t *scope, style_t *style)
 
 	size_t imm_iter = 0;
 	size_t table_iter = 0;
+
+
 	for(int i = 0; i < inst_len; ++i)
 	{
-		printf("enty %d %d\n", i, inst_len);
+		//printf("enty %d %d\n", i, inst_len);
 		ientry_t *entry = scope->entries[i];
 
 		if(imm_iter % 128 == 0)
@@ -98,6 +100,7 @@ segout_txt_t create_segout_txt(icontext_t *ctx, iscope_t *scope, style_t *style)
 			exit(1);
 		}
 		inst_t *instruction = &entry->entry.inst;
+		printf("content %s\n", entry->node->tok->lexeme);
 		print_inst(instruction);
 
 		if(instruction->immflag )
@@ -105,11 +108,12 @@ segout_txt_t create_segout_txt(icontext_t *ctx, iscope_t *scope, style_t *style)
 			int64_t current_imm = 0;
 			if(instruction->immref != NULL)
 			{
-
 				//should do local and global conversion here
 				iref_t *ref = (iref_t *)getdata_from_hash_table(ctx->ref_table, instruction->immref);
 				if(!ref)
 				{
+					print_hash_table(ctx->ref_table);
+
 					perror("ref not found\n");
 					exit(1);
 				}
@@ -140,7 +144,7 @@ segout_txt_t create_segout_txt(icontext_t *ctx, iscope_t *scope, style_t *style)
 			}
 
 			imm[imm_iter ++] = current_imm;
-			printf("current imm %d\n", current_imm);
+			//printf("current imm %d\n", current_imm);
 		}
 		//this is an undersized type need to be packed later
 		//todo
@@ -149,11 +153,12 @@ segout_txt_t create_segout_txt(icontext_t *ctx, iscope_t *scope, style_t *style)
 		inst[i] = current_inst;
 
 	}
+ 	size_t base = style->regions[scope->segment->segment_id].position;
 
-	txt.desc[0] = 6;
+	txt.desc[0] = 6 + base;
 	txt.desc[1] = table_size;
 
-	const size_t inst_offset = 6 + table_size;
+	const size_t inst_offset = 6 + base + table_size;
 	txt.desc[2] = inst_offset;
 	txt.desc[3] = inst_len;
 	const size_t imm_offset = inst_offset + inst_len;
@@ -172,8 +177,8 @@ segout_data_t create_segout_data(icontext_t *ctx, iscope_t *scope, style_t *styl
 {
 	segout_data_t data = {0};
 
-
-	uint64_t *content = CALLOC(scope->segment->segment_id, uint64_t);
+ 	size_t size = style->regions[scope->segment->segment_id].size;
+	uint64_t *content = CALLOC(size, uint64_t);
 
 	size_t iter = 0;
 	for(int i = 0; i < scope->entries_count; ++i)
@@ -234,7 +239,7 @@ output_t *combine_segouts(segout_t *segouts, int length)
 	output_t *output = CALLOC(1, output_t);
 
 	size_t bin_alloc = 100;
-	uint64_t *bin = CALLOC(bin_alloc, uint64_t);
+	int64_t *bin = CALLOC(bin_alloc, uint64_t);
 	size_t bin_iter = 0;
 
 	for(int i = 0; i < length; ++i)
@@ -243,7 +248,7 @@ output_t *combine_segouts(segout_t *segouts, int length)
 
 
 		segout_t *so = &segouts[i];
-		printf("type: %d alloc: %d\n", so->type, bin_alloc);
+		//printf("type: %d alloc: %d\n", so->type, bin_alloc);
 		if(so->type == ISEG_TEXT)
 		{
 			segout_txt_t *txt = &so->output.txt;
@@ -344,7 +349,7 @@ size_t resolve_addresses(icontext_t *ctx,  style_t *style)
 		 regions[i].position = current_postion;
 
 		 current_postion += region_size;
-		 printf("region: %d size:%lu pos:%lu\n", i, region_size, regions[i].position);
+		 //printf("region: %d size:%lu pos:%lu\n", i, region_size, regions[i].position);
 	}
 
 	style->regions = regions;
@@ -376,10 +381,10 @@ void fill_in_addresses(icontext_t *ctx, style_t *style)
 			iref_t *ref = scope->refs[r];
 			ref->resolved_address = ref->offset + scope_base_offset + current_size;
 			ref->resolved = true;
-			printf("%s %d \n", ref->ref_string, ref->resolved_address);
+			//printf("resolved: %s %d \n", ref->ref_string, ref->resolved_address);
 
 		}
-		printf("fill in\n");
+		//printf("fill in\n");
 
 		current_size += style->regions[i].size;
 	}
@@ -414,11 +419,9 @@ void write_out(output_t *output, char *name)
 	}
 	for(int i = 0; i < output->size; i++)
 	{
-		if(i % sizeof(int64_t) == 0)
-		{
+		printf("%.3d: %.8llx %lld\n", i, output->bin[i], output->bin[i]);
 
-			printf("%.3d: %.8llx %llu\n", i/8, output->bin[i / 8], output->bin[i / 8]);
-		}
+
 
 	}
 	fwrite(output->bin, sizeof(uint64_t), output->size, fp);

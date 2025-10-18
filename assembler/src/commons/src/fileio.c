@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <errno.h>
+#include "eerror.h"
 #include <stdio.h>
 #include "string.h"
 #include "commons.h"

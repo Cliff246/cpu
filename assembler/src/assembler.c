@@ -7,7 +7,7 @@
 #include "decoder.h"
 #include "commons.h"
 #include "strtools.h"
-#include "error.h"
+#include "eerror.h"
 #include <errno.h>
 #include <stdint.h>
 #include <stdbool.h>

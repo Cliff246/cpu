@@ -7,7 +7,7 @@
 #include "assembler.h"
 #include "decoder.h"
 #include "commons.h"
-#include "error.h"
+#include "eerror.h"
 #include "lexer.h"
 #include "parser.h"
 #include "encoder.h"
@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
 {
 	char *content = NULL;
 	int length = file_load(argv[1], &content);
+	printf("run\n");
 	icontext_t *context = load_context(argv[1]);
 	context_resolve(context);
 

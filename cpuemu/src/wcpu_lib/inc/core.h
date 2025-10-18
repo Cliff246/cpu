@@ -67,6 +67,23 @@ typedef struct interreg
 	uint64_t rpc, ripc, gp, tp;
 }interreg_t;
 
+typedef struct
+{
+
+}live_wires_t;
+
+
+typedef struct instruction
+{
+	uint32_t path;
+	uint32_t subpath;
+	uint32_t rd ;
+	uint32_t rs1 ;
+	uint32_t rs2 ;
+	uint32_t aux ;
+	uint32_t immflag;
+}inst_t;
+
 
 
 typedef struct
@@ -106,10 +123,14 @@ typedef struct
 	uint64_t u_mode_frame;
 	//book marks filled;
 
+
+	bool has_jumped;
+
 	stages_t stage;
 
 	int64_t curimm;
 	int32_t curins;
+	inst_t inst;
 	//current input 1, 2, 3
 	int64_t ci1, ci2, ci3;
 	//current output
@@ -122,18 +143,6 @@ typedef struct
 
 
 void print_cpu_state(cpu_t *cpu);
-
-
-typedef struct instruction
-{
-	uint32_t path;
-	uint32_t subpath;
-	uint32_t rd ;
-	uint32_t rs1 ;
-	uint32_t rs2 ;
-	uint32_t aux ;
-	uint32_t immflag;
-}inst_t;
 
 
 
@@ -156,6 +165,15 @@ uint64_t get_ipc_offset(void);
 
 uint64_t get_pc_len(void);
 uint64_t get_ipc_len(void);
+
+
+void set_sfp(uint64_t set);
+uint64_t get_sfp(void);
+void set_sp(uint64_t set);
+uint64_t get_sp(void);
+
+uint64_t dec_sp(uint64_t degree);
+uint64_t inc_sp(uint64_t degree);
 
 //step the cpu forward
 void step_cpu(void);

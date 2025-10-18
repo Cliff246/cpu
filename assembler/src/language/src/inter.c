@@ -50,7 +50,8 @@ ientry_t *create_entry(parse_node_t *node, iscope_t *scope)
 	}
 	else
 	{
-
+		printf("entry is invalid\n");
+		exit(1);
 	}
 	scope->entries[scope->entries_count++] = entry;
 

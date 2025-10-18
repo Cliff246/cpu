@@ -47,6 +47,15 @@
 #define AUX_RELATIVE	1
 #define AUX_
 
+//ALL internal operations that are get and set are done via rd and rs1.
+
+// as in get is just setting rd,
+// as in set is just setting rs1
+
+//so rd = x0, rs1 = x0 = nop
+//so rd != x0, rs1 = x0 = get
+//so rd = x0, rs1 != x0 = set
+//so rd != x0, rs1 != x0 = exchange
 
 
 //rd = rs1 + rs2 + imm
@@ -91,23 +100,23 @@
 //compare not equals
 #define ALU_CNE		0x14
 
+
+
+
+
 //MEMORY
 //Memory load
 #define MEM_LD 		0x00
 //Memory store
 #define MEM_SD		0x01
-//MEMORY get stack ptr
-#define MEM_GET_SP	0x02
-//Memory set stack ptr
-#define MEM_SET_SP	0x03
+//MEMORY get stack ptr, set stack ptr
+#define MEM_SP	0x02
 //Memory Push
 #define MEM_PUSH	0x04
 //Memory pop
 #define MEM_POP		0x05
-//memory get stack frame ptr
-#define MEM_GET_SFP	0x06
-//memory set stack frame ptr
-#define MEM_SET_SFP	0x07
+//memory get stack frame ptr, get stack frame
+#define MEM_SFP	0x06
 
 
 //branch equal
@@ -128,33 +137,27 @@
 //return from function
 #define JP_RET		0x07
 
-//relative jmps
-#define JP_REL_BEQ 	0x08
-#define JP_REL_BNE 	0x09
-#define JP_REL_JMP 	0x0a
-#define JP_REL_BLT	0x0b
-#define JP_REL_BLE	0x0c
+
 
 
 //SYS
 
 //get timer
-#define SYS_GET_TIME 			0x01
+#define SYS_TIME 			0x01
 //get retired
-#define SYS_GET_RETIRED 		0x02
-//set fault jump
-#define SYS_SET_JUMP			0x03
+#define SYS_RETIRED 		0x02
+//set, get fault jump
+#define SYS_JUMP			0x03
 //sys get mode
-#define SYS_GET_MODE			0x04
+#define SYS_MODE			0x04
 
 
 
 
 //function table
 //user or kernal mode
-#define SYS_SET_FUNC_TABLE_PTR	0x05
+#define SYS_FUNC_TABLE_PTR	0x05
 //gets the function table
-#define SYS_GET_FUNC_TABLE_PTR 	0x07
 
 
 
@@ -177,20 +180,13 @@
 #define SYS_BREAK				0x0f
 
 //frame description table ptr
-#define SYS_SET_FDT_PTR			0x10
+#define SYS_CDT_PTR			0x10
 //frame description table len
-#define SYS_SET_FDT_LEN			0x11
-
-//get frame description ptr
-#define SYS_GET_FDT_PTR			0x12
-//get frame description len
-#define SYS_GET_FDT_LEN			0x13
 
 //permisions TODO
 //set permisions
-#define SYS_SET_PERMS			0x14
+#define SYS_PERMS			0x14
 //get permisions
-#define SYS_GET_PERMS			0x15
 
 //furhter shit needed
 //system set code description ptr
@@ -205,7 +201,7 @@
 #define SYS_PRESS_USER			0x1a
 
 //system interupt usermode timer
-#define SYS_SET_INTERUPT_TIMER 	0x1b
+#define SYS_INTERUPT_TIMER 	0x1b
 
 
 //these are the realloc ptr's that set dest address as hashes resolved by the vpu
@@ -245,6 +241,7 @@
 *			MACRO_MEMSET
 *			MACRO_MEMMOV
 *			MACRO_MEMCHR
+			MACRO_MEMCLR
 *			MACRO_BSEARCH_GT
 *			MACRO_BSEARCH_GE
 *
