@@ -20,23 +20,23 @@ inst_t decode_inst(int32_t instr)
 	inst_t in = {0};
 	in.path = (instr >> 28) & 0xF;
 	in.subpath = (instr >> 21) & 0x7F;
-	in.rd = (instr >> 16) & 0x1F;
-	in.rs1 = (instr >> 11) & 0x1F;
-	in.rs2 = (instr >> 6) & 0x1F;
-	in.aux = (instr >> 2) & 0xf;
-	in.immflag = instr & 0x3;
+	in.rd = (instr >> 15) & 0x33F;
+	in.rs1 = (instr >> 9) & 0x3F;
+	in.rs2 = (instr >> 3) & 0x3F;
+	in.aux = (instr >> 1) & 0x03;
+	in.immflag = instr & 0x1;
 	return in;
 }
 
 uint32_t encode_inst(inst_t *inst)
 {
 
-	return ((inst->path << 28) | (inst->subpath << 21) | (inst->rd << 16) | (inst->rs1 << 11) | (inst->rs2 << 6) | (inst->aux << 2) | inst->immflag);
+	return ((inst->path << 28) | (inst->subpath << 21) | (inst->rd << 15) | (inst->rs1 << 9) | (inst->rs2 << 3) | (inst->aux << 1) | inst->immflag);
 }
 
 uint64_t encode(uint64_t path, uint64_t subpath, uint64_t rd, uint64_t rs1, uint64_t rs2, uint64_t aux, uint64_t immf)
 {
-	uint64_t inst = ( (path & 0xF) << 28) | ((subpath &0x7f) << 21) | ((rd &0x1f) << 16) | ((rs1 &0x1f) << 11) | ((rs2 &0x1f) << 6) | ((aux & 0xf) << 2) | (immf);
+	uint64_t inst = ( (path & 0xF) << 28) | ((subpath &0x7f) << 21) | ((rd &0x1f) << 16) | ((rs1 &0x1f) << 11) | ((rs2 &0x1f) << 6) | ((aux & 0x1f) << 1) | (immf);
 	print_bin(inst, 32, 1);
 	return inst;
 }
@@ -355,7 +355,39 @@ int get_register(char *keyword)
 		"x28", "s4",
 		"x29", "sys",
 		"x30", "aux0",
-		"x31", "aux1"
+		"x31", "aux1",
+		"x32",
+		"x33",
+		"x34",
+		"x35",
+		"x36",
+		"x37",
+		"x38",
+		"x39",
+		"x40",
+		"x41",
+		"x42",
+		"x43",
+		"x44",
+		"x45",
+		"x46",
+		"x47",
+		"x48",
+		"x49",
+		"x50",
+		"x51",
+		"x52",
+		"x53",
+		"x54",
+		"x55",
+		"x56",
+		"x57",
+		"x58",
+		"x59",
+		"x60",
+		"x61",
+		"x62",
+		"x63",
 	};
 
 	int regvalue[] = {
@@ -390,7 +422,39 @@ int get_register(char *keyword)
 		28, 28,
 		29, 29,
 		30, 30,
-		31, 31
+		31, 31,
+		32,
+		33,
+		34,
+		35,
+		36,
+		37,
+		38,
+		39,
+		40,
+		41,
+		42,
+		43,
+		44,
+		45,
+		46,
+		47,
+		48,
+		49,
+		50,
+		51,
+		52,
+		53,
+		54,
+		55,
+		56,
+		57,
+		58,
+		59,
+		60,
+		61,
+		62,
+		63
 	};
 
 	int code = determine_code(keyword, reg_mnemonics, ARYSIZE(reg_mnemonics));
@@ -454,6 +518,7 @@ int get_alu_subpath(char *keyword)
 	const char *const alu_mnemonics[] = {
 		"add",
 		"sub",
+		"subu",
 		"and",
 		"or",
 		"xor",
@@ -478,6 +543,7 @@ int get_alu_subpath(char *keyword)
 	const int opvalue[] = {
 		ALU_ADD,
 		ALU_SUB,
+		ALU_SUBU,
 		ALU_AND,
 		ALU_OR,
 		ALU_XOR,
@@ -562,6 +628,8 @@ int get_jmp_subpath(char *keyword)
 		"ble",
 		"call",
 		"ret",
+		"bleu",
+		"bltu",
 	};
 
 	const int opvalue[] = {
@@ -571,7 +639,9 @@ int get_jmp_subpath(char *keyword)
 		JP_BEQ,
 		JP_BLE,
 		JP_CALL,
-		JP_RET
+		JP_RET,
+		JP_BLEU,
+		JP_BLTU,
 	};
 
 	int code = determine_code(keyword, jmp_mnemonics, ARYSIZE(jmp_mnemonics));

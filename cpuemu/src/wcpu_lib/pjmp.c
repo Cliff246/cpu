@@ -199,7 +199,7 @@ void jump_return(cpu_t *cpu)
 }
 
 
-void jump_submit(cpu_t *cpu, uint64_t subpath, uint64_t rd, uint64_t rs1, uint64_t rs2, uint64_t imm, char immf)
+void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t rd, int64_t rs1, int64_t rs2, int64_t imm, char immf)
 {
 	switch(subpath)
 	{
@@ -233,6 +233,19 @@ void jump_submit(cpu_t *cpu, uint64_t subpath, uint64_t rd, uint64_t rs1, uint64
 		case JP_RET:
 			{
 				jump_return(cpu);
+			}
+			break;
+		case JP_BLEU:
+			if((uint64_t)rs1 <= (uint64_t)rs2)
+			{
+				jump_to(cpu, imm);
+			}
+			break;
+
+		case JP_BLTU:
+			if((uint64_t)rs1 < (uint64_t)rs2)
+			{
+				jump_to(cpu, imm);	
 			}
 			break;
 		default:

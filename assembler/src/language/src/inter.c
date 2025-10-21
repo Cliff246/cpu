@@ -11,7 +11,7 @@ void entry_instruction(ientry_t *entry)
 	entry->entry.inst = inst;
 	entry->type = IE_INST;
 
-	//print_inst(&entry->entry.inst);
+	print_inst(&entry->entry.inst);
 
 }
 

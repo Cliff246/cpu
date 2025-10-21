@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 
 void print_bin(long bin, char len, bool newline)
@@ -47,17 +48,40 @@ void print_str_hex(char *str, bool newline)
 void reverse(char *ary)
 {
     size_t len = strlen(ary);
-    char tstr[len + 1];
-    memset(tstr, 0, len + 1);
-    strcpy(tstr, ary);
-    int initial = 0, end = len - 1;
-    for (int i = initial; i < end; i++)
+    int end = len;
+    for (int i = 0; i < len / 2; i++, end--)
     {
-        char temp = tstr[i];
-        tstr[i] = tstr[end];
-        tstr[end] = temp;
-        end--;
+        char temp = ary[i];
+        ary[i] = ary[end];
+        ary[end] = temp;
     }
-    strcpy(ary, tstr);
-
 }
+
+
+
+char *to_string(char ch)
+{
+	char *str = calloc(2, sizeof(char));
+	if(!str)
+		return NULL;
+	str[0] = ch;
+	str[1] = 0;
+	return str;
+}
+
+
+void *realloc_safe(void *ptr, size_t count, size_t size)
+{
+	
+	void *temp = realloc(ptr, size * count);
+	if(!temp )
+	{
+		fprintf(stderr, "realloc failed\n");
+		return ptr;	
+	}
+	else
+	{
+		return temp;
+	}
+}
+

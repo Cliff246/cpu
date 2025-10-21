@@ -24,8 +24,8 @@
 
 
 //instruction convention is always
-//4			7		5		5		5	 3		2
-//[31:28] [27:21] [20:16] [15:11] [10:6] [5:2] [1:0]
+//4			7		6		6		6	 3		2
+//[31:28] [27:21] [20:15] [14:9] [8:3] [2:1] [0]
 //path    subpath  rd      rs1     rs2   aux    immf
 
 #define STR(x) #x
@@ -61,25 +61,29 @@
 //rd = rs1 + rs2 + imm
 #define ALU_ADD 	0x00
 //rd = rs1 - rs2 - imm
+//signed alu add
 #define ALU_SUB 	0x01
+//rd = 
+#define ALU_SUBU 	0x02
+
 //rd = rs1 & (immflag)? rs2 : imm
-#define ALU_AND		0x02
+#define ALU_AND		0x03
 //rd = rs1 | (immflag)? rs2 : imm
-#define ALU_OR		0x03
+#define ALU_OR		0x04
 //rd = rs1 ^ (immflag)? rs2 : imm
-#define ALU_XOR 	0x04
+#define ALU_XOR 	0x05
 //shift left logical
-#define ALU_SLL 	0x05
+#define ALU_SLL 	0x06
 //shift right logical
-#define ALU_SRL		0x06
+#define ALU_SRL		0x07
 //shift right arithmetic
-#define ALU_SRA 	0x07
+#define ALU_SRA 	0x08
 //divide signed
-#define ALU_DIV 	0x08
+#define ALU_DIV 	0x09
 //multiply signed low
-#define ALU_MUL 	0x09
+#define ALU_MUL 	0x0a
 //remainder
-#define ALU_REM 	0x0a
+#define ALU_REM 	0x0b
 //multiply unsigned
 #define ALU_MULHI	0x0c
 //multiply unsigned
@@ -130,14 +134,20 @@
 //jmp branch less than equal
 #define JP_BLE		0x05
 
+
+
+
 //CALLS
+//
+
 //call function
 //
 #define JP_CALL		0x06
 //return from function
 #define JP_RET		0x07
 
-
+#define JP_BLTU		0x08
+#define JP_BLEU		0x09
 
 
 //SYS

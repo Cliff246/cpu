@@ -2,9 +2,11 @@
 #include "cpumemory.h"
 #include "flags.h"
 
+#include "common.h"
 #include "stdio.h"
 #include <stdlib.h>
-
+#include "cli.h"
+#include "token.h"
 
 
 
@@ -58,7 +60,14 @@ void load_file(const char *file_name)
 
 int main(int argc, char *argv[])
 {
+	cli_context_t *ctx = create_cli_context();
 
+	//while(true)
+	{
+	//	pull_line(ctx);
+	}
+
+	//return 0; 
 	if(argc == 1)
 	{
 		printf("not enough arguments\n");

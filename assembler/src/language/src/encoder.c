@@ -3,6 +3,7 @@
 #include "string.h"
 #include "commons.h"
 #include "eerror.h"
+#include "errno.h"
 
 
 uint64_t text_resolve(iscope_t *txt)

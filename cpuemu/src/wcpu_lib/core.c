@@ -247,8 +247,8 @@ void fetch_cpu(void)
 	// printf("pc: %llu ipc: %llu\n", pc, ipc);
 
 #endif
-	CCPU(curins) = MEMLD(pc);
-	CCPU(curimm) = MEMLD(ipc);
+	CCPU(curins) = (int32_t)MEMLD(pc);
+	CCPU(curimm) = (int64_t)MEMLD(ipc);
 
 	CCPU(has_jumped) = false;
 }
@@ -306,7 +306,8 @@ void writeback_cpu(void)
 
 int64_t get_reg(int reg)
 {
-	if (reg >= 32 || reg <= 0)
+	printf("get reg %d\n", reg);
+	if (reg >= 64 || reg <= 0)
 	{
 		return 0;
 	}
@@ -323,7 +324,8 @@ int64_t get_reg(int reg)
 
 void set_reg(int reg, int64_t content)
 {
-	if (reg >= 32 || reg <= 0)
+	printf("set reg %d %d\n", reg, content);
+	if (reg >= 64 || reg <= 0)
 	{
 		return;
 	}
@@ -345,23 +347,23 @@ inst_t decode_inst(int32_t instr)
 	inst_t in;
 	in.path = (instr >> 28) & 0xF;
 	in.subpath = (instr >> 21) & 0x7F;
-	in.rd = (instr >> 16) & 0x1F;
-	in.rs1 = (instr >> 11) & 0x1F;
-	in.rs2 = (instr >> 6) & 0x1F;
-	in.aux = (instr >> 2) & 0xF;
-	in.immflag = instr & 0x3;
+	in.rd = (instr >> 15) & 0x3F;
+	in.rs1 = (instr >> 9) & 0x3F;
+	in.rs2 = (instr >> 3) & 0x3F;
+	in.aux = (instr >> 1) & 0x03;
+	in.immflag = instr & 0x1;
 	return in;
 }
 
 int32_t encode_inst(inst_t *inst)
 {
 
-	return ((inst->path << 28) | (inst->subpath << 21) | (inst->rd << 16) | (inst->rs1 << 11) | (inst->rs2 << 6) | (inst->aux << 2) | inst->immflag);
+	return ((inst->path << 28) | (inst->subpath << 21) | (inst->rd << 15) | (inst->rs1 << 9) | (inst->rs2 << 3) | (inst->aux << 1) | inst->immflag);
 }
 
 uint64_t encode(uint64_t path, uint64_t subpath, uint64_t rd, uint64_t rs1, uint64_t rs2, uint64_t aux, uint64_t immf)
 {
-	uint64_t inst = ((path & 0xF) << 28) | ((subpath & 0x7F) << 21) | ((rd & 0x1f) << 16) | ((rs1 & 0x1f) << 11) | ((rs2 & 0x1f) << 6) | ((aux & 0xf) << 2) | (immf);
+	uint64_t inst = ((path & 0xF) << 28) | ((subpath & 0x7F) << 21) | ((rd & 0x3f) << 15) | ((rs1 & 0x3f) << 9) | ((rs2 & 0x3f) << 3) | ((aux & 0xf) << 1) | (immf);
 	// print_bin(inst, 32, 1);
 	return inst;
 }
@@ -404,8 +406,8 @@ void print_cpu_state(cpu_t *cpu)
 
 void print_regs(void)
 {
-	for (int i = 0; i < 32; ++i)
+	for (int i = 0; i < 64; ++i)
 	{
-		printf("reg:%d = %d\n", i, get_reg(i));
+		printf("reg:%d = %lld\n", i, get_reg(i));
 	}
 }

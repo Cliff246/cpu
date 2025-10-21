@@ -47,6 +47,11 @@ INST(SUB)
 	//rd = rs1 - rs2 - imm
 	TRI(-);
 }
+INST(SUBU)
+{
+	DEST = (uint64_t)RS1 - (uint64_t)RS2 - (uint64_t)IMM;
+	DONE;
+}
 
 INST(AND)
 {
@@ -81,7 +86,7 @@ INST(SRA)
 INST(DIV)
 {
 	printf("divide\n");
-	uint64_t divident = FLAG(IMM, RS2);
+	int64_t divident = FLAG(IMM, RS2);
 	printf("divide %d %d %d\n", RS1, divident, RS1 / divident);
 
 	if(divident == 0)
@@ -200,6 +205,7 @@ void set_alu_instructions(void)
 {
 	SET(ADD);
 	SET(SUB);
+	SET(SUBU);
 	SET(AND);
 	SET(OR);
 	SET(XOR);

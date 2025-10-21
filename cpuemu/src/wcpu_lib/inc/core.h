@@ -91,9 +91,9 @@ typedef struct
 
 
 	//general regs
-	int64_t regs[32];
+	int64_t regs[64];
 
-	int64_t kregs[32];
+	int64_t kregs[64];
 
 	//instruction pc and imm_pc
 	//kernal stack pointer and stack frame
