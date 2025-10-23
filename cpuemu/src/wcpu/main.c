@@ -10,6 +10,7 @@
 
 
 
+
 void fill_binary(uint64_t *bin, size_t length)
 {
 
@@ -67,7 +68,7 @@ int main(int argc, char *argv[])
 	//	pull_line(ctx);
 	}
 
-	//return 0; 
+	//return 0;
 	if(argc == 1)
 	{
 		printf("not enough arguments\n");

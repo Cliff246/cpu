@@ -2,6 +2,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "commons.h"
+#include "eerror.h"
 
 
 void print_depth(parse_node_t *node, int depth)
@@ -52,6 +53,21 @@ void free_parse_node(parse_node_t *ptr)
 
 }
 
+
+static tok_t *lookahead(parser_ctx_t *ctx)
+{
+	if(ctx->pos >= ctx->lex_ctx->count)
+	{
+		return NULL;
+	}
+	else
+	{
+
+		tok_t *tok = &ctx->lex_ctx->toks[ctx->pos + 1];
+		//printf("%s peek\n", tok->lexeme);
+		return tok;
+	}
+}
 
 static tok_t *peek(parser_ctx_t *ctx)
 {
@@ -228,11 +244,13 @@ parser_ctx_t *create_context(lexer_ctx_t *ctx)
 
 parse_node_t *parse_reference(parser_ctx_t *p)
 {
-
+	tok_t *current = peek(p);
 	tok_t *reference = expect(p, TOK_REFERENCE);
 	if(!(reference))
 	{
 		//TODO emit expected token error
+		LOG("parsed reference failed");
+		exit(1);
 		//emit error and recover
 	}
     parse_node_t *n = make_node(NODE_REFERENCE, reference);
@@ -241,6 +259,8 @@ parse_node_t *parse_reference(parser_ctx_t *p)
 	tok_t *colon = expect(p, TOK_COLON);
 	if(!colon)
 	{
+		LOG("expected colon\n");
+		exit(1);
 		//TODO
 		//this should be a colon if not that's bad
 	}
@@ -306,7 +326,12 @@ parse_node_t *parse_metaop(parser_ctx_t *p)
 parse_node_t *parse_internal(parser_ctx_t *p)
 {
 	parse_node_t *child;
-	tok_t *nexttok = &p->lex_ctx->toks[p->pos + 1];
+	tok_t *nexttok = lookahead(p);
+	if(nexttok == NULL)
+	{
+
+		return NULL;
+	}
 	switch(nexttok->type)
 	{
 		case TOK_DOT:
@@ -342,7 +367,7 @@ parse_node_t *parse_program(parser_ctx_t *p)
         parse_node_t *child = NULL;
 		//printf("current directive %p\n", seg_root);
 		//printf("current label %p\n", ref_root);
-		//printf("%s %d\n", t->lexeme, t->type);
+		printf("%s %d\n", t->lexeme, t->type);
 
 		if(t->type == TOK_NEWLINE)
 		{
@@ -396,13 +421,19 @@ parse_node_t *parse_program(parser_ctx_t *p)
 
 
 			if(p->pos + 1 >= p->lex_ctx->count) break;
-			tok_t *nexttok = &p->lex_ctx->toks[p->pos + 1];
+			tok_t *nexttok = lookahead(p);
 			//printf("%s %d\n", nexttok->lexeme, nexttok->type);
 			if(nexttok->type == TOK_TOKEN)
 			{
 				next(p);
 
 				child = parse_internal(p);
+				if(child == NULL)
+				{
+					newline = false;
+					continue;
+				}
+
 				add_child(ref_root, child);
 
 			}

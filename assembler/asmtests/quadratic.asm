@@ -23,7 +23,7 @@ SQRT:
 	;epsion
 	alu.add g0, zero, zero, 10
 
-INNER_SQRT:
+INNER_SQRT
 	;we need to do k' = (k + (y/k))/2
 	;diff = x - y
 	alu.sub t2, t0, t1

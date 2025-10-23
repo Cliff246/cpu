@@ -134,6 +134,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 	{
 		ch = GETCHAR;
 		++index;
+		printf("%c\n", ch);
 		if(ch == 0)
 		{
 			break;
@@ -318,7 +319,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 
 	for(int i = 0; i < ctx->count; ++i)
 	{
-		//print_token(&ctx->toks[i]);
+		print_token(&ctx->toks[i]);
 	}
 	return ctx;
 }

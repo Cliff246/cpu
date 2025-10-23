@@ -63,7 +63,7 @@
 //rd = rs1 - rs2 - imm
 //signed alu add
 #define ALU_SUB 	0x01
-//rd = 
+//rd =
 #define ALU_SUBU 	0x02
 
 //rd = rs1 & (immflag)? rs2 : imm
@@ -258,7 +258,7 @@
 *
 *	2:SEC/CRYPT
 *		Security/Cyptography path
-*
+*we
 *		may include:
 *			SEC_RAND
 *			SEC_SRAND

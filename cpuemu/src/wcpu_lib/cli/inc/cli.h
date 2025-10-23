@@ -4,12 +4,12 @@
 #include <stdlib.h>
 #include "token.h"
 #include "cmdsys.h"
-
+#include "cliparser.h"
 
 
 typedef struct cli_context
 {
-	
+
 	cmdline_t *lines;
 	size_t count;
 }cli_context_t;

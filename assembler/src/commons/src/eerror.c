@@ -128,3 +128,7 @@ char *get_errstr(int code)
 	}
 }
 
+void print_log(char *log, size_t line, char *filename)
+{
+	fprintf(stderr, "%s at %s:%d\n", log, filename, line);
+ }

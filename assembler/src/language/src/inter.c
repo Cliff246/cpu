@@ -175,18 +175,23 @@ icontext_t *load_context(const char *path)
 	static int fileid = 0;
 	fileid++;
 	file_desc_t *desc = get_fdesc(path);
-
+	if(!desc)
+	{
+		fprintf(stderr,"could not laod %s", path);
+		exit(1);
+	}
 	ctx->desc = desc;
 
 	ctx->l_ctx = create_token_stream(desc->src, fileid);
 
-
+	printf("finished lexer\n");
 
 
 
 	ctx->p_ctx = create_context(ctx->l_ctx);
+	printf("created parser\n");
 	ctx->head = parse_program(ctx->p_ctx);
-
+	printf("done parser\n");
 
 	ctx->scopes_count = ctx->head->child_count;
 	ctx->scopes = CALLOC(ctx->scopes_count, iscope_t);

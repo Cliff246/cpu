@@ -65,7 +65,7 @@ uint64_t closest_rel(cpu_t *cpu, uint64_t ct_addr, uint64_t ct_len, uint64_t rel
 
 //does binary search on table and adds to cache if missing
 
-uint64_t find_immedate_from_rel_table(cpu_t *cpu, uint64_t address)
+uint64_t find_immediate_from_rel_table(cpu_t *cpu, uint64_t address)
 {
 	uint64_t ct_address = 0;
 	uint64_t ct_len = 0;
@@ -99,6 +99,7 @@ uint64_t find_immedate_from_rel_table(cpu_t *cpu, uint64_t address)
 	if(ct_len < 1)
 	{
 		closest = 0;
+
 	}
 	else
 	{
@@ -141,7 +142,7 @@ void call_to_outside(cpu_t *cpu, uint64_t rel_addr, uint64_t cd_addr)
 
 	set_frame(cpu->mode, current_frame);
 
-  	uint64_t imm = find_immedate_from_rel_table(cpu, rel_addr);
+  	uint64_t imm = find_immediate_from_rel_table(cpu, rel_addr);
     set_pc(rel_addr);
     set_ipc(imm);
 }
@@ -157,7 +158,7 @@ void ret_from_outside(cpu_t *cpu)
 
 void jump_to(cpu_t *cpu, uint64_t address)
 {
-	uint64_t imm = find_immedate_from_rel_table(cpu, address);
+	uint64_t imm = find_immediate_from_rel_table(cpu, address);
 
 	printf("\njumpto pc=%d ipc=%d\n\n", address, imm );
 	//jump to
@@ -171,7 +172,7 @@ void jump_to(cpu_t *cpu, uint64_t address)
 void jump_call(cpu_t *cpu, uint64_t target, char immf)
 {
 	store(get_sp(), get_pc() + 1);
-	store(inc_sp(1), get_ipc() + (immf)? 1: 0) ;
+	store(inc_sp(1), get_ipc() + ((immf)? 1: 0)) ;
 	store(inc_sp(1), get_sfp());
 	inc_sp(1);
 	memory_print(components.mem, 1000, 1010);
@@ -204,6 +205,7 @@ void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t rd, int64_t rs1, int64_t 
 	switch(subpath)
 	{
 		case JP_JMP:
+			//TODO revalute how this will be done
 			jump_to(cpu, rs1 + rs2 + imm);
 			break;
 		case JP_BEQ:
@@ -220,13 +222,23 @@ void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t rd, int64_t rs1, int64_t 
 			}
 			break;
 		case JP_BLT:
-			if(rs1 < rs2)
+			if((int64_t)rs1 < (int64_t)rs2)
 			{
 				jump_to(cpu, imm);
 			}
 			break;
+		case JP_BLE:
+			if((int64_t)rs1 <= (int64_t)rs2)
+			{
+				jump_to(cpu, imm);
+
+			}
+			break;
+
 		case JP_CALL:
 			{
+
+				//TODO revaluate if rs1 + rs2 + imm should be done
 				jump_call(cpu, rs1 + rs2 + imm, immf);
 			}
 			break;
@@ -245,9 +257,10 @@ void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t rd, int64_t rs1, int64_t 
 		case JP_BLTU:
 			if((uint64_t)rs1 < (uint64_t)rs2)
 			{
-				jump_to(cpu, imm);	
+				jump_to(cpu, imm);
 			}
 			break;
+
 		default:
 			break;
 

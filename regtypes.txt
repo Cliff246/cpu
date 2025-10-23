@@ -1,0 +1,71 @@
+# Register Reference Table
+# ------------------------
+# Index | Primary | Alias | Description
+# --------------------------------------
+
+ 00 | x0   | zero,  null | Constant zero / register
+ 01 | x1   | a0   | Argument 0 / return value
+ 02 | x2   | a1   | Argument 1
+ 03 | x3   | a2   | Argument 2
+ 04 | x4   | a3   | Argument 3
+ 05 | x5   | t0   | Temporary 0
+ 06 | x6   | t1   | Temporary 1
+ 07 | x7   | t2   | Temporary 2
+ 08 | x8   | t3   | Temporary 3
+ 09 | x9   | t4   | Temporary 4
+ 10 | x10  | t5   | Temporary 5
+ 11 | x11  | t6   | Temporary 6
+ 12 | x12  | t7   | Temporary 7
+ 13 | x13  | t8   | Temporary 8
+ 14 | x14  | t9   | Temporary 9
+ 15 | x15  | t10  | Temporary 10
+ 16 | x16  | g0   | Global 0
+ 17 | x17  | g1   | Global 1
+ 18 | x18  | g2   | Global 2
+ 19 | x19  | g3   | Global 3
+ 20 | x20  | g4   | Global 4
+ 21 | x21  | g5   | Global 5
+ 22 | x22  | g6   | Global 6
+ 23 | x23  | g7   | Global 7
+ 24 | x24  | s0   | Saved 0
+ 25 | x25  | s1   | Saved 1
+ 26 | x26  | s2   | Saved 2
+ 27 | x27  | s3   | Saved 3
+ 28 | x28  | s4   | Saved 4
+ 29 | x29  | sys  | System register
+ 30 | x30  | aux0 | Auxiliary 0
+ 31 | x31  | aux1 | Auxiliary 1
+
+# Extended / Unassigned
+ 32 | x32  | —
+ 33 | x33  | —
+ 34 | x34  | —
+ 35 | x35  | —
+ 36 | x36  | —
+ 37 | x37  | —
+ 38 | x38  | —
+ 39 | x39  | —
+ 40 | x40  | —
+ 41 | x41  | —
+ 42 | x42  | —
+ 43 | x43  | —
+ 44 | x44  | —
+ 45 | x45  | —
+ 46 | x46  | —
+ 47 | x47  | —
+ 48 | x48  | —
+ 49 | x49  | —
+ 50 | x50  | —
+ 51 | x51  | —
+ 52 | x52  | —
+ 53 | x53  | —
+ 54 | x54  | —
+ 55 | x55  | —
+ 56 | x56  | —
+ 57 | x57  | —
+ 58 | x58  | —
+ 59 | x59  | —
+ 60 | x60  | —
+ 61 | x61  | —
+ 62 | x62  | —
+ 63 | x63  | —

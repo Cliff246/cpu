@@ -306,7 +306,7 @@ void writeback_cpu(void)
 
 int64_t get_reg(int reg)
 {
-	printf("get reg %d\n", reg);
+	//printf("get reg %d\n", reg);
 	if (reg >= 64 || reg <= 0)
 	{
 		return 0;
@@ -324,7 +324,7 @@ int64_t get_reg(int reg)
 
 void set_reg(int reg, int64_t content)
 {
-	printf("set reg %d %d\n", reg, content);
+	//printf("set reg %d %d\n", reg, content);
 	if (reg >= 64 || reg <= 0)
 	{
 		return;

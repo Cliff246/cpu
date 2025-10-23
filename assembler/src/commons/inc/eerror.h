@@ -42,4 +42,9 @@ void inline_error(int code, const char *error, const char *filename, size_t line
 char *get_errstr(int code);
 
 #define ERR(code, log) inline_error(code, log, __FILE__, __LINE__)
+
+void print_log(char *log, size_t line, char *filename);
+
+#define LOG(log) print_log(log, __LINE__, __FILE__);
+
 #endif
