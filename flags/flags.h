@@ -24,9 +24,14 @@
 
 
 //instruction convention is always
-//4			7		6		6		6	 3		2
-//[31:28] [27:21] [20:15] [14:9] [8:3] [2:1] [0]
-//path    subpath  rd      rs1     rs2   aux    immf
+//4			7		6		6		  6	     1	         1              1
+//[31:28] [27:21] [20:15] [14:9]   [8:3]    [2]        [1]   		   [0]
+//path    subpath  rd      rs1     rs2    selflag  reallocflag        immf
+
+
+//realloc has the associated immediate turn into a key thats reallocable. so you can do dynamic code with constants
+//selflag turns rs2 into a number... as in, dont load rs2 convert it into a 6 bit number
+
 
 #define STR(x) #x
 
@@ -41,11 +46,6 @@
 #define IMMF_FULL		3
 
 
-//AUX FLAGS
-//
-#define AUX_ZERO		0
-#define AUX_RELATIVE	1
-#define AUX_
 
 //ALL internal operations that are get and set are done via rd and rs1.
 
@@ -104,6 +104,8 @@
 //compare not equals
 #define ALU_CNE		0x14
 
+
+//get rd from rs2
 
 
 

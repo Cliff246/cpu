@@ -109,13 +109,14 @@ uint64_t find_immediate_from_rel_table(cpu_t *cpu, uint64_t address)
 	uint64_t inst_addr = (address / CODE_DESC_STRIDE);
 	uint64_t imm_addr = load(closest + ct_address);
 	printf("%d address\n", address);
-	for(int i = 0; i < CODE_DESC_STRIDE && inst_addr < get_pc_len(); ++i)
+	for(int i = 0; i < CODE_DESC_STRIDE; ++i)
 	{
-		uint32_t instruction = load(inst_addr + get_pc_offset());
-		printf("iaddr: %d instruction: %d\n", inst_addr, instruction);
+		uint32_t instruction = get_inst_at_pc_address(inst_addr);
+
+		printf("iaddr: %ld instruction: %x\n", inst_addr, instruction);
 		if(address == inst_addr)
 			break;
-		if ((instruction & 0x3) > 0)
+		if ((instruction & 0x1) > 0)
 		{
 			imm_addr++;
 		}
@@ -159,6 +160,7 @@ void ret_from_outside(cpu_t *cpu)
 void jump_to(cpu_t *cpu, uint64_t address)
 {
 	uint64_t imm = find_immediate_from_rel_table(cpu, address);
+	//print_regs();
 
 	printf("\njumpto pc=%d ipc=%d\n\n", address, imm );
 	//jump to
@@ -178,7 +180,6 @@ void jump_call(cpu_t *cpu, uint64_t target, char immf)
 	memory_print(components.mem, 1000, 1010);
 	set_sfp(get_sp());
 
-	print_regs();
 
 	jump_to(cpu, target);
 
@@ -202,6 +203,8 @@ void jump_return(cpu_t *cpu)
 
 void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t rd, int64_t rs1, int64_t rs2, int64_t imm, char immf)
 {
+	//print_regs();
+
 	switch(subpath)
 	{
 		case JP_JMP:

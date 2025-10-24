@@ -23,14 +23,27 @@ uint64_t text_resolve(iscope_t *txt)
 			instructions++;
 
 		}
+		else if(entry->type == IE_MOP)
+		{
+			if(entry->entry.mop.type == MOP_TYPE_DEFINE_CONFIG)
+			{
+				//do shit with config
+			}
+			else
+			{
+				//error out
+			}
+		}
 
 
 	}
-	uint64_t size = instructions + immedates;
+	uint64_t actual_instructions = (instructions / 2) + (instructions % 2);
+	uint64_t size = actual_instructions + immedates;
+
 	uint64_t excess = (instructions / 128) + 1;
 	const uint64_t table = 6;
 
-	//printf("immedates %d instructions %d\n", immedates, instructions);
+	printf("sze %d instructions %d\n", size, excess);
 
 	return size + excess + table;
 
@@ -53,7 +66,16 @@ uint64_t data_resolve(iscope_t *data)
 
 		if(entry->type == IE_MOP)
 		{
-			size += entry->entry.mop.holder.words_len;
+			mop_t *mop = &entry->entry.mop;
+			if(mop->type == MOP_TYPE_DEFINE_DATA)
+			{
+				size += mop->holder.data.words_len;
+
+			}
+			else
+			{
+				//Not allowed
+			}
 		}
 		else
 		{
@@ -83,7 +105,7 @@ segout_txt_t create_segout_txt(icontext_t *ctx, iscope_t *scope, style_t *style)
 
 	size_t imm_iter = 0;
 	size_t table_iter = 0;
-
+	bool failed = false;
 
 	for(int i = 0; i < inst_len; ++i)
 	{
@@ -101,8 +123,8 @@ segout_txt_t create_segout_txt(icontext_t *ctx, iscope_t *scope, style_t *style)
 			exit(1);
 		}
 		inst_t *instruction = &entry->entry.inst;
-		printf("content %s\n", entry->node->tok->lexeme);
-		print_inst(instruction);
+		//printf("content %s\n", entry->node->tok->lexeme);
+		//print_inst(instruction);
 
 		if(instruction->immflag )
 		{
@@ -113,10 +135,20 @@ segout_txt_t create_segout_txt(icontext_t *ctx, iscope_t *scope, style_t *style)
 				iref_t *ref = (iref_t *)getdata_from_hash_table(ctx->ref_table, instruction->immref);
 				if(!ref)
 				{
-					print_hash_table(ctx->ref_table);
 
-					perror("ref not found\n");
-					exit(1);
+					errelm_line_t line = {.column = entry->node->tok->locale.col, .line = entry->node->tok->locale.row};
+					errelm_file_t file = {.name = get_path_from_identifier(entry->node->tok->locale.file)};
+					char buffer[1025] = {0};
+					sprintf(buffer, "could not fine %s in reference table", instruction->immref);
+
+					errelm_t elmline = errelm_create_line_element(line);
+					errelm_t elmfile =  errelm_create_file_element(file);
+					//printf("emit stage\n");
+					emit_error(KEY_ERROR, buffer, 2, elmfile, elmline);
+					//printf("emit stage2\n");
+
+					failed = true;
+					continue;
 				}
 				if(instruction->ref_type == INST_REF_GLOBAL)
 				{
@@ -156,13 +188,22 @@ segout_txt_t create_segout_txt(icontext_t *ctx, iscope_t *scope, style_t *style)
 	}
  	size_t base = style->regions[scope->segment->segment_id].position;
 
+
+	if(failed == true)
+	{
+		print_errors();
+		exit(1);
+	}
+
+	size_t compacted = (inst_len / 2) + (inst_len % 2);
+
 	txt.desc[0] = 6 + base;
 	txt.desc[1] = table_size;
 
 	const size_t inst_offset = 6 + base + table_size;
 	txt.desc[2] = inst_offset;
-	txt.desc[3] = inst_len;
-	const size_t imm_offset = inst_offset + inst_len;
+	txt.desc[3] = compacted;
+	const size_t imm_offset = inst_offset + compacted;
 	txt.desc[4] = imm_offset;
 	txt.desc[5] = imm_iter;
 
@@ -193,12 +234,17 @@ segout_data_t create_segout_data(icontext_t *ctx, iscope_t *scope, style_t *styl
 		}
 
 		mop_t *mop = &entry->entry.mop;
-
-		for(int wi = 0; wi < mop->holder.words_len; ++wi)
+		if(mop->type == MOP_TYPE_DEFINE_DATA)
 		{
-			content[iter++] = mop->holder.words[wi];
+			data_holder_t holder = mop->holder.data;
+			for(int wi = 0; wi < holder.words_len; ++wi)
+			{
+				printf("%16x holder words\n",holder.words[wi]);
+				content[iter++] = holder.words[wi];
 
+			}
 		}
+
 
 	}
 	data.data = content;
@@ -206,6 +252,8 @@ segout_data_t create_segout_data(icontext_t *ctx, iscope_t *scope, style_t *styl
 
 	return data;
 }
+
+
 
 segout_t create_segout(icontext_t *ctx, int segindex, style_t *style)
 {
@@ -221,6 +269,9 @@ segout_t create_segout(icontext_t *ctx, int segindex, style_t *style)
 		case ISEG_DATA:
 			out.output.data = create_segout_data(ctx, scope, style);
 			break;
+
+
+
 
 		default:
 
@@ -271,10 +322,27 @@ output_t *combine_segouts(segout_t *segouts, int length)
 				bin[bin_iter++] = txt->table[i_table];
 			}
 
-			for(int i_inst = 0; i_inst < txt->inst_len; ++i_inst)
+			for(int i_inst = 0; i_inst < txt->inst_len; i_inst++)
 			{
-				bin[bin_iter ++] = txt->inst[i_inst];
+				inst_t inst = decode_inst(txt->inst[i_inst]);
+				//print_inst(&inst);
+
+				//add 1
+
+				uint64_t compressed = txt->inst[i_inst++];
+				compressed <<= 32;
+				//add 2
+				if(i_inst < txt->inst_len)
+				{
+					inst_t inst2 = decode_inst(txt->inst[i_inst]);
+					print_inst(&inst2);
+					compressed += txt->inst[i_inst];
+
+				}
+				bin[bin_iter ++] = compressed;
 			}
+
+
 			for(int i_imm = 0; i_imm < txt->imm_len; ++i_imm)
 			{
 				bin[bin_iter++] = txt->imm[i_imm];
@@ -291,10 +359,13 @@ output_t *combine_segouts(segout_t *segouts, int length)
 			}
 			for(int i_data = 0; i_data < data->data_size; ++i_data)
 			{
+				printf("%x\n",data->data[i_data]);
 				bin[bin_iter++] = data->data[i_data];
 			}
 
 		}
+
+
 		else
 		{
 			perror("segout type emit not done yet\n");
@@ -420,7 +491,7 @@ void write_out(output_t *output, char *name)
 	}
 	for(int i = 0; i < output->size; i++)
 	{
-		printf("%.3d: %.8llx %lld\n", i, output->bin[i], output->bin[i]);
+		printf("%.3d: %.16llx %lld\n", i, output->bin[i], output->bin[i]);
 
 
 

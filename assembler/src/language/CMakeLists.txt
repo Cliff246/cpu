@@ -4,6 +4,7 @@ set(ASM_LANG_SRC ${ASM_LANG_SRC}
 	${CMAKE_CURRENT_SOURCE_DIR}/src/parser.c
 	${CMAKE_CURRENT_SOURCE_DIR}/src/inter.c
 	${CMAKE_CURRENT_SOURCE_DIR}/src/encoder.c
+	${CMAKE_CURRENT_SOURCE_DIR}/src/linker.c
 
 )
 

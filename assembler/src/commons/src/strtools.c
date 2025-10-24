@@ -247,11 +247,18 @@ int get_starting_tabs_count(char *str, int tabsize)
 }
 
 
+char basic_strings[256][2] = {
+	0
+};
+
 char *to_string(char val)
 {
-	char *str = CALLOC(2, char);
-	str[0] = val;
-	return str;
+
+	if(basic_strings[(unsigned char)val][0] != val)
+	{
+		basic_strings[val][0] = val;
+	}
+	return basic_strings[val];
 }
 
 

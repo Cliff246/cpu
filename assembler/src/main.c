@@ -15,6 +15,8 @@
 #include "inter.h"
 #include "fileio.h"
 
+#include "arguments.h"
+
 
 
 
@@ -22,49 +24,34 @@
 
 int main(int argc, char *argv[])
 {
-	char *content = NULL;
-	int length = file_load(argv[1], &content);
-	printf("run\n");
-	icontext_t *context = load_context(argv[1]);
-	context_resolve(context);
 
-	output_t *output = emit(context);
-	write_out(output, "bin.bin");
-
-	return 0;
 	setup_errors();
 	errno = 0;
-	if(argc == 1)
+
+	generate_target(argc, argv);
+
+	char *first_source = target.inputs[0];
+
+	file_desc_t *desc = get_fdesc(first_source);
+	if(errno == EACCES && !desc)
 	{
-		printf("no argument's provided\n");
+		printf("bad file\n");
 		return 1;
 	}
-
-	if(argc == 2)
+	else
 	{
-		char *content = NULL;
-	   	int length = file_load(argv[1], &content);
-		if(errno == EACCES && !content)
-		{
-			printf("bad file\n");
-			return 1;
-		}
-		else
-		{
-			//printf("assemble\n");
-			assemble(content, length, "bin");
-			//test(content, length);
-		}
-		return 0;
+		icontext_t *context = load_context(desc);
+		context_resolve(context);
+		output_t *output = emit(context);
+		write_out(output, (char *)target.output_file);
+		//printf("assemble\n");
+		//assemble(content, length, "bin");
+		//test(content, length);
 	}
+	return 0;
 
 
-	int arguments[ARGUMENTS_COUNT];
 
 
-	for(int i = 0; i < argc && i < ARGUMENTS_COUNT; ++i)
-	{
-
-	}
 
 }

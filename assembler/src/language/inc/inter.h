@@ -15,20 +15,74 @@
 typedef enum isegment_type
 {
 	ISEG_NONE,
-	ISEG_REALLOC,
-	ISEG_TEXT,
-	ISEG_DATA,
-	ISEG_BSS,
+	ISEG_REALLOC,		//realloc segments
+	ISEG_TEXT,			//code semgents that are seperate
+	ISEG_DATA,			//data segments
+	ISEG_BSS,			//bss
+	ISEG_CODE,			//combined unified code blocks
+	ISEG_CONFIG,
 }iseg_type_t;
+
+
+typedef struct isegment_code
+{
+	int id;
+}iseg_code_t;
+
+
+typedef struct isegment_config
+{
+	char **includes;
+	char **public;
+	char **defines;
+	size_t includes_len, public_len, defines_len;
+}iseg_config_t;
+
+
+typedef struct isegment_text
+{
+
+}iseg_text_t;
+
+
+typedef struct isegment_realloc
+{
+
+}iseg_realloc_t;
+
+
+
+typedef struct isegment_data
+{
+
+}iseg_data_t;
+
 
 typedef struct isegment
 {
 	iseg_type_t segtype;
 	uint64_t segment_id;
+
 	parse_node_t *head;
+
+	union
+	{
+		iseg_code_t code;
+		iseg_config_t config;
+		iseg_text_t text;
+		iseg_realloc_t realloc;
+		iseg_data_t data;
+	}content;
+
 }iseg_t;
 
 iseg_t *create_segment(parse_node_t *head);
+iseg_code_t create_code_segment(iseg_t *seg);
+iseg_config_t create_config_segment(iseg_t *seg);
+iseg_text_t create_text_segment(iseg_t *seg);
+iseg_data_t create_data_segment(iseg_t *seg);
+iseg_realloc_t create_realloc_segment(iseg_t *seg);
+
 
 typedef struct ireference
 {
@@ -46,6 +100,9 @@ typedef enum ientry_type
 	IE_MOP,
 }ientry_type_t;
 
+
+
+
 typedef struct
 {
 
@@ -57,7 +114,8 @@ typedef struct
 	{
 		inst_t inst;
 		mop_t mop;
-	}entry;
+
+	} entry;
 
 
 }ientry_t;
@@ -92,6 +150,9 @@ uint64_t get_line(ientry_t *entry);
 uint64_t get_file(ientry_t *entry);
 
 
+
+
+
 typedef struct
 {
 	lexer_ctx_t *l_ctx;
@@ -105,16 +166,14 @@ typedef struct
 	size_t scopes_count;
 
 	p_hashtable_t ref_table;
-	p_hashtable_t seg_table;
 
 	file_desc_t *desc;
 
 }icontext_t;
 
 
-icontext_t *load_context(const char *path);
+icontext_t *load_context(file_desc_t *desc);
 void context_resolve(icontext_t *ctx);
-
 
 
 

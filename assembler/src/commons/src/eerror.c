@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
+
 
 static error_t *_e_list;
 static size_t _e_alloc = 10;
@@ -24,8 +26,13 @@ void setup_errors(void)
 
 
 
-void emit_error(error_type_t type, const char *msg, void *extra, err_fn_t fn)
+#define MAX_ERROR_ELEMENTS 255
+void emit_error(error_type_t type, const char *msg, int count, ...)
 {
+	va_list va = {0};
+
+
+
 
 	if(_e_length == _e_alloc)
 	{
@@ -37,8 +44,37 @@ void emit_error(error_type_t type, const char *msg, void *extra, err_fn_t fn)
 	_e_list[_e_length].ertp = type;
 	_e_list[_e_length].msg = duplicate;
 
+	error_extra_t extra = {0};
+	if(count > 0)
+	{
+		errelm_t buffer[MAX_ERROR_ELEMENTS] = {0};
+
+		if(count >= MAX_ERROR_ELEMENTS)
+		{
+			perror("to many error elements in one error skipping after 255");
+		}
+		va_start(va, count);
+		for(int i = 0; i < count && i < MAX_ERROR_ELEMENTS; ++i)
+		{
+			buffer[i] = va_arg(va, errelm_t);
+		}
+		va_end(va);
+
+
+		extra.elements = CALLOC(count, errelm_t);
+		extra.elements_count = count;
+		for(int n = 0; n < count; ++n)
+		{
+			extra.elements[n] = buffer[n];
+		}
+	}
+	if(count == 0)
+	{
+
+	}
+
+
 	_e_list[_e_length].extra = extra;
-	_e_list[_e_length].err_fn = fn;
 	_e_length++;
 }
 
@@ -46,16 +82,19 @@ void print_error(int i)
 {
 	if(i < _e_length && i >= 0)
 	{
-		if(_e_list[i].err_fn == NULL)
-		{
+	  	error_t *err =  &_e_list[i];
 
-			fprintf(stderr, "type:%d msg:\'%s\'\n\terror str: \'%s\'\n", _e_list[i].ertp, _e_list[i].msg, get_errstr(_e_list[i].ertp));
-		}
-		else
+		fprintf(stderr,"error: %s msg: %s\n", get_error_type_str(err->ertp), err->msg);
+		if(err->extra.elements_count > 0)
 		{
-			//calls custom error;
-			_e_list[i].err_fn(&_e_list[i]);
+			for(int i = 0; i < err->extra.elements_count; ++i)
+			{
+				errelm_t *elem = &err->extra.elements[i];
+				error_element_printer(elem);
+			}
+
 		}
+
 	}
 }
 
@@ -67,39 +106,50 @@ void print_errors(void)
 		print_error(i);
 	}
 }
-
-
-
-
-//takes error with tok_t as error
-void error_token_error(error_t *err)
+//not threading safe
+char *get_error_type_str(error_type_t code)
 {
-	tok_t *token = err->extra;
+	#define ERROR_TYPE_STR_BUFFER 1025
+	static char buffer[ERROR_TYPE_STR_BUFFER];
 
-	//TODO replace file with a string look up for name
-	fprintf(stderr,"error at: f:%d line:%s col:%d\n", token->locale.file, token->locale.row, token->locale.col);
-	fprintf(stderr, "type:%d msg:\'%s\'\n", err->ertp, err->msg);
+	memset(buffer, 0, ERROR_TYPE_STR_BUFFER);
 
+
+	switch(code)
+	{
+
+
+
+		default:
+			strcpy(buffer, "unknown error");
+			break;
+	}
+	return buffer;
 }
 
-void error_unknown_error(error_t *err)
+void error_element_printer(errelm_t *elm)
 {
+	switch(elm->type)
+	{
 
+		case ERRELM_FILE:
+			errelm_file_t file = elm->elem.file;
+			fprintf(stderr,"file name: %s\n", file.name);
+			break;
+		case ERRELM_LINE:
+		 	errelm_line_t line =  elm->elem.line;
+			fprintf(stderr,"line:%d col: %d\n", line.line, line.column);
+			break;
+		default:
+			fprintf(stderr, "unknown element_type\n");
+			break;
+	}
 }
 
 
 
-err_fn_t error_class_allocate(error_type_t type)
-{
 
-	err_fn_t funcs[] = {
-		error_unknown_error,
-		error_token_error,
-	};
 
-	return *funcs[type];
-
-}
 
 void inline_error(int code, const char *error, const char *filename, size_t line)
 {
@@ -131,4 +181,21 @@ char *get_errstr(int code)
 void print_log(char *log, size_t line, char *filename)
 {
 	fprintf(stderr, "%s at %s:%d\n", log, filename, line);
- }
+}
+
+
+errelm_t errelm_create_file_element(errelm_file_t file)
+{
+	errelm_t element = {.elem.file = file, .type = ERRELM_FILE};
+	return element;
+}
+errelm_t errelm_create_line_element(errelm_line_t line)
+{
+	errelm_t element = {.elem.line = line, .type = ERRELM_LINE};
+	return element;
+}
+errelm_t errelm_create_token_element(errelm_token_t token)
+{
+	errelm_t element = {.elem.token = token, .type = ERRELM_TOKEN};
+	return element;
+}

@@ -3,11 +3,12 @@
 #include "parser.h"
 #include "commons.h"
 #include "eerror.h"
-
+#include "arguments.h"
 
 void print_depth(parse_node_t *node, int depth)
 {
-
+	if(target.debug_enabled == false)
+		return;
 
 	for(int d = 0; d < depth; ++d)
 	{
@@ -249,7 +250,7 @@ parse_node_t *parse_reference(parser_ctx_t *p)
 	if(!(reference))
 	{
 		//TODO emit expected token error
-		LOG("parsed reference failed");
+		LOG("parsed reference failed", 0);
 		exit(1);
 		//emit error and recover
 	}
@@ -259,11 +260,46 @@ parse_node_t *parse_reference(parser_ctx_t *p)
 	tok_t *colon = expect(p, TOK_COLON);
 	if(!colon)
 	{
-		LOG("expected colon\n");
+		LOG("expected colon\n", 0);
 		exit(1);
 		//TODO
 		//this should be a colon if not that's bad
 	}
+
+	parse_node_t *arguments = make_node(NODE_ARGS, colon);
+	add_child(n, arguments);
+	while(true)
+	{
+		tok_t *ahead = peek(p);
+		if(ahead == NULL)
+		{
+			return n;
+		}
+		if(ahead->type == TOK_EOF || ahead->type == TOK_COMMENT || ahead->type == TOK_NEWLINE)
+		{
+			return n;
+		}
+		else
+		{
+			if(ahead->type == TOK_IDENT)
+			{
+				next(p);
+			}
+			else if(ahead->type == TOK_TOKEN)
+			{
+				parse_node_t *extra = make_node(NODE_ARGS, expect(p, TOK_TOKEN));
+				add_child(arguments, extra);
+			}
+			else
+			{
+				//
+				perror("invalid type");
+				return n;
+			}
+		}
+	}
+
+
 	//TODO fill more
 
     return n;
@@ -279,8 +315,32 @@ parse_node_t *parse_segment(parser_ctx_t *p)
 	}
     parse_node_t *n = make_node(NODE_SEGMENT,segment );
     // optionally collect args until newline
+	if(peek(p)->type == TOK_IDENT)
+	{
+		while(true)
+		{
+			tok_t *cur  =next(p);
+
+			if(cur->type == TOK_TOKEN)
+			{
+				parse_node_t *argument = make_node(NODE_ARGS, cur);
+				add_child(n, argument);
+
+			}
+			else if(cur->type == TOK_IDENT)
+			{
+				continue;
+			}
+			else
+				break;
+
+		}
+
+	}
+	return n;
+
+
 	//next(p);
-    return n;
 }
 
 void parse_expr(parser_ctx_t *p, parse_node_t *parent)
@@ -289,7 +349,6 @@ void parse_expr(parser_ctx_t *p, parse_node_t *parent)
 
 	if(peek(p)->type == TOK_NEWLINE || !peek(p))
 	{
-		next(p);
 		return;
 	}
 	else if(peek(p)->type == TOK_COMMA || peek(p)->type == TOK_IDENT)
@@ -400,6 +459,7 @@ parse_node_t *parse_program(parser_ctx_t *p)
 			//printf("label\n");
 			child = parse_reference(p);
 
+
 			ref_root = child;
        		add_child(seg_root, ref_root);
 			newline = false;
@@ -408,15 +468,7 @@ parse_node_t *parse_program(parser_ctx_t *p)
         }
 		else if (t->type == TOK_IDENT && newline)
 		{
-			if(!seg_root)
-			{
-				//TODO should try to skip to next valid segment and emit error
-			}
-			if(!ref_root)
-			{
-				//TODO should try to skip to next valid reference and emit error
 
-			}
 
 
 
@@ -434,9 +486,28 @@ parse_node_t *parse_program(parser_ctx_t *p)
 					continue;
 				}
 
-				add_child(ref_root, child);
+				if(seg_root && !ref_root)
+				{
+					add_child(seg_root, child);
+				}
+				else if(ref_root)
+				{
+					add_child(ref_root, child);
+
+				}
+				else
+				{
+					//should die
+					perror("internal outside of any container");
+					exit(1);
+				}
+
 
 			}
+
+
+
+
 			newline = false;
 			continue;
 		}

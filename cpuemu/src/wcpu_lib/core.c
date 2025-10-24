@@ -158,6 +158,24 @@ void set_frame(pmode_t mode, cd_frame_t frame)
 	}
 }
 
+uint32_t get_inst_at_pc_address(uint64_t address)
+{
+
+
+
+	uint64_t dest = (address / 2) + get_pc_offset();
+	if(address % 2 == 0)
+	{
+		return (uint32_t)((uint64_t)(MEMLD(dest) >> 32) & 0xffffffff);
+
+	}
+	else
+	{
+		return (uint32_t)((MEMLD(dest) & 0xffffffff));
+	}
+}
+
+
 uint64_t stream_in[255] = {0};
 uint64_t stream_out[255] = {0};
 
@@ -239,16 +257,19 @@ void fetch_cpu(void)
 	CCPU(ci2) = 0;
 	CCPU(ci3) = 0;
 
-	uint64_t pc = get_pc() + get_pc_offset();
-	uint64_t ipc = get_ipc() + get_ipc_offset();
+	uint64_t pc = get_pc();
+	uint64_t ipc = get_ipc();
 #if DEBUG_MODE == 1
 	// printf("fpc: %llu fipc: %llu\n", get_pc(), get_ipc());
 	// printf("current imm: %d\n", CCPU(curimm));
 	// printf("pc: %llu ipc: %llu\n", pc, ipc);
 
 #endif
-	CCPU(curins) = (int32_t)MEMLD(pc);
-	CCPU(curimm) = (int64_t)MEMLD(ipc);
+	printf("pc %d\n", pc);
+
+
+	CCPU(curins) = (uint32_t)get_inst_at_pc_address(pc);
+	CCPU(curimm) = (int64_t)MEMLD(ipc + get_ipc_offset());
 
 	CCPU(has_jumped) = false;
 }
@@ -264,15 +285,26 @@ void decode_cpu(void)
 void execute_cpu(void)
 {
 	inst_t inst = decode_inst(CCPU(curins));
-
+	int64_t rs1_n = inst.rs1, rs2_n = inst.rs2;
+	int64_t rs1_d = get_reg(rs1_n);
+	int64_t rs2_d =  get_reg(rs2_n);
+	if(inst.selflag)
+	{
+		rs2_d = rs2_n;
+	}
 	if (inst.path == PATH_ALU)
 	{
 
-		alu_submit(components.alu, inst.subpath, get_reg(inst.rs1), get_reg(inst.rs2), CCPU(curimm), inst.immflag, inst.aux);
 
+
+
+
+		alu_submit(components.alu, inst.subpath, rs1_d, rs2_d, CCPU(curimm), inst.immflag);
 		alu_step(components.alu);
-
 		CCPU(co) = components.alu->regdest;
+
+
+
 	}
 	if (inst.path == PATH_SYS)
 	{
@@ -281,13 +313,16 @@ void execute_cpu(void)
 	if (inst.path == PATH_JMP)
 	{
 
-		jump_submit(components.cpu, inst.subpath, 0, get_reg(inst.rs1), get_reg(inst.rs2), CCPU(curimm), inst.immflag);
+		jump_submit(components.cpu, inst.subpath, 0, rs1_d, rs2_d, CCPU(curimm), inst.immflag);
 	}
 	else if (inst.path == PATH_MEM)
 	{
 		memory_submit(components.cpu);
 	}
 }
+
+
+
 void memory_cpu(void)
 {
 }
@@ -344,13 +379,15 @@ void set_reg(int reg, int64_t content)
 
 inst_t decode_inst(int32_t instr)
 {
-	inst_t in;
+	inst_t in = {0};
 	in.path = (instr >> 28) & 0xF;
 	in.subpath = (instr >> 21) & 0x7F;
 	in.rd = (instr >> 15) & 0x3F;
 	in.rs1 = (instr >> 9) & 0x3F;
 	in.rs2 = (instr >> 3) & 0x3F;
-	in.aux = (instr >> 1) & 0x03;
+	in.selflag = (instr >> 2) & 0x01;
+
+	in.reallocflag = (instr >> 1) & 0x01;
 	in.immflag = instr & 0x1;
 	return in;
 }
@@ -358,7 +395,7 @@ inst_t decode_inst(int32_t instr)
 int32_t encode_inst(inst_t *inst)
 {
 
-	return ((inst->path << 28) | (inst->subpath << 21) | (inst->rd << 15) | (inst->rs1 << 9) | (inst->rs2 << 3) | (inst->aux << 1) | inst->immflag);
+	return ((inst->path << 28) | (inst->subpath << 21) | (inst->rd << 15) | (inst->rs1 << 9) | (inst->rs2 << 3) | (inst->selflag << 2) | (inst->reallocflag << 1) | inst->immflag);
 }
 
 uint64_t encode(uint64_t path, uint64_t subpath, uint64_t rd, uint64_t rs1, uint64_t rs2, uint64_t aux, uint64_t immf)
@@ -371,7 +408,7 @@ uint64_t encode(uint64_t path, uint64_t subpath, uint64_t rd, uint64_t rs1, uint
 void print_inst(inst_t *inst)
 {
 	inst_t op = *inst;
-	printf("p: %d: sp: %d, rd: %d, rs1: %d, rs2: %d, aux :%d, f: %d\n", op.path, op.subpath, op.rd, op.rs1, op.rs2, op.aux, op.immflag);
+	printf("p: %d: sp: %d, rd: %d, rs1: %d, rs2: %d, selflag: %d, reallocflag: %d, f: %d\n", op.path, op.subpath, op.rd, op.rs1, op.rs2, op.selflag, op.reallocflag, op.immflag);
 }
 
 void init_components(void)

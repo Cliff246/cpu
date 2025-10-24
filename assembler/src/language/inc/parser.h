@@ -15,7 +15,8 @@ typedef enum
 	NODE_SUBPATH,
 	NODE_RD,
 	NODE_RS1,
-	NODE_RS2
+	NODE_RS2,
+	NODE_ARGS, NODE_CHILDS,
 } parse_node_kind_t;
 
 typedef enum

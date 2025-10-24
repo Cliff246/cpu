@@ -7,7 +7,8 @@ typedef enum
 {
     TOK_INVAL, TOK_TOKEN,
 	TOK_IDENT, TOK_NUMBER, TOK_STRING, TOK_DIRECTIVE, TOK_REFERENCE,
-    TOK_COLON, TOK_COMMA, TOK_DOT,
+    TOK_COLON, TOK_FOLLOWING,
+	TOK_COMMA, TOK_DOT,
 	TOK_SYMBOL,
     TOK_NEWLINE, TOK_EOF,
 	TOK_COMMENT,
@@ -30,7 +31,6 @@ typedef struct
 {
 	tok_t *toks;
 	size_t count, capacity;
-
 	const char *src;
 	size_t src_len;
 

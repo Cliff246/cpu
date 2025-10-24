@@ -30,6 +30,10 @@ typedef struct segout_data
 	size_t data_size;
 }segout_data_t;
 
+typedef struct segout_extern
+{
+	//todo
+}segout_extern_t;
 
 typedef struct segout
 {
@@ -39,6 +43,7 @@ typedef struct segout
 	{
 		segout_txt_t txt;
 		segout_data_t data;
+		segout_extern_t exteral;
 	}output;
 }segout_t;
 

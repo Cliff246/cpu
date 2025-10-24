@@ -2,6 +2,7 @@
 #include "commons.h"
 #include <stdlib.h>
 #include <string.h>
+#include "arguments.h"
 
 
 
@@ -11,14 +12,13 @@ void entry_instruction(ientry_t *entry)
 	entry->entry.inst = inst;
 	entry->type = IE_INST;
 
-	print_inst(&entry->entry.inst);
+	//print_inst(&entry->entry.inst);
 
 }
 
 void entry_mop(ientry_t *entry)
 {
 	mop_t mop = create_mop(entry->node);
-	print_depth(entry->node, 0);
 	entry->entry.mop = mop;
 	entry->type = IE_MOP;
 }
@@ -45,7 +45,15 @@ ientry_t *create_entry(parse_node_t *node, iscope_t *scope)
 	else if(node->kind == NODE_METAOP)
 	{
 		entry_mop(entry);
-		scope->offset += entry->entry.mop.holder.words_len;
+		if(entry->entry.mop.type == MOP_TYPE_DEFINE_DATA)
+		{
+			scope->offset += entry->entry.mop.holder.data.words_len;
+
+		}
+		else
+		{
+			printf("mop config type\n");
+		}
 
 	}
 	else
@@ -66,7 +74,9 @@ iseg_type_t get_seg_type(char *node)
 		".realloc",
 		".text",
 		".data",
-		".bss"
+		".bss",
+		".code",
+		".config",
 	};
 	iseg_type_t type = 0;
 	for(int i = 0; i < ARYSIZE(segment_types); ++i)
@@ -79,6 +89,29 @@ iseg_type_t get_seg_type(char *node)
 	return type;
 }
 
+iseg_code_t create_code_segment(iseg_t *seg)
+{
+
+}
+
+iseg_config_t create_config_segment(iseg_t *seg)
+{
+
+}
+iseg_text_t create_text_segment(iseg_t *seg)
+{
+
+}
+iseg_data_t create_data_segment(iseg_t *seg)
+{
+
+}
+iseg_realloc_t create_realloc_segment(iseg_t *seg)
+{
+
+}
+
+
 iseg_t *create_segment(parse_node_t *head)
 {
 	static int segid = 0;
@@ -86,6 +119,15 @@ iseg_t *create_segment(parse_node_t *head)
 
 	segment->head = head;
 	segment->segment_id = segid++;
+
+	for(int i = 0; i < head->child_count; ++i)
+	{
+		if(head->children[i]->kind == NODE_ARGS)
+		{
+
+		}
+	}
+
 	//find type
 	//TODO
 	//segment->segtype =
@@ -93,6 +135,37 @@ iseg_t *create_segment(parse_node_t *head)
 	//
 	//
 	segment->segtype = get_seg_type(head->tok->lexeme);
+
+
+	switch(segment->segtype)
+	{
+		case ISEG_TEXT:
+			segment->content.text = create_text_segment(segment);
+			break;
+		case ISEG_CONFIG:
+			segment->content.config = create_config_segment(segment);
+
+			break;
+		case ISEG_CODE:
+			segment->content.code = create_code_segment(segment);
+
+			break;
+		case ISEG_DATA:
+			segment->content.data = create_data_segment(segment);
+
+			break;
+		case ISEG_REALLOC:
+			segment->content.realloc = create_realloc_segment(segment);
+
+			break;
+
+		default:
+			printf("segment content not implemented yet\n");
+			exit(1);
+			break;
+
+	}
+
 	return segment;
 }
 
@@ -120,11 +193,11 @@ iref_t *create_reference(parse_node_t *head, iscope_t *scope, char *name)
 void fill_scope(iscope_t *scope, iseg_t *segment)
 {
 
-	scope->entries_alloc = 1000;
+	scope->entries_alloc = 100;
 	scope->entries_count = 0;
 	scope->entries = CALLOC(scope->entries_alloc, ientry_t *);
 
-	scope->refs_alloc = 100;
+	scope->refs_alloc = 10;
 	scope->refs_count = 0;
 	scope->refs = CALLOC(scope->refs_alloc, iref_t *);
 
@@ -157,50 +230,32 @@ void free_iseg(void *ptr)
 	free(seg);
 }
 
-//gives a temporary string for look up
-char *segment_id_to_string(size_t segid)
+
+icontext_t *load_context(file_desc_t *desc)
 {
 
-	static char number[33] = {0};
-	memset(number, 0, 33 * sizeof(char));
- 	sprintf(number, "%lu", segid);
-	return number;
-}
-
-
-
-icontext_t *load_context(const char *path)
-{
 	icontext_t *ctx = CALLOC(1, icontext_t);
-	static int fileid = 0;
-	fileid++;
-	file_desc_t *desc = get_fdesc(path);
-	if(!desc)
-	{
-		fprintf(stderr,"could not laod %s", path);
-		exit(1);
-	}
+
 	ctx->desc = desc;
+	ctx->l_ctx = create_token_stream(desc->src, desc->id);
 
-	ctx->l_ctx = create_token_stream(desc->src, fileid);
-
-	printf("finished lexer\n");
+	//printf("finished lexer\n");
 
 
 
 	ctx->p_ctx = create_context(ctx->l_ctx);
-	printf("created parser\n");
+	//printf("created parser\n");
 	ctx->head = parse_program(ctx->p_ctx);
-	printf("done parser\n");
+	//printf("done parser\n");
 
 	ctx->scopes_count = ctx->head->child_count;
 	ctx->scopes = CALLOC(ctx->scopes_count, iscope_t);
 
+	//print_depth(ctx->head, 0);
 
-
-	const int max_size = 10000;
+	//this is over kill likely
+	const int max_size = 1000;
 	ctx->ref_table = new_hash_table(max_size, free_iref);
-	ctx->seg_table = new_hash_table(max_size, free_iseg);
 
 	return ctx;
 }
@@ -219,36 +274,61 @@ void context_resolve(icontext_t *ctx)
 
 		fill_scope(scope, create_segment(cur));
 
-		addto_hash_table(ctx->seg_table, segment_id_to_string(scope->segment->segment_id), scope->segment);
 
 		for(int r = 0; r < cur->child_count; ++r)
 		{
 			//references
 			parse_node_t *subcur = cur->children[r];
-
-			char *name = subcur->tok->lexeme;
-
-
-			iref_t *check = getdata_from_hash_table(ctx->ref_table, name);
-			if(check != NULL)
+			if(subcur->kind == NODE_REFERENCE)
 			{
-				//duplicate's in the hash table
-				printf("duplicate reference %s\n", name);
-				exit(1);
+				char *name = subcur->tok->lexeme;
+
+				iref_t *check = getdata_from_hash_table(ctx->ref_table, name);
+				if(check != NULL)
+				{
+					//duplicate's in the hash table
+					printf("duplicate reference %s\n", name);
+					exit(1);
+				}
+
+				iref_t *ref = create_reference(subcur,scope, name);
+
+
+
+				addto_hash_table(ctx->ref_table, ref->ref_string, (void *)ref);
+
+				for(int i = 0; i < subcur->child_count; ++i)
+				{
+					parse_node_kind_t kind = subcur->children[i]->kind;
+					if( kind == NODE_INSTR || kind == NODE_METAOP )
+					{
+						create_entry(subcur->children[i], scope);
+
+					}
+				}
 			}
-
-			iref_t *ref = create_reference(subcur,scope, name);
-
-
-
-			addto_hash_table(ctx->ref_table, ref->ref_string, (void *)ref);
-
-			for(int i = 0; i < subcur->child_count; ++i)
+			else if(subcur->kind == NODE_METAOP)
 			{
-				create_entry(subcur->children[i], scope);
-			}
+				create_entry(subcur, scope);
 
+
+			}
+			else if(subcur->kind == NODE_ARGS)
+			{
+
+
+			}
+			else
+			{
+
+			}
 		}
+
+
+
+
+
 
 	}
 }
+

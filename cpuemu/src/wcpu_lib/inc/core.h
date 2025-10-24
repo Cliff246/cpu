@@ -80,7 +80,8 @@ typedef struct instruction
 	uint32_t rd ;
 	uint32_t rs1 ;
 	uint32_t rs2 ;
-	uint32_t aux ;
+	uint32_t selflag ;
+	uint32_t reallocflag ;
 	uint32_t immflag;
 }inst_t;
 
@@ -184,6 +185,8 @@ void decode_cpu(void);
 void execute_cpu(void);
 void memory_cpu(void);
 void writeback_cpu(void);
+
+uint32_t get_inst_at_pc_address(uint64_t address);
 
 //get the right address for memory
 uint64_t address(uint64_t addr);

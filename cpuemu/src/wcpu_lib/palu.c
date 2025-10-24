@@ -55,7 +55,7 @@ INST(SUBU)
 
 INST(AND)
 {
-	//printf("%lld %lld %lld\n", RS1, RS2, RS1 & RS2);
+	printf("%lld %lld %lld\n", RS1, IMM, RS1 & IMM);
 	OPT(&);
 	//printf("%lld\n", DEST);
 }
@@ -262,7 +262,7 @@ alu_t *create_alu(void)
 
 
 //sumbit work
-void alu_submit(alu_t *alu, char subpath, int64_t rs1, int64_t rs2, int64_t imm, char immflag, char aux)
+void alu_submit(alu_t *alu, char subpath, int64_t rs1, int64_t rs2, int64_t imm, char immflag)
 {
 	alu->reg1 = rs1;
 	alu->reg2 = rs2;
@@ -270,7 +270,6 @@ void alu_submit(alu_t *alu, char subpath, int64_t rs1, int64_t rs2, int64_t imm,
 	alu->regdest = 0;
 	alu->subpath = subpath;
 	alu->flag = immflag;
-	alu->aux = aux;
 	alu->cycle = 0;
 	alu->complete = 0;
 }

@@ -15,7 +15,7 @@ SQRT_FUNCTION:
 	;one = 1
 	alu.add t2, zero, zero, 1
 
-WHILE_1
+WHILE_1:
 	;one <<= 2
 	alu.sll t2, t2, null, 2
 	jmp.ble null, t2, a0, @WHILE_1
@@ -37,6 +37,7 @@ WHILE_2:
 	;res += 2 * one
 	alu.sll t4, t2, null, 2
 	alu.add t1, t1, t4
+
 
 
 ELSE:

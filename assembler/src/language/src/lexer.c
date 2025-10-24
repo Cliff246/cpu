@@ -7,14 +7,17 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <errno.h>
+#include "arguments.h"
 
 void free_token(tok_t *ptr)
 {
-	free(ptr->lexeme);
+	//i tried
+	if(ptr->lexeme < (char *)basic_strings || ptr->lexeme >= (char *)basic_strings + (256 * 2 * sizeof(char)))
+		free(ptr->lexeme);
 	free(ptr);
 }
 
-void lexer_emit(lexer_ctx_t *ctx, tok_type_t type, const char *lexme)
+void lexer_emit(lexer_ctx_t *ctx, tok_type_t type, char *lexme)
 {
 	const size_t default_alloc = 100;
 	if (ctx->toks == NULL)
@@ -28,7 +31,7 @@ void lexer_emit(lexer_ctx_t *ctx, tok_type_t type, const char *lexme)
 		ctx->capacity *= 2;
 		ctx->toks = REALLOC(ctx->toks, ctx->capacity, tok_t);
 	}
-
+	//this is where lexer tokens are created
 	ctx->toks[ctx->count].lexeme = lexme;
 	ctx->toks[ctx->count].locale = ctx->locale;
 	ctx->toks[ctx->count].type = type;
@@ -108,6 +111,8 @@ char *lexer_slice(lexer_ctx_t *ctx, size_t start, size_t stop)
 
 void print_token(tok_t *tok)
 {
+	if(!target.debug_enabled)
+		return;
 	printf("lexme: %s type: %d  row:%d col:%d fid:%d\n", tok->lexeme, tok->type, tok->locale.row, tok->locale.col, tok->locale.file);
 }
 
@@ -117,7 +122,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 	tok_t *tokens = CALLOC(default_alloc, tok_t);
 
 	lexer_ctx_t *ctx = CALLOC(1, lexer_ctx_t);
-	locale_t local = {.file = file_id, .col = 0, .row = 0};
+	locale_t local = {.file = file_id, .col = 0, .row = 1};
 	ctx->locale = local;
 	ctx->pos = 0;
 	ctx->capacity = default_alloc;
@@ -134,7 +139,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 	{
 		ch = GETCHAR;
 		++index;
-		printf("%c\n", ch);
+		//printf("%c\n", ch);
 		if(ch == 0)
 		{
 			break;
@@ -202,7 +207,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 			continue;
 		}
 
-		else if (ch == ';' || ch == '#')
+		else if (ch == ';')
 		{
 			//printf("3\n");
 			//printf("3, index: %d %d\n", index, ctx->pos);
@@ -304,6 +309,27 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 			}
 			seperator = false;
 
+		}
+		else if(ch == '#')
+		{
+			if(isdigit(PEEK))
+			{
+				start = ctx->pos;
+
+				while(isdigit(PEEK))
+				{
+					//printf("%d %c\n", index, ch);
+
+					ADVANCE;
+				}
+				ADVANCE;
+
+				char *lexeme = SLICE(start, ctx->pos);
+
+				EMIT(TOK_TOKEN, lexeme);
+
+			}
+			seperator = false;
 		}
 		else
 		{

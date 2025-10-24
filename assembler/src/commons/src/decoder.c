@@ -8,38 +8,35 @@
 #include <string.h>
 #include "strtools.h"
 #include "parser.h"
+#include <stdbool.h>
 
 
 void print_inst(inst_t *inst)
 {
-	printf("path:%d subpath %d: rd: %d, rs1: %d, rs2: %d, aux: %d, immf: %d [reference: %s]\n", inst->path, inst->subpath, inst->rd, inst->rs1, inst->rs2, inst->aux, inst->immflag, inst->immref);
+	printf("path:%d subpath %d: rd: %d, rs1: %d, rs2: %d, selflag: %d, realocflag %d, immf: %d [reference: %s]\n", inst->path, inst->subpath, inst->rd, inst->rs1, inst->rs2, inst->selflag, inst->realocflag, inst->immflag, inst->immref);
 }
 
-inst_t decode_inst(int32_t instr)
+inst_t decode_inst(uint32_t instr)
 {
 	inst_t in = {0};
 	in.path = (instr >> 28) & 0xF;
 	in.subpath = (instr >> 21) & 0x7F;
-	in.rd = (instr >> 15) & 0x33F;
+	in.rd = (instr >> 15) & 0x3F;
 	in.rs1 = (instr >> 9) & 0x3F;
 	in.rs2 = (instr >> 3) & 0x3F;
-	in.aux = (instr >> 1) & 0x03;
-	in.immflag = instr & 0x1;
+	in.selflag = (instr >> 2) & 0x01;
+	in.realocflag = (instr >> 1) & 0x01;
+	in.immflag = instr & 0x01;
 	return in;
 }
 
 uint32_t encode_inst(inst_t *inst)
 {
 
-	return ((inst->path << 28) | (inst->subpath << 21) | (inst->rd << 15) | (inst->rs1 << 9) | (inst->rs2 << 3) | (inst->aux << 1) | inst->immflag);
+	return ((inst->path << 28) | (inst->subpath << 21) | (inst->rd << 15) | (inst->rs1 << 9) | (inst->rs2 << 3) | ((inst->selflag << 2)) | ((inst->realocflag << 1) & 0x1) | inst->immflag);
 }
 
-uint64_t encode(uint64_t path, uint64_t subpath, uint64_t rd, uint64_t rs1, uint64_t rs2, uint64_t aux, uint64_t immf)
-{
-	uint64_t inst = ( (path & 0xF) << 28) | ((subpath &0x7f) << 21) | ((rd &0x1f) << 16) | ((rs1 &0x1f) << 11) | ((rs2 &0x1f) << 6) | ((aux & 0x1f) << 1) | (immf);
-	print_bin(inst, 32, 1);
-	return inst;
-}
+
 void free_inst(inst_t *inst)
 {
 	free(inst->immref);
@@ -48,7 +45,7 @@ void free_inst(inst_t *inst)
 
 void invalid_inst(parse_node_t *node, inst_t *inst)
 {
-	emit_error(TOKEN_ERROR, "not", NULL, NULL);
+	emit_error(TOKEN_ERROR, "not", 0, NULL);
 }
 
 void inst_no_imm(parse_node_t *node, inst_t *inst)
@@ -67,11 +64,27 @@ void inst_no_imm(parse_node_t *node, inst_t *inst)
 
 	int rd = get_register(node->children[2]->tok->lexeme);
 	int rs1 = get_register(node->children[3]->tok->lexeme);
-	int rs2 = get_register(node->children[4]->tok->lexeme);
+	int rs2 = 0;
+
+
+	char *rs2_str = node->children[4]->tok->lexeme;
+
+	if(rs2_str[0] == '#')
+	{
+		int value = atoi(rs2_str + 1);
+		rs2 = value;
+		inst->selflag = 1;
+	}
+	else
+	{
+		rs2 = get_register(rs2_str);
+
+	}
 	inst->rd =rd;
 	inst->rs1= rs1;
 	inst->rs2= rs2;
-	inst->aux = 0;
+	inst->realocflag = 0;
+
 
 	inst->err = valid;
 	inst->imm = 0;
@@ -94,8 +107,26 @@ void inst_imm(parse_node_t *node, inst_t *inst)
 	inst->subpath = subpath;
 
 	int rd = get_register(node->children[2]->tok->lexeme);
+
+
 	int rs1 = get_register(node->children[3]->tok->lexeme);
-	int rs2 = get_register(node->children[4]->tok->lexeme);
+	int rs2 = 0;
+
+
+	char *rs2_str = node->children[4]->tok->lexeme;
+
+	if(rs2_str[0] == '#')
+	{
+		int value = atoi(rs2_str + 1);
+		rs2 = value;
+
+		inst->selflag = 1;
+	}
+	else
+	{
+		rs2 = get_register(rs2_str);
+
+	}
 
 	inst->rd =rd;
 	inst->rs1= rs1;
@@ -120,6 +151,7 @@ void inst_imm(parse_node_t *node, inst_t *inst)
 
 	if(type == NUM_NONE)
 	{
+		//printf("%s\n", final);
 
 		if(final[0] == '@')
 		{
@@ -140,8 +172,10 @@ void inst_imm(parse_node_t *node, inst_t *inst)
 		else if(valid_name(final))
 		{
 			char *dup = strdup(final);
+			//printf("%s\n", dup);
 			inst->immref = dup;
 			inst->ref_type = INST_REF_GLOBAL;
+
 		}
 		else
 		{
@@ -150,6 +184,7 @@ void inst_imm(parse_node_t *node, inst_t *inst)
 	}
 
 	//printf("%s %d\n", final, imm);
+	inst->realocflag = 0;
 	inst->imm = imm;
 	inst->immflag = 1;
 	inst->err = valid;
@@ -195,7 +230,7 @@ data_holder_t decode_string(parse_node_t *head)
 
 	if(buffer_alloc <= buffer_size + 1)
 	{
-		buffer = REALLOC(buffer, buffer_alloc *= 2, uint64_t);
+		buffer = REALLOC(buffer, buffer_alloc *= 2, uint8_t);
 
 	}
 	buffer[buffer_size++] = 0;
@@ -211,6 +246,7 @@ data_holder_t decode_string(parse_node_t *head)
 	uint64_t *actual_data = CALLOC(len, uint64_t);
 
 	memcpy(actual_data, buffer, buffer_size);
+
 	free(buffer);
 	holder.words = actual_data;
 	holder.words_len = len;
@@ -265,24 +301,45 @@ mop_t create_mop(parse_node_t *node)
 	switch(mop.mop)
 	{
 		case MOP_STRING:
-			mop.holder = decode_string(node);
+			mop.holder.data = decode_string(node);
+			mop.type = MOP_TYPE_DEFINE_DATA;
+
 			break;
 		case MOP_I16:
-			mop.holder = decode_integer(node);
+			mop.holder.data = decode_integer(node);
+			mop.type = MOP_TYPE_DEFINE_DATA;
+
 			break;
 		case MOP_I32:
-			mop.holder = decode_integer(node);
+			mop.holder.data = decode_integer(node);
+			mop.type = MOP_TYPE_DEFINE_DATA;
 
 			break;
 		case MOP_I8:
-			mop.holder = decode_integer(node);
-
+			mop.holder.data = decode_integer(node);
+			mop.type = MOP_TYPE_DEFINE_DATA;
 			break;
 		case MOP_I64:
-			mop.holder = decode_integer(node);
+			mop.holder.data = decode_integer(node);
+			mop.type = MOP_TYPE_DEFINE_DATA;
+
 			break;
+		case MOP_PUB:
+			mop.type = MOP_TYPE_DEFINE_CONFIG;
+
+			break;
+		case MOP_DEFINE:
+			mop.type = MOP_TYPE_DEFINE_CONFIG;
+
+			break;
+		case MOP_INCLUDE:
+			mop.type = MOP_TYPE_DEFINE_CONFIG;
+
+			break;
+
 		default:
 			break;
+
 	}
 
 	return mop;
@@ -418,16 +475,19 @@ int regvalue[] = {
 mop_id_t get_mop_code(char *keyword)
 {
 	const char *const mops[] = {
-		"I64",
-		"I32",
-		"I16",
-		"I8",
-		"FLOAT",
-		"DOUBLE",
-		"ALIGN",
-		"STRING",
-		"MEM",
-		"PTR",
+		"i64",
+		"i32",
+		"i16",
+		"i8",
+		"float",
+		"double",
+		"align",
+		"string",
+		"mem",
+		"ptr",
+		"pub",
+		"def",
+		"include",
 	};
 
 	mop_id_t ids[] = {
@@ -441,6 +501,9 @@ mop_id_t get_mop_code(char *keyword)
 		MOP_STRING,
 		MOP_MEM,
 		MOP_PTR,
+		MOP_PUB,
+		MOP_DEFINE,
+		MOP_INCLUDE
 	};
 
 	int code = determine_code(keyword, mops, ARYSIZE(mops));
@@ -482,7 +545,7 @@ int get_alu_subpath(char *keyword)
 		"clt",
 		"cltu",
 		"cne",
-		"ceq"
+		"ceq",
 	};
 
 	const int opvalue[] = {
@@ -508,11 +571,10 @@ int get_alu_subpath(char *keyword)
 		ALU_CLTU,
 		ALU_CNE,
 		ALU_CEQ,
-
 	};
 
-
 	int code = determine_code(keyword, alu_mnemonics, ARYSIZE(alu_mnemonics));
+	//printf("keyword %s %d\n", keyword, code);
 
 	if(code != -1)
 	{

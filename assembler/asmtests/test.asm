@@ -1,4 +1,4 @@
-.text
+.text a
 run:
 	jmp.jmp x0, x0, x0, @open
 	alu.div zero, x0, x0
@@ -12,9 +12,9 @@ open:
 
 .data
 ref:
-	STRING "test test"
+	string "test test"
 fun:
-	I64 0x1234
+	i64 0x1234
 
 
 

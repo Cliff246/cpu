@@ -25,5 +25,6 @@ char *to_string(char val);
 int *collect_lines(char *content, size_t length);
 int *collect_references(char *content, size_t length);
 int *collect_segments(char *content, size_t length);
+extern char basic_strings[256][2];
 
 #endif

@@ -8,9 +8,10 @@ add_subdirectory(language)
 
 
 set(ASMFILES ${ASM_C_FILES}
-	assembler.c
+	analyzer.c
 	main.c
 )
+
 set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
 set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall")
 set(CMAKE_BUILD_TYPE Debug)

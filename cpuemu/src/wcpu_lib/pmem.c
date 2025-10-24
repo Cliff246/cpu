@@ -12,7 +12,7 @@ void memory_submit(cpu_t *cpu)
 	{
 		case MEM_LD:
 			uint64_t address = cpu->curimm + get_reg(inst.rs1) + get_reg(inst.rs2);
-			int64_t ld = load(address);
+			uint64_t ld = load(address);
 			printf("load %d %d %d\n", ld, address, ld);
 			cpu->co = ld;
 			break;
