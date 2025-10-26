@@ -85,21 +85,36 @@ typedef enum config_type
 
 }config_type_t;
 
+
+typedef struct config_include
+{
+	char *file_include;
+	int id;
+}config_include_t;
+
+typedef struct config_public
+{
+	char *key_string;
+	int count;
+}config_public_t;
+
+typedef struct config_define
+{
+	char *key_imply;
+}config_define_t;
+
+
 typedef struct config
 {
 	config_type_t type;
 
 	union
 	{
-
+		config_include_t inc;
+		config_define_t def;
+		config_public_t pub;
 	} config_type;
 }config_t;
-
-typedef struct config_holder
-{
-	config_t configuration;
-}config_holder_t;
-
 
 data_holder_t decode_string(parse_node_t *head);
 data_holder_t decode_integer(parse_node_t *head);
@@ -126,7 +141,7 @@ typedef struct metaop
 	union
 	{
 		data_holder_t data;
-		config_holder_t config;
+		config_t config;
 	}
 	holder;
 

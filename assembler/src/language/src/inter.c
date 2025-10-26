@@ -89,27 +89,7 @@ iseg_type_t get_seg_type(char *node)
 	return type;
 }
 
-iseg_code_t create_code_segment(iseg_t *seg)
-{
 
-}
-
-iseg_config_t create_config_segment(iseg_t *seg)
-{
-
-}
-iseg_text_t create_text_segment(iseg_t *seg)
-{
-
-}
-iseg_data_t create_data_segment(iseg_t *seg)
-{
-
-}
-iseg_realloc_t create_realloc_segment(iseg_t *seg)
-{
-
-}
 
 
 iseg_t *create_segment(parse_node_t *head)
@@ -137,36 +117,7 @@ iseg_t *create_segment(parse_node_t *head)
 	segment->segtype = get_seg_type(head->tok->lexeme);
 
 
-	switch(segment->segtype)
-	{
-		case ISEG_TEXT:
-			segment->content.text = create_text_segment(segment);
-			break;
-		case ISEG_CONFIG:
-			segment->content.config = create_config_segment(segment);
-
-			break;
-		case ISEG_CODE:
-			segment->content.code = create_code_segment(segment);
-
-			break;
-		case ISEG_DATA:
-			segment->content.data = create_data_segment(segment);
-
-			break;
-		case ISEG_REALLOC:
-			segment->content.realloc = create_realloc_segment(segment);
-
-			break;
-
-		default:
-			printf("segment content not implemented yet\n");
-			exit(1);
-			break;
-
-	}
-
-	return segment;
+		return segment;
 }
 
 iref_t *create_reference(parse_node_t *head, iscope_t *scope, char *name)

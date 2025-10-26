@@ -41,7 +41,7 @@ typedef struct isegment_config
 
 typedef struct isegment_text
 {
-
+	
 }iseg_text_t;
 
 

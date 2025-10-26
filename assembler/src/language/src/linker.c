@@ -79,10 +79,10 @@ void get_globals_from_link(linker_t *lctx, link_t *link)
 					mop_t *mop =  &entry->entry.mop;
 					if(mop->type == MOP_TYPE_DEFINE_CONFIG)
 					{
-						if(mop->mop == MOP_CONFIG_TYPE_PUBLIC)
+						if(mop->holder.config.type == MOP_CONFIG_TYPE_PUBLIC)
 						{
 							//do something to include that into public
-
+								
 						}
 					}
 
@@ -100,5 +100,5 @@ linker_t *create_linker(void)
 	linker_t *lctx = CALLOC(1, linker_t);
 
 	lctx->globals = new_hash_table(1000, free_global);
-
+	return lctx;
 }
