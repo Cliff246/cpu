@@ -5,7 +5,8 @@
             "includePath": [
                 "${default}",
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/assembler/src/language/inc",
+                "${workspaceFolder}/assembler/src/language/internals/inc",
+                "${workspaceFolder}/assembler/src/language/frontend/inc",
                 "${workspaceFolder}/assembler/src/commons/src"
             ],
             "defines": [

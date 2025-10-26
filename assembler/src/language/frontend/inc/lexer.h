@@ -17,13 +17,13 @@ typedef enum
 typedef struct locale
 {
 	size_t row, col, file;
-}locale_t;
+}toklocale_t;
 
 typedef struct
 {
     tok_type_t type;
     char *lexeme;
-	locale_t locale;
+	toklocale_t locale;
 } tok_t;
 
 
@@ -35,7 +35,7 @@ typedef struct
 	size_t src_len;
 
 	size_t pos;
-	locale_t locale;
+	toklocale_t locale;
 
 }lexer_ctx_t;
 

@@ -122,7 +122,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 	tok_t *tokens = CALLOC(default_alloc, tok_t);
 
 	lexer_ctx_t *ctx = CALLOC(1, lexer_ctx_t);
-	locale_t local = {.file = file_id, .col = 0, .row = 1};
+	toklocale_t local = {.file = file_id, .col = 0, .row = 1};
 	ctx->locale = local;
 	ctx->pos = 0;
 	ctx->capacity = default_alloc;

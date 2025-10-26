@@ -13,6 +13,8 @@ typedef enum number_type
 	NUM_OCT
 }number_type_t;
 
+
+
 #define SETBIT(n, k) (1 | (n << k))
 #define CLRBIT(n, k) (n & ~(1 << k))
 #define GETBIT(n, k) (1 & (n >> k))

@@ -2,6 +2,7 @@
 #define __LINKER__
 
 #include "inter.h"
+#include "hashmap.h"
 #include <stdbool.h>
 
 
@@ -21,7 +22,7 @@ typedef struct linkflags
 typedef struct link
 {
 
-	icontext_t *ctx;
+	context_t *ctx;
 
 	linkflags_t flags;
 }link_t;
@@ -37,7 +38,7 @@ typedef struct global
 
 typedef struct linker
 {
-	link_t *links;
+	link_t **links;
 	int length;
 
 
@@ -46,11 +47,14 @@ typedef struct linker
 }linker_t;
 
 
+global_t *create_global(char *key, link_t *link);
+
+
 void get_globals_from_link(linker_t *lctx, link_t *link);
+void add_link_to_linker(linker_t *lctx, link_t *link);
 
-void add_link_to_linker(linker_t *lctx, icontext_t *ctx);
 
-
+link_t *create_link(context_t *ictx);
 linker_t *create_linker(void);
 
 #endif

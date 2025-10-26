@@ -470,7 +470,6 @@ void instruction_pull(context_t *ctx, int index)
 			}
 			if(ref->rtype == REF_REALLOC)
 			{
-				temp.aux = 1;
 			}
 			if(ref->rtype == REF_INVAL)
 			{
