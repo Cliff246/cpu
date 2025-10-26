@@ -24,38 +24,7 @@ typedef enum isegment_type
 }iseg_type_t;
 
 
-typedef struct isegment_code
-{
-	int id;
-}iseg_code_t;
 
-
-typedef struct isegment_config
-{
-	char **includes;
-	char **public;
-	char **defines;
-	size_t includes_len, public_len, defines_len;
-}iseg_config_t;
-
-
-typedef struct isegment_text
-{
-	
-}iseg_text_t;
-
-
-typedef struct isegment_realloc
-{
-
-}iseg_realloc_t;
-
-
-
-typedef struct isegment_data
-{
-
-}iseg_data_t;
 
 
 typedef struct isegment
@@ -65,24 +34,10 @@ typedef struct isegment
 
 	parse_node_t *head;
 
-	union
-	{
-		iseg_code_t code;
-		iseg_config_t config;
-		iseg_text_t text;
-		iseg_realloc_t realloc;
-		iseg_data_t data;
-	}content;
 
 }iseg_t;
 
 iseg_t *create_segment(parse_node_t *head);
-iseg_code_t create_code_segment(iseg_t *seg);
-iseg_config_t create_config_segment(iseg_t *seg);
-iseg_text_t create_text_segment(iseg_t *seg);
-iseg_data_t create_data_segment(iseg_t *seg);
-iseg_realloc_t create_realloc_segment(iseg_t *seg);
-
 
 typedef struct ireference
 {
