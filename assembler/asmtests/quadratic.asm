@@ -8,6 +8,7 @@ MAIN:
 	jmp.call zero, zero, zero, @QUADRATIC
 RESET:
 	jmp.jmp zero, zero, zero, @RESET
+	
 
 ;takes sqrt as x8
 ;a0 = y

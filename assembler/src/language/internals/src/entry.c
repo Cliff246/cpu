@@ -30,11 +30,18 @@ void entry_mop(entry_t *entry)
 
 }
 
+void entry_macro(entry_t *entry)
+{
+	//TODO
+
+}
+
 entry_t *create_entry(parse_node_t *node)
 {
 	entry_t *entry = CALLOC(1, entry_t);
 
 	entry->node = node;
+	//printf("lexme %s\n", node->tok->lexeme);
 	//fill out types
 	if(node->kind == NODE_INSTR)
 	{
@@ -46,6 +53,10 @@ entry_t *create_entry(parse_node_t *node)
 	{
 		entry_mop(entry);
 
+
+	}
+	else if(node->kind == NODE_MACRO)
+	{
 
 	}
 	else

@@ -382,6 +382,23 @@ parse_node_t *parse_metaop(parser_ctx_t *p)
 	}
 }
 
+parse_node_t *parse_macro(parser_ctx_t *p)
+{
+	if(peek(p)->type != TOK_PERCENT)
+	{
+		//failed mop
+		parse_node_t *n = make_node(NODE_INVAL, peek(p));
+		return n;
+	}
+	else
+	{
+    	parse_node_t *n = make_node(NODE_MACRO, next(p));
+		parse_expr(p, n);
+		return n;
+	}
+}
+
+
 parse_node_t *parse_internal(parser_ctx_t *p)
 {
 	parse_node_t *child;
@@ -399,6 +416,7 @@ parse_node_t *parse_internal(parser_ctx_t *p)
 		case TOK_IDENT:
 			child = parse_metaop(p);
 			break;
+
 		default:
 			//emit error and skip to next valid internal consuming all
 			break;
@@ -426,7 +444,7 @@ parse_node_t *parse_program(parser_ctx_t *p)
         parse_node_t *child = NULL;
 		//printf("current directive %p\n", seg_root);
 		//printf("current label %p\n", ref_root);
-		printf("%s %d\n", t->lexeme, t->type);
+		//printf("%s %d\n", t->lexeme, t->type);
 
 		if(t->type == TOK_NEWLINE)
 		{
@@ -503,6 +521,31 @@ parse_node_t *parse_program(parser_ctx_t *p)
 				}
 
 
+			}
+			if(nexttok->type == TOK_PERCENT)
+			{
+				next(p);
+				child = parse_macro(p);
+				if(child == NULL)
+				{
+					newline = false;
+					continue;
+				}
+				if(seg_root && !ref_root)
+				{
+					add_child(seg_root, child);
+				}
+				else if(ref_root)
+				{
+					add_child(ref_root, child);
+
+				}
+				else
+				{
+					//should die
+					perror("internal outside of any container");
+					exit(1);
+				}
 			}
 
 

@@ -15,7 +15,6 @@
 #include "fileio.h"
 
 #include "arguments.h"
-#include "linker.h"
 
 
 
@@ -40,13 +39,9 @@ int main(int argc, char *argv[])
 	else
 	{
 
-		linker_t *lctx = create_linker();
 		context_t *context = load_context(desc);
 		context_resolve(context);
-		link_t *link = create_link(context);
-		add_link_to_linker(lctx,link);
-		//get_globals_from_link(lctx, link);
-		//print_hash_table(lctx->globals);
+
 		output_t *output = emit(context);
 		write_out(output, (char *)target.output_file);
 		printf("assemble\n");

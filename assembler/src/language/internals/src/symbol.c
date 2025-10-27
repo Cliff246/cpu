@@ -18,7 +18,7 @@ void free_symbol(symbol_t *sym)
 {
 	if(sym->type == SYMBOL_REFERENCE)
 	{
-		free_reference(sym.symbol.ref);
+		free_reference(sym->symbol.ref);
 	}
 	free(sym);
 

@@ -4,42 +4,40 @@
 #include <string.h>
 #include "arguments.h"
 #include "entry.h"
+#include "symbol.h"
 
 
 
 
-void free_symbol(void *ptr)
+void free_alias(void *ptr)
 {
-	symbol_t *sym = (symbol_t *)ptr;
-	free(sym);
+	alias_t *ali = (alias_t *)ptr;
+	 
 }
 
-symbol_t *create_symbol(context_t *ctx, ref_t *ref)
+alias_t *create_alias(context_t *ctx, symbol_t *sym)
 {
-	symbol_t *sym = CALLOC(1, symbol_t);
-	if(ctx->symbols_alloc <= 0)
+	if(ctx->aliases <= 0)
 	{
-		ctx->symbols = CALLOC((ctx->symbols_alloc = 100), symbol_t *);
+		ctx->aliases = CALLOC((ctx->alias_alloc = 100), alias_t );
 
 	}
-	else if(ctx->symbols_count >= ctx->symbols_alloc)
+	else if(ctx->alias_count >= ctx->alias_alloc)
 	{
-		ctx->symbols = REALLOC(ctx->symbols,(ctx->symbols_alloc *= 2), symbol_t *);
+		ctx->aliases = REALLOC(ctx->aliases,(ctx->alias_alloc *= 2), alias_t );
 
 	}
-	sym->index = ctx->symbols_count;
-	sym->ref = ref;
-	ctx->symbols[ctx->symbols_count].index = ctx->symbols_count;
-	ctx->symbols[ctx->symbols_count].ref = ref;
-	if(getdata_from_hash_table(ctx->symmap, sym->ref->ref_string))
+
+	ctx->aliases[ctx->alias_count].index = ctx->alias_count;
+	ctx->aliases[ctx->alias_count].symbol = sym;
+	if(getdata_from_hash_table(ctx->alias_map, sym->key))
 	{
 		perror("cannot duplicate reference key");
 
 	}
 
-	addto_hash_table(ctx->symmap, sym->ref->ref_string, ctx->symbols + ctx->symbols_count);
-	ctx->symbols_count++;
-	return ctx->symbols + ctx->symbols_count;
+	addto_hash_table(ctx->alias_map, sym->key, ctx->aliases + ctx->alias_count);
+	return ctx->aliases + ctx->alias_count++;
 }
 
 
@@ -63,14 +61,6 @@ local_t *create_local(context_t *ctx, scope_t scope)
 	return ctx->locales.locales + ctx->locales.size;
 }
 
-void print_local(local_t *l)
-{
-	printf("ref %d\n",l->scope.refs.count);
-	for(int i = 0; i < l->scope.refs.count; ++i)
-	{
-		printf("locale ref:%s\n", l->scope.refs.refs[i]->ref_string);
-	}
-}
 
 context_t *load_context(file_desc_t *desc)
 {
@@ -90,13 +80,13 @@ context_t *load_context(file_desc_t *desc)
 	//printf("done parser\n");
 	ctx->locales.size = 0;
 	ctx->locales.locales = NULL;
-	print_depth(ctx->head, 0);
+	//print_depth(ctx->head, 0);
 
 	//this is over kill likely
 	const int max_size = 100;
-	ctx->symbols_alloc = max_size;
-	ctx->symbols = CALLOC(ctx->symbols_alloc, symbol_t *);
-	ctx->symmap = new_hash_table(max_size, free_symbol);
+	ctx->alias_alloc = max_size;
+	ctx->aliases = CALLOC(ctx->alias_alloc, alias_t);
+	ctx->alias_map = new_hash_table(max_size, free_alias);
 
 	return ctx;
 }
@@ -110,14 +100,16 @@ void context_resolve(context_t *ctx)
 	for(int s = 0; s < ctx->head->child_count; ++s)
 	{
 		parse_node_t *child = ctx->head->children[s];
+		printf("child %s\n",child->tok->lexeme);
 		if(child->kind == NODE_SEGMENT)
 		{
 			scope_t scope = create_scope(child);
 
 			local_t *local = create_local(ctx, scope);
-			for(int i = 0; i < scope.refs.count; ++i)
+			for(int i = 0; i < scope.symbols.count; ++i)
 			{
-				create_symbol(ctx,scope.refs.refs[i]);
+				//printf("refs: %d %s\n", i, scope.refs.refs[i]->ref_string);
+				create_alias(ctx,scope.symbols.symbols[i]);
 			}
 
 		}
@@ -125,6 +117,6 @@ void context_resolve(context_t *ctx)
 
 
 	}
-	print_hash_table(ctx->symmap);
+	print_hash_table(ctx->alias_map);
 }
 

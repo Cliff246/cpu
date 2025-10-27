@@ -45,7 +45,7 @@ typedef struct reference
 }ref_t;
 
 ref_t *create_reference(char *key);
-
+void print_ref(ref_t *ref);
 void implement_reference(ref_t *ref, parse_node_t *head);
-
+void free_reference(ref_t *ptr);
 #endif

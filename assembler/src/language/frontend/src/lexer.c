@@ -310,6 +310,29 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 			seperator = false;
 
 		}
+		else if(ch == '%')
+		{
+
+			if(isalpha(PEEK))
+			{
+				start = ctx->pos;
+
+				while(isalnum(PEEK) || PEEK == '_')
+				{
+					//printf("%d %c\n", index, ch);
+
+					ADVANCE;
+				}
+				ADVANCE;
+
+				char *lexeme = SLICE(start, ctx->pos);
+
+				EMIT(TOK_PERCENT, lexeme);
+
+			}
+			seperator = false;
+
+		}
 		else if(ch == '#')
 		{
 			if(isdigit(PEEK))
@@ -345,7 +368,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 
 	for(int i = 0; i < ctx->count; ++i)
 	{
-		print_token(&ctx->toks[i]);
+		//print_token(&ctx->toks[i]);
 	}
 	return ctx;
 }

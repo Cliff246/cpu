@@ -2,15 +2,11 @@
 #define __SYMBOL__
 
 #include "reference.h"
-#include "object.h"
-#include "marco.h"
 
 typedef enum symtype
 {
 	SYMBOL_INVAL,
 	SYMBOL_REFERENCE,
-	SYMBOL_MACRO,
-	SYMBOL_OBJECT,
 }symtype_t;
 
 
@@ -23,7 +19,6 @@ typedef struct symbol
 	union
 	{
 		ref_t *ref;
-		obj_t *obj;
 
 	}symbol;
 }symbol_t;

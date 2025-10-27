@@ -16,7 +16,7 @@
 #include "metaop.h"
 #include "entry.h"
 #include "scope.h"
-
+#include "symbol.h"
 
 
 typedef struct segout_txt
@@ -65,6 +65,11 @@ typedef struct previous_contexts
 }prev_ctx_t;
 
 
+typedef enum local_type
+{
+	LOCAL_WRITABLE,
+}local_type_t;
+
 typedef struct local
 {
 	//order
@@ -91,14 +96,12 @@ typedef struct locales
 }locale_t;
 
 
-
-
-
-typedef struct symbol
+typedef struct alias
 {
-	ref_t *ref;
+	symbol_t *symbol;
 	int index;
-}symbol_t;
+}alias_t;
+
 
 
 typedef struct
@@ -110,9 +113,9 @@ typedef struct
 	//holds the results of the ref_table ptr
 
 	locale_t locales;
-	symbol_t *symbols;
-	size_t symbols_count, symbols_alloc;
-	p_hashtable_t symmap;
+	alias_t *aliases;
+	size_t alias_count, alias_alloc;
+	p_hashtable_t alias_map;
 	file_desc_t *desc;
 
 }context_t;

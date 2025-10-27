@@ -111,6 +111,7 @@ config_public_t create_config_public(parse_node_t *node)
 	config_public_t pub = {0};
 	pub.count = 0;
 	bool found_valid_public = false;
+	printf("create config public\n");
 	for(int i = 0; i < node->child_count; ++i)
 	{
 		parse_node_t *child = node->children[i];
@@ -137,11 +138,43 @@ config_public_t create_config_public(parse_node_t *node)
 config_define_t create_config_define(parse_node_t *node)
 {
 	config_define_t def = {0};
+	bool found_valid_define = false;
+	for(int i = 0; i < node->child_count; ++i)
+	{
+		parse_node_t *child = node->children[i];
+
+		if(child->kind == NODE_LITERAL)
+		{
+			if(child->tok->type == TOK_TOKEN)
+			{
+				//reference here
+				def.key_imply = child->tok->lexeme;
+				found_valid_define = true;
+				break;
+			}
+		}
+	}
 	return def;
 }
 config_include_t create_config_include(parse_node_t *node)
 {
 	config_include_t inc = {0};
+	bool found = false;
+	for(int i = 0; i < node->child_count; ++i)
+	{
+		parse_node_t *child = node->children[i];
+
+		if(child->kind == NODE_LITERAL)
+		{
+			if(child->tok->type == TOK_STRING)
+			{
+				//reference here
+				inc.file_include = child->tok->lexeme;
+				found = true;
+				break;
+			}
+		}
+	}
 	return inc;
 }
 
@@ -252,7 +285,7 @@ mop_id_t get_mop_code(char *keyword)
 		"ptr",
 		"pub",
 		"def",
-		"include",
+		"inc",
 	};
 
 	mop_id_t ids[] = {

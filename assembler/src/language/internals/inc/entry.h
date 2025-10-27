@@ -11,7 +11,7 @@
 
 
 
-typedef enum ientry_type
+typedef enum entry_type
 {
 	ENTRY_UNKNOWN,
 	ENTRY_INST,

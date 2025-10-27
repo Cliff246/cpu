@@ -8,7 +8,7 @@
 #include "entry.h"
 #include "segment.h"
 #include "reference.h"
-
+#include "symbol.h"
 
 
 
@@ -21,24 +21,27 @@ typedef struct scope_entries
 
 }scope_entries_t;
 
-typedef struct scope_refs
+typedef struct scope_symbols
 {
-	ref_t **refs;
+	symbol_t **symbols;
 	size_t count;
 	size_t alloc;
-}scope_refs_t;
+}scope_symbols_t;
 
 
 typedef struct scope
 {
 	scope_entries_t entries;
-	scope_refs_t refs;
-
+	scope_symbols_t symbols;
 	seg_t segment;
 
 	parse_node_t *head;
-}scope_t;
+	size_t bytes;
 
+}scope_t;
+void create_ref_from_parser(scope_t *scope, parse_node_t *head);
+
+void add_symbol_to_scope(scope_t *scope, symbol_t *ref);
 
 scope_t create_scope(parse_node_t *head);
 

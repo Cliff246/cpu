@@ -157,6 +157,8 @@ void inst_imm(parse_node_t *node, inst_t *inst)
 				//faking the valid names
 				char *dup = strdup(final + 1);
 				inst->immref = dup;
+				inst->ref_type = INST_REF_LOCAL;
+
 			}
 			else
 			{
@@ -192,7 +194,7 @@ inst_t create_instruction(parse_node_t *node)
 	inst_t inst = {0};
 	//clear this
 	inst.line = node->tok->locale.row;
-	inst.ref_type = INST_REF_NONE;
+	inst.ref_type = INST_REF_GLOBAL;
 
 	if(node->child_count != 6 && node->child_count!= 5)
 	{
