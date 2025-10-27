@@ -276,7 +276,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 
 				char *lexeme = SLICE(start, ctx->pos);
 
-				EMIT(TOK_DIRECTIVE, lexeme);
+				EMIT(TOK_SEGMENT, lexeme);
 
 			}
 			else

@@ -106,101 +106,6 @@ data_holder_t decode_integer(parse_node_t *head)
 
 }
 
-config_public_t create_config_public(parse_node_t *node)
-{
-	config_public_t pub = {0};
-	pub.count = 0;
-	bool found_valid_public = false;
-	printf("create config public\n");
-	for(int i = 0; i < node->child_count; ++i)
-	{
-		parse_node_t *child = node->children[i];
-
-		if(child->kind == NODE_LITERAL)
-		{
-			if(child->tok->type == TOK_TOKEN)
-			{
-				//reference here
-				pub.key_string = child->tok->lexeme;
-				found_valid_public = true;
-				break;
-			}
-		}
-	}
-	if(found_valid_public == false)
-	{
-		perror("valid parser node for configuartion public was not found");
-	}
-
-	return pub;
-}
-
-config_define_t create_config_define(parse_node_t *node)
-{
-	config_define_t def = {0};
-	bool found_valid_define = false;
-	for(int i = 0; i < node->child_count; ++i)
-	{
-		parse_node_t *child = node->children[i];
-
-		if(child->kind == NODE_LITERAL)
-		{
-			if(child->tok->type == TOK_TOKEN)
-			{
-				//reference here
-				def.key_imply = child->tok->lexeme;
-				found_valid_define = true;
-				break;
-			}
-		}
-	}
-	return def;
-}
-config_include_t create_config_include(parse_node_t *node)
-{
-	config_include_t inc = {0};
-	bool found = false;
-	for(int i = 0; i < node->child_count; ++i)
-	{
-		parse_node_t *child = node->children[i];
-
-		if(child->kind == NODE_LITERAL)
-		{
-			if(child->tok->type == TOK_STRING)
-			{
-				//reference here
-				inc.file_include = child->tok->lexeme;
-				found = true;
-				break;
-			}
-		}
-	}
-	return inc;
-}
-
-
-
-config_t create_config(parse_node_t *node, config_type_t type)
-{
-	config_t config = {0};
-	config.type = type;
-	switch(type)
-	{
-		case MOP_CONFIG_TYPE_PUBLIC:
-			config.config.pub = create_config_public(node);
-			break;
-		case MOP_CONFIG_TYPE_DEFINE:
-			config.config.def = create_config_define(node);
-
-			break;
-		case MOP_CONFIG_TYPE_INCLUDE:
-			config.config.inc = create_config_include(node);
-
-			break;
-	}
-	return config;
-}
-
 
 void print_mop(mop_t *mop)
 {
@@ -224,43 +129,30 @@ mop_t create_mop(parse_node_t *node)
 	switch(mop.mop)
 	{
 		case MOP_STRING:
-			mop.holder.data = decode_string(node);
+			mop.data = decode_string(node);
 			mop.type = MOP_TYPE_DEFINE_DATA;
 
 			break;
 		case MOP_I16:
-			mop.holder.data = decode_integer(node);
+			mop.data = decode_integer(node);
 			mop.type = MOP_TYPE_DEFINE_DATA;
 
 			break;
 		case MOP_I32:
-			mop.holder.data = decode_integer(node);
+			mop.data = decode_integer(node);
 			mop.type = MOP_TYPE_DEFINE_DATA;
 
 			break;
 		case MOP_I8:
-			mop.holder.data = decode_integer(node);
+			mop.data = decode_integer(node);
 			mop.type = MOP_TYPE_DEFINE_DATA;
 			break;
 		case MOP_I64:
-			mop.holder.data = decode_integer(node);
+			mop.data = decode_integer(node);
 			mop.type = MOP_TYPE_DEFINE_DATA;
 
 			break;
-		case MOP_PUB:
-			mop.type = MOP_TYPE_DEFINE_CONFIG;
-			mop.holder.config = create_config(node, MOP_CONFIG_TYPE_PUBLIC);
-			break;
-		case MOP_DEFINE:
-			mop.type = MOP_TYPE_DEFINE_CONFIG;
-			mop.holder.config = create_config(node, MOP_CONFIG_TYPE_DEFINE);
 
-			break;
-		case MOP_INCLUDE:
-			mop.type = MOP_TYPE_DEFINE_CONFIG;
-			mop.holder.config = create_config(node, MOP_CONFIG_TYPE_INCLUDE);
-
-			break;
 
 		default:
 			break;
@@ -283,9 +175,7 @@ mop_id_t get_mop_code(char *keyword)
 		"string",
 		"mem",
 		"ptr",
-		"pub",
-		"def",
-		"inc",
+
 	};
 
 	mop_id_t ids[] = {
@@ -299,9 +189,7 @@ mop_id_t get_mop_code(char *keyword)
 		MOP_STRING,
 		MOP_MEM,
 		MOP_PTR,
-		MOP_PUB,
-		MOP_DEFINE,
-		MOP_INCLUDE
+
 	};
 
 	int code = determine_code(keyword, mops, ARYSIZE(mops));

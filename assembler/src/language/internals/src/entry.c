@@ -18,15 +18,9 @@ void entry_mop(entry_t *entry)
 	mop_t mop = create_mop(entry->node);
 	entry->entry.mop = mop;
 	entry->type = ENTRY_MOP;
-	if(entry->entry.mop.type == MOP_TYPE_DEFINE_CONFIG)
-	{
+	entry->bytes = entry->entry.mop.data.words_len * 8;
 
-	}
-	else
-	{
-		entry->bytes = entry->entry.mop.holder.data.words_len * 8;
 
-	}
 
 }
 
@@ -53,10 +47,6 @@ entry_t *create_entry(parse_node_t *node)
 	{
 		entry_mop(entry);
 
-
-	}
-	else if(node->kind == NODE_MACRO)
-	{
 
 	}
 	else

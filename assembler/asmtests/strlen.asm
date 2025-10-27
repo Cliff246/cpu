@@ -1,3 +1,5 @@
+
+%pub MAIN
 .text test
 
 MAIN:

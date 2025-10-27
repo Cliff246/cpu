@@ -17,6 +17,7 @@
 #include "entry.h"
 #include "scope.h"
 #include "symbol.h"
+#include "directive.h"
 
 
 typedef struct segout_txt
@@ -104,6 +105,8 @@ typedef struct alias
 
 
 
+
+
 typedef struct
 {
 
@@ -115,6 +118,10 @@ typedef struct
 	locale_t locales;
 	alias_t *aliases;
 	size_t alias_count, alias_alloc;
+
+	directive_t *directives;
+	size_t dirs_count, dirs_alloc;
+
 	p_hashtable_t alias_map;
 	file_desc_t *desc;
 

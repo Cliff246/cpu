@@ -308,7 +308,7 @@ parse_node_t *parse_reference(parser_ctx_t *p)
 parse_node_t *parse_segment(parser_ctx_t *p)
 {
 
-	tok_t *segment = expect(p, TOK_DIRECTIVE);
+	tok_t *segment = expect(p, TOK_SEGMENT);
 	if(!segment)
 	{
 		//TODO expected token error
@@ -382,22 +382,32 @@ parse_node_t *parse_metaop(parser_ctx_t *p)
 	}
 }
 
-parse_node_t *parse_macro(parser_ctx_t *p)
+parse_node_t *parse_directive(parser_ctx_t *p)
 {
-	if(peek(p)->type != TOK_PERCENT)
+	parse_node_t *n = make_node(NODE_DIRECTIVE, next(p));
+	parse_expr(p, n);
+	if(peek(p)->type == TOK_IDENT)
 	{
-		//failed mop
-		parse_node_t *n = make_node(NODE_INVAL, peek(p));
-		return n;
-	}
-	else
-	{
-    	parse_node_t *n = make_node(NODE_MACRO, next(p));
-		parse_expr(p, n);
-		return n;
-	}
-}
+		while(true)
+		{
+			tok_t *cur  =next(p);
 
+			if(cur->type != TOK_EOF || cur->type != TOK_NEWLINE)
+			{
+				parse_node_t *argument = make_node(NODE_ARGS, cur);
+				add_child(n, argument);
+
+			}
+			else
+			{
+				break;
+			}
+
+		}
+
+	}
+	return n;
+}
 
 parse_node_t *parse_internal(parser_ctx_t *p)
 {
@@ -452,8 +462,16 @@ parse_node_t *parse_program(parser_ctx_t *p)
 			next(p);
 			continue;
 		}
+		else if (t->type == TOK_PERCENT)
+		{
 
-        else if (t->type == TOK_DIRECTIVE)
+            child = parse_directive(p);
+
+       		add_child(root, child);
+			newline = false;
+			continue;
+		}
+        else if (t->type == TOK_SEGMENT)
 		{
 
 
@@ -522,31 +540,7 @@ parse_node_t *parse_program(parser_ctx_t *p)
 
 
 			}
-			if(nexttok->type == TOK_PERCENT)
-			{
-				next(p);
-				child = parse_macro(p);
-				if(child == NULL)
-				{
-					newline = false;
-					continue;
-				}
-				if(seg_root && !ref_root)
-				{
-					add_child(seg_root, child);
-				}
-				else if(ref_root)
-				{
-					add_child(ref_root, child);
 
-				}
-				else
-				{
-					//should die
-					perror("internal outside of any container");
-					exit(1);
-				}
-			}
 
 
 

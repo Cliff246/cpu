@@ -12,7 +12,7 @@
 void free_alias(void *ptr)
 {
 	alias_t *ali = (alias_t *)ptr;
-	 
+
 }
 
 alias_t *create_alias(context_t *ctx, symbol_t *sym)
@@ -86,7 +86,13 @@ context_t *load_context(file_desc_t *desc)
 	const int max_size = 100;
 	ctx->alias_alloc = max_size;
 	ctx->aliases = CALLOC(ctx->alias_alloc, alias_t);
-	ctx->alias_map = new_hash_table(max_size, free_alias);
+	ctx->alias_map = new_hash_table(1000, free_alias);
+
+	ctx->dirs_alloc = max_size;
+	ctx->directives = CALLOC(ctx->dirs_alloc, directive_t);
+
+
+
 
 	return ctx;
 }
@@ -112,6 +118,10 @@ void context_resolve(context_t *ctx)
 				create_alias(ctx,scope.symbols.symbols[i]);
 			}
 
+		}
+		else if(child->kind == NODE_DIRECTIVE)
+		{
+			//solve directives
 		}
 
 

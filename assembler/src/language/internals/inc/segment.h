@@ -14,7 +14,6 @@ typedef enum segment_type
 	ISEG_DATA,			//data segments
 	ISEG_BSS,			//bss
 	ISEG_CODE,			//combined unified code blocks
-	ISEG_CONFIG,
 }seg_type_t;
 
 
@@ -32,7 +31,6 @@ typedef struct segment
 {
 	seg_type_t segtype;
 	int sid;
-	segarg_t args[5];
 
 
 }seg_t;

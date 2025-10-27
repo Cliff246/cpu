@@ -13,6 +13,7 @@ set(ASM_LANG_SRC ${ASM_LANG_SRC}
 	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/segment.c
 	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/scope.c
 	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/symbol.c
+	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/directive.c
 
 )
 

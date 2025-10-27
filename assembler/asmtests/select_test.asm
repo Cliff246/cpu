@@ -1,7 +1,6 @@
-.config
-	pub MAINS
-	inc "sqrt.asm"
-	def "SQRT_FUNCTION"
+%pub MAINS
+%inc "sqrt.asm"
+%def "SQRT_FUNCTION"
 .text
 
 MAIN: test

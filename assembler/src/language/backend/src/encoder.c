@@ -27,14 +27,7 @@ uint64_t text_resolve(scope_t *txt)
 		}
 		else if(entry->type == ENTRY_MOP)
 		{
-			if(entry->entry.mop.type == MOP_TYPE_DEFINE_CONFIG)
-			{
-				//do shit with config
-			}
-			else
-			{
-				//error out
-			}
+
 		}
 
 
@@ -71,7 +64,7 @@ uint64_t data_resolve(scope_t *data)
 			mop_t *mop = &entry->entry.mop;
 			if(mop->type == MOP_TYPE_DEFINE_DATA)
 			{
-				size += mop->holder.data.words_len;
+				size += mop->data.words_len;
 
 			}
 			else
@@ -244,7 +237,7 @@ segout_data_t create_segout_data(context_t *ctx, int index)
 		mop_t *mop = &entry->entry.mop;
 		if(mop->type == MOP_TYPE_DEFINE_DATA)
 		{
-			data_holder_t holder = mop->holder.data;
+			data_holder_t holder = mop->data;
 			for(int wi = 0; wi < holder.words_len; ++wi)
 			{
 				printf("%16x holder words\n",holder.words[wi]);

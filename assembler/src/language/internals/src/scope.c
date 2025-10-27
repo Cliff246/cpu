@@ -22,40 +22,7 @@ void add_entry_to_scope(scope_t *scope, entry_t *entry)
 	else if(scope->entries.alloc <= scope->entries.count)
 		scope->entries.entries = REALLOC(scope->entries.entries, (scope->entries.alloc *= 2), entry_t *);
 
-	if(entry->type == ENTRY_MOP)
-	{
-		if(entry->entry.mop.type == MOP_TYPE_DEFINE_CONFIG)
-		{
-			if(entry->entry.mop.holder.config.type == MOP_CONFIG_TYPE_PUBLIC)
-			{
-				ref_t *ref = create_reference(entry->entry.mop.holder.config.config.pub.key_string);
-				ref->access_modifier = ACCESS_PUBLIC;
-				symbol_t *sym = create_symbol_with_ref(ref);
-				add_symbol_to_scope(scope, sym);
-
-
-			}
-			else if(entry->entry.mop.holder.config.type == MOP_CONFIG_TYPE_INCLUDE)
-			{
-				ref_t *ref = create_reference(entry->entry.mop.holder.config.config.inc.file_include);
-				symbol_t *sym = create_symbol_with_ref(ref);
-
-				add_symbol_to_scope(scope, sym);
-			}
-
-			else if(entry->entry.mop.holder.config.type == MOP_CONFIG_TYPE_DEFINE)
-			{
-				ref_t *ref = create_reference(entry->entry.mop.holder.config.config.def.key_imply);
-				symbol_t *sym = create_symbol_with_ref(ref);
-
-				add_symbol_to_scope(scope, sym);
-
-
-			}
-		}
-
-	}
-		scope->bytes += entry->bytes;
+	scope->bytes += entry->bytes;
 
 	scope->entries.entries[scope->entries.count++] = entry;
 
