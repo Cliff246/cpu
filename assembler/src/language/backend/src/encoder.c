@@ -13,7 +13,7 @@ uint64_t text_resolve(scope_t *txt)
 	uint64_t immedates = 0;
 	for(int i = 0; i < txt->entries.count; ++i)
 	{
-		printf("%d\n", i);
+		//printf("%d\n", i);
 
 		entry_t *entry = txt->entries.entries[i];
 		if(entry->type == ENTRY_INST)
@@ -105,7 +105,7 @@ segout_txt_t create_segout_txt(context_t *ctx, int index)
 
 	for(int i = 0; i < inst_len; ++i)
 	{
-		printf("enty %d %d\n", i, inst_len);
+		//printf("enty %d %d\n", i, inst_len);
 		entry_t *entry = scope->entries.entries[i];
 
 		if(imm_iter % 128 == 0)
@@ -120,7 +120,7 @@ segout_txt_t create_segout_txt(context_t *ctx, int index)
 		}
 		inst_t *instruction = &entry->entry.inst;
 		//printf("content %s\n", entry->node->tok->lexeme);
-		print_inst(instruction);
+		//print_inst(instruction);
 
 		if(instruction->immflag )
 		{
@@ -240,7 +240,7 @@ segout_data_t create_segout_data(context_t *ctx, int index)
 			data_holder_t holder = mop->data;
 			for(int wi = 0; wi < holder.words_len; ++wi)
 			{
-				printf("%16x holder words\n",holder.words[wi]);
+				//printf("%16x holder words\n",holder.words[wi]);
 				content[iter++] = holder.words[wi];
 
 			}
@@ -360,7 +360,7 @@ output_t *combine_segouts(segout_t *segouts, int length)
 			}
 			for(int i_data = 0; i_data < data->data_size; ++i_data)
 			{
-				printf("%x\n",data->data[i_data]);
+				//printf("%x\n",data->data[i_data]);
 				bin[bin_iter++] = data->data[i_data];
 			}
 
@@ -382,13 +382,13 @@ output_t *combine_segouts(segout_t *segouts, int length)
 uint64_t resolve_size(scope_t *scope)
 {
 	uint64_t size = 0;
-	printf("resolve %d\n", scope->segment.segtype);
+	//printf("resolve %d\n", scope->segment.segtype);
 	switch(scope->segment.segtype)
 	{
 
 		case ISEG_TEXT:
 			size = text_resolve(scope);
-			printf("text segment: %d\n", size);
+			//printf("text segment: %d\n", size);
 			break;
 
 		case ISEG_REALLOC:
@@ -415,11 +415,11 @@ size_t resolve_addresses(context_t *ctx)
 
 	for(int i = 0; i < ctx->locales.size; ++i)
 	{
-		printf("counter %d %d\n", i, ctx->locales.size);
-		 size_t region_size = resolve_size(&ctx->locales.locales[i].scope);
-		 ctx->locales.locales[i].region.size = region_size;
-		 ctx->locales.locales[i].region.position = current_postion;
-		 current_postion += region_size;
+		//printf("counter %d %d\n", i, ctx->locales.size);
+		size_t region_size = resolve_size(&ctx->locales.locales[i].scope);
+		ctx->locales.locales[i].region.size = region_size;
+		ctx->locales.locales[i].region.position = current_postion;
+		current_postion += region_size;
 	}
 
 	return current_postion;
@@ -462,7 +462,7 @@ void fill_in_addresses(context_t *ctx)
 
 output_t *emit(context_t *ctx)
 {
-	printf("resolve addresses\n");
+	//printf("resolve addresses\n");
 	size_t total_size = resolve_addresses(ctx);
 	fill_in_addresses(ctx);
 

@@ -1,0 +1,186 @@
+
+code:
+
+
+%pub MAIN
+.text test
+
+MAIN:
+ 	;t1 = pointer
+	; t2 = counter
+00:	alu.add t1, zero, zero           ; start pointer = 0
+01:	alu.add t2, zero, zero           ; length = 0
+
+LOOP:
+	; t3 = data
+02:	mem.ld t3, zero, t1, str        ; load one word
+	; t4 = count of 8
+03:	alu.add t4, zero, #8
+BYTE_SPLIT:
+	;x2 = mask
+04:	alu.and t5, t3, null, 0xFF      ; mask lowest byte (flag=1)
+05:	jmp.beq null, t5, zero, @END      ; stop at null terminator
+06:	alu.srl t3, t3, #8
+
+	;x6 = x6 + 1
+07:	alu.add t2, t2, #1        ; length++
+	;x4 = x4 - 1
+08:	alu.sub t4, t4, #1        ; move to next byte
+	;jmp on x4 != 0
+09:	jmp.bne null, t4, zero, @BYTE_SPLIT
+
+10:	alu.add t1, t1, #1
+
+11:	jmp.jmp null, null, null, @LOOP
+END:
+12:	jmp.jmp null, null, null, @END      ; halt here
+
+.data
+str:
+ptr whereever:	string "hello world this is"
+
+
+
+
+the decoder goes from the top of main, regardless of instructions down to the bottom of instructions.
+that's to say from 0 to 12.
+
+feeding down wide and filling up regardless of how long an instruction takes
+[alu.add t1, zero, zero]
+[alu.add t2, zero, zero]
+[mem.ld t3, zero, t1, str]
+[alu.add t4, zero, #8]
+[alu.and t5, t3, null, 0xFF]
+[jmp.beq null, t5, zero, @END]
+[alu.srl t3, t3, #8]
+[alu.add t2, t2, #1]
+[alu.sub t4, t4, #1 ]
+[jmp.bne null, t4, zero, @BYTE_SPLIT]
+[alu.add t1, t1, #1]
+
+[jmp.jmp null, null, null, @LOOP]
+[jmp.jmp null, null, null, @END]
+
+
+the binary may look like this
+
+000: 0000000000000006 6						code table ptr
+001: 0000000000000001 1						code table len
+002: 0000000000000007 7						instructions
+003: 0000000000000007 7						instruction words
+004: 000000000000000e 14					immediate ptr
+005: 0000000000000006 6						immediate words
+006: 0000000000000000 0						first code table check point
+007: 0003000000038000 844424930361344		[add t1, x0, x0 				| add t2, x0, x0				]
+008: 1004003100048044 1154047614967382084	[ld t3, x0, x0, imm[0] == 20	| alu.add t4, zero, #8			]
+009: 0065100120201401 28446569667761153		[and t5, t3, x0, imm[1] == 255	| beq x0, t5, x0, imm[2] == 12	]
+010: 00e4104400038e0c 64194178934083084		[srl t3, t3, #8(inline 8)		| add t2, t2, #1(inline 1)		]
+011: 0024920c20401201 10293679939916289		[sub t4, t4, #1(inline 1)		| bne x0, t4, x0, imm[4] == 4	]
+012: 00030c0c20600001 857671152435201		[add t1, t1, #1(inline 1)	 	| jmp x0, x0, x0, imm[5] == 2	]
+013: 2060000100000000 2332864611272884224	[jmp x0, x0, x0, imm[5] == 12	| NOP							]
+014: 0000000000000014 20					[ptr to str]
+015: 00000000000000ff 255					[mask]
+016: 000000000000000c 12					[ptr to end]
+017: 0000000000000004 4						[ptr to BYTE_SPLIT]
+018: 0000000000000002 2						[ptr to loop]
+019: 000000000000000c 12					[ptr to end]
+020: 6f77206f6c6c6568 8031924123371070824	["hello wo"]
+021: 7369687420646c72 8316293034885278834	["rld this"]
+022: 0000000000736920 7563552				[" is"]
+
+the system ultimately doesnt care how it's done...
+but if you look at the binary you will see that when you run through it. it's incredably explict.
+
+
+so let's imagine how this would work
+
+given 4 fabrics f0, f1, f2, f3 each with a unlimited buffer and infinite registers just so we share how it works
+
+
+the decode string comes in deep and fast
+
+so in 14 cycles you would get the entire instructions without any delays.
+likely it would be super scalar so lets say 7 or even 3 if we double it again
+
+
+f0 as the first fabric will see unresolved dependencies that are free from the first 2 instructions
+[t1 = 0, t2 = 0]
+it takes them from the queue because it's free of registers and now it owns t1, t2
+f0 = [t1 = 0, t2 = 0]
+it sees again that mem.ld t3, zero, t1, str.
+it has register t1 so it must take mem.ld... stall... sad usually. this would force it to slow down if it were any other cpu but not this one
+f1 also free sees instruction 4 since we keep running. it takes that as in, it's taking
+f0 = [t1 = 0, t2 = 0, t3 = str]
+f1 = [t4 = 8]
+it keeps running it sees and t5, t3, 0, 0xff
+it doesnt have t3... since thats a src register required it doesnt take.
+butttttttt
+f0 does have t3..
+so it takes [t1 = 0, t2 = 0, t3 = str, t5 = t3 & 0xff]
+we keep running ahead.
+we see [jmp.beq null, t5, zero, @END]
+this is a jump that sources t5
+which fabric 0 owns
+so it gets
+[t1 = 0, t2 = 0, t3 = str, t5 = t3 & 0xff, bne t5 == 0 too END]
+this is full. since it's holding on jump, as in. the resolved queue now has a jump and cannot consume more ops
+oh no were stuck... no let's keep going on at two different targets.
+f0 armed to @END
+f1 unarmed,
+f2 unarmed,
+f3 unarmed
+
+we keep going down is the. next op.
+alu.srl t3, t3, #8
+okay... shit that requires t3 from this armed fabric... but no. we fill a new fabric and have it wait on f0
+
+f2 = [srl t3@f0:0, t3@f0:0, #8]
+we keep going down
+alu.add t2, t2, #1
+shit again... but we are already waiting on f0 so send it to f2 it's already waiting
+f2 = [srl t3@f0:0, t3@f0:0, #8, add t2, t2, #1]
+we see alu.sub t4, t4, #1
+well fabric 1 owns t4 but this is on branch so we must wait on commit but otherwise we can update it
+f1 = [t4 = 8, t4 -= 1]
+we see jmp.bne null, t4, zero, @BYTE_SPLIT
+well f1 owns t4 so we can give that to f1
+f1 = [t4 = 8, t4@f0:0(failed) -= 1, bne t4@f0:0(failed) == 0 too @BYTE_SPLIT]
+now f1 must arm.
+so to recap
+f0 armed to @END at t5 == 0
+f1 armed to @BYTE_SPLIT at t4 == 0 and f0 doesnt commit
+f2 is unarmed and dont commit if f0 doesnt commit
+f3 is unarmed
+
+we keep walking
+alu.add t1, t1, #1
+we see this... who owns t1... well f0... so we need to commit on f0 non arm but were also in f1 failed arm.
+so we
+add to a new free fabric either f3 or f2 let's do f3
+f3 = [add t1@f1:0, t1@f1:0, #1]
+we choose f1 to commit on since the last failed branch on this is at f1 and f1 fails on f0
+we keep going
+[jmp.jmp null, null, null, @LOOP]
+well... that's fine we give it to a free fabric it's just a jump
+f2 = [srl t3@f0:0, t3@f0:0, #8, add t2, t2, #1, jmp@f1:0 @LOOP]
+we keep going we see
+[jmp.jmp null, null, null, @END]
+well no, since jmp.jmp is guranteed to jump we have no branches, this branch was guranteed killed.
+well that fills that.
+but since we jumped to @end f0 can fill [jmp.jmp null, null, null, @END] since it's on commit but it must be on success
+that's to say it's ready for that branch...
+infact we keep doing this again and again and again.
+f1 branches @BYTE_SPLIT so we start loading byte split into it
+
+
+add this to f1.. since for f1 to be resolved t5 must be valid and free we can add this
+[alu.and t5, t3, null, 0xFF]
+[jmp.beq null, t5, zero, @END]
+then arm on beq.
+then since we are still in this stream add to the fabrics that are free the next path
+well f2 see these numbers
+[alu.srl t3@f1:1, t3@f1:1, #8]
+[alu.add t2@f1:1, t2@f1:1, #1]
+[alu.sub t4@f1:1, t4@f1:1, #1 ]
+
+it can add that on... you see

@@ -14,7 +14,6 @@ seg_type_t get_seg_type(char *node)
 		".data",
 		".bss",
 		".code",
-		".config",
 	};
 	seg_type_t type = 0;
 	for(int i = 0; i < ARYSIZE(segment_types); ++i)
@@ -46,7 +45,7 @@ seg_t create_segment(parse_node_t *head)
 	//
 	segment.segtype = get_seg_type(head->tok->lexeme);
 
-	LOG("seg type %d\n", segment.segtype, 0);
+	//LOG("seg type %d\n", segment.segtype, 0);
 	return segment;
 }
 

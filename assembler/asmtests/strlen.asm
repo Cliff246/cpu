@@ -1,5 +1,5 @@
 
-%pub MAIN
+%pub MAIN LOOP BYTE_SPLIT
 .text test
 
 MAIN:

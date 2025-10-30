@@ -59,6 +59,7 @@ void print_bin(long bin, char len, bool newline)
     {
         printf("\n");
     }
+#undef BUFSIZE
 }
 
 void print_hex(char hex, bool newline)
@@ -457,3 +458,23 @@ void logit(char *fmt, size_t line, char *filename, ...)
 	fprintf(stdout, "<%s:%d> %s",filename, line, buffer);
 }
 
+int remove_quotes(char *string, char *buffer, size_t length)
+{
+	memset(buffer, 0, length);
+	int current = 0, quotes = 0;
+	for(char *c = string; *c; c++)
+	{
+		if(*c != '\"' && *c != '\'')
+		{
+			quotes++;
+			if(current >= length)
+			{
+				buffer[current] = 0;
+				return quotes ;
+			}
+			buffer[current++] = *c;
+
+		}
+	}
+	return quotes;
+}

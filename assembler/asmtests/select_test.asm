@@ -1,9 +1,11 @@
-%pub MAINS
-%inc "sqrt.asm"
-%def "SQRT_FUNCTION"
+%def MAIN
+%imp "asmtests/strlen.asm"
+;%def SQRT_FUNCTION
 .text
 
-MAIN: test
-	%add x5, x0, #5
+
+
+START: test
 	alu.add x9, zero, zero, 100
 	alu.sub x10, x9, #60
+	alu.add x10, x5, x5, @SQRT_FUNCTION

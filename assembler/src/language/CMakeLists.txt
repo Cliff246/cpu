@@ -5,6 +5,8 @@ set(ASM_LANG_SRC ${ASM_LANG_SRC}
 	${CMAKE_CURRENT_SOURCE_DIR}/frontend/src/inter.c
 	${CMAKE_CURRENT_SOURCE_DIR}/backend/src/encoder.c
 	${CMAKE_CURRENT_SOURCE_DIR}/backend/src/objfile.c
+	${CMAKE_CURRENT_SOURCE_DIR}/backend/src/linker.c
+	${CMAKE_CURRENT_SOURCE_DIR}/backend/src/outputer.c
 	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/entry.c
 	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/instruction.c
 	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/metaop.c

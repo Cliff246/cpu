@@ -105,9 +105,9 @@ typedef struct alias
 
 
 
+struct directive;
 
-
-typedef struct
+typedef struct context
 {
 
 	parse_node_t *head;
@@ -118,21 +118,38 @@ typedef struct
 	locale_t locales;
 	alias_t *aliases;
 	size_t alias_count, alias_alloc;
-
-	directive_t *directives;
+	struct directive **directives;
 	size_t dirs_count, dirs_alloc;
 
 	p_hashtable_t alias_map;
 	file_desc_t *desc;
 
+	int *imports;
+	int *defines;
+	int *publics;
+	size_t imports_count, defines_count, publics_count;
+	size_t imports_alloc, defines_alloc, publics_alloc;
+
+
+	bool resolved;
+
 }context_t;
 
 
+
+bool uses_symbol(context_t *ctx, char *key);
 context_t *load_context(file_desc_t *desc);
 void context_resolve(context_t *ctx);
 local_t *create_local(context_t *ctx, scope_t scope);
 
 
+void print_directives(context_t *ctx);
+void print_imports(context_t *ctx);
+void print_defines(context_t *ctx);
+void print_publics(context_t *ctx);
+
 void add_local_to_locale(context_t *ctx, local_t local);
+
+bool is_symbol_implemented(context_t *ctx, char *key);
 
 #endif

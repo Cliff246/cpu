@@ -557,7 +557,7 @@ parse_node_t *parse_program(parser_ctx_t *p)
        	add_child(root, child);
 
     }
-	print_depth(root, 0);
+	//print_depth(root, 0);
 
     return root;
 }

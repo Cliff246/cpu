@@ -15,9 +15,13 @@
 typedef struct scope_entries
 {
 	entry_t **entries;
-
 	size_t count;
 	size_t alloc;
+
+
+	char **consumed;
+	size_t consumed_count;
+	size_t consumed_alloc;
 
 }scope_entries_t;
 
@@ -44,6 +48,6 @@ void create_ref_from_parser(scope_t *scope, parse_node_t *head);
 void add_symbol_to_scope(scope_t *scope, symbol_t *ref);
 
 scope_t create_scope(parse_node_t *head);
-
+bool scope_uses_symbol(scope_t *scope, char *key);
 
 #endif
