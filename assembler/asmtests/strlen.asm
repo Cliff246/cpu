@@ -1,6 +1,6 @@
 
 %pub MAIN LOOP BYTE_SPLIT
-.text test
+.text  tag std
 
 MAIN:
 	; t1 = pointer

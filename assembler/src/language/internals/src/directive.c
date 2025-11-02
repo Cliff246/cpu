@@ -1,6 +1,7 @@
+#include "inter.h"
+
 #include "parser.h"
 #include "directive.h"
-#include "inter.h"
 #include <string.h>
 #include <stdbool.h>
 
@@ -12,45 +13,83 @@ typedef struct dirtemplate
 
 }dirtemplate_t;
 
+
+dir_rec_t *get_record_from_context(context_t *ctx, directive_type_t type)
+{
+	int index = -1;
+	switch(type)
+	{
+		case DIR_DEF:
+			index = DIRECTIVE_CONTEXT_RECORD_DEFINE;
+			break;
+		case DIR_PUB:
+			index = DIRECTIVE_CONTEXT_RECORD_PUBLIC;
+			break;
+		case DIR_IMP:
+			index = DIRECTIVE_CONTEXT_RECORD_IMPORT;
+			break;
+		case DIR_START:
+			index = DIRECTIVE_CONTEXT_RECORD_START;
+			break;
+		default:
+
+			LOG("type is invalid for record %d\n", type, 0);
+			exit(1);
+			break;
+	}
+	//LOG("directive type %d\n ", type, 0);
+	ctx_dirs_t *dirs = &ctx->dirs;
+
+	dir_rec_t * record = &dirs->records[index];
+	return record;
+}
+
+static void realloc_directive_record(dir_rec_t *record)
+{
+	if(record->count >= record->alloc)
+	{
+		record->records = REALLOC(record->records, record->alloc *= 2, int);
+	}
+}
+
+static void directive_generic_handler(context_t *ctx, directive_t *d)
+{
+	dir_rec_t *record = get_record_from_context(ctx, d->type);
+	realloc_directive_record(record);
+	record->records[record->count++] = d->index;
+}
+
+
+
 void directive_public_handler(context_t *ctx, directive_t *d)
 {
-	if(ctx->publics_count <= ctx->publics_alloc)
-	{
-		ctx->publics = REALLOC(ctx->publics, ctx->publics_alloc *= 2, int);
-
-	}
-
-
-	ctx->publics[ctx->publics_count++] = d->index;
-
+	directive_generic_handler(ctx, d);
 	// TODO: implement public directive handler
 }
 
+
+
 void directive_def_handler(context_t *ctx, directive_t *d)
 {
-	if(ctx->defines_count <= ctx->defines_alloc)
-	{
-		ctx->defines = REALLOC(ctx->defines, ctx->defines_alloc *= 2, int);
-
-	}
+	directive_generic_handler(ctx, d);
 
 
-	ctx->defines[ctx->defines_count++] = d->index;
 	// TODO: implement def directive handler
 }
 
 void directive_imp_handler(context_t *ctx, directive_t *d)
 {
-	if(ctx->imports_count <= ctx->imports_alloc)
-	{
-		ctx->imports = REALLOC(ctx->imports, ctx->imports_alloc *= 2, int);
+	directive_generic_handler(ctx, d);
 
-	}
-
-
-	ctx->imports[ctx->imports_count++] = d->index;
 	// TODO: implement inc directive handler
 }
+
+void directive_start_handler(context_t *ctx, directive_t *d)
+{
+	directive_generic_handler(ctx, d);
+
+}
+
 
 static dirtemplate_t builtins[] =
 {
@@ -58,6 +97,7 @@ static dirtemplate_t builtins[] =
 	[DIR_PUB]	= {"pub", directive_public_handler, DIR_PUB},
 	[DIR_DEF] 	= {"def", directive_def_handler, DIR_DEF},
 	[DIR_IMP] 	= {"imp", directive_imp_handler, DIR_IMP},
+	[DIR_START] 	= {"start", directive_start_handler, DIR_START},
 };
 
 char *inval = "INVAL";
@@ -92,12 +132,13 @@ ERR:
 
 void apply_directive(struct context *ctx, directive_t *dir)
 {
-	if(ctx->dirs_alloc <= ctx->dirs_count)
+	ctx_dirs_t *dirs = &ctx->dirs;
+	if(dirs->count <= dirs->count)
 	{
-		ctx->directives = REALLOC(ctx->directives, ctx->dirs_alloc *= 2, directive_t *);
+		dirs->directives = REALLOC(dirs->directives, dirs->alloc *= 2, directive_t *);
 	}
-	dir->index = ctx->dirs_count;
-	ctx->directives[ctx->dirs_count++] = dir;
+	dir->index = dirs->count;
+	dirs->directives[dirs->count++] = dir;
 	builtins[dir->type].fn(ctx, dir);
 
 }
@@ -151,7 +192,7 @@ directive_t *create_directive(struct context *ctx, parse_node_t *head)
 	}
 	//printf("%s\n", template.key);
 	directive_t *dir = CALLOC(1, directive_t);
-	printf("dirkey: %s\n", template.key);
+	//printf("dirkey: %s\n", template.key);
 	dirarg_type_t args[MAX_DIRECTIVE_CONTENTS] = {DIRARG_UNDEFINED};
 	for(int next = 0; next < MAX_DIRECTIVE_CONTENTS; ++next)
 	{
@@ -160,7 +201,7 @@ directive_t *create_directive(struct context *ctx, parse_node_t *head)
 		{
 			parse_node_t *child = head->children[next];
 			char *childtok = child->tok->lexeme;
-			dir->contents[next].content = childtok;
+			dir->contents[next].content = strdup(childtok);
 			args[next] = fill_dirarg_type(template.type, args, next, child);
 		}
 		else
@@ -172,6 +213,6 @@ directive_t *create_directive(struct context *ctx, parse_node_t *head)
 	dir->type = template.type;
 	dir->head = head;
 	dir->index = -1;
-
+	//LOG("dirkey done\n", 0);
 	return dir;
 }

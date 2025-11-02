@@ -5,6 +5,11 @@
 #include "eerror.h"
 #include "arguments.h"
 
+struct parse_node_pair
+{
+	parse_node_t *a, *b;
+};
+
 void print_depth(parse_node_t *node, int depth)
 {
 	if(target.debug_enabled == false)
@@ -243,7 +248,7 @@ parser_ctx_t *create_context(lexer_ctx_t *ctx)
 	return pctx;
 }
 
-parse_node_t *parse_reference(parser_ctx_t *p)
+struct parse_node_pair parse_reference(parser_ctx_t *p)
 {
 	tok_t *current = peek(p);
 	tok_t *reference = expect(p, TOK_REFERENCE);
@@ -268,16 +273,21 @@ parse_node_t *parse_reference(parser_ctx_t *p)
 
 	parse_node_t *arguments = make_node(NODE_ARGS, colon);
 	add_child(n, arguments);
+	parse_node_t *instructions = make_node(NODE_REFERENCE_SCOPE, &empty_token);
+	add_child(n, instructions);
+
+	struct parse_node_pair pair = {.a = n, .b = instructions};
+
 	while(true)
 	{
 		tok_t *ahead = peek(p);
 		if(ahead == NULL)
 		{
-			return n;
+			return pair;
 		}
 		if(ahead->type == TOK_EOF || ahead->type == TOK_COMMENT || ahead->type == TOK_NEWLINE)
 		{
-			return n;
+			return pair;
 		}
 		else
 		{
@@ -294,7 +304,7 @@ parse_node_t *parse_reference(parser_ctx_t *p)
 			{
 				//
 				perror("invalid type");
-				return n;
+				return pair;
 			}
 		}
 	}
@@ -302,10 +312,11 @@ parse_node_t *parse_reference(parser_ctx_t *p)
 
 	//TODO fill more
 
-    return n;
+    return pair;
+
 }
 
-parse_node_t *parse_segment(parser_ctx_t *p)
+struct parse_node_pair parse_segment(parser_ctx_t *p)
 {
 
 	tok_t *segment = expect(p, TOK_SEGMENT);
@@ -313,8 +324,15 @@ parse_node_t *parse_segment(parser_ctx_t *p)
 	{
 		//TODO expected token error
 	}
-    parse_node_t *n = make_node(NODE_SEGMENT,segment );
+    parse_node_t *n = make_node(NODE_SCOPE, segment );
     // optionally collect args until newline
+
+	parse_node_t *arghead = make_node(NODE_ARGS, segment);
+	parse_node_t *refhead = make_node(NODE_SEGMENT, segment);
+	//in this order
+	add_child(n, arghead);
+	add_child(n, refhead);
+	struct parse_node_pair pair = {.a = n, .b = refhead};
 	if(peek(p)->type == TOK_IDENT)
 	{
 		while(true)
@@ -324,7 +342,7 @@ parse_node_t *parse_segment(parser_ctx_t *p)
 			if(cur->type == TOK_TOKEN)
 			{
 				parse_node_t *argument = make_node(NODE_ARGS, cur);
-				add_child(n, argument);
+				add_child(arghead, argument);
 
 			}
 			else if(cur->type == TOK_IDENT)
@@ -337,7 +355,8 @@ parse_node_t *parse_segment(parser_ctx_t *p)
 		}
 
 	}
-	return n;
+
+	return pair;
 
 
 	//next(p);
@@ -476,10 +495,9 @@ parse_node_t *parse_program(parser_ctx_t *p)
 
 
 
-            child = parse_segment(p);
-
-			seg_root = child;
-       		add_child(root, seg_root);
+           	struct parse_node_pair seg_pair = parse_segment(p);
+			seg_root = seg_pair.b;
+       		add_child(root, seg_pair.a);
 			newline = false;
 			continue;
 		}
@@ -493,11 +511,14 @@ parse_node_t *parse_program(parser_ctx_t *p)
 			}
 
 			//printf("label\n");
-			child = parse_reference(p);
 
+			//should come in
+			//a = reference ptr
+			//b = instruction scope ptr
+			struct parse_node_pair pair  = parse_reference(p);
+			ref_root = pair.b;
 
-			ref_root = child;
-       		add_child(seg_root, ref_root);
+       		add_child(seg_root, pair.a);
 			newline = false;
 
 			continue;

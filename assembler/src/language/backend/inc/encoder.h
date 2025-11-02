@@ -13,7 +13,9 @@ typedef struct output
 
 
 
+uint64_t text_resolve(scope_t *txt);
 
+uint64_t data_resolve(scope_t *data);
 
 segout_data_t create_segout_data(context_t *ctx, int index);
 

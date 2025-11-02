@@ -16,12 +16,13 @@ typedef enum access_modifier
 
 }refmod_t;
 
+#define REFERENCE_STRING_SIZE 100
 
 typedef struct reference
 {
 
 
-	char *ref_string;
+	char ref_string[REFERENCE_STRING_SIZE + 1];
 	//file id
 	int fid;
 	//segment id
@@ -43,6 +44,10 @@ typedef struct reference
 	bool resolved;
 	bool implemented;
 }ref_t;
+
+parse_node_t *get_arguments_under_reference(ref_t *ref);
+
+parse_node_t *get_entries_under_reference(ref_t *ref);
 
 ref_t *create_reference(char *key);
 void print_ref(ref_t *ref);

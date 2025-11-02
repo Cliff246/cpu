@@ -1,6 +1,6 @@
 %def MAIN
 %imp "asmtests/strlen.asm"
-;%def SQRT_FUNCTION
+%def SQRT_FUNCTION
 .text
 
 

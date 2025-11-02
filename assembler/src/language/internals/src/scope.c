@@ -72,11 +72,11 @@ void create_ref_from_parser(scope_t *scope, parse_node_t *head)
 	ref->locale_offset = (scope->bytes / 4);
 	//printf("scope bytes: %d\n", scope->bytes / 4);
 	//print_ref(ref);
+	parse_node_t *entry_head = get_entries_under_reference(ref);
 
-
-	for(int i = 0; i < head->child_count; ++i)
+	for(int i = 0; i < entry_head->child_count; ++i)
 	{
-		parse_node_t *child = head->children[i];
+		parse_node_t *child = entry_head->children[i];
 		//could be stupid idk
 		if(child->kind == NODE_METAOP || child->kind == NODE_INSTR)
 		{
@@ -93,14 +93,24 @@ void create_ref_from_parser(scope_t *scope, parse_node_t *head)
 scope_t create_scope(parse_node_t *head)
 {
 	scope_t scope = {0};
-	scope.segment = create_segment(head);
-
-	for(int i = 0; i < head->child_count; ++i)
+	if(head->child_count != 2)
 	{
-		parse_node_t *child = head->children[i];
+		printf("scope should have 2 children had %d\n", head->child_count);
+		exit(1);
+	}
+
+	parse_node_t *arg_node = head->children[0];
+	parse_node_t *seg_node = head->children[1];
+
+	scope.segment = create_segment(arg_node);
+
+
+
+	for(int i = 0; i < seg_node->child_count; ++i)
+	{
+		parse_node_t *child = seg_node->children[i];
 		//printf("b%d\n", scope.bytes);
 		//print_depth(child, 0);
-
 		if(child->kind == NODE_REFERENCE)
 		{
 			create_ref_from_parser(&scope, child);
@@ -113,15 +123,6 @@ scope_t create_scope(parse_node_t *head)
 			add_entry_to_scope(&scope, mop_entry);
 
 		}
-		else if(child->kind == NODE_ARGS)
-		{
-
-		}
-		else if(child->kind == NODE_CHILDS)
-		{
-
-		}
-
 	}
 	return scope;
 }
@@ -132,7 +133,7 @@ bool scope_uses_symbol(scope_t *scope, char *key)
 	{
 		for(int i = 0; i < scope->entries.consumed_count; ++i)
 		{
-			if(!strcmp(scope->entries.consumed[i], key));
+			if(!strcmp(scope->entries.consumed[i], key))
 				return true;
 
 		}

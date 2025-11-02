@@ -20,44 +20,7 @@
 #include "directive.h"
 
 
-typedef struct segout_txt
-{
-	int64_t *inst;
-	int64_t *imm;
-	//table is inst_len / 128 + 1
-	uint64_t *table;
 
-	size_t inst_len, imm_len;
-
-	uint64_t desc[6];
-}segout_txt_t;
-
-typedef struct segout_data
-{
-	uint64_t *data;
-	size_t data_size;
-}segout_data_t;
-
-
-typedef struct segout
-{
-	seg_type_t type;
-
-	union
-	{
-		segout_txt_t txt;
-		segout_data_t data;
-	}output;
-}segout_t;
-
-
-
-
-typedef struct region
-{
-	size_t position;
-	size_t size;
-}region_t;
 
 typedef struct previous_contexts
 {
@@ -76,8 +39,6 @@ typedef struct local
 	//order
 
 	scope_t scope;
-	region_t region;
-	segout_t out;
 	//has been resolved into elements
 	bool loaded;
 	bool resolved;
@@ -86,6 +47,37 @@ typedef struct local
 	bool passed;
 
 }local_t;
+
+struct directive;
+
+
+
+//directives
+typedef struct directive_record
+{
+	int *records;
+	size_t alloc;
+	size_t count;
+}dir_rec_t;
+
+
+
+//order of directive_record
+
+#define DIRECTIVE_CONTEXT_RECORD_PUBLIC 0
+#define DIRECTIVE_CONTEXT_RECORD_IMPORT 1
+#define DIRECTIVE_CONTEXT_RECORD_DEFINE 2
+#define DIRECTIVE_CONTEXT_RECORD_START 3
+
+
+typedef struct context_directives
+{
+	dir_rec_t records[DIRECTIVES_TYPES_COUNT];
+	struct directive **directives;
+	size_t count, alloc;
+
+}ctx_dirs_t;
+
 
 
 //tores the locals
@@ -105,7 +97,6 @@ typedef struct alias
 
 
 
-struct directive;
 
 typedef struct context
 {
@@ -116,19 +107,15 @@ typedef struct context
 	//holds the results of the ref_table ptr
 
 	locale_t locales;
+
+
 	alias_t *aliases;
 	size_t alias_count, alias_alloc;
-	struct directive **directives;
-	size_t dirs_count, dirs_alloc;
 
 	p_hashtable_t alias_map;
-	file_desc_t *desc;
+	int desc_id;
 
-	int *imports;
-	int *defines;
-	int *publics;
-	size_t imports_count, defines_count, publics_count;
-	size_t imports_alloc, defines_alloc, publics_alloc;
+	ctx_dirs_t dirs;
 
 
 	bool resolved;
@@ -141,15 +128,23 @@ bool uses_symbol(context_t *ctx, char *key);
 context_t *load_context(file_desc_t *desc);
 void context_resolve(context_t *ctx);
 local_t *create_local(context_t *ctx, scope_t scope);
-
+char *get_filename_from_context(context_t *ctx);
 
 void print_directives(context_t *ctx);
 void print_imports(context_t *ctx);
 void print_defines(context_t *ctx);
 void print_publics(context_t *ctx);
 
+
+
+scope_t *get_scope_from_context(context_t *ctx, int index);
+size_t get_number_of_scope_from_context(context_t *ctx);
+
 void add_local_to_locale(context_t *ctx, local_t local);
 
 bool is_symbol_implemented(context_t *ctx, char *key);
+
+
+
 
 #endif

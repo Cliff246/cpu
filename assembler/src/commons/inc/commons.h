@@ -20,6 +20,7 @@ typedef enum number_type
 #define GETBIT(n, k) (1 & (n >> k))
 #define ARYSIZE(ary) sizeof(ary)/sizeof(*ary)
 
+#define MIN(x,y) ((x < y)? x : y)
 
 void *safe_calloc(size_t size, size_t type_size);
 

@@ -1,9 +1,11 @@
 
+#include "fileio.h"
 #include "linker.h"
 #include "inter.h"
 #include "commons.h"
 #include "hashmap.h"
 #include <stdbool.h>
+#include "arguments.h"
 
 void add_src_to_global(global_t *global, int index)
 {
@@ -15,7 +17,7 @@ void add_src_to_global(global_t *global, int index)
 	int page = index / __CHAR_BIT__;
 	int offset = index % __CHAR_BIT__;
 	char content = glb->srcs.files[page];
-	
+
 	content = SETBIT(content, offset);
 	glb->srcs.files[page] = content;
 }
@@ -149,17 +151,13 @@ static int context_in_linker(linker_t *lk, char *filename)
 	char buffer[DEFAULT_BUFFER + 1] = {0};
 
 	int quotes = remove_quotes(filename, buffer, DEFAULT_BUFFER);
-	if(lk->ctx_size == 0)
-		return -1;
+
 	//if(!validate_path(filename))
 	//return -1;
 
-	for(int i = 0; i < lk->ctx_size; ++i)
+	for(int i = 0; i < description_used; ++i)
 	{
-		context_t *ctx = lk->ctx[i];
-		file_desc_t *desc = ctx->desc;
-		LOG("descname: %s fname: %s\n", desc->name, buffer, 0);
-		if(!strcmp(desc->name, buffer))
+		if(!strcmp(get_path_from_identifier(i), buffer))
 		{
 			return i;
 		}
@@ -172,8 +170,8 @@ static int context_in_linker(linker_t *lk, char *filename)
 static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_dir)
 {
 
-
-	directive_t *dir = ctx->directives[index_dir];
+	ctx_dirs_t *ctx_dirs = &ctx->dirs;
+	directive_t *dir = ctx_dirs->directives[index_dir];
 	if(dir->type == DIR_IMP)
 	{
 
@@ -198,11 +196,11 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 			new->used = true;
 			new->key = arg.content;
 			new->type = GLOBAL_IMPORT;
-			new->glb.import.ctx_source = ctx->desc->id;
+			new->glb.import.ctx_source = ctx->desc_id;
 			new->glb.import.ctx_target = index;
 			new->glb.import.valid = true;
 
-			lk->matrix.mat[ctx->desc->id][index] = 1;
+			lk->matrix.mat[ctx->desc_id][index] = 1;
 
 		}
 		return;
@@ -242,12 +240,12 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 
 				if(sym->imps.implemented == false)
 				{
-					sym->imps.ctx_index = ctx->desc->id;
+					sym->imps.ctx_index = ctx->desc_id;
 					sym->imps.implemented = true;
 				}
 				else
 				{
-					LOG("%s already implmented in %s\n", glb->key, get_filename_from_code(lk, sym->imps.ctx_index), 0);
+					LOG("%s already implmented in %s\n", glb->key, get_path_from_identifier(sym->imps.ctx_index), 0);
 					exit(1);
 				}
 			}
@@ -256,11 +254,11 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 
 				if(!is_symbol_implemented(ctx, glb->key))
 				{
-					add_src_to_global(glb, ctx->desc->id);
+					add_src_to_global(glb, ctx->desc_id);
 				}
 				else
 				{
-					LOG("global %s is already already defined in file %s\n", glb->key, get_filename_from_code(lk, sym->imps.ctx_index), 0);
+					LOG("global %s is already already defined in file %s\n", glb->key, get_path_from_identifier( sym->imps.ctx_index), 0);
 
 				}
 				//slow function
@@ -284,29 +282,16 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 
 void add_context_to_linker(linker_t *lk, context_t *ctx)
 {
-	if(lk->ctx_size >= LINKER_MAX_FILES)
-	{
-		LOG("too many files added size:%d max_files%d\n",lk->ctx_size, LINKER_MAX_FILES, 0);
-		exit(1);
-	}
+	LOG("adding context to linker %s\n", get_filename_from_context(ctx), 0);
 
-	lk->ctx[lk->ctx_size] = ctx;
-	for(int i = 0; i < ctx->dirs_count; ++i)
+
+
+
+	lk->srcs[ctx->desc_id].ctx = ctx;
+	for(int i = 0; i < ctx->dirs.count; ++i)
 	{
 		fill_global_via_directive(lk, ctx, i);
 	}
-
-
-
-	//should grab included files and determine in scope names
-	{
-
-
-	}
-
-
-	lk->ctx_size++;
-
 	return;
 }
 
@@ -316,11 +301,6 @@ void free_global(void *ptr)
 	gptr->used = false;
 }
 
-char *get_filename_from_code(linker_t *lk, int index)
-{
-	return lk->ctx[index]->desc->name;
-	return NULL;
-}
 
 linker_t *create_linker(void)
 {
@@ -342,16 +322,19 @@ linker_t *create_linker(void)
 
 void print_globals(linker_t *lk)
 {
-	for(int i = 0; i < lk->ctx_size; ++i)
+	for(int i = 0; i < description_used; ++i)
 	{
-		context_t *ctx = lk->ctx[i];
+		context_t *ctx = lk->srcs[i].ctx;
 
 		print_directives(ctx);
 
 	}
 }
 
-
+size_t get_number_of_sources(void)
+{
+	return description_used;
+}
 
 
 bool check_global_validity(linker_t *lk)
@@ -381,3 +364,42 @@ bool check_global_validity(linker_t *lk)
 	}
 	return passes;
 }
+
+//temp function to just print out all segments
+
+void build_module_stack(linker_t *lk)
+{
+
+
+	for(int i = 0; i < get_number_of_sources(); ++i)
+	{
+		linker_src_t *src = &lk->srcs[i];
+		context_t *ctx = src->ctx;
+		size_t local_scopes = get_number_of_scope_from_context(ctx);
+		for(int x = 0; x < local_scopes; ++x)
+		{
+			scope_t *scope =  get_scope_from_context(ctx, x);
+			int sid = scope->segment.sid;
+
+			module_t *module = get_module(lk, sid);
+			module->tag = segment_ids_to_tag[sid];
+
+			append_scope_ref(lk, module, i, x);
+		}
+	}
+
+
+	for(int m = 0; m < MAX_TAGS; ++m)
+	{
+		module_t *module = &lk->modules[m];
+		if(module->set == false)
+			break;
+
+		fill_module(lk, module);
+	}
+}
+
+
+
+
+

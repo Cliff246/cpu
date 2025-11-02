@@ -12,11 +12,12 @@ typedef enum
 	TOK_SYMBOL,
     TOK_NEWLINE, TOK_EOF,
 	TOK_COMMENT,
+	TOK_EMPTY,
 } tok_type_t;
 
 typedef struct locale
 {
-	size_t row, col, file;
+	int row, col, file;
 }toklocale_t;
 
 typedef struct
@@ -25,6 +26,8 @@ typedef struct
     char *lexeme;
 	toklocale_t locale;
 } tok_t;
+
+extern tok_t empty_token;
 
 
 typedef struct

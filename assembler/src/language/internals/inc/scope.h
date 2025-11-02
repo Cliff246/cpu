@@ -43,6 +43,9 @@ typedef struct scope
 	size_t bytes;
 
 }scope_t;
+
+
+
 void create_ref_from_parser(scope_t *scope, parse_node_t *head);
 
 void add_symbol_to_scope(scope_t *scope, symbol_t *ref);

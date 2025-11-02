@@ -1,14 +1,19 @@
 #ifndef __LINKER_HEADER__
 #define __LINKER_HEADER__
 
+
+
+
+
 #include "inter.h"
 #include "commons.h"
 #include "hashmap.h"
 #include <stdlib.h>
+#include "segment.h"
+#include "module.h"
 
-
+#define LINKER_MAX_FILES ASM_MAX_FILES
 #define HASHTABLE_LINKER_GLOBALS 1000
-#define LINKER_MAX_FILES 8
 #define LINKER_FILE_BITS  (LINKER_MAX_FILES / __CHAR_BIT__) + 1
 
 typedef enum global_type
@@ -66,25 +71,45 @@ typedef struct context_include_matrix
 	char mat[LINKER_MAX_FILES][LINKER_MAX_FILES];
 }ctx_inc_mat_t;
 
+typedef struct linker_source
+{
+	context_t *ctx;
+
+
+
+}linker_src_t;
+
+
+
+
+
+struct module;
+//very screwed
+
+
 typedef struct linker
 {
-	context_t *ctx[LINKER_MAX_FILES];
-	size_t ctx_size;
+	linker_src_t srcs[LINKER_MAX_FILES];
 
 	global_t *global_store;
 	size_t global_alloc, global_count;
 	p_hashtable_t globals;
 	ctx_inc_mat_t matrix;
-
+	struct module modules[MAX_TAGS];
 }linker_t;
+
+
 
 
 void add_context_to_linker(linker_t *lk, context_t *context);
 linker_t *create_linker(void);
 void print_globals(linker_t *lk);
-char *get_filename_from_code(linker_t *lk, int index);
 
 bool check_global_validity(linker_t *lk);
+size_t get_number_of_sources(void);
+void build_module_stack(linker_t *lk);
+
+
 
 
 #endif

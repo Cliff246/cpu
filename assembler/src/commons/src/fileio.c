@@ -54,17 +54,36 @@ int file_load(const char *file_name, char **ref)
 }
 
 
-
-
-file_desc_t *get_fdesc(const char *file_name)
+int allocate_fdesc(const char *file_name)
 {
-	static int id_index = 0;
+	if(description_used >= ASM_MAX_FILES)
+	{
+		printf("too many files used %d\n ", description_used);
+		exit(1);
+	}
+	file_desc_t *desc = &descptions[description_used];
+
+	desc->has_read = false;
+	desc->is_closed = true;
+	desc->name = (char *)file_name;
+	desc->allocated = true;
+	desc->id = description_used;
+
+	int used = description_used;
+	description_used++;
+	return used;
+}
+
+file_desc_t *get_fdesc(int id)
+{
 
 
 
-	file_desc_t *desc = &descptions[id_index];
-	desc->id = id_index;
-	id_index++;
+
+	file_desc_t *desc = &descptions[id];
+
+
+	char *file_name = desc->name;
 	char *ref = NULL;
 
 	FILE *fp = fopen(file_name, "r");
@@ -73,17 +92,18 @@ file_desc_t *get_fdesc(const char *file_name)
 		errno = EACCES;
 		exit(1);
 	}
+	desc->is_closed = false;
+
 	int length = get_content(fp, &ref);
 	if(length >= 0)
 	{
 		desc->fp = fp;
-		desc->isclosed = true;
 		desc->src = ref;
-		desc->name = file_name;
 		desc->length = length;
 		fclose(fp);
 
-		desc->isclosed = true;
+		desc->is_closed = true;
+		desc->has_read = true;
 		return desc;
 	}
 	else if(errno == EACCES)
@@ -119,7 +139,8 @@ bool validate_path(const char *path)
 }
 
 
-file_desc_t descptions[MAX_SOURCES] = {0};
+file_desc_t descptions[ASM_MAX_FILES] = {0};
+int description_used = 0;
 
 
 char *get_path_from_identifier(int index)
@@ -127,7 +148,7 @@ char *get_path_from_identifier(int index)
 
 	if(index >= 0)
 	{
-		if(index < MAX_SOURCES)
+		if(index < ASM_MAX_FILES)
 		{
 			if(descptions[index].id >= 0)
 				return descptions[index].name;
@@ -141,4 +162,9 @@ char *get_path_from_identifier(int index)
 	{
 		return "NO FILE";
 	}
+}
+
+char *get_filename_from_id(int id)
+{
+	return get_path_from_identifier(id);
 }

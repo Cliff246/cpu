@@ -9,14 +9,13 @@
 #include "eerror.h"
 #include "lexer.h"
 #include "parser.h"
-#include "encoder.h"
 #define ARGUMENTS_COUNT 255
 #include "inter.h"
 #include "fileio.h"
 
 #include "arguments.h"
 #include "linker.h"
-
+#include "emiter.h"
 
 
 
@@ -29,7 +28,10 @@ int main(int argc, char *argv[])
 	generate_target(argc, argv);
 
 
-
+	for(int filldesc = 0; filldesc < target.inputs_count; ++filldesc)
+	{
+		allocate_fdesc(target.inputs[filldesc]);
+	}
 
 
 	if(errno == EACCES)
@@ -44,16 +46,22 @@ int main(int argc, char *argv[])
 		linker_t *lk = create_linker();
 		for(int i = 0; i < target.inputs_count; ++i)
 		{
-			printf("i:%d\n", i);
-			char *src = target.inputs[i];
-			contexts[i] = load_context(get_fdesc(src));
+			contexts[i] = load_context(get_fdesc(i));
 			context_resolve(contexts[i]);
 			add_context_to_linker(lk, contexts[i]);
 		}
 		printf("validity %d\n", check_global_validity(lk));
-		printf("%s\n", contexts[0]->desc->name);
-		output_t *output = emit(contexts[0]);
-		write_out(output, (char *)target.output_file);
+		print_globals(lk);
+		printf("%s\n", get_filename_from_context(contexts[0]));
+		build_module_stack(lk);
+		outorder_t *oo = create_outorder(lk);
+		int positions[3] = {2, 1, 0};
+		set_outorder_positions(oo, positions, 3);
+		resolve_positions(oo);
+		printf("done\n");
+
+		//output_t *output = emit(contexts[0]);
+		//write_out(output, (char *)target.output_file);
 		//printf("assemble\n");
 		//assemble(content, length, "bin");
 		//test(content, length);

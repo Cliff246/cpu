@@ -59,3 +59,15 @@ entry_t *create_entry(parse_node_t *node)
 
 	return entry;
 }
+
+
+uint64_t get_line(entry_t *entry)
+{
+	return entry->node->tok->locale.row;
+}
+
+
+uint64_t get_file(entry_t *entry)
+{
+	return entry->node->tok->locale.file;
+}

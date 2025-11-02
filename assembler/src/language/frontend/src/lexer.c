@@ -17,6 +17,9 @@ void free_token(tok_t *ptr)
 	free(ptr);
 }
 
+tok_t empty_token = {.lexeme = "", .locale = {.col = -1, .file = -1, .row = -1}, .type = TOK_EMPTY};
+
+
 void lexer_emit(lexer_ctx_t *ctx, tok_type_t type, char *lexme)
 {
 	const size_t default_alloc = 100;

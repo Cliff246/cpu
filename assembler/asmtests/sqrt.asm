@@ -1,6 +1,6 @@
 
-
-.text
+%pub SQRT_FUNCTION
+.text tag std
 
 
 	;takes a a0 as an argument

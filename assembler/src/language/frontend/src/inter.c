@@ -72,6 +72,10 @@ local_t *create_local(context_t *ctx, scope_t scope)
 	return ctx->locales.locales + ctx->locales.size;
 }
 
+char *get_filename_from_context(context_t *ctx)
+{
+	return get_path_from_identifier(ctx->desc_id);
+}
 
 
 
@@ -80,7 +84,7 @@ context_t *load_context(file_desc_t *desc)
 
 	context_t *ctx = CALLOC(1, context_t);
 
-	ctx->desc = desc;
+	ctx->desc_id = desc->id;
 	ctx->staged_ctx.l_ctx = create_token_stream(desc->src, desc->id);
 
 	//printf("finished lexer\n");
@@ -101,20 +105,23 @@ context_t *load_context(file_desc_t *desc)
 	ctx->aliases = CALLOC(ctx->alias_alloc, alias_t);
 	ctx->alias_map = new_hash_table(1000, free_alias);
 
-	ctx->dirs_alloc = max_size;
-	ctx->directives = CALLOC(ctx->dirs_alloc, directive_t);
 
-	ctx->publics_alloc = 1;
-	ctx->publics_count = 0;
-	ctx->publics = CALLOC(ctx->publics_alloc, int);
 
-	ctx->imports_alloc = 1;
-	ctx->imports_count = 0;
-	ctx->imports = CALLOC(ctx->imports_alloc, int);
+	ctx_dirs_t *ctx_dirs = &ctx->dirs;
 
-	ctx->defines_alloc = 1;
-	ctx->defines_count = 0;
-	ctx->defines = CALLOC(ctx->defines_alloc, int);
+	ctx_dirs->alloc = max_size;
+	ctx_dirs->count = 0;
+	ctx_dirs->directives =  CALLOC(ctx_dirs->alloc, directive_t);
+
+
+	for(int record = 0; record < DIRECTIVES_TYPES_COUNT; record++)
+	{
+		dir_rec_t *drec = & ctx_dirs->records[record];
+		drec->alloc = 1;
+		drec->count = 0;
+		drec->records = CALLOC(drec->alloc, int);
+	}
+
 
 
 
@@ -132,7 +139,7 @@ void context_resolve(context_t *ctx)
 	{
 		parse_node_t *child = ctx->head->children[s];
 		//printf("child %s\n",child->tok->lexeme);
-		if(child->kind == NODE_SEGMENT)
+		if(child->kind == NODE_SCOPE)
 		{
 			scope_t scope = create_scope(child);
 
@@ -162,13 +169,19 @@ void context_resolve(context_t *ctx)
 
 
 	}
+
+
+
 	#define OVERLAPPING_MAXIMUM 256
 	char *overlaping[OVERLAPPING_MAXIMUM] = {0};
 	int overlap_current = 0;
-	for(int d = 0; d < ctx->defines_count; ++d)
+	ctx_dirs_t *dirs = &ctx->dirs;
+	dir_rec_t *defines = &dirs->records[DIRECTIVE_CONTEXT_RECORD_DEFINE];
+
+	for(int d = 0; d < defines->count; ++d)
 	{
-		int define = ctx->defines[d];
-		directive_t *dir = ctx->directives[define];
+		int define = defines->records[d];
+		directive_t *dir = dirs->directives[define];
 		for(int a = 0; a < MAX_DIRECTIVE_CONTENTS; a++)
 		{
 			dirarg_t arg = dir->contents[a];
@@ -179,7 +192,7 @@ void context_resolve(context_t *ctx)
 			{
 				if(overlap_current >= OVERLAPPING_MAXIMUM)
 				{
-					LOG("too many overlaps in a single file %s\n", ctx->desc->name, 0);
+					LOG("too many overlaps in a single file %s\n", get_filename_from_context(ctx), 0);
 					exit(1);
 				}
 				overlaping[overlap_current++] = alias->symbol->key;
@@ -193,15 +206,17 @@ void context_resolve(context_t *ctx)
 		{
 			if(overlaping[ol] == NULL)
 				continue;
-			LOG("overlapped defintion at file %s with key %s\n", ctx->desc->name, overlaping[ol]);
+			LOG("overlapped defintion at file %s with key %s\n", get_filename_from_context(ctx), overlaping[ol]);
 		}
 		exit(EXIT_FAILURE);
 	}
 
 	ctx->resolved = true;
+	//print_depth(ctx->head, 0);
 	//print_hash_table(ctx->alias_map);
 	//print_directives(ctx);
 	//print_publics(ctx);
+	#undef OVERLAPPING_MAXIMUM
 }
 
 
@@ -210,9 +225,11 @@ void context_resolve(context_t *ctx)
 
 void print_directives(context_t *ctx)
 {
-	for(int i = 0; i < ctx->dirs_count; ++i)
+	ctx_dirs_t *ctx_dirs = &ctx->dirs;
+
+	for(int i = 0; i < ctx_dirs->count; ++i)
 	{
-		directive_t *dir = ctx->directives[i];
+		directive_t *dir = ctx_dirs->directives[i];
 
 		char buffer[DEFAULT_BUFFER + 1] = {0};
 		size_t checkpoint = 0;
@@ -220,10 +237,10 @@ void print_directives(context_t *ctx)
 		{
 
 			char *cur = dir->contents[i].content;
-
-			if(cur == NULL || dir->contents[i].type != DIRARG_UNDEFINED)
+			if(cur == NULL || dir->contents[i].type == DIRARG_UNDEFINED)
+			{
 				break;
-
+			}
 			size_t size = strlen(cur);
 			size_t delta = DEFAULT_BUFFER - checkpoint;
 			if(delta < size)
@@ -248,10 +265,13 @@ void print_directives(context_t *ctx)
 
 void print_imports(context_t *ctx)
 {
-	for(int i = 0; i < ctx->imports_count; ++i)
+	ctx_dirs_t *ctx_dirs = &ctx->dirs;
+	dir_rec_t *imports_record = &ctx_dirs->records[DIRECTIVE_CONTEXT_RECORD_IMPORT];
+
+	for(int i = 0; i < imports_record->count; ++i)
 	{
-		int import = ctx->imports[i];
-		directive_t *dir = ctx->directives[import];
+		int import = imports_record->records[i];
+		directive_t *dir = ctx_dirs->directives[import];
 
 		char buffer[DEFAULT_BUFFER + 1] = {0};
 		size_t checkpoint = 0;
@@ -259,7 +279,7 @@ void print_imports(context_t *ctx)
 		{
 
 			char *cur = dir->contents[i].content;
-			if(cur == NULL || dir->contents[i].type != DIRARG_UNDEFINED)
+			if(cur == NULL || dir->contents[i].type == DIRARG_UNDEFINED)
 				break;
 
 
@@ -286,16 +306,18 @@ void print_imports(context_t *ctx)
 }
 void print_defines(context_t *ctx)
 {
-	for(int i = 0; i < ctx->defines_count; ++i)
+	ctx_dirs_t *ctx_dirs = &ctx->dirs;
+	dir_rec_t *defines_record = &ctx_dirs->records[DIRECTIVE_CONTEXT_RECORD_DEFINE];
+	for(int i = 0; i < defines_record->count; ++i)
 	{
-		int define = ctx->defines[i];
-		directive_t *dir = ctx->directives[define];
+		int define = defines_record->records[i];
+		directive_t *dir = ctx_dirs->directives[define];
 		char buffer[DEFAULT_BUFFER + 1] = {0};
 		size_t checkpoint = 0;
 		for(int i = 0; i < MAX_DIRECTIVE_CONTENTS; ++i)
 		{
 			char *cur = dir->contents[i].content;
-			if(cur == NULL || dir->contents[i].type != DIRARG_UNDEFINED)
+			if(cur == NULL || dir->contents[i].type == DIRARG_UNDEFINED)
 				break;
 
 			size_t size = strlen(cur);
@@ -322,16 +344,20 @@ void print_defines(context_t *ctx)
 
 void print_publics(context_t *ctx)
 {
-	for(int i = 0; i < ctx->publics_count; ++i)
+	ctx_dirs_t *ctx_dirs = &ctx->dirs;
+	dir_rec_t *publics_record = &ctx_dirs->records[DIRECTIVE_CONTEXT_RECORD_PUBLIC];
+
+
+	for(int i = 0; i < publics_record->count; ++i)
 	{
-		int public = ctx->publics[i];
-		directive_t *dir = ctx->directives[public];
+		int public = publics_record->records[i];
+		directive_t *dir = ctx_dirs->directives[public];
 		char buffer[DEFAULT_BUFFER + 1] = {0};
 		size_t checkpoint = 0;
 		for(int i = 0; i < MAX_DIRECTIVE_CONTENTS; ++i)
 		{
 			char *cur = dir->contents[i].content;
-			if(cur == NULL || dir->contents[i].type != DIRARG_UNDEFINED)
+			if(cur == NULL || dir->contents[i].type == DIRARG_UNDEFINED)
 				break;
 
 
@@ -370,4 +396,20 @@ bool is_symbol_implemented(context_t *ctx, char *key)
 		return false;
 	else
 		return true;
+}
+
+scope_t *get_scope_from_context(context_t *ctx, int index)
+{
+	if(ctx->locales.size < index)
+		return NULL;
+	if(index < 0)
+		return NULL;
+
+	scope_t *scope = &ctx->locales.locales[index].scope;
+	return scope;
+}
+
+size_t get_number_of_scope_from_context(context_t *ctx)
+{
+	return ctx->locales.size;
 }

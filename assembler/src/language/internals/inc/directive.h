@@ -5,15 +5,22 @@
 #include "inter.h"
 
 
+//the define directives types count must be n - 1 size
 typedef enum directive_type
 {
 	DIR_INVAL,
 	DIR_PUB,
 	DIR_IMP,
 	DIR_DEF,
+	DIR_START,
 }directive_type_t;
 
+#define DIRECTIVES_TYPES_COUNT 4
+
+
 struct context;
+
+
 
 typedef enum dirarg_type
 {
