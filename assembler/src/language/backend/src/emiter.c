@@ -94,7 +94,7 @@ void resolve_positions(outorder_t *oo)
 
 
 }
-
+/*
 
 segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 {
@@ -303,6 +303,7 @@ segout_t create_segout(linker_t *ll, region_t *region)
 	return out;
 
 }
+*/
 
 
 void emit_segouts(linker_t *ll, outorder_t *oo)
