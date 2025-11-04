@@ -25,7 +25,7 @@ static modfrag_code_t module_code_resolve(scope_t *txt)
 		}
 		else if(entry->type == ENTRY_MOP)
 		{
-
+			
 		}
 
 
@@ -265,7 +265,30 @@ void fill_module(struct linker *lk, module_t *mod)
 
 	}
 	mod->filled = true;
+
+	mod->emit_order = CALLOC(mod->size, int);
+
+
+	int start = get_module_start(lk, mod);
+
+	for(int i = 0; i < mod->size; ++i)
+	{
+		mod->emit_order[i] = i;
+	}
+	if(start != -1 && start != 0)
+	{
+		printf("swap %d %d\n", start, mod->emit_order[0]);
+		int swap_start = mod->emit_order[0];
+		mod->emit_order[0] = start;
+		mod->emit_order[start] = swap_start;
+	}
+
+
+
+
 }
+
+
 
 //this is pretty shit
 static size_t total_module_size_code(module_t *mod)
@@ -277,7 +300,7 @@ static size_t total_module_size_code(module_t *mod)
 
 	for(int fi = 0; fi < mod->size; ++fi)
 	{
-		modfrag_t frag = mod->fragments[fi];
+		modfrag_t frag = mod->fragments[mod->emit_order[ fi]];
 		imms += frag.frag.code.imms;
 		insts += frag.frag.code.insts;
 	}
@@ -297,7 +320,7 @@ static size_t total_module_size_data(module_t *mod)
 
 	for(int fi = 0; fi < mod->size; ++fi)
 	{
-		modfrag_t frag = mod->fragments[fi];
+		modfrag_t frag = mod->fragments[mod->emit_order[ fi]];
 		words += frag.frag.data.words;
 	}
 	return words;
@@ -329,4 +352,24 @@ size_t total_module_size(module_t *mod)
 context_t *get_context_from_ref(struct linker *lk, scope_ref_t ref)
 {
 	return lk->srcs[ref.ctx_id].ctx;
+}
+
+
+int get_module_start(struct linker *lk, module_t *module)
+{
+	if(module->filled == false)
+	{
+		return -1;
+	}
+	int set_state = 0;
+
+	for(int i = 0; module->size; ++i)
+	{
+		scope_t *scope = get_scope_from_ref(lk, module->fragments[i].ref);
+		if(scope->segment.start_state == true)
+		{
+			return i;
+		}
+	}
+	return 0;
 }

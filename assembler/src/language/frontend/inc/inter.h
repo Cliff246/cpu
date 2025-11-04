@@ -67,7 +67,8 @@ typedef struct directive_record
 #define DIRECTIVE_CONTEXT_RECORD_PUBLIC 0
 #define DIRECTIVE_CONTEXT_RECORD_IMPORT 1
 #define DIRECTIVE_CONTEXT_RECORD_DEFINE 2
-#define DIRECTIVE_CONTEXT_RECORD_START 3
+#define DIRECTIVE_CONTEXT_RECORD_ORDER  3
+
 
 
 typedef struct context_directives

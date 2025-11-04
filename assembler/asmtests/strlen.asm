@@ -1,5 +1,10 @@
 
 %pub MAIN LOOP BYTE_SPLIT
+
+%order test std
+
+
+
 .text  tag std
 
 MAIN:

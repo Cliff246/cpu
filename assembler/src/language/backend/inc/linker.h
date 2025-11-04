@@ -81,10 +81,21 @@ typedef struct linker_source
 
 
 
-
-
 struct module;
 //very screwed
+
+typedef struct linker_tagorder
+{
+	char *tag;
+	bool exists;
+}linker_tagorder_t;
+
+typedef struct linkorder
+{
+	//tag order parts
+	linker_tagorder_t *tagorder;
+	size_t count;
+}linkorder_t;
 
 
 typedef struct linker
@@ -96,10 +107,11 @@ typedef struct linker
 	p_hashtable_t globals;
 	ctx_inc_mat_t matrix;
 	struct module modules[MAX_TAGS];
+	linkorder_t order;
 }linker_t;
 
 
-
+void free_linker(linker_t *lk);
 
 void add_context_to_linker(linker_t *lk, context_t *context);
 linker_t *create_linker(void);
@@ -112,6 +124,8 @@ void build_module_stack(linker_t *lk);
 context_t *get_context_from_global(linker_t *lk, global_t *glb);
 
 symbol_t *get_symbol_from_global(linker_t *lk, global_t *glb);
-
+bool add_tag_to_tagorder(linker_t *lk, char *key, int order);
+void print_linker_tagorder(linker_t *lk);
+int create_link_order(linker_t *lk, int *buffer, int bufsize);
 
 #endif

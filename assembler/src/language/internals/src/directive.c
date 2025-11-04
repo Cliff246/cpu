@@ -13,7 +13,7 @@ typedef struct dirtemplate
 
 }dirtemplate_t;
 
-
+//get the
 dir_rec_t *get_record_from_context(context_t *ctx, directive_type_t type)
 {
 	int index = -1;
@@ -28,8 +28,8 @@ dir_rec_t *get_record_from_context(context_t *ctx, directive_type_t type)
 		case DIR_IMP:
 			index = DIRECTIVE_CONTEXT_RECORD_IMPORT;
 			break;
-		case DIR_START:
-			index = DIRECTIVE_CONTEXT_RECORD_START;
+		case DIR_ORDER:
+			index = DIRECTIVE_CONTEXT_RECORD_ORDER;
 			break;
 		default:
 
@@ -84,12 +84,20 @@ void directive_imp_handler(context_t *ctx, directive_t *d)
 	// TODO: implement inc directive handler
 }
 
-void directive_start_handler(context_t *ctx, directive_t *d)
+
+
+
+void directive_order_handler(context_t *ctx, directive_t *d)
 {
+	static bool used = false;
+	if(used == true)
+	{
+
+	}
+
 	directive_generic_handler(ctx, d);
 
 }
-
 
 static dirtemplate_t builtins[] =
 {
@@ -97,7 +105,8 @@ static dirtemplate_t builtins[] =
 	[DIR_PUB]	= {"pub", directive_public_handler, DIR_PUB},
 	[DIR_DEF] 	= {"def", directive_def_handler, DIR_DEF},
 	[DIR_IMP] 	= {"imp", directive_imp_handler, DIR_IMP},
-	[DIR_START] 	= {"start", directive_start_handler, DIR_START},
+	[DIR_ORDER] = {"order", directive_order_handler, DIR_ORDER},
+
 };
 
 char *inval = "INVAL";
@@ -159,6 +168,9 @@ static dirarg_type_t fill_dirarg_type(directive_type_t type, dirarg_type_t args[
 				return DIRARG_REFERENCE;
 			case DIR_DEF:
 				return DIRARG_IMPLICIT;
+
+			case DIR_ORDER:
+				return DIRARG_TAG;
 			default:
 				return DIRARG_INVAL;
 		}

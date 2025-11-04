@@ -6,16 +6,28 @@
 
 
 //the define directives types count must be n - 1 size
+
+
+#define DIRECTIVE_TYPE_ENUM(DIR_X)	\
+	DIR_X(INVAL)					\
+	DIR_X(IMP)						\
+	DIR_X(PUB)						\
+	DIR_X(DEF)						\
+	DIR_X(ORDER)					\
+
+
+#define DIR_X(val) DIR_ ## val,
+
 typedef enum directive_type
 {
-	DIR_INVAL,
-	DIR_PUB,
-	DIR_IMP,
-	DIR_DEF,
-	DIR_START,
+	DIRECTIVE_TYPE_ENUM(DIR_X)
 }directive_type_t;
+#undef DIR_X
 
-#define DIRECTIVES_TYPES_COUNT 4
+#define DIR_X_ADD(val) + 1
+
+#define DIRECTIVES_TYPES_COUNT (0 DIRECTIVE_TYPE_ENUM(DIR_X_ADD))
+
 
 
 struct context;
@@ -28,7 +40,8 @@ typedef enum dirarg_type
 	DIRARG_INVAL,
 	DIRARG_FILE,
 	DIRARG_REFERENCE,
-	DIRARG_IMPLICIT
+	DIRARG_IMPLICIT,
+	DIRARG_TAG,
 }dirarg_type_t;
 
 typedef struct dirarg
@@ -37,7 +50,7 @@ typedef struct dirarg
 	dirarg_type_t type;
 
 }dirarg_t;
-
+//shit
 #define MAX_DIRECTIVE_CONTENTS 10
 typedef struct directive
 {

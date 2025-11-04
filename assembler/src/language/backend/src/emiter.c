@@ -35,8 +35,8 @@ outorder_t *create_outorder(linker_t *ll)
 
 		region_t *re = create_region(mod);
 		oo->regions[ri] = re;
-		print_module(re->mod);
-		printf("size %d\n", re->size);
+		//print_module(re->mod);
+		//printf("size %d\n", re->size);
 
 		total_size += re->size;
 	}
@@ -65,7 +65,7 @@ void set_outorder_positions(outorder_t *oo, int *positions, size_t size)
 			exit(1);
 		}
 		oo->regions[i]->order = i;
-		printf("%d %p\n", i, oo->regions[i]);
+		//printf("%d %p\n", i, oo->regions[i]);
 		temp[spot] = oo->regions[i];
 	}
 
@@ -84,9 +84,9 @@ void resolve_positions(outorder_t *oo)
 	size_t position = 0;
 	for(int i = 0; i < oo->count; ++i)
 	{
-		printf("%d %p\n", i, oo->regions[i]);
+		region_t *old = oo->regions[i];
+		//printf("%d %p\n", i, oo->regions[i]);
 		oo->regions[i]->position = position;
-		printf("%d\n", position);
 
 		position += oo->regions[i]->size;
 	}
@@ -105,17 +105,17 @@ symbol_t *resolve_symbol(char *key, linker_t *lk, modfrag_t *frag)
 {
 
 	context_t *ctx = get_context_from_ref(lk, frag->ref);
-	printf("local %p\n", ctx);
+	//printf("local %p\n", ctx);
 	alias_t *ali = (alias_t *)getdata_from_hash_table(ctx->alias_map, key);
 	if(ali)
 	{
 		return ali->symbol;
 	}
-	printf("global %p\n", ctx);
+	//printf("global %p\n", ctx);
 
 
 	global_t *glb = (global_t *)getdata_from_hash_table(lk->globals, key);
-	printf("global %d\n", glb->type);
+	//printf("global %d\n", glb->type);
 	if(glb && glb->type == GLOBAL_SYMBOL)
 	{
 
@@ -238,7 +238,7 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 		imm_len += code.imms;
 	}
 
-	printf("lands\n");
+	//printf("lands\n");
 	const size_t table_size = inst_len/ 128 + 1;
 	uint64_t *table = CALLOC(table_size, uint64_t);
 	//oversized
@@ -256,13 +256,15 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 	bool failed = false;
 
 
-
 	for(int fi = 0; fi < mod->size; ++fi)
 	{
-
-		modfrag_t *frag = &mod->fragments[fi];
+		modfrag_t *frag;
+		frag = &mod->fragments[mod->emit_order[fi]];
+		printf("emit order %d\n", mod->emit_order[fi]);
 		scope_t *scope = get_scope_from_ref(ll, frag->ref);
-		printf("run\n");
+		printf("%s\n", get_filename_from_id(scope->segment.fid));
+
+		//printf("run\n");
 		for(int si = 0; si < scope->entries.count; ++si)
 		{
 			//printf("enty %d %d\n", si, scope->entries.count);
@@ -404,7 +406,7 @@ segout_data_t create_segout_data(linker_t *ll, region_t *region)
 	size_t iter = 0;
 	for(int fi = 0; fi < mod->size; ++fi)
 	{
-		modfrag_t *frag = &mod->fragments[fi];
+		modfrag_t *frag = &mod->fragments[mod->emit_order[fi]];
 		scope_t *scope = get_scope_from_ref(ll, frag->ref);
 		for(int i = 0; i < scope->entries.count; ++i)
 		{
@@ -555,7 +557,7 @@ void fix_align_module_addresses(linker_t *ll, module_t *mod, size_t offset)
 	size_t fragment_offset = 0;
 	for(int mi = 0; mi < mod->size; ++mi)
 	{
-		modfrag_t *frag = &mod->fragments[mi];
+		modfrag_t *frag = &mod->fragments[mod->emit_order[mi]];
 		scope_t *scope = get_scope_from_ref(ll, frag->ref);
 		size_t scope_local = fix_align_scope_addresses(scope, offset, fragment_offset);
 		fragment_offset += scope_local;
@@ -618,7 +620,7 @@ void print_over_module(linker_t *lk, module_t *mod)
 	//module iter
 	for(int mi = 0; mi < mod->size; mi++)
 	{
-		modfrag_t *frag = &mod->fragments[mi];
+		modfrag_t *frag = &mod->fragments[mod->emit_order[mi]];
 		print_over_fragment(lk, frag);
 
 	}

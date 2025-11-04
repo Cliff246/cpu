@@ -35,6 +35,120 @@ bool get_src_in_global(global_t *global, int index)
 	return bit;
 }
 
+void free_linker(linker_t *lk)
+{
+	if(lk->order.tagorder != NULL)
+	{
+
+		for(int toi = 0; toi < lk->order.count; ++toi)
+		{
+		//lto = linker tag order
+			linker_tagorder_t *lto = &lk->order.tagorder[toi];
+			if(lto->tag != NULL)
+			{
+			free(lto->tag);
+			}
+		}
+		free(lk->order.tagorder);
+	}
+
+
+}
+
+
+bool add_tag_to_tagorder(linker_t *lk, char *key, int order)
+{
+	if(order < 0)
+	{
+		return false;
+	}
+	if(lk->order.tagorder == NULL || lk->order.count == 0)
+	{
+		lk->order.tagorder = CALLOC((lk->order.count = order + 1), linker_tagorder_t);
+
+
+	}
+	else if(lk->order.count <= order)
+	{
+		lk->order.tagorder =  REALLOC(lk->order.tagorder, (lk->order.count = order + 1), linker_tagorder_t);
+
+	}
+	linker_tagorder_t *tagorder = &lk->order.tagorder[order];
+	printf("%d %d\n", lk->order.count, order);
+	if(tagorder->exists == true)
+	{
+		LOG("trying to over set the tag: %s with %s at %d\n", tagorder->tag, key, order);
+		return false;
+	}
+	else
+	{
+		tagorder->exists = true;
+		//duplicate tag order
+
+		tagorder->tag = strdup(key);
+		return true;
+	}
+
+
+}
+
+//should be done after resolution
+
+int create_link_order(linker_t *lk, int *buffer, int bufsize)
+{
+    int *pos = CALLOC(bufsize, int);
+    for (int i = 0; i < bufsize; ++i)
+    {
+        buffer[i] = i;
+        pos[i] = i;
+    }
+
+    for (int ti = 0; ti < lk->order.count; ++ti)
+    {
+        linker_tagorder_t *lto = &lk->order.tagorder[ti];
+        if (!lto->exists)
+            continue;
+
+        int target = check_tag(lto->tag);
+        if (target < 0 || target >= bufsize)
+            continue;
+
+        int currPos = pos[ti];
+        if (currPos == target)
+            continue;
+
+        int other = buffer[target];
+
+        // swap in buffer
+        buffer[target] = ti;
+        buffer[currPos] = other;
+
+        // update pos map
+        pos[ti] = target;
+        pos[other] = currPos;
+    }
+
+    free(pos);
+    return 1;
+}
+
+
+
+
+
+void print_linker_tagorder(linker_t *lk)
+{
+	for(int i = 0; i < lk->order.count; ++i)
+	{
+		if(lk->order.tagorder[i].exists == true)
+		{
+			char *key = lk->order.tagorder[i].tag;
+			printf("i:%d tag:%s id:%d\n",i, key, check_tag(key));
+
+		}
+	}
+
+}
 
 void print_global_content(global_t *global)
 {
@@ -65,6 +179,8 @@ global_type_t get_global_type_from_directive(directive_type_t dirtype)
 		case DIR_PUB:
 			return GLOBAL_SYMBOL;
 		case DIR_INVAL:
+			return GLOBAL_INVAL;
+		case DIR_ORDER:
 			return GLOBAL_INVAL;
 		default:
 			return GLOBAL_INVAL;
@@ -172,6 +288,7 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 
 	ctx_dirs_t *ctx_dirs = &ctx->dirs;
 	directive_t *dir = ctx_dirs->directives[index_dir];
+	LOG("directive type %d\n", dir->type, 0);
 	if(dir->type == DIR_IMP)
 	{
 
@@ -205,7 +322,7 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 		}
 		return;
 	}
-	else
+	else if(dir->type == DIR_DEF || dir->type == DIR_PUB)
 	{
 		//da = dir arg
 		for(int da = 0; da < MAX_DIRECTIVE_CONTENTS; ++da)
@@ -272,17 +389,35 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 				}
 
 			}
-			print_global_content(glb);
+			//print_global_content(glb);
 
 		}
 		return;
+	}
+
+	else if(dir->type == DIR_ORDER)
+	{
+		//not enough arguments to fully saturate the amount of tags
+		for(int da = 0; da < MAX_DIRECTIVE_CONTENTS; ++da)
+		{
+			dirarg_t arg = dir->contents[da];
+			if(arg.type == DIRARG_INVAL || arg.type == DIRARG_UNDEFINED)
+			{
+				continue;
+			}
+			add_tag_to_tagorder(lk, arg.content, da);
+		}
+	}
+	else
+	{
+
 	}
 
 }
 
 void add_context_to_linker(linker_t *lk, context_t *ctx)
 {
-	LOG("adding context to linker %s\n", get_filename_from_context(ctx), 0);
+	//LOG("adding context to linker %s\n", get_filename_from_context(ctx), 0);
 
 
 
@@ -310,7 +445,6 @@ linker_t *create_linker(void)
 	lk->global_alloc = HASHTABLE_LINKER_GLOBALS;
 	lk->global_count = 0;
 	lk->global_store = CALLOC(lk->global_alloc, global_t);
-
 	lk->globals = new_hash_table(HASHTABLE_LINKER_GLOBALS, free_global);
 	for(int i = 0; i < LINKER_MAX_FILES; ++i)
 	{
@@ -397,6 +531,7 @@ void build_module_stack(linker_t *lk)
 
 		fill_module(lk, module);
 	}
+	print_linker_tagorder(lk);
 }
 
 
@@ -409,7 +544,7 @@ context_t *get_context_from_global(linker_t *lk, global_t *glb)
 	}
 	if(glb->type == GLOBAL_SYMBOL)
 	{
-		printf("implemented %d\n", glb->glb.symbol.imps.implemented);
+		//printf("implemented %d\n", glb->glb.symbol.imps.implemented);
 
 		if(glb->glb.symbol.imps.implemented == false)
 		{
@@ -461,7 +596,7 @@ symbol_t *get_symbol_from_global(linker_t *lk, global_t *glb)
 		}
 		else
 		{
-			printf("%p\n", alias);
+			//printf("%p\n", alias);
 			return alias->symbol;
 
 		}

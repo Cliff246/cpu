@@ -158,6 +158,11 @@ static void generate_argument_data(seg_t *seg)
 		{
 			at_state = true;
 		}
+		else if(!strcmp(arg->arg, "start"))
+		{
+			LOG("Start state set\n", 0);
+			seg->start_state = true;
+		}
 		else
 		{
 			tag_state = false;

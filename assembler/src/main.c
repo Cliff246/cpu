@@ -55,8 +55,17 @@ int main(int argc, char *argv[])
 		//printf("%s\n", get_filename_from_context(contexts[0]));
 		build_module_stack(lk);
 		outorder_t *oo = create_outorder(lk);
-		int positions[3] = {2, 0, 1};
-		set_outorder_positions(oo, positions, 3);
+
+		int buffer[10] = {0};
+		create_link_order(lk, buffer, 10);
+		printf("\n\n");
+		for(int bufi = 0; bufi < 10; bufi++)
+		{
+			printf("%d \n", buffer[bufi]);
+		}
+
+
+		set_outorder_positions(oo, buffer, oo->count);
 		resolve_positions(oo);
 		fix_addresses(lk, oo);
 		//print_over_outorder(lk, oo);

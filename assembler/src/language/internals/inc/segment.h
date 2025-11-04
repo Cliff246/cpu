@@ -64,6 +64,7 @@ typedef struct segment
 	bool state_refat;
 	//todo do ref at
 	bool state_tag;
+	bool start_state;
 	int tag;
 
 }seg_t;

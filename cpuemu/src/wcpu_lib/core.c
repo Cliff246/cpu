@@ -265,7 +265,7 @@ void fetch_cpu(void)
 	// printf("pc: %llu ipc: %llu\n", pc, ipc);
 
 #endif
-	printf("pc %d\n", pc);
+	//printf("pc %d\n", pc);
 
 
 	CCPU(curins) = (uint32_t)get_inst_at_pc_address(pc);
@@ -276,7 +276,7 @@ void fetch_cpu(void)
 void decode_cpu(void)
 {
 	inst_t inst = decode_inst(CCPU(curins));
-	print_inst(&inst);
+	//print_inst(&inst);
 
 #if DEBUG_MODE == 1
 
@@ -296,7 +296,7 @@ void execute_cpu(void)
 	{
 
 
-
+		printf("%d %d %d\n", rs1_d, rs2_d);
 
 
 		alu_submit(components.alu, inst.subpath, rs1_d, rs2_d, CCPU(curimm), inst.immflag);
@@ -306,11 +306,11 @@ void execute_cpu(void)
 
 
 	}
-	if (inst.path == PATH_SYS)
+	else if (inst.path == PATH_SYS)
 	{
 		system_submit(components.cpu);
 	}
-	if (inst.path == PATH_JMP)
+	else if (inst.path == PATH_JMP)
 	{
 
 		jump_submit(components.cpu, inst.subpath, 0, rs1_d, rs2_d, CCPU(curimm), inst.immflag);

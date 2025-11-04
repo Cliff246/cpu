@@ -45,6 +45,7 @@ typedef struct module_fragment
 		modfrag_data_t data;
 		modfrag_code_t code;
 	}frag;
+
 }modfrag_t;
 
 
@@ -54,6 +55,9 @@ typedef struct module
 	int size;
 	module_type_t type;
 	modfrag_t *fragments;
+	int *emit_order;
+
+
 	bool set;
 	bool filled;
 }module_t;
@@ -75,5 +79,7 @@ void fill_module(struct linker *lk, module_t *mod);
 
 size_t total_module_size(module_t *mod);
 context_t *get_context_from_ref(struct linker *lk, scope_ref_t ref) ;
+int get_module_start(struct linker *lk, module_t *module);
+
 
 #endif
