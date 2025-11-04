@@ -71,3 +71,23 @@ uint64_t get_file(entry_t *entry)
 {
 	return entry->node->tok->locale.file;
 }
+
+
+
+
+void print_entry(entry_t *entry)
+{
+	switch(entry->type)
+	{
+		case ENTRY_INST:
+			print_inst(&entry->entry.inst);
+			break;
+		case ENTRY_MOP:
+			print_mop(&entry->entry.mop);
+			break;
+		default:
+			LOG("unknown entry\n", 0);
+			break;
+
+	}
+}

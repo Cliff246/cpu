@@ -109,7 +109,9 @@ bool check_global_validity(linker_t *lk);
 size_t get_number_of_sources(void);
 void build_module_stack(linker_t *lk);
 
+context_t *get_context_from_global(linker_t *lk, global_t *glb);
 
+symbol_t *get_symbol_from_global(linker_t *lk, global_t *glb);
 
 
 #endif

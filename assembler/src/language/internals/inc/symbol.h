@@ -27,5 +27,7 @@ typedef struct symbol
 symbol_t *create_symbol_with_ref(ref_t *ref);
 symbol_t *create_symbol(void);
 void free_symbol(symbol_t *sym);
+void print_symbol(symbol_t *sym);
+
 
 #endif

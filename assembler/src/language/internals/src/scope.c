@@ -8,7 +8,23 @@
 #include <stdio.h>
 #include "commons.h"
 #include "symbol.h"
+#include "fileio.h"
 
+void print_scope_symbols(scope_t *scope)
+{
+	printf("scope sid:%d tag:%d file:%s:\n", scope->segment.sid, scope->segment.tag, get_filename_from_id(get_scope_file_id(scope)));
+	for(int i = 0; i < scope->symbols.count; ++i)
+	{
+		symbol_t *sym = scope->symbols.symbols[i];
+		printf("\t");
+		print_symbol(sym);
+	}
+}
+
+int get_scope_file_id(scope_t *scope)
+{
+	return scope->segment.fid;
+}
 
 void add_entry_to_scope(scope_t *scope, entry_t *entry)
 {
@@ -69,7 +85,7 @@ void create_ref_from_parser(scope_t *scope, parse_node_t *head)
 
 	//set sid
 	ref->sid = scope->segment.sid;
-	ref->locale_offset = (scope->bytes / 4);
+	ref->locale_offset = scope->entries.count;
 	//printf("scope bytes: %d\n", scope->bytes / 4);
 	//print_ref(ref);
 	parse_node_t *entry_head = get_entries_under_reference(ref);
@@ -140,4 +156,9 @@ bool scope_uses_symbol(scope_t *scope, char *key)
 		return false;
 	}
 	return false;
+}
+
+size_t get_scope_size(scope_t *scope)
+{
+	return scope->entries.count;
 }

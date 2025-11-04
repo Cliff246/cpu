@@ -40,11 +40,13 @@ typedef struct scope
 	seg_t segment;
 
 	parse_node_t *head;
+	size_t addresses;
 	size_t bytes;
 
+	
 }scope_t;
 
-
+void print_scope_symbols(scope_t *scope);
 
 void create_ref_from_parser(scope_t *scope, parse_node_t *head);
 
@@ -52,5 +54,8 @@ void add_symbol_to_scope(scope_t *scope, symbol_t *ref);
 
 scope_t create_scope(parse_node_t *head);
 bool scope_uses_symbol(scope_t *scope, char *key);
+int get_scope_file_id(scope_t *scope);
+size_t get_scope_size(scope_t *scope);
+
 
 #endif

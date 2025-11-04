@@ -47,8 +47,7 @@ entry_t *create_entry(parse_node_t *node);
 uint64_t get_line(entry_t *entry);
 uint64_t get_file(entry_t *entry);
 
-
-
+void print_entry(entry_t *entry);
 
 #endif
 

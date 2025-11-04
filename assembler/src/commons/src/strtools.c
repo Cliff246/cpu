@@ -403,3 +403,14 @@ int *collect_segments(char *content, size_t length)
 	segments[index] = -1;
 	return segments;
 }
+
+
+void int64_to_8chars(int64_t num, char dest[8])
+{
+	int64_t cur = num;
+	for(int i = 0; i < 8; ++i)
+	{
+		dest[i] = cur & 0xff;
+		cur >>= 8;
+	}
+}

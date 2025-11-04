@@ -50,16 +50,24 @@ int main(int argc, char *argv[])
 			context_resolve(contexts[i]);
 			add_context_to_linker(lk, contexts[i]);
 		}
-		printf("validity %d\n", check_global_validity(lk));
-		print_globals(lk);
-		printf("%s\n", get_filename_from_context(contexts[0]));
+		//printf("validity %d\n", check_global_validity(lk));
+		//print_globals(lk);
+		//printf("%s\n", get_filename_from_context(contexts[0]));
 		build_module_stack(lk);
 		outorder_t *oo = create_outorder(lk);
-		int positions[3] = {2, 1, 0};
+		int positions[3] = {2, 0, 1};
 		set_outorder_positions(oo, positions, 3);
 		resolve_positions(oo);
-		printf("done\n");
+		fix_addresses(lk, oo);
+		//print_over_outorder(lk, oo);
 
+		segout_t outs[oo->count];
+		for(int ri = 0; ri < oo->count; ++ri)
+		{
+			outs[ri] = create_segout(lk, oo->regions[ri]);
+		}
+		output_t *out =  combine_segouts(outs, oo->count);
+		write_out(out, target.output_file);
 		//output_t *output = emit(contexts[0]);
 		//write_out(output, (char *)target.output_file);
 		//printf("assemble\n");

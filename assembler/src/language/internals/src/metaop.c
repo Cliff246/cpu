@@ -10,6 +10,61 @@
 #include "entry.h"
 #include "decoder.h"
 #include "strtools.h"
+#include <assert.h>
+
+
+const char *mopids_as_strings[] =
+{
+	[MOP_UNKNOWN] = "inval",
+	[MOP_I64] = "i64",
+	[MOP_I32] = "i32",
+	[MOP_I16] = "i16",
+	[MOP_I8] = "i8",
+	[MOP_U64] = "u64",
+	[MOP_U32] = "u32",
+	[MOP_U16] = "u16",
+	[MOP_U8] = "u8",
+	[MOP_FLOAT] = "float",
+	[MOP_DOUBLE] = "double",
+	[MOP_ALIGN] = "align",
+	[MOP_STRING] = "string",
+	[MOP_MEM] = "mem",
+	[MOP_PTR] = "ptr",
+};
+
+static bool is_mop_id_integer(mop_id_t id)
+{
+	switch(id)
+	{
+		case MOP_I16:
+			return true;
+		case MOP_I32:
+			return true;
+		case MOP_I64:
+			return true;
+		case MOP_I8:
+			return true;
+		case MOP_U16:
+			return true;
+		case MOP_U32:
+			return true;
+		case MOP_U64:
+			return true;
+		case MOP_U8:
+			return true;
+		default:
+			return false;
+	}
+}
+
+static bool is_mop_id_string(mop_id_t id)
+{
+	if(id == MOP_STRING)
+		return true;
+	else
+		return false;
+}
+
 
 data_holder_t decode_string(parse_node_t *head)
 {
@@ -106,10 +161,89 @@ data_holder_t decode_integer(parse_node_t *head)
 
 }
 
+void print_data_holder_string(data_holder_t holder)
+{
+
+
+	char buffer[DEFAULT_BUFFER + 1] = {0};
+
+	size_t size = MIN((DEFAULT_BUFFER / 8), holder.words_len);
+	for(size_t c = 0; c < size; ++c)
+	{
+		char temp[8] = {0};
+		int64_to_8chars(holder.words[c], temp);
+
+		for(int bi = 0; bi < 8; ++bi)
+		{
+			buffer[(c * 8) + bi] = temp[bi];
+		}
+
+	}
+	printf("\t<%s>\n", buffer);
+}
+
+
+
+void print_mop_data_string(mop_t *mop)
+{
+	if(is_mop_id_string(mop->mop))
+	{
+		print_data_holder_string(mop->data);
+	}
+}
+
+void print_mop_data_int(mop_t *mop)
+{
+	if(is_mop_id_integer(mop->mop))
+	{
+
+	}
+}
+
+void print_mop_data(mop_t *mop)
+{
+	printf("\tmop: \'%s\'\n", mopids_as_strings[mop->mop]);
+
+	if(is_mop_id_integer(mop->mop))
+	{
+		print_mop_data_int(mop);
+	}
+	else if(is_mop_id_string(mop->mop))
+	{
+		print_mop_data_string(mop);
+	}
+	else
+	{
+		switch(mop->mop)
+		{
+			case MOP_FLOAT:
+				//todo print float
+				break;
+			case MOP_DOUBLE:
+				//todo print double
+				break;
+			case MOP_PTR:
+				//todo print ptr
+				break;
+
+			case MOP_ALIGN:
+				//todo print align
+				break;
+			default:
+				//should never be reached
+				LOG("mop id %s %d was not associated with a print", mopids_as_strings[mop->mop], mop->mop, 0);
+				exit(EXIT_FAILURE);
+				break;
+		}
+	}
+
+}
 
 void print_mop(mop_t *mop)
 {
-
+	printf("mop key: %s id:%d type:%d { \n", mop->mop_keyword, mop->mop, mop->type);
+	print_mop_data(mop);
+	printf("}\n");
 }
 
 
@@ -121,7 +255,7 @@ mop_t create_mop(parse_node_t *node)
 	char *mop_tok_id = strdup(node->tok->lexeme);
 
 	mop.mop = get_mop_code(mop_tok_id);
-	mop.mop_id = mop_tok_id;
+	mop.mop_keyword = mop_tok_id;
 	mop.expressions = node->children;
 	mop.expressions_len = node->child_count;
 
@@ -164,25 +298,10 @@ mop_t create_mop(parse_node_t *node)
 
 mop_id_t get_mop_code(char *keyword)
 {
-	const char *const mops[] = {
-		"i64",
-		"i32",
-		"i16",
-		"i8",
-		"u64",
-		"u32",
-		"u16",
-		"u8",
-		"float",
-		"double",
-		"align",
-		"string",
-		"mem",
-		"ptr",
 
-	};
 
 	mop_id_t ids[] = {
+		MOP_UNKNOWN,
 		MOP_I64,
 		MOP_I32,
 		MOP_I16,
@@ -199,8 +318,8 @@ mop_id_t get_mop_code(char *keyword)
 		MOP_PTR,
 
 	};
-
-	int code = determine_code(keyword, mops, ARYSIZE(mops));
+	static_assert(ARYSIZE(ids) == ARYSIZE(mopids_as_strings), "array of mop ids string and mopid enum must be the same");
+	int code = determine_code(keyword, mopids_as_strings, ARYSIZE(mopids_as_strings));
 	if(code != -1)
 	{
 

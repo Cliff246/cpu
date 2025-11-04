@@ -50,7 +50,7 @@ typedef struct metaop
 	mop_type_t type;
 
 
-	char *mop_id;
+	char *mop_keyword;
 
 	parse_node_t **expressions;
 	size_t expressions_len;

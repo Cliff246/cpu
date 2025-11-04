@@ -10,6 +10,7 @@
 
 typedef enum access_modifier
 {
+	ACCESS_INVAL,
 	ACCESS_PUBLIC,
 	ACESSS_PRIVATE,
 
@@ -33,6 +34,9 @@ typedef struct reference
 
 	//the locale/segment offset
 	uint64_t locale_offset;
+	uint64_t fragment_offset;
+	uint64_t absolute_offset;
+
 	uint64_t resolved_address;
 
 	//public or

@@ -6,6 +6,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 int split_str(const char *string, char ***ptr, const char *delims);
 char *clear_whitespace(char *str);
@@ -25,6 +26,7 @@ char *to_string(char val);
 int *collect_lines(char *content, size_t length);
 int *collect_references(char *content, size_t length);
 int *collect_segments(char *content, size_t length);
+void int64_to_8chars(int64_t num, char dest[8]);
 extern char basic_strings[256][2];
 
 #endif

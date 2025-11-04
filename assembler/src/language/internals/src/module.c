@@ -325,3 +325,8 @@ size_t total_module_size(module_t *mod)
 
 	return 0;
 }
+
+context_t *get_context_from_ref(struct linker *lk, scope_ref_t ref)
+{
+	return lk->srcs[ref.ctx_id].ctx;
+}

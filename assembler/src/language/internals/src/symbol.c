@@ -29,3 +29,19 @@ symbol_t *create_symbol(void)
 	symbol_t *sym = CALLOC(1, symbol_t);
 	return sym;
 }
+
+
+void print_symbol(symbol_t *sym)
+{
+	switch(sym->type)
+	{
+		case SYMBOL_REFERENCE:
+			print_ref(sym->symbol.ref);
+			break;
+		case SYMBOL_INVAL:
+			printf("symbol is invalid\n");
+			break;
+		default:
+			break;
+	}
+}

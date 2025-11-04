@@ -59,7 +59,7 @@ typedef struct segment
 {
 	seg_type_t segtype;
 	int sid;
-
+	int fid;
 	seg_arg_t args[SEGMENT_MAX_ARGUMENTS];
 	bool state_refat;
 	//todo do ref at

@@ -5,6 +5,7 @@ struct module;
 
 #include <stdlib.h>
 #include "scope.h"
+#include "inter.h"
 
 typedef struct scope_ref
 {
@@ -73,5 +74,6 @@ scope_t *get_scope_from_ref(struct linker *lk, scope_ref_t ref);
 void fill_module(struct linker *lk, module_t *mod);
 
 size_t total_module_size(module_t *mod);
+context_t *get_context_from_ref(struct linker *lk, scope_ref_t ref) ;
 
 #endif

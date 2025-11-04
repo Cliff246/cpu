@@ -89,97 +89,7 @@ uint64_t data_resolve(scope_t *data)
 
 
 
-output_t *combine_segouts(segout_t *segouts, int length)
-{
 
-	output_t *output = CALLOC(1, output_t);
-
-	size_t bin_alloc = 100;
-	int64_t *bin = CALLOC(bin_alloc, uint64_t);
-	size_t bin_iter = 0;
-
-	for(int i = 0; i < length; ++i)
-	{
-
-
-
-		segout_t *so = &segouts[i];
-		//printf("type: %d alloc: %d\n", so->type, bin_alloc);
-		if(so->type == ISEG_TEXT)
-		{
-			segout_txt_t *txt = &so->output.txt;
-			const size_t table_len = (txt->inst_len / 128) + 1;
-
-			size_t added = txt->imm_len + txt->inst_len + table_len + 6;
-			if(added + bin_iter >= bin_alloc)
-			{
-				bin_alloc += added;
-				bin = REALLOC(bin, bin_alloc, uint64_t);
-			}
-			for(int i_desc = 0; i_desc < 6; ++i_desc)
-			{
-				bin[bin_iter++] = txt->desc[i_desc];
-			}
-
-			for(int i_table = 0; i_table < table_len; ++i_table)
-			{
-				bin[bin_iter++] = txt->table[i_table];
-			}
-
-			for(int i_inst = 0; i_inst < txt->inst_len; i_inst++)
-			{
-				inst_t inst = decode_inst(txt->inst[i_inst]);
-				//print_inst(&inst);
-
-				//add 1
-
-				uint64_t compressed = txt->inst[i_inst++];
-				compressed <<= 32;
-				//add 2
-				if(i_inst < txt->inst_len)
-				{
-					inst_t inst2 = decode_inst(txt->inst[i_inst]);
-					//print_inst(&inst2);
-					compressed += txt->inst[i_inst];
-
-				}
-				bin[bin_iter ++] = compressed;
-			}
-
-
-			for(int i_imm = 0; i_imm < txt->imm_len; ++i_imm)
-			{
-				bin[bin_iter++] = txt->imm[i_imm];
-			}
-
-		}
-		else if(so->type == ISEG_DATA)
-		{
-			segout_data_t *data = &so->output.data;
-			if(data->data_size + bin_iter >= bin_alloc)
-			{
-				bin_alloc += (data->data_size);
-				bin = REALLOC(bin, bin_alloc, uint64_t);
-			}
-			for(int i_data = 0; i_data < data->data_size; ++i_data)
-			{
-				//printf("%x\n",data->data[i_data]);
-				bin[bin_iter++] = data->data[i_data];
-			}
-
-		}
-
-
-		else
-		{
-			perror("segout type emit not done yet\n");
-			exit(1);
-		}
-	}
-	output->bin = bin;
-	output->size = bin_iter;
-	return output;
-}
 
 
 uint64_t resolve_size(scope_t *scope)
@@ -281,21 +191,3 @@ output_t *emit(context_t *ctx)
 
 
 
-void write_out(output_t *output, char *name)
-{
-	FILE *fp = fopen(name, "wb");
-	if(fp == NULL)
-	{
-		ERR(EBADF, "could not load file");
-		exit(1);
-	}
-	for(int i = 0; i < output->size; i++)
-	{
-		printf("%.3d: %.16llx %lld\n", i, output->bin[i], output->bin[i]);
-
-
-
-	}
-	fwrite(output->bin, sizeof(uint64_t), output->size, fp);
-	fclose(fp);
-}

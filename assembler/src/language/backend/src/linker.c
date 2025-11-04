@@ -400,6 +400,72 @@ void build_module_stack(linker_t *lk)
 }
 
 
+context_t *get_context_from_global(linker_t *lk, global_t *glb)
+{
+	if(glb->used == false)
+	{
+		LOG("tried to grab context form unused global\n", 0);
+		exit(EXIT_FAILURE);
+	}
+	if(glb->type == GLOBAL_SYMBOL)
+	{
+		printf("implemented %d\n", glb->glb.symbol.imps.implemented);
+
+		if(glb->glb.symbol.imps.implemented == false)
+		{
+			LOG("global symbol %s not implemented\n", glb->key, 0);
+			exit(EXIT_FAILURE);
+		}
+		int index = glb->glb.symbol.imps.ctx_index;
+		context_t *ctx = lk->srcs[index].ctx;
+		return ctx;
+	}
+	else if(glb->used == GLOBAL_IMPORT)
+	{
+		if(glb->glb.import.valid == false)
+		{
+			LOG("global import %s not valid\n", glb->key, 0);
+			exit(EXIT_FAILURE);
+		}
+		int index = glb->glb.import.ctx_source;
+		context_t *ctx = &lk->srcs->ctx[index];
+		return ctx;
+	}
+	else
+	{
+		LOG("global type not valid %s %d\n", glb->key, glb->type, 0);
+		exit(EXIT_FAILURE);
+	}
+
+}
+
+symbol_t *get_symbol_from_global(linker_t *lk, global_t *glb)
+{
+
+	if(glb->type != GLOBAL_SYMBOL)
+	{
+		LOG("tried to get symbol from non symbol global %s %d\n", glb->key, glb->type, 0);
+		exit(EXIT_FAILURE);
+	}
+
+	else
+	{
+		context_t *ctx = get_context_from_global(lk, glb);
+		//should check if context is valid but whatever
+		print_hash_table(ctx->alias_map);
+		alias_t *alias = (alias_t *)getdata_from_hash_table(ctx->alias_map, glb->key);
+		if(!alias)
+		{
+			LOG("global to local alias was not found %s\n", glb->key, 0);
+			exit(EXIT_FAILURE);
+		}
+		else
+		{
+			printf("%p\n", alias);
+			return alias->symbol;
+
+		}
 
 
-
+	}
+}

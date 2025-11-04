@@ -36,6 +36,12 @@ typedef struct segout
 }segout_t;
 
 
+typedef struct output
+{
+	uint64_t *bin;
+	uint64_t size;
+}output_t;
+
 
 
 typedef struct region
@@ -61,5 +67,13 @@ outorder_t *create_outorder(linker_t *ll);
 void set_outorder_positions(outorder_t *oo, int *positions, size_t size);
 
 void resolve_positions(outorder_t *oo);
+void fix_addresses(linker_t *ll, outorder_t *oo);
 void emit_segouts(linker_t *ll, outorder_t *oo);
+void print_over_outorder(linker_t *lk, outorder_t *oo);
+
+segout_t create_segout(linker_t *ll, region_t *region);
+void print_segout(segout_t *out);
+output_t *combine_segouts(segout_t *segouts, int length);
+void write_out(output_t *output, char *name);
+
 #endif
