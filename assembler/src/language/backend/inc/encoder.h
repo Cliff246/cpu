@@ -5,6 +5,9 @@
 #include "parser.h"
 #include "inter.h"
 
+/*
+ OLD FILE
+*/
 
 
 uint64_t text_resolve(scope_t *txt);

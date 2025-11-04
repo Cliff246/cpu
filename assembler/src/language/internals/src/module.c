@@ -25,7 +25,7 @@ static modfrag_code_t module_code_resolve(scope_t *txt)
 		}
 		else if(entry->type == ENTRY_MOP)
 		{
-			
+
 		}
 
 
@@ -141,7 +141,7 @@ void append_scope_ref(struct linker *lk, module_t *mod, int ctx_id, int local_in
 		}
 
 	}
-	printf("test %d\n", current);
+	//printf("test %d\n", current);
 
 	mod->size++;
 }
@@ -277,7 +277,7 @@ void fill_module(struct linker *lk, module_t *mod)
 	}
 	if(start != -1 && start != 0)
 	{
-		printf("swap %d %d\n", start, mod->emit_order[0]);
+		//printf("swap %d %d\n", start, mod->emit_order[0]);
 		int swap_start = mod->emit_order[0];
 		mod->emit_order[0] = start;
 		mod->emit_order[start] = swap_start;

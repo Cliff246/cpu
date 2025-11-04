@@ -74,7 +74,7 @@ bool add_tag_to_tagorder(linker_t *lk, char *key, int order)
 
 	}
 	linker_tagorder_t *tagorder = &lk->order.tagorder[order];
-	printf("%d %d\n", lk->order.count, order);
+	//printf("%d %d\n", lk->order.count, order);
 	if(tagorder->exists == true)
 	{
 		LOG("trying to over set the tag: %s with %s at %d\n", tagorder->tag, key, order);
@@ -282,13 +282,38 @@ static int context_in_linker(linker_t *lk, char *filename)
 
 }
 
+bool check_global_inscope(linker_t *lk, global_t *glb, scope_t *scope)
+{
+
+	if(glb->type == GLOBAL_SYMBOL)
+	{
+		global_symbol_t gsym = glb->glb.symbol;
+
+		int fid = get_scope_file_id(scope);
+		if(get_src_in_global(glb, fid))
+		{
+			return true;
+		}
+		LOG("global not found in src %s %s\n", glb->key, get_filename_from_id( fid), 0);
+		return false;
+	}
+	else
+	{
+		//TODO wtf
+		LOG("checking if import global in scope %s\n", glb->key);
+		return true;
+	}
+
+
+}
+
 
 static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_dir)
 {
 
 	ctx_dirs_t *ctx_dirs = &ctx->dirs;
 	directive_t *dir = ctx_dirs->directives[index_dir];
-	LOG("directive type %d\n", dir->type, 0);
+	//LOG("directive type %d\n", dir->type, 0);
 	if(dir->type == DIR_IMP)
 	{
 
@@ -531,7 +556,7 @@ void build_module_stack(linker_t *lk)
 
 		fill_module(lk, module);
 	}
-	print_linker_tagorder(lk);
+	//print_linker_tagorder(lk);
 }
 
 
@@ -587,7 +612,7 @@ symbol_t *get_symbol_from_global(linker_t *lk, global_t *glb)
 	{
 		context_t *ctx = get_context_from_global(lk, glb);
 		//should check if context is valid but whatever
-		print_hash_table(ctx->alias_map);
+		//print_hash_table(ctx->alias_map);
 		alias_t *alias = (alias_t *)getdata_from_hash_table(ctx->alias_map, glb->key);
 		if(!alias)
 		{

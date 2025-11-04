@@ -56,13 +56,13 @@ int main(int argc, char *argv[])
 		build_module_stack(lk);
 		outorder_t *oo = create_outorder(lk);
 
-		int buffer[10] = {0};
-		create_link_order(lk, buffer, 10);
-		printf("\n\n");
-		for(int bufi = 0; bufi < 10; bufi++)
-		{
-			printf("%d \n", buffer[bufi]);
-		}
+		int buffer[100] = {0};
+		create_link_order(lk, buffer, 100);
+		//printf("\n\n");
+		//for(int bufi = 0; bufi < 10; bufi++)
+		//{
+			//printf("%d \n", buffer[bufi]);
+		//}
 
 
 		set_outorder_positions(oo, buffer, oo->count);

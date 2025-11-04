@@ -1,6 +1,7 @@
 
 %imp "asmtests/testsuit/test_combine/combine1.asm"
 %pub JMP1
+
 .text tag combine
 
 START:
@@ -8,4 +9,4 @@ START:
 JMP1:
 	alu.add t0, t0, t0
 
-	
+

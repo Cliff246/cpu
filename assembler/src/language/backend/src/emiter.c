@@ -115,12 +115,25 @@ symbol_t *resolve_symbol(char *key, linker_t *lk, modfrag_t *frag)
 
 
 	global_t *glb = (global_t *)getdata_from_hash_table(lk->globals, key);
+
 	//printf("global %d\n", glb->type);
 	if(glb && glb->type == GLOBAL_SYMBOL)
 	{
 
-		symbol_t *sym = get_symbol_from_global(lk, glb);
-		return sym;
+		scope_t *scope = get_scope_from_ref(lk, frag->ref);
+		if(check_global_inscope(lk, glb, scope))
+		{
+			symbol_t *sym = get_symbol_from_global(lk, glb);
+			return sym;
+		}
+		else
+		{
+			LOG("global outside of scope %s\n", glb->key);
+			return NULL;
+		}
+
+
+
 
 	}
 	else
@@ -260,9 +273,9 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 	{
 		modfrag_t *frag;
 		frag = &mod->fragments[mod->emit_order[fi]];
-		printf("emit order %d\n", mod->emit_order[fi]);
+		//printf("emit order %d\n", mod->emit_order[fi]);
 		scope_t *scope = get_scope_from_ref(ll, frag->ref);
-		printf("%s\n", get_filename_from_id(scope->segment.fid));
+		//printf("%s\n", get_filename_from_id(scope->segment.fid));
 
 		//printf("run\n");
 		for(int si = 0; si < scope->entries.count; ++si)
@@ -287,18 +300,11 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 			if(instruction->immflag )
 			{
 
-
-
-
 				int64_t current_imm = 0;
 				if(instruction->immref != NULL)
 				{
 					//should do local and global conversion here
 					symbol_t *sym = resolve_symbol(instruction->immref, ll, frag);
-
-
-
-
 
 					if(!sym)
 					{
@@ -317,6 +323,9 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 						failed = true;
 						continue;
 					}
+
+
+
 					if(instruction->ref_type == INST_REF_GLOBAL)
 					{
 						if(sym->symbol.ref->resolved == false)
@@ -333,7 +342,6 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 					else if(instruction->ref_type == INST_REF_LOCAL)
 					{
 						ref_t *ref = sym->symbol.ref;
-
 						current_imm = ref->fragment_offset + ref->locale_offset;
 
 					}
@@ -446,7 +454,7 @@ segout_t create_segout(linker_t *ll, region_t *region)
 {
 
 	segout_t out = {0};
-	printf("output %d\n", region->mod->type);
+	//printf("output %d\n", region->mod->type);
 	switch(region->mod->type)
 	{
 		case MODULE_CODE:
@@ -561,7 +569,7 @@ void fix_align_module_addresses(linker_t *ll, module_t *mod, size_t offset)
 		scope_t *scope = get_scope_from_ref(ll, frag->ref);
 		size_t scope_local = fix_align_scope_addresses(scope, offset, fragment_offset);
 		fragment_offset += scope_local;
-		print_scope_symbols(scope);
+		//print_scope_symbols(scope);
 
 	}
 

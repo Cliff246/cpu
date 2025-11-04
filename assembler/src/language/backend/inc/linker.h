@@ -116,6 +116,7 @@ void free_linker(linker_t *lk);
 void add_context_to_linker(linker_t *lk, context_t *context);
 linker_t *create_linker(void);
 void print_globals(linker_t *lk);
+bool check_global_inscope(linker_t *lk, global_t *glb, scope_t *scope);
 
 bool check_global_validity(linker_t *lk);
 size_t get_number_of_sources(void);

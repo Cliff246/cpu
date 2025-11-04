@@ -1,8 +1,9 @@
 
 
 %imp "asmtests/testsuit/test_combine/combine2.asm"
-%def JMP1
 %order combine
+%def JMP1
+
 .text tag combine start
 
 
