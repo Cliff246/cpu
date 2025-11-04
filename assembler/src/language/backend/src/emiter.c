@@ -2,6 +2,7 @@
 #include "commons.h"
 #include "module.h"
 #include "eerror.h"
+#include "errno.h"
 
 region_t *create_region(module_t *mod)
 {
