@@ -337,7 +337,7 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 
 						ref_t *ref = sym->symbol.ref;
 
-						current_imm = ref->fragment_offset + ref->locale_offset + ref->absolute_offset;
+						current_imm = ref->fragment_offset + (ref->byte_offset / 8) + ref->absolute_offset;
 
 					}
 					else if(instruction->ref_type == INST_REF_LOCAL)
@@ -545,6 +545,7 @@ size_t fix_align_scope_addresses(scope_t *scope, size_t module_offset, size_t fr
 			ref->fragment_offset = fragment_offset;
 			ref->absolute_offset = module_offset;
 			ref->resolved = true;
+			print_ref(ref);
 
 		}
 		else if(sym->type == SYMBOL_INVAL)

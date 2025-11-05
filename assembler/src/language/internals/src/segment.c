@@ -209,7 +209,7 @@ seg_t create_segment(parse_node_t *head)
 	//
 	segment.segtype = get_seg_type(head->tok->lexeme);
 	segment.fid = head->tok->locale.file;
-	//LOG("seg type %d\n", segment.segtype, 0);
+	LOG("seg type %d\n", segment.segtype, 0);
 	segment_ids_to_tag[segid++] = segment.tag;
 	return segment;
 }

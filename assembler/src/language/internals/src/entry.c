@@ -1,5 +1,6 @@
 #include "entry.h"
 #include "commons.h"
+#include "fileio.h"
 #include <stdio.h>
 
 void entry_instruction(entry_t *entry)
@@ -35,7 +36,7 @@ entry_t *create_entry(parse_node_t *node)
 	entry_t *entry = CALLOC(1, entry_t);
 
 	entry->node = node;
-	//printf("lexme %s\n", node->tok->lexeme);
+	//printf("lexme %s %s %d\n", node->tok->lexeme, get_filename_from_id(node->tok->locale.file), node->tok->locale.row);
 	//fill out types
 	if(node->kind == NODE_INSTR)
 	{

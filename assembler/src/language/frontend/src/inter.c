@@ -87,14 +87,14 @@ context_t *load_context(file_desc_t *desc)
 	ctx->desc_id = desc->id;
 	ctx->staged_ctx.l_ctx = create_token_stream(desc->src, desc->id);
 
-	//printf("finished lexer\n");
+	LOG("finished lexer\n", 0);
 
 
 
 	ctx->staged_ctx.p_ctx = create_context(ctx->staged_ctx.l_ctx);
-	//printf("created parser\n");
+	LOG("created parser\n", 0);
 	ctx->head = parse_program(ctx->staged_ctx.p_ctx);
-	//printf("done parser\n");
+	LOG("done parser\n", 0);
 	ctx->locales.size = 0;
 	ctx->locales.locales = NULL;
 	//print_depth(ctx->head, 0);
@@ -161,7 +161,7 @@ void context_resolve(context_t *ctx)
 				exit(1);
 			}
 			apply_directive(ctx, dir);
-		//	printf("directive %s\n", dir->name);
+			LOG("directive %s\n", dir->head->tok->lexeme);
 
 
 		}
@@ -214,8 +214,9 @@ void context_resolve(context_t *ctx)
 	ctx->resolved = true;
 	//print_depth(ctx->head, 0);
 	//print_hash_table(ctx->alias_map);
-	//print_directives(ctx);
-	//print_publics(ctx);
+	print_directives(ctx);
+	print_publics(ctx);
+	print_defines(ctx);
 	#undef OVERLAPPING_MAXIMUM
 }
 

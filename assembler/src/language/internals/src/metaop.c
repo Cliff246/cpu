@@ -72,7 +72,7 @@ data_holder_t decode_string(parse_node_t *head)
 	data_holder_t holder = {0};
 
 	uint8_t *buffer = CALLOC(buffer_alloc, uint8_t);
-
+	//printf("mop string\n");
 	//the prefill into a long string
 	for(int i = 0; i < head->child_count; ++i)
 	{
@@ -110,7 +110,7 @@ data_holder_t decode_string(parse_node_t *head)
 	}
 	buffer[buffer_size++] = 0;
 
-	//printf("buffer: %s\n", buffer);
+	printf("buffer: %s\n", buffer);
 	size_t mod = buffer_size % 8;
 	size_t len = buffer_size / 8;
 	if(mod > 0)
@@ -159,6 +159,40 @@ data_holder_t decode_integer(parse_node_t *head)
 
 	return holder;
 
+}
+
+data_holder_t  decode_mem(parse_node_t *head)
+{
+	data_holder_t holder = {0};
+	for(int i = 0; i < head->child_count; ++i)
+	{
+		parse_node_t *child = head->children[i];
+		char *tok = child->tok->lexeme;
+		number_type_t type = get_number_type(tok);
+		int64_t imm = 0;
+		if(type == NUM_INT)
+		{
+			imm = atoi(tok);
+		}
+		if(type == NUM_HEX)
+		{
+			imm = convert_to_hex(tok);
+		}
+		if(type == NUM_OCT)
+		{
+			imm = convert_to_oct(tok);
+		}
+
+		holder.words_len += imm;
+	}
+	if(holder.words_len < 0)
+	{
+		LOG("decode mem data holder size %d is bellow zero\n", holder.words_len);
+		exit(EXIT_FAILURE);
+	}
+	holder.words = CALLOC(holder.words_len, uint64_t);
+
+	return holder;
 }
 
 void print_data_holder_string(data_holder_t holder)
@@ -229,6 +263,8 @@ void print_mop_data(mop_t *mop)
 			case MOP_ALIGN:
 				//todo print align
 				break;
+			case MOP_MEM:
+				break;
 			default:
 				//should never be reached
 				LOG("mop id %s %d was not associated with a print", mopids_as_strings[mop->mop], mop->mop, 0);
@@ -236,7 +272,7 @@ void print_mop_data(mop_t *mop)
 				break;
 		}
 	}
-
+	printf("\t%d\n", mop->data.words_len);
 }
 
 void print_mop(mop_t *mop)
@@ -258,7 +294,7 @@ mop_t create_mop(parse_node_t *node)
 	mop.mop_keyword = mop_tok_id;
 	mop.expressions = node->children;
 	mop.expressions_len = node->child_count;
-
+	//LOG("create mop\n", 0);
 
 	switch(mop.mop)
 	{
@@ -286,9 +322,13 @@ mop_t create_mop(parse_node_t *node)
 			mop.type = MOP_TYPE_DEFINE_DATA;
 
 			break;
-
-
+		case MOP_MEM:
+			mop.data = decode_mem(node);
+			mop.type = MOP_TYPE_DEFINE_DATA;
+			break;
 		default:
+			LOG("mop not defined %d\n", mop.mop);
+			exit(EXIT_FAILURE);
 			break;
 
 	}

@@ -31,6 +31,7 @@ dir_rec_t *get_record_from_context(context_t *ctx, directive_type_t type)
 		case DIR_ORDER:
 			index = DIRECTIVE_CONTEXT_RECORD_ORDER;
 			break;
+
 		default:
 
 			LOG("type is invalid for record %d\n", type, 0);
@@ -89,12 +90,6 @@ void directive_imp_handler(context_t *ctx, directive_t *d)
 
 void directive_order_handler(context_t *ctx, directive_t *d)
 {
-	static bool used = false;
-	if(used == true)
-	{
-
-	}
-
 	directive_generic_handler(ctx, d);
 
 }
@@ -141,6 +136,7 @@ ERR:
 
 void apply_directive(struct context *ctx, directive_t *dir)
 {
+
 	ctx_dirs_t *dirs = &ctx->dirs;
 	if(dirs->count <= dirs->count)
 	{

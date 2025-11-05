@@ -87,7 +87,11 @@ int main(int argc, char *argv[])
 
 			step_cpu();
 		}
-		print_regs();
+		//print_regs();
+		for(int mi = 0; mi < 100; ++mi)
+		{
+			printf("%3d 0x%8x\n",mi, load(mi));
+		}
 	}
 	else
 	{

@@ -264,13 +264,14 @@ void fill_module(struct linker *lk, module_t *mod)
 
 
 	}
+	LOG("fill module\n", 0);
 	mod->filled = true;
 
 	mod->emit_order = CALLOC(mod->size, int);
 
 
 	int start = get_module_start(lk, mod);
-
+	LOG("start %d\n", start);
 	for(int i = 0; i < mod->size; ++i)
 	{
 		mod->emit_order[i] = i;
@@ -362,10 +363,14 @@ int get_module_start(struct linker *lk, module_t *module)
 		return -1;
 	}
 	int set_state = 0;
-
-	for(int i = 0; module->size; ++i)
+	LOG("module size %d\n", module->size);
+	for(int i = 0;i < module->size; ++i)
 	{
 		scope_t *scope = get_scope_from_ref(lk, module->fragments[i].ref);
+		if(scope == NULL)
+		{
+			LOG("scope is null %d\n", i);
+		}
 		if(scope->segment.start_state == true)
 		{
 			return i;

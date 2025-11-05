@@ -3,6 +3,6 @@
 
 #include "core.h"
 
-void memory_submit(cpu_t *cpu);
+void memory_submit(cpu_t *cpu, char subpath, int64_t rs1, int64_t rs2, int64_t imm, char immflag );
 
 #endif

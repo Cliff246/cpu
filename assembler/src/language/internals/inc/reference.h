@@ -33,6 +33,7 @@ typedef struct reference
 
 
 	//the locale/segment offset
+	uint64_t byte_offset;
 	uint64_t locale_offset;
 	uint64_t fragment_offset;
 	uint64_t absolute_offset;

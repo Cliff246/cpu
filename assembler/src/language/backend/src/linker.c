@@ -16,9 +16,10 @@ void add_src_to_global(global_t *global, int index)
 		return;
 	int page = index / __CHAR_BIT__;
 	int offset = index % __CHAR_BIT__;
-	char content = glb->srcs.files[page];
-
+	uint8_t content = glb->srcs.files[page];
 	content = SETBIT(content, offset);
+	//LOG("set bit i:%d offset:%d content:%d \n", index , offset, content);
+
 	glb->srcs.files[page] = content;
 }
 
@@ -27,11 +28,12 @@ bool get_src_in_global(global_t *global, int index)
 	if(index < 0 || index > LINKER_MAX_FILES)
 		return false;
 	global_symbol_t glb = global->glb.symbol;
-
 	int page = index / __CHAR_BIT__;
 	int offset = index % __CHAR_BIT__;
-	char content = glb.srcs.files[page];
-	int bit = GETBIT(content, offset);
+	uint8_t content = glb.srcs.files[page];
+	int bit = GETBIT(content, offset - 1);
+	//LOG("get src: %d file:0x%x, %d =[%d]\n", index, content, bit, offset);
+
 	return bit;
 }
 
@@ -152,8 +154,9 @@ void print_linker_tagorder(linker_t *lk)
 
 void print_global_content(global_t *global)
 {
-	switch(global->type == GLOBAL_SYMBOL)
+	if(global->type == GLOBAL_SYMBOL)
 	{
+
 		global_symbol_t glb = global->glb.symbol;
 
 		printf("global %s srcs:\n", global->key);
@@ -288,8 +291,9 @@ bool check_global_inscope(linker_t *lk, global_t *glb, scope_t *scope)
 	if(glb->type == GLOBAL_SYMBOL)
 	{
 		global_symbol_t gsym = glb->glb.symbol;
-
 		int fid = get_scope_file_id(scope);
+		LOG("global fid: %s %d\n",glb->key,fid);
+
 		if(get_src_in_global(glb, fid))
 		{
 			return true;
@@ -313,7 +317,7 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 
 	ctx_dirs_t *ctx_dirs = &ctx->dirs;
 	directive_t *dir = ctx_dirs->directives[index_dir];
-	//LOG("directive type %d\n", dir->type, 0);
+	LOG("directive type %d\n", dir->type, 0);
 	if(dir->type == DIR_IMP)
 	{
 
@@ -350,6 +354,7 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 	else if(dir->type == DIR_DEF || dir->type == DIR_PUB)
 	{
 		//da = dir arg
+		//printf("dir %s\n",dir->head->tok->lexeme);
 		for(int da = 0; da < MAX_DIRECTIVE_CONTENTS; ++da)
 		{
 			dirarg_t arg = dir->contents[da];
@@ -396,6 +401,7 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 
 				if(!is_symbol_implemented(ctx, glb->key))
 				{
+					LOG("adding src %d\n", ctx->desc_id, 0);
 					add_src_to_global(glb, ctx->desc_id);
 				}
 				else
@@ -426,9 +432,10 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 		for(int da = 0; da < MAX_DIRECTIVE_CONTENTS; ++da)
 		{
 			dirarg_t arg = dir->contents[da];
+			LOG("arg type%d\n", arg.type);
 			if(arg.type == DIRARG_INVAL || arg.type == DIRARG_UNDEFINED)
 			{
-				continue;
+				break;
 			}
 			add_tag_to_tagorder(lk, arg.content, da);
 		}
@@ -481,12 +488,10 @@ linker_t *create_linker(void)
 
 void print_globals(linker_t *lk)
 {
-	for(int i = 0; i < description_used; ++i)
+	printf("globals:\n");
+	for(int i = 0; i < lk->global_count; ++i)
 	{
-		context_t *ctx = lk->srcs[i].ctx;
-
-		print_directives(ctx);
-
+		print_global_content(&lk->global_store[i]);
 	}
 }
 
@@ -528,10 +533,11 @@ bool check_global_validity(linker_t *lk)
 
 void build_module_stack(linker_t *lk)
 {
-
+	//printf("build stack\n");
 
 	for(int i = 0; i < get_number_of_sources(); ++i)
 	{
+		//printf("%d\n", i);
 		linker_src_t *src = &lk->srcs[i];
 		context_t *ctx = src->ctx;
 		size_t local_scopes = get_number_of_scope_from_context(ctx);
@@ -547,13 +553,13 @@ void build_module_stack(linker_t *lk)
 		}
 	}
 
-
+	//printf("finished first stage\n");
 	for(int m = 0; m < MAX_TAGS; ++m)
 	{
 		module_t *module = &lk->modules[m];
 		if(module->set == false)
 			break;
-
+		//LOG("fill module %d\n", m, 0);
 		fill_module(lk, module);
 	}
 	//print_linker_tagorder(lk);

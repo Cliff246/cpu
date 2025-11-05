@@ -86,6 +86,7 @@ void create_ref_from_parser(scope_t *scope, parse_node_t *head)
 	//set sid
 	ref->sid = scope->segment.sid;
 	ref->locale_offset = scope->entries.count;
+	ref->byte_offset = scope->bytes;
 	//printf("scope bytes: %d\n", scope->bytes / 4);
 	//print_ref(ref);
 	parse_node_t *entry_head = get_entries_under_reference(ref);
@@ -119,7 +120,6 @@ scope_t create_scope(parse_node_t *head)
 	parse_node_t *seg_node = head->children[1];
 
 	scope.segment = create_segment(arg_node);
-
 
 
 	for(int i = 0; i < seg_node->child_count; ++i)

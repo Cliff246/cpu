@@ -276,7 +276,7 @@ void fetch_cpu(void)
 void decode_cpu(void)
 {
 	inst_t inst = decode_inst(CCPU(curins));
-	//print_inst(&inst);
+	print_inst(&inst);
 
 #if DEBUG_MODE == 1
 
@@ -296,13 +296,13 @@ void execute_cpu(void)
 	{
 
 
-		printf("%d %d %d\n", rs1_d, rs2_d);
+		printf("%d %d \n", rs1_d, rs2_d);
 
 
 		alu_submit(components.alu, inst.subpath, rs1_d, rs2_d, CCPU(curimm), inst.immflag);
 		alu_step(components.alu);
 		CCPU(co) = components.alu->regdest;
-
+		printf("dest %d\n",  components.alu->regdest);
 
 
 	}
@@ -317,7 +317,7 @@ void execute_cpu(void)
 	}
 	else if (inst.path == PATH_MEM)
 	{
-		memory_submit(components.cpu);
+		memory_submit(components.cpu, inst.subpath, rs1_d, rs2_d, CCPU(curimm), inst.immflag);
 	}
 }
 

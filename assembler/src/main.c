@@ -49,26 +49,28 @@ int main(int argc, char *argv[])
 			contexts[i] = load_context(get_fdesc(i));
 			context_resolve(contexts[i]);
 			add_context_to_linker(lk, contexts[i]);
+			printf("file output\n");
 		}
-		//printf("validity %d\n", check_global_validity(lk));
-		//print_globals(lk);
+		printf("validity %d\n", check_global_validity(lk));
+		print_globals(lk);
 		//printf("%s\n", get_filename_from_context(contexts[0]));
 		build_module_stack(lk);
+		printf("build modules\n");
 		outorder_t *oo = create_outorder(lk);
 
 		int buffer[100] = {0};
 		create_link_order(lk, buffer, 100);
-		//printf("\n\n");
-		//for(int bufi = 0; bufi < 10; bufi++)
-		//{
+		printf("\n\n");
+		for(int bufi = 0; bufi < 10; bufi++)
+		{
 			//printf("%d \n", buffer[bufi]);
-		//}
+		}
 
 
 		set_outorder_positions(oo, buffer, oo->count);
 		resolve_positions(oo);
 		fix_addresses(lk, oo);
-		//print_over_outorder(lk, oo);
+		print_over_outorder(lk, oo);
 
 		segout_t outs[oo->count];
 		for(int ri = 0; ri < oo->count; ++ri)

@@ -10,7 +10,7 @@ void free_reference(ref_t *ptr)
 
 void print_ref(ref_t *ref)
 {
-	printf("%15s l:%d f:%d a:%d r:%d\n", ref->ref_string, ref->locale_offset, ref->fragment_offset, ref->absolute_offset, ref->resolved_address);
+	printf("%15s b:%d l:%d f:%d a:%d r:%d\n", ref->ref_string, ref->byte_offset, ref->locale_offset, ref->fragment_offset, ref->absolute_offset, ref->resolved_address);
 }
 
 ref_t *create_reference( char *key)

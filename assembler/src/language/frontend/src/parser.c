@@ -156,6 +156,8 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	tok_t *path =  expect(ctx, TOK_TOKEN);
 	if(!path)
 	{
+		LOG("path is not there ready\n", 0);
+		exit(EXIT_FAILURE);
 		//TODO expected token error
 		//emit error recover
 	}
@@ -164,6 +166,8 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 
 	if(!dot)
 	{
+		LOG("dot is not there ready\n", 0);
+		exit(EXIT_FAILURE);
 		//TODO expected token error
 		//emit error recover
 	}
@@ -171,6 +175,8 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	tok_t *subpath =  expect(ctx, TOK_TOKEN);
 	if(!subpath)
 	{
+		LOG("subpath is not there ready\n", 0);
+		exit(EXIT_FAILURE);
 		//TODO expected token error
 		//emit error and recover
 	}
@@ -179,6 +185,8 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	tok_t *sep = expect(ctx, TOK_IDENT);
 	if(!sep)
 	{
+		LOG("ident is not there ready\n", 0);
+		exit(EXIT_FAILURE);
 		//TODO expected token error
 		//emit error and recover
 	}
@@ -186,6 +194,8 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	tok_t *rd = expect(ctx, TOK_TOKEN);
 	if(!rd)
 	{
+		LOG("rd is not there ready\n", 0);
+		exit(EXIT_FAILURE);
 		//TODO token error
 		//emit error and recover
 	}
@@ -196,6 +206,8 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	tok_t *comma1 = expect(ctx, TOK_COMMA);
 	if(!comma1)
 	{
+		LOG("comma1 is not there ready\n", 0);
+		exit(EXIT_FAILURE);
 		//TODO expected token error
 		//emit error and recover
 	}
@@ -203,6 +215,8 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	tok_t *rs1 =  expect(ctx, TOK_TOKEN);
 	if(!rs1)
 	{
+		LOG("rs1 is not there ready\n", 0);
+		exit(EXIT_FAILURE);
 		//TODO expected token error
 		//emit error and recover
 	}
@@ -211,6 +225,8 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	tok_t *comma2 = expect(ctx, TOK_COMMA);
 	if(!comma2)
 	{
+		LOG("comma2 is not there ready\n", 0);
+		exit(EXIT_FAILURE);
 		//TODO expected token error
 		//emit error and recover
 	}
@@ -218,6 +234,8 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	tok_t *rs2 = expect(ctx, TOK_TOKEN );
 	if(!rs2)
 	{
+		LOG("rs2 is not there ready\n", 0);
+		exit(EXIT_FAILURE);
 		//TODO expected token error
 		//emit error and recover
 	}
@@ -366,7 +384,7 @@ void parse_expr(parser_ctx_t *p, parse_node_t *parent)
 {
 
 
-	if(peek(p)->type == TOK_NEWLINE || !peek(p))
+	if(peek(p)->type == TOK_NEWLINE || !peek(p) || peek(p)->type == TOK_EOF)
 	{
 		return;
 	}
