@@ -19,6 +19,7 @@ typedef struct globalstate
 extern globalstate_t globalstate;
 
 
+
 void init(int argc, char **argv);
 
 void update(void);
