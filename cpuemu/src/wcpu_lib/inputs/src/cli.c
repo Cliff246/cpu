@@ -24,7 +24,8 @@ void lex_cmdline(cmdline_t *cl, char *str)
 	}
 	else
 	{
-		cl->lex = lex_string(str);
+		//print_toklex(tl);
+		cl->lex = tl;
 		cl->lexed = true;
 	}
 }
@@ -48,16 +49,16 @@ void parse_cmdline(cmdline_t *cl)
 		return;
 }
 
-cmdline_t *create_line(char *str)
+cmdline_t create_line(char *str)
 {
-	cmdline_t *cl = calloc(1, sizeof(cmdline_t));
+	cmdline_t cl = {0};
+	lex_cmdline(&cl, str);
+	//parse_cmdline(&cl);
+	cl.str = str;
+	return cl;
 
-	lex_cmdline(cl, str);
-	parse_cmdline(cl);
-	cl->str = str;
-	if(cl->parsed)
+	if(cl.parsed)
 	{
-		return cl;
 	}
 	else
 	{
@@ -72,7 +73,7 @@ char *read_line(void)
 	return buffer;
 }
 
-cmd_t *create_command(cli_context_t* ctx, cmdline_t *cmdline)
+cmd_t *create_command(cli_context_t* ctx, cmdline_t cmdline)
 {
 	if(ctx->count >= ctx->alloc)
 		ctx->commands = realloc_safe(ctx->commands, ctx->alloc *= 2, sizeof(cmd_t));
@@ -82,4 +83,41 @@ cmd_t *create_command(cli_context_t* ctx, cmdline_t *cmdline)
 	cmd->line = cmdline;
 
 	return cmd;
+}
+
+cmd_t *pull_line(cli_context_t *ctx)
+{
+	return create_command(ctx, create_line(read_line()));
+}
+
+
+char *get_elem_line(cmdline_t *line, int i)
+{
+	if(line->lex->slen > i && i >= 0)
+	{
+		return line->lex->tokens[i].token;
+	}
+	return NULL;
+}
+tok_t *get_tok_cmd(cmd_t *cmd, int i)
+{
+	if(cmd->line.lex->slen > i && i >= 0)
+	{
+		return &cmd->line.lex->tokens[i];
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+cmdpacket_t create_cmdpacket(cmdline_t line)
+{
+
+
+
+
+
+
+
 }

@@ -203,6 +203,11 @@ toklex_t *lex_string(const char *string)
 
 					//deal with octal
 				}
+				else
+				{
+					size_t end = position(tl);
+					emit(tl, TOK_INT, split(tl, begin, end));
+				}
 
 			}
 			else

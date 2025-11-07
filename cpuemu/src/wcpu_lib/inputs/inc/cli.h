@@ -23,12 +23,19 @@ typedef struct cmdline
 
 }cmdline_t;
 
+
+typedef struct cmdpacket
+{
+
+}cmdpacket_t;
+
+
+
+
 typedef struct command
 {
-	cmdline_t *line;
-
-	cmdobj_t obj;
-
+	cmdline_t line;
+	cmdpacket_t packet;
 
 }cmd_t;
 
@@ -41,19 +48,22 @@ typedef struct cli_context
 
 }cli_context_t;
 
+
+char *get_elem_line(cmdline_t *line, int i);
+tok_t *get_tok_cmd(cmd_t *cmd, int i);
 char *read_line(void);
 
-cmdline_t *create_line(char *str);
+cmdline_t create_line(char *str);
 
 void create_cli_context(cli_context_t *ctx);
 
 
+cmdpacket_t create_cmdpacket(cmdline_t line);
 
 
+cmd_t *create_command(cli_context_t* ctx, cmdline_t cmdline);
 
-cmd_t *create_command(cli_context_t* ctx, cmdline_t *cmdline);
-
-void pull_line(cli_context_t *ctx);
+cmd_t *pull_line(cli_context_t *ctx);
 
 
 

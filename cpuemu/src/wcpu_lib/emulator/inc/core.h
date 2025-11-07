@@ -9,7 +9,6 @@
 #include "cpumemory.h"
 #include "palu.h"
 
-
 #define BOOKMARKS_MAX 128
 
 
@@ -150,31 +149,6 @@ void print_cpu_state(cpu_t *cpu);
 //create cpu
 cpu_t *create_cpu(void);
 
-uint64_t get_ipc(void);
-uint64_t get_pc(void);
-
-void set_ipc(uint64_t set);
-void set_pc(uint64_t set);
-
-void inc_ipc(uint64_t inc);
-void inc_pc(uint64_t inc);
-
-
-uint64_t get_pc_offset(void);
-uint64_t get_ipc_offset(void);
-
-
-uint64_t get_pc_len(void);
-uint64_t get_ipc_len(void);
-
-
-void set_sfp(uint64_t set);
-uint64_t get_sfp(void);
-void set_sp(uint64_t set);
-uint64_t get_sp(void);
-
-uint64_t dec_sp(uint64_t degree);
-uint64_t inc_sp(uint64_t degree);
 
 //step the cpu forward
 void step_cpu(void);
@@ -186,13 +160,8 @@ void execute_cpu(void);
 void memory_cpu(void);
 void writeback_cpu(void);
 
-uint32_t get_inst_at_pc_address(uint64_t address);
 
-//get the right address for memory
-uint64_t address(uint64_t addr);
 
-cd_frame_t get_frame(pmode_t mode);
-void set_frame(pmode_t mode, cd_frame_t frame);
 
 
 typedef enum
@@ -201,8 +170,7 @@ typedef enum
 	ldst_fake
 }ldst_type;
 
-uint64_t load(uint64_t address);
-void store(uint64_t address, int64_t value);
+
 //decode instruction form int32_t
 inst_t decode_inst(int32_t code);
 int32_t encode_inst(inst_t *inst);
@@ -212,9 +180,7 @@ uint64_t load(uint64_t address);
 
 void store(uint64_t address, int64_t value);
 //register get
-int64_t get_reg(int reg);
-//register set
-void set_reg(int reg, int64_t content);
+
 
 void print_inst(inst_t *inst);
 void print_regs(void);

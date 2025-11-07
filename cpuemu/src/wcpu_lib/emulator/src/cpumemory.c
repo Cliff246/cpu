@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <coreutils.h>
 #include <errno.h>
 
 memory_t *create_memory(int64_t length)

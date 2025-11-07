@@ -197,7 +197,7 @@ pnode_t *evaluate_lex(toklex_t *lex)
 
 	while(ctx.index < lex->tcount)
 	{
-		printf("repeater %d\n", peek_tok(&ctx)->type);
+		//printf("repeater %d\n", peek_tok(&ctx)->type);
 		tok_t *tok = next_tok(&ctx);
 
 		tok_type_t type = tok->type;

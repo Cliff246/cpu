@@ -3,6 +3,8 @@
 #include "coreutils.h"
 
 
+#define CCPU(part) components.cpu->part
+#define MEMLD(address) load(address)
 
 
 void push_scd(cpu_t *cpu, cd_frame_t frame)
@@ -75,3 +77,187 @@ cd_frame_t get_frame_from_address(cpu_t *cpu, uint64_t address)
 	};
 	return frame;
 }
+
+
+uint64_t get_ipc(void)
+{
+	return (CCPU(mode) == KERNAL) ? CCPU(k_cd.ipc) : CCPU(u_cd.ipc);
+}
+uint64_t get_pc(void)
+{
+	return (CCPU(mode) == KERNAL) ? CCPU(k_cd.pc) : CCPU(u_cd.pc);
+}
+
+void set_ipc(uint64_t set)
+{
+	if (CCPU(mode) == KERNAL)
+		CCPU(k_cd.ipc) = set;
+	else
+		CCPU(u_cd.ipc) = set;
+}
+
+void set_pc(uint64_t set)
+{
+	if (CCPU(mode) == KERNAL)
+		CCPU(k_cd.pc) = set;
+	else
+		CCPU(u_cd.pc) = set;
+	// printf("%d should be | is %d\n", set, CCPU(k_pc));
+}
+
+void inc_ipc(uint64_t inc)
+{
+	if (CCPU(mode) == KERNAL)
+		CCPU(k_cd.ipc) += inc;
+	else
+		CCPU(u_cd.ipc) += inc;
+}
+
+void inc_pc(uint64_t inc)
+{
+	if (CCPU(mode) == KERNAL)
+		CCPU(k_cd.pc) += inc;
+	else
+		CCPU(u_cd.pc) += inc;
+}
+
+uint64_t get_pc_offset(void)
+{
+	return (CCPU(mode) == KERNAL) ? CCPU(k_cd.pc_ptr) : CCPU(u_cd.pc_ptr);
+}
+uint64_t get_ipc_offset(void)
+{
+
+	return (CCPU(mode) == KERNAL) ? CCPU(k_cd.ipc_ptr) : CCPU(u_cd.ipc_ptr);
+}
+
+uint64_t get_pc_len(void)
+{
+
+	return (CCPU(mode) == KERNAL) ? CCPU(k_cd.pc_len) : CCPU(u_cd.pc_len);
+}
+uint64_t get_ipc_len(void)
+{
+
+	return (CCPU(mode) == KERNAL) ? CCPU(k_cd.ipc_len) : CCPU(u_cd.ipc_len);
+}
+
+uint64_t get_sp(void)
+{
+	return (CCPU(mode) == KERNAL) ? CCPU(k_stack.sp) : CCPU(u_stack.sp);
+}
+
+void set_sp(uint64_t set)
+{
+	if (CCPU(mode) == KERNAL)
+		CCPU(k_stack.sp) = set;
+	else
+		CCPU(u_stack.sp) = set;
+}
+
+uint64_t get_sfp(void)
+{
+	return (CCPU(mode) == KERNAL) ? CCPU(k_stack.sf) : CCPU(u_stack.sf);
+}
+
+void set_sfp(uint64_t set)
+{
+	if (CCPU(mode) == KERNAL)
+		CCPU(k_stack.sf) = set;
+	else
+		CCPU(u_stack.sf) = set;
+}
+
+uint64_t dec_sp(uint64_t degree)
+{
+	uint64_t val;
+	if (CCPU(mode) == KERNAL)
+		val = (CCPU(k_stack.sp) -= degree);
+	else
+		val = (CCPU(u_stack.sp) -= degree);
+	return val;
+}
+uint64_t inc_sp(uint64_t degree)
+{
+	uint64_t val;
+
+	if (CCPU(mode) == KERNAL)
+		val = (CCPU(k_stack.sp) += degree);
+	else
+		val = (CCPU(u_stack.sp) += degree);
+	return val;
+}
+
+cd_frame_t get_frame(pmode_t mode)
+{
+	return (mode == KERNAL) ? CCPU(k_cd) : CCPU(u_cd);
+}
+
+void set_frame(pmode_t mode, cd_frame_t frame)
+{
+	if (mode == KERNAL)
+	{
+		CCPU(k_cd) = frame;
+	}
+	else
+	{
+		CCPU(u_cd) = frame;
+	}
+}
+
+int64_t get_reg(int reg)
+{
+	//printf("get reg %d\n", reg);
+	if (reg >= 64 || reg <= 0)
+	{
+		return 0;
+	}
+	if (CCPU(mode) == KERNAL)
+	{
+
+		return CCPU(kregs)[reg];
+	}
+	else
+	{
+		return CCPU(regs)[reg];
+	}
+}
+
+void set_reg(int reg, int64_t content)
+{
+	//printf("set reg %d %d\n", reg, content);
+	if (reg >= 64 || reg <= 0)
+	{
+		return;
+	}
+	if (CCPU(mode) == KERNAL)
+	{
+
+		CCPU(kregs)
+		[reg] = content;
+	}
+	else
+	{
+		CCPU(regs)
+		[reg] = content;
+	}
+}
+
+
+uint32_t get_inst_at_pc_address(uint64_t address)
+{
+
+
+
+	uint64_t dest = (address / 2) + get_pc_offset();
+	if(address % 2 == 0)
+	{
+		return (uint32_t)((uint64_t)(MEMLD(dest) >> 32) & 0xffffffff);
+
+	}
+	else
+	{
+		return (uint32_t)((MEMLD(dest) & 0xffffffff));
+	}
+}
+

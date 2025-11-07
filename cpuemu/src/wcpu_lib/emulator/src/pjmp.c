@@ -5,6 +5,7 @@
 #include "coreutils.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <coreutils.h>
 
 
 uint64_t bookmark_index(uint64_t address, uint64_t cd_ptr)

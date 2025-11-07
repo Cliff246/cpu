@@ -4,6 +4,7 @@
 #include "core.h"
 #include "coreutils.h"
 #include <stdio.h>
+#include <coreutils.h>
 
 
 #define INST(S, M, A)  SYS_ ## S ## _ ## M ## _ ## A

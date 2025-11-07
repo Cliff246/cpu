@@ -3,6 +3,7 @@
 #include "flags.h"
 #include "cpumemory.h"
 #include "core.h"
+#include <coreutils.h>
 #include <stdio.h>
 
 void memory_submit(cpu_t *cpu, char subpath, int64_t rs1, int64_t rs2, int64_t imm, char immflag )
