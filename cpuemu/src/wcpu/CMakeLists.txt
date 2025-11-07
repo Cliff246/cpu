@@ -10,12 +10,12 @@ add_executable(wcpu ${WCPU_EXE})
 
 target_link_libraries(wcpu
 
-	wcpu_lib_cli
+	wcpu_lib_inputs
 	wcpu_lib
 
 )
 
 target_include_directories(wcpu PUBLIC
-	wcpu_lib_cli
+	wcpu_lib_inputs
 	wcpu_lib
 )

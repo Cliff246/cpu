@@ -5,10 +5,8 @@
 #include "token.h"
 #include "cliparser.h"
 
-
-cli_context_t *create_cli_context()
+void create_cli_context(cli_context_t *ctx)
 {
-	cli_context_t *ctx = calloc(1, sizeof(cli_context_t));
 
 
 	ctx->alloc = 10;
@@ -84,17 +82,4 @@ cmd_t *create_command(cli_context_t* ctx, cmdline_t *cmdline)
 	cmd->line = cmdline;
 
 	return cmd;
-}
-
-void pull_line(cli_context_t *ctx)
-{
-	create_command(ctx, create_line(read_line()));
-
-
-
-
-
-
-
-
 }

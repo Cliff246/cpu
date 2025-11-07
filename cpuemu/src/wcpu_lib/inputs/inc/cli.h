@@ -27,10 +27,11 @@ typedef struct command
 {
 	cmdline_t *line;
 
-
+	cmdobj_t obj;
 
 
 }cmd_t;
+
 
 typedef struct cli_context
 {
@@ -44,7 +45,7 @@ char *read_line(void);
 
 cmdline_t *create_line(char *str);
 
-cli_context_t *create_cli_context();
+void create_cli_context(cli_context_t *ctx);
 
 
 

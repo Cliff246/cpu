@@ -5,8 +5,7 @@
 #include "common.h"
 #include "stdio.h"
 #include <stdlib.h>
-#include "cli.h"
-#include "token.h"
+#include "manager.h"
 
 
 
@@ -61,42 +60,6 @@ void load_file(const char *file_name)
 
 int main(int argc, char *argv[])
 {
-	cli_context_t *ctx = create_cli_context();
 
-	while(true)
-	{
-		pull_line(ctx);
-	}
-
-	//return 0;
-	if(argc == 1)
-	{
-		printf("not enough arguments\n");
-	}
-	else if(argc == 2)
-	{
-		init_components();
-
-		load_file(argv[1]);
-
-
-		startup_cpu();
-
-		for(int i = 0; i < (1000); ++i)
-		{
-
-			step_cpu();
-		}
-		//print_regs();
-		for(int mi = 0; mi < 100; ++mi)
-		{
-			printf("%3d 0x%8x\n",mi, load(mi));
-		}
-	}
-	else
-	{
-		printf("%d arguments I need to build the arg parser\n", argc);
-		exit(1);
-	}
-
+	init(argc, argv);
 }
