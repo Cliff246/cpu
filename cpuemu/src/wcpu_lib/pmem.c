@@ -21,8 +21,8 @@ void memory_submit(cpu_t *cpu, char subpath, int64_t rs1, int64_t rs2, int64_t i
 			cpu->co = ld;
 			break;
 		case MEM_SD:
-			address = rs1 + rs2 + imm;
-			uint64_t sd = get_reg(inst.rd);
+			address = rs2 + imm;
+			uint64_t sd = get_reg(rs1);
 			printf("store [%d] = %d \n", address, sd );
 
 			store(address, sd);
