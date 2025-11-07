@@ -3,7 +3,7 @@
 #include "parser.h"
 #include "reference.h"
 #include "entry.h"
-
+#include "eerror.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include "commons.h"
@@ -30,7 +30,10 @@ void add_entry_to_scope(scope_t *scope, entry_t *entry)
 {
 	//printf("%d\n", entry->bytes);
 
-
+	if(entry->error == true)
+	{
+		scope->errors += 1;
+	}
 
 
 	if(scope->entries.alloc == 0)
@@ -46,10 +49,10 @@ void add_entry_to_scope(scope_t *scope, entry_t *entry)
 	{
 		scope->entries.consumed = REALLOC(scope->entries.consumed, (scope->entries.consumed_alloc *= 2), char *);
 	}
-	if(entry->entry.inst.immref != NULL)
+	if(entry->entry.inst.imm_type == INSTIMM_REFERENCE)
 	{
 		//valid until instruction goes out of scope which should be together
-		scope->entries.consumed[scope->entries.consumed_count++] = entry->entry.inst.immref;
+		scope->entries.consumed[scope->entries.consumed_count++] = entry->entry.inst.imm.iref.ref;
 	}
 	scope->bytes += entry->bytes;
 
@@ -113,7 +116,7 @@ scope_t create_scope(parse_node_t *head)
 	if(head->child_count != 2)
 	{
 		printf("scope should have 2 children had %d\n", head->child_count);
-		exit(1);
+		escape(1);
 	}
 
 	parse_node_t *arg_node = head->children[0];

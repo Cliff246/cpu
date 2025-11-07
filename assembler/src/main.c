@@ -49,9 +49,14 @@ int main(int argc, char *argv[])
 			contexts[i] = load_context(get_fdesc(i));
 			context_resolve(contexts[i]);
 			add_context_to_linker(lk, contexts[i]);
-			printf("file output\n");
 		}
-		printf("validity %d\n", check_global_validity(lk));
+
+		if(lk->has_error)
+		{
+			print_errors();
+			exit(EXIT_FAILURE);
+		}
+
 		print_globals(lk);
 		//printf("%s\n", get_filename_from_context(contexts[0]));
 		build_module_stack(lk);

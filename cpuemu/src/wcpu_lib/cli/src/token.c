@@ -5,13 +5,14 @@
 #include <ctype.h>
 #include "common.h"
 
+tok_t empty_tok = {.token = "/", .type = TOK_NONE};
 //string should be it a valid ptr to take, this is a move
 static void emit(toklex_t *tl, tok_type_t type, char *string)
 {
-	
+
 	tl->tokens = realloc_safe(tl->tokens, tl->tcount + 1, sizeof(tok_t));
-	
-	tl->tokens[tl->tcount].token = string; 
+
+	tl->tokens[tl->tcount].token = string;
 	tl->tokens[tl->tcount].type = type;
 	tl->tcount++;
 }
@@ -19,7 +20,7 @@ static void emit(toklex_t *tl, tok_type_t type, char *string)
 
 static char *split(toklex_t *tl, size_t start, size_t stop)
 {
-	
+
 	if(stop < start)
 	{
 		printf("null\n");
@@ -32,12 +33,12 @@ static char *split(toklex_t *tl, size_t start, size_t stop)
 	}
 	if(stop == start)
 	{
-		return to_string(tl->string[start]);		
+		return to_string(tl->string[start]);
 	}
 	char *split =  calloc(stop - start + 1, sizeof(char));
-	memcpy(split, tl->string + start, stop - start);	
-	
-	
+	memcpy(split, tl->string + start, stop - start);
+
+
 
 	return split;
 }
@@ -49,7 +50,7 @@ static char peek(toklex_t *tl)
 		return 0;
 	else
 		return tl->string[tl->index];
-	
+
 }
 
 static char advance(toklex_t *tl)
@@ -99,10 +100,10 @@ toklex_t *lex_string(const char *string)
 		}
 		else if(isalpha(cur))
 		{
-			
-			do 
+
+			do
 			{
-				char scroll = peek(tl);	
+				char scroll = peek(tl);
 				if(!isalnum(scroll) && scroll != '_')
 				{
 					break;
@@ -112,18 +113,18 @@ toklex_t *lex_string(const char *string)
 			size_t end = position(tl);
 
 			//printf("done scroll\n");
-			
+
 			char *spl = split(tl, begin, end);
-			
+
 			emit(tl, TOK_WORD, spl);
 
-			
+
 		}
 		else if(cur == '\"')
 		{
-			do 
+			do
 			{
-				char scroll = peek(tl);	
+				char scroll = peek(tl);
 				if(scroll == 0 || scroll == 10)
 					break;
 				if(scroll == '\"')
@@ -133,13 +134,13 @@ toklex_t *lex_string(const char *string)
 			size_t end = position(tl);
 			if(end == begin + 1)
 			{
-				emit(tl, TOK_STRING, strdup("\"\""));	
+				emit(tl, TOK_STRING, strdup("\"\""));
 				advance(tl);
-			}	
+			}
 			else
 			{
 				char *spl = split(tl, begin + 1, end);
-				emit(tl, TOK_STRING, spl);			
+				emit(tl, TOK_STRING, spl);
 
 				advance(tl);
 			}
@@ -153,31 +154,31 @@ toklex_t *lex_string(const char *string)
 				char next = advance(tl);
 				if(next == 'x' || next == 'X')
 				{
-					
+
 					do {
 						char scroll = peek(tl);
 						if(!isdigit(scroll) && !(scroll > 'A' && scroll < 'F') && !(scroll > 'a' && scroll < 'f'))
 						{
 							break;
-						}	
-					}  
+						}
+					}
 					while(advance(tl));
 
 					size_t end = position(tl);
 
 					emit(tl, TOK_HEX, split(tl, begin, end ));
-					
-					//deal with hex					
+
+					//deal with hex
 				}
 				if(next == 'b' || next == 'B')
 				{
-					do 
+					do
 					{
 						char scroll = peek(tl);
 						if(scroll != '0' && scroll != '1')
 						{
 							break;
-						}	
+						}
 					}
 					while(advance(tl));
 					size_t end = position(tl);
@@ -192,7 +193,7 @@ toklex_t *lex_string(const char *string)
 						if(scroll > '8' && scroll < '0')
 						{
 							break;
-						}	
+						}
 					}
 					while(advance(tl));
 
@@ -206,12 +207,12 @@ toklex_t *lex_string(const char *string)
 			}
 			else
 			{
-				do 
+				do
 				{
 					if(!isdigit(peek(tl)))
 					{
 						break;
-					}	
+					}
 				}
 				while(advance(tl));
 				size_t end = position(tl);
@@ -221,44 +222,44 @@ toklex_t *lex_string(const char *string)
 		}
 		else if(cur == '-')
 		{
-			
+
 			char next = peek(tl);
 			if(isdigit(next))
 			{
 				//negative number
-				do 
+				do
 				{
 					if(!isdigit(peek(tl)))
 					{
 						break;
-					}	
+					}
 				}
 				while(advance(tl));
 				size_t end = position(tl);
 				emit(tl, TOK_INT, split(tl, begin, end));
-			
+
 			}
 			else if(next == '=')
 			{
 				advance(tl);
-				size_t end = position(tl);		
+				size_t end = position(tl);
 				emit(tl, TOK_OP, split(tl, begin, end));
 			}
 			else if(next == '-')
 			{
 				advance(tl);
-				size_t end = position(tl);		
+				size_t end = position(tl);
 				emit(tl, TOK_OP, split(tl, begin, end));
 
 			}
 			else
 			{
-				size_t end = position(tl);		
+				size_t end = position(tl);
 				emit(tl, TOK_OP, split(tl, begin, end));
 
 			}
-			
-			
+
+
 		}
 		else if(strchr("=<>+*%/!@$|%^&", cur))
 		{
@@ -266,7 +267,7 @@ toklex_t *lex_string(const char *string)
 			if(next == cur)
 			{
 
-				advance(tl);	
+				advance(tl);
 				size_t end = position(tl);
 				if(next == '+')
 				{
@@ -287,9 +288,9 @@ toklex_t *lex_string(const char *string)
 					emit(tl, TOK_OP, split(tl, begin, end));
 				}
 			}
-			else 
+			else
 			{
-				emit(tl, TOK_OP, to_string(cur));	
+				emit(tl, TOK_OP, to_string(cur));
 			}
 
 		}
@@ -308,8 +309,9 @@ toklex_t *lex_string(const char *string)
 			emit(tl, TOK_DOT, to_string(cur));
 		}
 
-	}	
+	}
 	emit(tl, TOK_END, to_string('%'));
+
 	return tl;
 }
 

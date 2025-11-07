@@ -8,17 +8,17 @@
  02 | x2   | a1   | Argument 1
  03 | x3   | a2   | Argument 2
  04 | x4   | a3   | Argument 3
- 05 | x5   | t0   | Temporary 0
- 06 | x6   | t1   | Temporary 1
- 07 | x7   | t2   | Temporary 2
- 08 | x8   | t3   | Temporary 3
- 09 | x9   | t4   | Temporary 4
- 10 | x10  | t5   | Temporary 5
- 11 | x11  | t6   | Temporary 6
- 12 | x12  | t7   | Temporary 7
- 13 | x13  | t8   | Temporary 8
- 14 | x14  | t9   | Temporary 9
- 15 | x15  | t10  | Temporary 10
+ 05 | x5   | t0, ta   | Temporary 0
+ 06 | x6   | t1, tb   | Temporary 1
+ 07 | x7   | t2, tc   | Temporary 2
+ 08 | x8   | t3, td   | Temporary 3
+ 09 | x9   | t4, te   | Temporary 4
+ 10 | x10  | t5, tf   | Temporary 5
+ 11 | x11  | t6, tg   | Temporary 6
+ 12 | x12  | t7, th   | Temporary 7
+ 13 | x13  | t8, ti   | Temporary 8
+ 14 | x14  | t9, tj   | Temporary 9
+ 15 | x15  | t10, tk  | Temporary 10
  16 | x16  | g0   | Global 0
  17 | x17  | g1   | Global 1
  18 | x18  | g2   | Global 2
@@ -33,39 +33,37 @@
  27 | x27  | s3   | Saved 3
  28 | x28  | s4   | Saved 4
  29 | x29  | sys  | System register
- 30 | x30  | aux0 | Auxiliary 0
- 31 | x31  | aux1 | Auxiliary 1
-
-# Extended / Unassigned
- 32 | x32  | —
- 33 | x33  | —
- 34 | x34  | —
- 35 | x35  | —
- 36 | x36  | —
- 37 | x37  | —
- 38 | x38  | —
- 39 | x39  | —
- 40 | x40  | —
- 41 | x41  | —
- 42 | x42  | —
- 43 | x43  | —
- 44 | x44  | —
- 45 | x45  | —
- 46 | x46  | —
- 47 | x47  | —
- 48 | x48  | —
- 49 | x49  | —
- 50 | x50  | —
- 51 | x51  | —
- 52 | x52  | —
- 53 | x53  | —
- 54 | x54  | —
- 55 | x55  | —
- 56 | x56  | —
- 57 | x57  | —
- 58 | x58  | —
- 59 | x59  | —
- 60 | x60  | —
- 61 | x61  | —
- 62 | x62  | —
- 63 | x63  | —
+ 30 | x30  | aux0 | Auxiliary 0 | used for get set
+ 31 | x31  | aux1 | Auxiliary 1 |
+ 32 | x32  | a4   | Argument 4
+ 33 | x33  | a5   | Argument 5
+ 34 | x34  | a6   | Argument 6
+ 35 | x35  | a7   | Argument 7
+ 36 | x36  | a8   | Argument 8
+ 37 | x37  | a9   | Argument 9
+ 38 | x38  | s5   | Saved 5
+ 39 | x39  | s6   | Saved 6
+ 40 | x40  | s7   | Saved 7
+ 41 | x41  | s8   | Saved 8
+ 42 | x42  | s9   | Saved 9
+ 43 | x43  | s10, exs0  | Saved 10, saved eXternal 0 / external return
+ 44 | x44  | s11, exs1  | Saved 11, saved eXternal 1 /
+ 45 | x45  | s12, exs2  | Saved 12, saved eXternal 2 /
+ 46 | x46  | s13, exs3  | Saved 13, saved eXternal 3 /
+ 47 | x47  | s14, exs4  | Saved 14, saved eXternal 4 /
+ 48 | x48  | t11, tx, ext0  | Temporary 11
+ 49 | x49  | t12, ty, ext1  | Temporary 12
+ 50 | x50  | t13, tz, ext2  | Temporary 13
+ 51 | x51  | t14, tu, ext3  | Temporary 14
+ 52 | x52  | six, s15  | Saved iterator x
+ 53 | x53  | siy, s16  | Saved iterator y
+ 54 | x54  | siz, s17  | Saved iterator z
+ 55 | x55  | tix, t15  | Temporary iterator x
+ 56 | x56  | tiy, t16  | Temporary iterator y
+ 57 | x57  | tiz, t17  | Temporary iterator z
+ 58 | x58  | hi   | high \ (simply predefined name does nothing unique)
+ 59 | x59  | lo   | low  \ (simply predefined name does nothing unique)
+ 60 | x60  | px   | pointer x
+ 61 | x61  | py   | pointer y
+ 62 | x62  | mask | mask
+ 63 | x63  | rp   | return pointer

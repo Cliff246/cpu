@@ -28,6 +28,7 @@ typedef struct
 
 	size_t bytes;
 	entry_type_t type;
+	bool error;
 	union
 	{
 		inst_t inst;

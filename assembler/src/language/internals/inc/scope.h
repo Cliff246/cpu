@@ -43,7 +43,8 @@ typedef struct scope
 	size_t addresses;
 	size_t bytes;
 
-	
+	int errors;
+
 }scope_t;
 
 void print_scope_symbols(scope_t *scope);

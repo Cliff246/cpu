@@ -1,12 +1,13 @@
 #include "inter.h"
 #include "commons.h"
-#include <stdlib.h>
-#include <string.h>
+
 #include "arguments.h"
 #include "entry.h"
 #include "symbol.h"
 #include "directive.h"
-
+#include "eerror.h"
+#include <stdlib.h>
+#include <string.h>
 
 
 void free_alias(void *ptr)
@@ -92,9 +93,14 @@ context_t *load_context(file_desc_t *desc)
 
 
 	ctx->staged_ctx.p_ctx = create_context(ctx->staged_ctx.l_ctx);
+
 	LOG("created parser\n", 0);
 	ctx->head = parse_program(ctx->staged_ctx.p_ctx);
-	LOG("done parser\n", 0);
+	if(ctx->staged_ctx.p_ctx->error == true)
+	{
+		ctx->has_error = true;
+		return ctx;
+	}
 	ctx->locales.size = 0;
 	ctx->locales.locales = NULL;
 	//print_depth(ctx->head, 0);
@@ -134,6 +140,10 @@ context_t *load_context(file_desc_t *desc)
 
 void context_resolve(context_t *ctx)
 {
+	if(ctx->has_error)
+	{
+		return;
+	}
 	//current semgents
 	for(int s = 0; s < ctx->head->child_count; ++s)
 	{
@@ -142,7 +152,10 @@ void context_resolve(context_t *ctx)
 		if(child->kind == NODE_SCOPE)
 		{
 			scope_t scope = create_scope(child);
-
+			if(scope.errors > 0)
+			{
+				ctx->has_error = true;
+			}
 			local_t *local = create_local(ctx, scope);
 			for(int i = 0; i < scope.symbols.count; ++i)
 			{
@@ -158,7 +171,7 @@ void context_resolve(context_t *ctx)
 			if(dir == NULL)
 			{
 				LOG("directive at %d %d is inval", child->tok->locale.file,  child->tok->locale.row, 0);
-				exit(1);
+				escape(1);
 			}
 			apply_directive(ctx, dir);
 			LOG("directive %s\n", dir->head->tok->lexeme);
@@ -193,7 +206,7 @@ void context_resolve(context_t *ctx)
 				if(overlap_current >= OVERLAPPING_MAXIMUM)
 				{
 					LOG("too many overlaps in a single file %s\n", get_filename_from_context(ctx), 0);
-					exit(1);
+					escape(1);
 				}
 				overlaping[overlap_current++] = alias->symbol->key;
 			}
@@ -208,7 +221,7 @@ void context_resolve(context_t *ctx)
 				continue;
 			LOG("overlapped defintion at file %s with key %s\n", get_filename_from_context(ctx), overlaping[ol]);
 		}
-		exit(EXIT_FAILURE);
+		escape(EXIT_FAILURE);
 	}
 
 	ctx->resolved = true;

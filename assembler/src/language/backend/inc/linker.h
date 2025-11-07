@@ -108,6 +108,7 @@ typedef struct linker
 	ctx_inc_mat_t matrix;
 	struct module modules[MAX_TAGS];
 	linkorder_t order;
+	bool has_error;
 }linker_t;
 
 

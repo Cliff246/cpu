@@ -1,6 +1,7 @@
 #include "entry.h"
 #include "commons.h"
 #include "fileio.h"
+#include "eerror.h"
 #include <stdio.h>
 
 void entry_instruction(entry_t *entry)
@@ -9,7 +10,11 @@ void entry_instruction(entry_t *entry)
 	entry->entry.inst = inst;
 	entry->type = ENTRY_INST;
 	entry->bytes = 4;
+	if(inst.imm_type == INSTIMM_ERROR)
+	{
 
+	 	entry->error = true;
+	}
 	//print_inst(&entry->entry.inst);
 
 }
@@ -53,7 +58,7 @@ entry_t *create_entry(parse_node_t *node)
 	else
 	{
 		printf("entry is invalid\n");
-		exit(1);
+		escape(1);
 	}
 
 

@@ -4,11 +4,29 @@
 #include "commons.h"
 #include "eerror.h"
 #include "arguments.h"
+#include "fileio.h"
 
 struct parse_node_pair
 {
 	parse_node_t *a, *b;
 };
+
+
+static void set_parser_error(parser_ctx_t *ctx, tok_t *tok, char *error)
+{
+
+	errelm_line_t line = {.column = get_token_col(tok), .line = get_token_row(tok)};
+	errelm_file_t file = {.name = get_filename_from_id(get_token_file(tok))};
+
+	errelm_t elmline = errelm_create_line_element(line);
+	errelm_t elmfile =  errelm_create_file_element(file);
+	//printf("emit error\n");
+	emit_error(PARSE_ERROR, error, 2, elmfile, elmline);
+	//printf("emit stage2\n");
+	ctx->error = true;
+
+}
+
 
 void print_depth(parse_node_t *node, int depth)
 {
@@ -28,7 +46,7 @@ void print_depth(parse_node_t *node, int depth)
 		if(node->tok->lexeme == NULL)
 		{
 			printf("token is invalid during parse %d\n", depth);
-			exit(1);
+			escape(1);
 		}
 		printf("lexme %s %d\n", node->tok->lexeme, node->kind);
 
@@ -113,7 +131,7 @@ static tok_t *expect(parser_ctx_t *ctx, tok_type_t tp)
 
 	if(!tok || tok->type != tp)
 	{
-		printf("failed expect\n");
+		//printf("failed expect\n");
 		return NULL;
 	}
 	return tok;
@@ -133,7 +151,7 @@ void add_child(parse_node_t *parent, parse_node_t *child)
 	if(!child)
 	{
 		printf("could not add child: %s\n", child->tok->lexeme);
-		exit(1);
+		escape(1);
 	}
 	if(parent->child_count == 0)
 	{
@@ -148,6 +166,22 @@ void add_child(parse_node_t *parent, parse_node_t *child)
 }
 
 
+static void goto_next_line(parser_ctx_t *ctx)
+{
+	tok_t *tok = peek(ctx);
+	while(tok)
+	{
+		if(tok->type == TOK_EOF || tok->type == TOK_NEWLINE)
+			break;
+		else
+			tok = next(ctx);
+
+	}
+	return;
+}
+
+
+
 parse_node_t *parse_instruction(parser_ctx_t *ctx)
 {
 	//printf("instruction\n");
@@ -156,8 +190,9 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	tok_t *path =  expect(ctx, TOK_TOKEN);
 	if(!path)
 	{
-		LOG("path is not there ready\n", 0);
-		exit(EXIT_FAILURE);
+		set_parser_error(ctx, peek(ctx), "path was expected");
+		goto_next_line(ctx);
+		return n;
 		//TODO expected token error
 		//emit error recover
 	}
@@ -166,8 +201,9 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 
 	if(!dot)
 	{
-		LOG("dot is not there ready\n", 0);
-		exit(EXIT_FAILURE);
+		set_parser_error(ctx, peek(ctx), "dot was expected");
+		goto_next_line(ctx);
+		return n;
 		//TODO expected token error
 		//emit error recover
 	}
@@ -175,8 +211,9 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	tok_t *subpath =  expect(ctx, TOK_TOKEN);
 	if(!subpath)
 	{
-		LOG("subpath is not there ready\n", 0);
-		exit(EXIT_FAILURE);
+		set_parser_error(ctx, peek(ctx), "subpath was expected");
+		goto_next_line(ctx);
+		return n;
 		//TODO expected token error
 		//emit error and recover
 	}
@@ -185,8 +222,9 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	tok_t *sep = expect(ctx, TOK_IDENT);
 	if(!sep)
 	{
-		LOG("ident is not there ready\n", 0);
-		exit(EXIT_FAILURE);
+		set_parser_error(ctx, peek(ctx), "seperator was expected");
+		goto_next_line(ctx);
+		return n;
 		//TODO expected token error
 		//emit error and recover
 	}
@@ -194,9 +232,9 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	tok_t *rd = expect(ctx, TOK_TOKEN);
 	if(!rd)
 	{
-		LOG("rd is not there ready\n", 0);
-		exit(EXIT_FAILURE);
-		//TODO token error
+		set_parser_error(ctx, peek(ctx), "rd was expected");
+		goto_next_line(ctx);
+		return n;		//TODO token error
 		//emit error and recover
 	}
 
@@ -206,8 +244,9 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	tok_t *comma1 = expect(ctx, TOK_COMMA);
 	if(!comma1)
 	{
-		LOG("comma1 is not there ready\n", 0);
-		exit(EXIT_FAILURE);
+		set_parser_error(ctx, peek(ctx), "comma was expected");
+		goto_next_line(ctx);
+		return n;
 		//TODO expected token error
 		//emit error and recover
 	}
@@ -215,8 +254,9 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	tok_t *rs1 =  expect(ctx, TOK_TOKEN);
 	if(!rs1)
 	{
-		LOG("rs1 is not there ready\n", 0);
-		exit(EXIT_FAILURE);
+		set_parser_error(ctx, peek(ctx), "rs1 was expected");
+		goto_next_line(ctx);
+		return n;
 		//TODO expected token error
 		//emit error and recover
 	}
@@ -225,8 +265,9 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	tok_t *comma2 = expect(ctx, TOK_COMMA);
 	if(!comma2)
 	{
-		LOG("comma2 is not there ready\n", 0);
-		exit(EXIT_FAILURE);
+		set_parser_error(ctx, peek(ctx), "comma2 was expected");
+		goto_next_line(ctx);
+		return n;
 		//TODO expected token error
 		//emit error and recover
 	}
@@ -234,8 +275,9 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 	tok_t *rs2 = expect(ctx, TOK_TOKEN );
 	if(!rs2)
 	{
-		LOG("rs2 is not there ready\n", 0);
-		exit(EXIT_FAILURE);
+		set_parser_error(ctx, peek(ctx), "rs2 was expected");
+		goto_next_line(ctx);
+		return n;
 		//TODO expected token error
 		//emit error and recover
 	}
@@ -274,7 +316,7 @@ struct parse_node_pair parse_reference(parser_ctx_t *p)
 	{
 		//TODO emit expected token error
 		LOG("parsed reference failed", 0);
-		exit(1);
+		escape(1);
 		//emit error and recover
 	}
     parse_node_t *n = make_node(NODE_REFERENCE, reference);
@@ -284,7 +326,7 @@ struct parse_node_pair parse_reference(parser_ctx_t *p)
 	if(!colon)
 	{
 		LOG("expected colon\n", 0);
-		exit(1);
+		escape(1);
 		//TODO
 		//this should be a colon if not that's bad
 	}
@@ -481,10 +523,11 @@ parse_node_t *parse_program(parser_ctx_t *p)
     parse_node_t *root = make_node(NODE_PROGRAM, NULL);
 	parse_node_t *seg_root = NULL;
 	parse_node_t *ref_root = NULL;
-	size_t max = 1000;
+
 	int count = 0;
 	bool newline = true;
-    while (peek(p) && peek(p)->type != TOK_EOF && count < max)
+
+    while (peek(p) && peek(p)->type != TOK_EOF)
 	{
 		count++;
         tok_t *t = peek(p);
@@ -573,8 +616,9 @@ parse_node_t *parse_program(parser_ctx_t *p)
 				else
 				{
 					//should die
-					perror("internal outside of any container");
-					exit(1);
+					set_parser_error(p, peek(p), "should not be outside of any elements");
+					goto_next_line(p);
+
 				}
 
 
@@ -596,6 +640,7 @@ parse_node_t *parse_program(parser_ctx_t *p)
        	add_child(root, child);
 
     }
+
 	//print_depth(root, 0);
 
     return root;

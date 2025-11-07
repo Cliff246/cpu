@@ -1,6 +1,7 @@
 #include "reference.h"
+#include "eerror.h"
 #include "commons.h"
-#include "stdio.h"
+#include <stdio.h>
 
 void free_reference(ref_t *ptr)
 {
@@ -44,7 +45,7 @@ void implement_reference(ref_t *ref, parse_node_t *head)
 	if(head->child_count != 2)
 	{
 		printf("references should implement two children implmeneted %s\n", head->child_count);
-		exit(1);
+		escape(1);
 	}
 
 

@@ -63,9 +63,9 @@ int main(int argc, char *argv[])
 {
 	cli_context_t *ctx = create_cli_context();
 
-	//while(true)
+	while(true)
 	{
-	//	pull_line(ctx);
+		pull_line(ctx);
 	}
 
 	//return 0;

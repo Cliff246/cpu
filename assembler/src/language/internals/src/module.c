@@ -1,6 +1,7 @@
 #include "module.h"
 #include "commons.h"
 #include "linker.h"
+#include "eerror.h"
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -137,7 +138,7 @@ void append_scope_ref(struct linker *lk, module_t *mod, int ctx_id, int local_in
 		if(mod->type != current)
 		{
 			printf("module type must be consistent across all fragments\n");
-			exit(1);
+			escape(1);
 		}
 
 	}
@@ -344,7 +345,8 @@ size_t total_module_size(module_t *mod)
 			return total_module_size_data(mod);
 		default:
 			printf("module type is invalid somehow %d\n", mod->type);
-			exit(1);
+			escape(1);
+			break;
 	}
 
 	return 0;

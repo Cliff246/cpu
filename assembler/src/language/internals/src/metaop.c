@@ -2,16 +2,17 @@
 
 #include "commons.h"
 #include "lexer.h"
-#include <string.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <stdbool.h>
+
 #include <stdio.h>
 #include "entry.h"
 #include "decoder.h"
 #include "strtools.h"
+#include "eerror.h"
 #include <assert.h>
-
+#include <string.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
 const char *mopids_as_strings[] =
 {
@@ -188,7 +189,7 @@ data_holder_t  decode_mem(parse_node_t *head)
 	if(holder.words_len < 0)
 	{
 		LOG("decode mem data holder size %d is bellow zero\n", holder.words_len);
-		exit(EXIT_FAILURE);
+		escape(EXIT_FAILURE);
 	}
 	holder.words = CALLOC(holder.words_len, uint64_t);
 
@@ -268,7 +269,7 @@ void print_mop_data(mop_t *mop)
 			default:
 				//should never be reached
 				LOG("mop id %s %d was not associated with a print", mopids_as_strings[mop->mop], mop->mop, 0);
-				exit(EXIT_FAILURE);
+				escape(EXIT_FAILURE);
 				break;
 		}
 	}
@@ -328,7 +329,7 @@ mop_t create_mop(parse_node_t *node)
 			break;
 		default:
 			LOG("mop not defined %d\n", mop.mop);
-			exit(EXIT_FAILURE);
+			escape(EXIT_FAILURE);
 			break;
 
 	}
@@ -368,6 +369,6 @@ mop_id_t get_mop_code(char *keyword)
 	else
 	{
 		printf("not a valid mop code %s\n", keyword);
-		exit(1);
+		escape(1);
 	}
 }

@@ -63,6 +63,9 @@ errelm_t errelm_create_file_element(errelm_file_t file);
 errelm_t errelm_create_line_element(errelm_line_t line);
 errelm_t errelm_create_token_element(errelm_token_t token);
 
+
+void escape(int errcode);
+
 typedef struct error_extra
 {
 

@@ -51,7 +51,7 @@ void set_outorder_positions(outorder_t *oo, int *positions, size_t size)
 	if(size != oo->count)
 	{
 		printf("output order size does not match modules count %d %d\n", size, oo->count);
-		exit(1);
+		escape(1);
 	}
 	//this is going to be packed
 	region_t *temp[size];
@@ -63,7 +63,7 @@ void set_outorder_positions(outorder_t *oo, int *positions, size_t size)
 		if(spot < 0 || spot >= size)
 		{
 			printf("order at [%d] = %d is outside of valid range\n", i, spot);
-			exit(1);
+			escape(1);
 		}
 		oo->regions[i]->order = i;
 		//printf("%d %p\n", i, oo->regions[i]);
@@ -230,7 +230,7 @@ output_t *combine_segouts(segout_t *segouts, int length)
 		else
 		{
 			perror("segout type emit not done yet\n");
-			exit(1);
+			escape(1);
 		}
 	}
 	output->bin = bin;
@@ -292,7 +292,7 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 			if(entry->type != ENTRY_INST)
 			{
 				printf("must be only instructions");
-				exit(1);
+				escape(1);
 			}
 			inst_t *instruction = &entry->entry.inst;
 			//printf("content %s\n", entry->node->tok->lexeme);
@@ -302,10 +302,11 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 			{
 
 				int64_t current_imm = 0;
-				if(instruction->immref != NULL)
+				if(instruction->imm_type == INSTIMM_REFERENCE)
 				{
 					//should do local and global conversion here
-					symbol_t *sym = resolve_symbol(instruction->immref, ll, frag);
+					char *tempref = instruction->imm.iref.ref;
+					symbol_t *sym = resolve_symbol(tempref, ll, frag);
 
 					if(!sym)
 					{
@@ -313,7 +314,7 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 						errelm_line_t line = {.column = entry->node->tok->locale.col, .line = entry->node->tok->locale.row};
 						errelm_file_t file = {.name = get_path_from_identifier(entry->node->tok->locale.file)};
 						char buffer[1025] = {0};
-						sprintf(buffer, "could not find %s in reference table", instruction->immref);
+						sprintf(buffer, "could not find %s in reference table", tempref);
 
 						errelm_t elmline = errelm_create_line_element(line);
 						errelm_t elmfile =  errelm_create_file_element(file);
@@ -327,12 +328,12 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 
 
 
-					if(instruction->ref_type == INST_REF_GLOBAL)
+					if(instruction->imm.iref.ref_type == INST_REF_GLOBAL)
 					{
 						if(sym->symbol.ref->resolved == false)
 						{
 							perror("reference has not been resolved and is global\n");
-							exit(1);
+							escape(1);
 						}
 
 						ref_t *ref = sym->symbol.ref;
@@ -340,7 +341,7 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 						current_imm = ref->fragment_offset + (ref->byte_offset / 8) + ref->absolute_offset;
 
 					}
-					else if(instruction->ref_type == INST_REF_LOCAL)
+					else if(instruction->imm.iref.ref_type == INST_REF_LOCAL)
 					{
 						ref_t *ref = sym->symbol.ref;
 						current_imm = ref->fragment_offset + ref->locale_offset;
@@ -349,13 +350,13 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 					else
 					{
 						perror("reference has not a valid type");
-						exit(1);
+						escape(1);
 					}
 
 				}
-				else
+				else if(instruction->imm_type == INSTIMM_LITERAL)
 				{
-					current_imm = instruction->imm;
+					current_imm = instruction->imm.ilit.lit;
 				}
 
 				imm[imm_iter ++] = current_imm;
@@ -378,7 +379,7 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 	if(failed == true)
 	{
 		print_errors();
-		exit(1);
+		escape(1);
 	}
 	size_t compacted = (inst_len / 2) + (inst_len % 2);
 
@@ -424,7 +425,7 @@ segout_data_t create_segout_data(linker_t *ll, region_t *region)
 			if(entry->type != ENTRY_MOP)
 			{
 				perror("entry must be mop in data section");
-				exit(1);
+				escape(1);
 			}
 
 			mop_t *mop = &entry->entry.mop;
@@ -551,12 +552,12 @@ size_t fix_align_scope_addresses(scope_t *scope, size_t module_offset, size_t fr
 		else if(sym->type == SYMBOL_INVAL)
 		{
 			LOG("symbol type invalid %s\n", sym->key, 0);
-			exit(EXIT_FAILURE);
+			escape(EXIT_FAILURE);
 		}
 		else
 		{
 			LOG("symbol type not implemented %d %s\n ", sym->type, sym->key);
-			exit(EXIT_FAILURE);
+			escape(EXIT_FAILURE);
 		}
 	}
 	return used;
@@ -659,7 +660,7 @@ void write_out(output_t *output, char *name)
 	if(fp == NULL)
 	{
 		ERR(EBADF, "could not load file");
-		exit(1);
+		escape(1);
 	}
 	for(int i = 0; i < output->size; i++)
 	{

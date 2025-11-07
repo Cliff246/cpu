@@ -1,6 +1,7 @@
 #ifndef __LANG_PARSER__
 #define __LANG_PARSER__
 
+#include <stdbool.h>
 #include <stdint.h>
 #include "lexer.h"
 
@@ -37,7 +38,6 @@ typedef struct parse_node
     tok_t *tok;
     struct parse_node **children;
     size_t child_count;
-	parse_error_t err;
 } parse_node_t;
 
 void free_parse_node(parse_node_t *ptr);
@@ -47,6 +47,8 @@ typedef struct parser_context
 {
 	lexer_ctx_t *lex_ctx;
 	size_t pos;
+	bool error;
+
 }parser_ctx_t;
 
 void print_depth(parse_node_t *node, int depth);

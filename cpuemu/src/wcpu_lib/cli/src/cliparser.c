@@ -143,14 +143,14 @@ pnode_t *calculate_term(pcontext_t *ctx)
 
 pnode_t *calculate_expr1(pcontext_t *ctx)
 {
-	printf("token 1\n");
+	//printf("token 1\n");
 	pnode_t *head = create_pnode(NULL, PN_OP);
 	tok_t *next = expect_tok(ctx, TOK_OP);
-	printf("token %s\n", next->token);
+	//printf("token %s\n", next->token);
 	if(!next)
 		return NULL;
 
-	printf("next = %s\n", next->token);
+	//printf("next = %s\n", next->token);
 	if(!strcmp(next->token, "+"))
 	{
 		pnode_t *add = create_pnode(next, PN_ADD);
@@ -192,22 +192,24 @@ pnode_t *evaluate_lex(toklex_t *lex)
 {
 	pcontext_t ctx = {.lex = lex, .index = 0};
 
-	pnode_t *head = create_pnode(NULL, PN_START);
-
+	pnode_t *head = create_pnode(&empty_tok, PN_START);
 
 
 	while(ctx.index < lex->tcount)
 	{
 		printf("repeater %d\n", peek_tok(&ctx)->type);
-		if(peek_tok(&ctx)->type == TOK_INT)
+		tok_t *tok = next_tok(&ctx);
+
+		tok_type_t type = tok->type;
+
+
+		if(type == TOK_WORD)
+		{
+			append_pnode(head, create_pnode(tok, PN_KEYWORD));
+		}
+		else if(type == TOK_INT)
 		{
 			append_pnode(head, calculate_expr(&ctx));
-
-		}
-		else
-		{
-
-			next_tok(&ctx);
 		}
 	}
 

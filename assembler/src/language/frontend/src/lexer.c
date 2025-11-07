@@ -119,6 +119,22 @@ void print_token(tok_t *tok)
 	printf("lexme: %s type: %d  row:%d col:%d fid:%d\n", tok->lexeme, tok->type, tok->locale.row, tok->locale.col, tok->locale.file);
 }
 
+int get_token_row(tok_t *tok)
+{
+	return (tok)? tok->locale.row : 0;
+}
+int get_token_file(tok_t *tok)
+{
+	return (tok)? tok->locale.file : 0;
+
+}
+int get_token_col(tok_t *tok)
+{
+	return (tok)? tok->locale.col : 0;
+
+}
+
+
 lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 {
 	const int default_alloc = 100;

@@ -20,8 +20,8 @@ typedef enum token_type
 	TOK_COMMA,
 	TOK_DOT,
 
-	
-	
+
+
 
 }tok_type_t;
 
@@ -33,8 +33,8 @@ typedef struct token
 
 typedef struct token_lexer
 {
-	tok_t *tokens;	
-	size_t tcount;	
+	tok_t *tokens;
+	size_t tcount;
 	char *string;
 	int index;
 	size_t slen;
@@ -42,6 +42,7 @@ typedef struct token_lexer
 
 }toklex_t;
 
+extern tok_t empty_tok;
 
 toklex_t *lex_string(const char *string);
 

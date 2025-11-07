@@ -120,7 +120,7 @@ typedef struct context
 
 
 	bool resolved;
-
+	bool has_error;
 }context_t;
 
 

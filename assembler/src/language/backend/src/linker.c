@@ -1,11 +1,11 @@
-
+#include "eerror.h"
 #include "fileio.h"
 #include "linker.h"
 #include "inter.h"
 #include "commons.h"
 #include "hashmap.h"
-#include <stdbool.h>
 #include "arguments.h"
+#include <stdbool.h>
 
 void add_src_to_global(global_t *global, int index)
 {
@@ -336,7 +336,7 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 			if(index == -1)
 			{
 				LOG("%s include not in assembler context\n", arg.content, 0);
-				exit(1);
+				escape(1);
 			}
 			global_t *new = add_global(lk);
 			new->used = true;
@@ -378,7 +378,7 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 			if(glb->type != get_global_type_from_directive(dir->type))
 			{
 				LOG("global type didnt match a directive type %d %d\n", glb->type, dir->type, 0);
-				exit(1);
+				escape(1);
 			}
 			global_symbol_t *sym = &glb->glb.symbol;
 
@@ -451,7 +451,12 @@ void add_context_to_linker(linker_t *lk, context_t *ctx)
 {
 	//LOG("adding context to linker %s\n", get_filename_from_context(ctx), 0);
 
-
+	if(ctx->has_error)
+	{
+		LOG("cannot put context with error\n", 0);
+		lk->has_error = true;
+		return;
+	}
 
 
 	lk->srcs[ctx->desc_id].ctx = ctx;
@@ -571,7 +576,7 @@ context_t *get_context_from_global(linker_t *lk, global_t *glb)
 	if(glb->used == false)
 	{
 		LOG("tried to grab context form unused global\n", 0);
-		exit(EXIT_FAILURE);
+		escape(EXIT_FAILURE);
 	}
 	if(glb->type == GLOBAL_SYMBOL)
 	{
@@ -591,7 +596,7 @@ context_t *get_context_from_global(linker_t *lk, global_t *glb)
 		if(glb->glb.import.valid == false)
 		{
 			LOG("global import %s not valid\n", glb->key, 0);
-			exit(EXIT_FAILURE);
+			escape(EXIT_FAILURE);
 		}
 		int index = glb->glb.import.ctx_source;
 		context_t *ctx = &lk->srcs->ctx[index];
@@ -600,7 +605,7 @@ context_t *get_context_from_global(linker_t *lk, global_t *glb)
 	else
 	{
 		LOG("global type not valid %s %d\n", glb->key, glb->type, 0);
-		exit(EXIT_FAILURE);
+		escape(EXIT_FAILURE);
 	}
 
 }
@@ -611,7 +616,7 @@ symbol_t *get_symbol_from_global(linker_t *lk, global_t *glb)
 	if(glb->type != GLOBAL_SYMBOL)
 	{
 		LOG("tried to get symbol from non symbol global %s %d\n", glb->key, glb->type, 0);
-		exit(EXIT_FAILURE);
+		escape(EXIT_FAILURE);
 	}
 
 	else
@@ -623,7 +628,7 @@ symbol_t *get_symbol_from_global(linker_t *lk, global_t *glb)
 		if(!alias)
 		{
 			LOG("global to local alias was not found %s\n", glb->key, 0);
-			exit(EXIT_FAILURE);
+			escape(EXIT_FAILURE);
 		}
 		else
 		{

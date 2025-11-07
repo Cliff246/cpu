@@ -1,8 +1,8 @@
 #include "segment.h"
+#include "commons.h"
+#include "eerror.h"
 #include <string.h>
 #include <stdio.h>
-#include "commons.h"
-
 
 int segment_ids_to_tag[MAX_SEGID] = {-1};
 int tags_used = 0;
@@ -23,7 +23,7 @@ int allocate_tag(void)
 	if(tags_used > MAX_TAGS)
 	{
 		printf("too many tags used%d\n", MAX_TAGS);
-		exit(1);
+		escape(1);
 	}
 	return tags_used++;
 }
@@ -185,7 +185,7 @@ seg_t create_segment(parse_node_t *head)
 	if(segid >= MAX_SEGID)
 	{
 		printf("TOO many segments%d\n", segid);
-		exit(1);
+		escape(1);
 	}
 
 	parse_node_t *arguments = (head->child_count <= 0)? NULL : head;

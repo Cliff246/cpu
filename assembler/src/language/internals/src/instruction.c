@@ -1,17 +1,50 @@
 #include "instruction.h"
-
+#include "fileio.h"
 #include "commons.h"
 #include "lexer.h"
 #include "eerror.h"
 #include "decoder.h"
-#include <stdio.h>
-#include <stdint.h>
 #include "parser.h"
 #include "strtools.h"
+#include <stdio.h>
+#include <stdint.h>
+
 
 void print_inst(inst_t *inst)
 {
-	printf("path:%d subpath %d: rd: %d, rs1: %d, rs2: %d, selflag: %d, realocflag %d, immf: %d [reference: %s]\n", inst->path, inst->subpath, inst->rd, inst->rs1, inst->rs2, inst->selflag, inst->realocflag, inst->immflag, inst->immref);
+
+
+	if(inst->imm_type == INSTIMM_LITERAL)
+	{
+		switch(inst->imm.ilit.lit_type)
+		{
+
+			default:
+				printf("path:%d subpath %d: rd: %d, rs1: %d, rs2: %d, selflag: %d, realocflag %d, immf: %d [immediate: %lld]\n", inst->path, inst->subpath, inst->rd, inst->rs1, inst->rs2, inst->selflag, inst->realocflag, inst->immflag, inst->imm.ilit.lit);
+
+				break;
+		}
+
+	}
+	else if(inst->imm_type == INSTIMM_REFERENCE)
+	{
+
+		if(inst->imm.iref.ref_type == INST_REF_GLOBAL)
+		{
+			printf("path:%d subpath %d: rd: %d, rs1: %d, rs2: %d, selflag: %d, realocflag %d, immf: %d [reference: %s]\n", inst->path, inst->subpath, inst->rd, inst->rs1, inst->rs2, inst->selflag, inst->realocflag, inst->immflag, inst->imm.iref.ref);
+
+		}
+		else
+		{
+			printf("path:%d subpath %d: rd: %d, rs1: %d, rs2: %d, selflag: %d, realocflag %d, immf: %d [reference: @%s]\n", inst->path, inst->subpath, inst->rd, inst->rs1, inst->rs2, inst->selflag, inst->realocflag, inst->immflag, inst->imm.iref.ref);
+		}
+
+	}
+
+	else if(inst->imm_type == INSTIMM_NONE)
+	{
+		printf("path:%d subpath %d: rd: %d, rs1: %d, rs2: %d, selflag: %d, realocflag %d, immf: %d\n", inst->path, inst->subpath, inst->rd, inst->rs1, inst->rs2, inst->selflag, inst->realocflag, inst->immflag);
+	}
 }
 
 inst_t decode_inst(uint32_t instr)
@@ -35,78 +68,88 @@ uint32_t encode_inst(inst_t *inst)
 }
 
 
+void set_instruction_keyword_error(tok_t *tok, char *keyword)
+{
+
+	errelm_line_t line = {.column = get_token_col(tok), .line = get_token_row(tok)};
+	errelm_file_t file = {.name = get_filename_from_id(get_token_file(tok))};
+	char buffer[1025] = {0};
+	sprintf(buffer, "keyword %s is not in not a valid instruction keyword", keyword);
+	errelm_t elmline = errelm_create_line_element(line);
+	errelm_t elmfile =  errelm_create_file_element(file);
+	//printf("emit stage\n");
+	emit_error(TOKEN_ERROR, buffer, 2, elmfile, elmline);
+	//printf("emit stage2\n");
+}
+
+void set_instruction_reference_error(tok_t *tok, char *reference)
+{
+	errelm_line_t line = {.column = get_token_col(tok), .line = get_token_row(tok)};
+	errelm_file_t file = {.name = get_filename_from_id(get_token_file(tok))};
+	char buffer[1025] = {0};
+	sprintf(buffer, "reference %s is not in not a valid assembler keyword", reference);
+	errelm_t elmline = errelm_create_line_element(line);
+	errelm_t elmfile =  errelm_create_file_element(file);
+	//printf("emit stage\n");
+	emit_error(TOKEN_ERROR, buffer, 2, elmfile, elmline);
+}
+
+
 void free_inst(inst_t *inst)
 {
-	if(inst->immref)
+	if(inst->imm_type == INSTIMM_REFERENCE)
 	{
-		free(inst->immref);
+		free(inst->imm.iref.ref);
 	}
 }
+
 
 void invalid_inst(parse_node_t *node, inst_t *inst)
 {
 	emit_error(TOKEN_ERROR, "not", 0, NULL);
 }
 
-void inst_no_imm(parse_node_t *node, inst_t *inst)
+
+void fill_instruction_start(parse_node_t *node, inst_t *inst)
 {
-	int path = get_path(node->children[0]->tok->lexeme);
-	if(path == -1)
-	{
-		return;
-	}
-
-	//printf("path %d\n", path);
-	inst->path = path;
-	int subpath = get_subpath(path, node->children[1]->tok->lexeme);
-	inst->subpath = subpath;
-
-	int rd = get_register(node->children[2]->tok->lexeme);
-	int rs1 = get_register(node->children[3]->tok->lexeme);
-	int rs2 = 0;
-
-
-	char *rs2_str = node->children[4]->tok->lexeme;
-
-	if(rs2_str[0] == '#')
-	{
-		int value = atoi(rs2_str + 1);
-		rs2 = value;
-		inst->selflag = 1;
-	}
-	else
-	{
-		rs2 = get_register(rs2_str);
-
-	}
-	inst->rd =rd;
-	inst->rs1= rs1;
-	inst->rs2= rs2;
-	inst->realocflag = 0;
-
-
-	inst->imm = 0;
-	inst->immflag = 0;
-	inst->immref = NULL;
-}
-
-void inst_imm(parse_node_t *node, inst_t *inst)
-{
-	int path = get_path(node->children[0]->tok->lexeme);
+	char *path_str = node->children[0]->tok->lexeme;
+	int path = get_path(path_str);
 	inst->path = path;
 	if(path == -1)
 	{
+		set_instruction_keyword_error(node->children[0]->tok, path_str);
+		inst->imm_type == INSTIMM_ERROR;
 		return;
 	}
 	//rint_depth(node, 0);
 
 	int subpath = get_subpath(inst->path, node->children[1]->tok->lexeme);
+	if(subpath == -1)
+	{
+		set_instruction_keyword_error(node->children[1]->tok, node->children[1]->tok->lexeme);
+		inst->imm_type == INSTIMM_ERROR;
+		return;
+
+	}
 	inst->subpath = subpath;
 
 	int rd = get_register(node->children[2]->tok->lexeme);
+	if(rd == -1)
+	{
+		set_instruction_keyword_error(node->children[2]->tok, node->children[2]->tok->lexeme);
+		inst->imm_type == INSTIMM_ERROR;
+		return;
 
+	}
 
 	int rs1 = get_register(node->children[3]->tok->lexeme);
+	if(rs1 == -1)
+	{
+		set_instruction_keyword_error(node->children[3]->tok,  node->children[3]->tok->lexeme);
+		inst->imm_type == INSTIMM_ERROR;
+		return;
+
+	}
 	int rs2 = 0;
 
 
@@ -124,29 +167,65 @@ void inst_imm(parse_node_t *node, inst_t *inst)
 		rs2 = get_register(rs2_str);
 
 	}
+	if(rs2 == -1)
+	{
+		set_instruction_keyword_error(node->children[4]->tok, node->children[4]->tok->lexeme);
+		inst->imm_type == INSTIMM_ERROR;
+		return;
 
+	}
 	inst->rd =rd;
 	inst->rs1= rs1;
 	inst->rs2= rs2;
+}
+
+void inst_no_imm(parse_node_t *node, inst_t *inst)
+{
+
+	fill_instruction_start(node, inst);
+	if(inst->imm_type != INSTIMM_ERROR)
+	{
+
+		inst->imm_type = INSTIMM_NONE;
+		inst->immflag = 0;
+	}
+
+
+}
+
+void inst_imm(parse_node_t *node, inst_t *inst)
+{
+	fill_instruction_start(node, inst);
+	if(inst->imm_type == INSTIMM_ERROR)
+	{
+		return;
+	}
+
 	char *final = node->children[5]->tok->lexeme;
 
 	number_type_t type = get_number_type(final);
 	uint64_t imm = 0;
 	//printf("final: %s %d\n", final, type);
-	if(type == NUM_INT)
-	{
-		imm = atoi(final);
-	}
-	if(type == NUM_HEX)
-	{
-		imm = convert_to_hex(final);
-	}
-	if(type == NUM_OCT)
-	{
-		imm = convert_to_oct(final);
-	}
 
-	if(type == NUM_NONE)
+	if(type != NUM_NONE)
+	{
+		if(type == NUM_INT)
+		{
+			imm = atoi(final);
+		}
+		else if(type == NUM_HEX)
+		{
+			imm = convert_to_hex(final);
+		}
+		else if(type == NUM_OCT)
+		{
+			imm = convert_to_oct(final);
+		}
+		inst->imm_type = INSTIMM_LITERAL;
+		inst->imm.ilit.lit = imm;
+		inst->imm.ilit.lit_type = INST_LIT_UNSET;
+	}
+	else
 	{
 		//printf("%s\n", final);
 
@@ -156,8 +235,8 @@ void inst_imm(parse_node_t *node, inst_t *inst)
 			{
 				//faking the valid names
 				char *dup = strdup(final + 1);
-				inst->immref = dup;
-				inst->ref_type = INST_REF_LOCAL;
+				inst->imm.iref.ref = dup;
+				inst->imm.iref.ref_type = INST_REF_LOCAL;
 
 			}
 			else
@@ -165,22 +244,23 @@ void inst_imm(parse_node_t *node, inst_t *inst)
 
 			}
 		}
-
 		else if(valid_name(final))
 		{
 			char *dup = strdup(final);
 			//printf("%s\n", dup);
-			inst->immref = dup;
-
+			inst->imm.iref.ref = dup;
+			inst->imm.iref.ref_type = INST_REF_GLOBAL;
 		}
 		else
 		{
+
 		}
+		inst->imm_type = INSTIMM_REFERENCE;
+
 	}
 
 	//printf("%s %d\n", final, imm);
 	inst->realocflag = 0;
-	inst->imm = imm;
 	inst->immflag = 1;
 }
 
@@ -193,8 +273,7 @@ inst_t create_instruction(parse_node_t *node)
 
 	inst_t inst = {0};
 	//clear this
-	inst.line = node->tok->locale.row;
-	inst.ref_type = INST_REF_GLOBAL;
+
 
 	if(node->child_count != 6 && node->child_count!= 5)
 	{

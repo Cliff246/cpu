@@ -13,24 +13,55 @@ typedef enum inst_ref_type
 	INST_REF_GLOBAL
 }inst_ref_type_t;
 
+typedef enum inst_lit_type
+{
+	INST_LIT_NONE,
+	INST_LIT_UNSET,
+	INST_LIT_SIGNED_INT,
+	INST_LIT_UNSIGNED_INT,
+	INST_LIT_FLOAT,
+
+}inst_lit_type_t;
+
+typedef enum inst_imm_type
+{
+	INSTIMM_NONE,
+	INSTIMM_ERROR,
+	INSTIMM_LITERAL,
+	INSTIMM_REFERENCE,
+}inst_imm_type_t;
+
+
+
+typedef struct imm_reference
+{
+	char *ref;
+	inst_ref_type_t ref_type;
+
+}imm_ref_t;
+
+typedef struct imm_literal
+{
+	int64_t lit;
+	inst_lit_type_t lit_type;
+}imm_lit_t;
+
 typedef struct instruction
 {
-	uint32_t path;
-	uint32_t subpath;
-	uint32_t rd;
-	uint32_t rs1;
-	uint32_t rs2;
+	char path;
+	char subpath;
+	char rd;
+	char rs1;
+	char rs2;
 	char realocflag;
 	char selflag;
 	char immflag;
-
-	uint64_t line;
-
-	int64_t imm;
-	char *linestr;
-
-	char *immref;
-	inst_ref_type_t ref_type;
+	union
+	{
+		imm_ref_t iref;
+		imm_lit_t ilit;
+	}imm;
+	inst_imm_type_t imm_type;
 }inst_t;
 
 

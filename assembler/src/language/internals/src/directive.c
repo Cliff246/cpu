@@ -1,5 +1,5 @@
 #include "inter.h"
-
+#include "eerror.h"
 #include "parser.h"
 #include "directive.h"
 #include <string.h>
@@ -35,7 +35,7 @@ dir_rec_t *get_record_from_context(context_t *ctx, directive_type_t type)
 		default:
 
 			LOG("type is invalid for record %d\n", type, 0);
-			exit(1);
+			escape(1);
 			break;
 	}
 	//LOG("directive type %d\n ", type, 0);
@@ -188,7 +188,7 @@ directive_t *create_directive(struct context *ctx, parse_node_t *head)
 	{
 		LOG("head is inval\n", 0);
 
-		exit(1);
+		escape(1);
 	}
 
 

@@ -129,6 +129,7 @@ char *get_error_type_str(error_type_t code)
 
 void error_element_printer(errelm_t *elm)
 {
+	fprintf(stderr, "\t");
 	switch(elm->type)
 	{
 
@@ -198,4 +199,10 @@ errelm_t errelm_create_token_element(errelm_token_t token)
 {
 	errelm_t element = {.elem.token = token, .type = ERRELM_TOKEN};
 	return element;
+}
+
+void escape(int errcode)
+{
+	print_errors();
+	exit(errcode);
 }

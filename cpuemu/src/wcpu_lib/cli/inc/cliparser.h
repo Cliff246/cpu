@@ -2,6 +2,7 @@
 #define __CLI_PARSER__
 
 #include "token.h"
+#include <stdbool.h>
 #include <stdlib.h>
 
 
@@ -14,6 +15,7 @@ typedef enum pnodetype
 	PN_SUB,
 	PN_DIV,
 	PN_MUL,
+	PN_KEYWORD,
 	PN_EMPTY,
 }pnode_type_t;
 
@@ -33,11 +35,7 @@ typedef struct pcontext
 	size_t index;
 }pcontext_t;
 
-typedef struct cmdline
-{
-	pnode_t *head;
-	toklex_t *lex;
-}cmdline_t;
+
 
 pnode_t *evaluate_lex(toklex_t *lex);
 
