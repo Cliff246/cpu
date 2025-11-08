@@ -129,7 +129,8 @@ void fetch_cpu(void)
 
 	CCPU(curins) = (uint32_t)get_inst_at_pc_address(pc);
 	CCPU(curimm) = (int64_t)MEMLD(ipc + get_ipc_offset());
-
+	CCPU(inst) = decode_inst(CCPU(curins));
+	CCPU(inst).imm = CCPU(curimm);
 	CCPU(has_jumped) = false;
 }
 void decode_cpu(void)

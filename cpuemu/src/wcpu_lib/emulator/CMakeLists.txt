@@ -8,6 +8,7 @@ set(CPU_EMULATOR_FILES ${CPU_EMULATOR_FILES}
 	${CMAKE_CURRENT_SOURCE_DIR}/src/pjmp.c
 	${CMAKE_CURRENT_SOURCE_DIR}/src/debug.c
 	${CMAKE_CURRENT_SOURCE_DIR}/src/coreutils.c
+	${CMAKE_CURRENT_SOURCE_DIR}/src/code_decoder.c
 )
 
 

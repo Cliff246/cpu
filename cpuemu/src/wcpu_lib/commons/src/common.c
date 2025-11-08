@@ -49,12 +49,24 @@ void reverse(char *ary)
 {
     size_t len = strlen(ary);
     int end = len;
+	if(len == 2)
+	{
+		char temp = ary[0];
+        ary[0] = ary[1];
+
+	    ary[1] = temp;
+		return;
+	}
     for (int i = 0; i < len / 2; i++, end--)
     {
         char temp = ary[i];
         ary[i] = ary[end];
-        ary[end] = temp;
-    }
+
+	    ary[end] = temp;
+		printf("%d %d\n", i, end);
+
+	}
+
 }
 
 
@@ -72,12 +84,12 @@ char *to_string(char ch)
 
 void *realloc_safe(void *ptr, size_t count, size_t size)
 {
-	
+
 	void *temp = realloc(ptr, size * count);
 	if(!temp )
 	{
 		fprintf(stderr, "realloc failed\n");
-		return ptr;	
+		return ptr;
 	}
 	else
 	{

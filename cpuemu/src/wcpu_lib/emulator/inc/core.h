@@ -74,14 +74,15 @@ typedef struct
 
 typedef struct instruction
 {
-	uint32_t path;
-	uint32_t subpath;
-	uint32_t rd ;
-	uint32_t rs1 ;
-	uint32_t rs2 ;
-	uint32_t selflag ;
-	uint32_t reallocflag ;
-	uint32_t immflag;
+	char  path;
+	char  subpath;
+	char  rd ;
+	char  rs1 ;
+	char  rs2 ;
+	char  selflag ;
+	char  reallocflag ;
+	char  immflag;
+	int64_t imm;
 }inst_t;
 
 

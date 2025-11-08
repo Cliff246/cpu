@@ -35,7 +35,7 @@ typedef struct globalstate
 
 extern globalstate_t globalstate;
 
-void step_instruction(void);
+void step_handler(void);
 
 void init(int argc, char **argv);
 

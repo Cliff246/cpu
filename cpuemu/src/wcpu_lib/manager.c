@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include "code_decoder.h"
 
 void fill_binary(uint64_t *bin, size_t length)
 {
@@ -190,7 +191,10 @@ void print_cmd(cmd_t *cmd)
 	else if(!strcmp(arg1, "inst"))
 	{
 		inst_t inst = decode_inst(components.cpu->curins);
-		print_inst(&inst);
+		//print_inst(&inst);
+		char *itext = convert_inst_to_text(&inst);
+		printf("%s\n", itext);
+		free(itext);
 	}
 	else
 	{

@@ -23,10 +23,9 @@ void memory_submit(cpu_t *cpu, char subpath, int64_t rs1, int64_t rs2, int64_t i
 			break;
 		case MEM_SD:
 			address = rs2 + imm;
-			sd = get_reg(rs1);
-			printf("store [%d] = %d \n", address, sd );
+			printf("store [%d] = %d \n", address, rs1 );
 
-			store(address, sd);
+			store(address, rs1);
 			break;
 
 		case MEM_SP:
@@ -42,7 +41,7 @@ void memory_submit(cpu_t *cpu, char subpath, int64_t rs1, int64_t rs2, int64_t i
 
 			break;
 		case MEM_LDS:
-			address = get_sp() - rs2 - imm;
+			address = get_sp() + rs2 + imm;
 			ld = load(address);
 			printf("load %d = %d\n", address, ld);
 			cpu->co = ld;
@@ -50,10 +49,9 @@ void memory_submit(cpu_t *cpu, char subpath, int64_t rs1, int64_t rs2, int64_t i
 
 		case MEM_SDS:
 			address = get_sp() + rs2 + imm;
-			sd = get_reg(rs1);
-			printf("store [%d] = %d \n", address, sd );
+			printf("store [%d] = %d \n", address, rs1);
 
-			store(address, sd);
+			store(address, rs1);
 			break;
 		case MEM_INCSP:
 

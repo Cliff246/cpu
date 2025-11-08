@@ -1,7 +1,8 @@
 
 
 #include "coreutils.h"
-
+#include "flags.h"
+#include <string.h>
 
 #define CCPU(part) components.cpu->part
 #define MEMLD(address) load(address)

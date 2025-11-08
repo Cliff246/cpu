@@ -8,7 +8,7 @@
 .text tag std
 
 START:
-
+	mem.sp zero, zero, zero, 1000
 	alu.add a0, zero, zero, ARRY
 	alu.add a1, zero, zero
 	alu.add a2, zero, #5
