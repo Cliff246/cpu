@@ -7,6 +7,13 @@
 
 .text tag std
 
+START:
+
+	alu.add a0, zero, zero, ARRY
+	alu.add a1, zero, zero
+	alu.add a2, zero, #5
+
+	jmp.call null, null, null, @SORT
 
 
 ;exs0 desc dest
@@ -80,28 +87,56 @@ ELSE_SWAP:
 
 
 
-;a0 dest
-;a1 size
-;a2 function description
-;a3 function destination
+;a0 source
+;a1 low
+;a2 hi
 SORT:
 
 
 ;setting saves
+	;array
+	mem.push zero, a0, zero
+	;low
+	mem.push zero, a1, zero
+	;high
+	mem.push zero, a2, zero
+
+	jmp.blt null, a1, a2, @SORT_DOWN
+
+
+	;arr, low, high
+	jmp.call null, null, null, @PARTITION
+
+
+	;pi = s0
 	alu.add s0, a0, zero
-	alu.add s1, a1, zero
-	alu.add s2, a2, zero
-	alu.add s3, a3, zero
-;s0 = dest
-;s1 = size
-;s2 = fdesc
-;s3 = fdest
 
-
+	alu.sub a2, s0, #1
+	;add a2 to stack ptr stack at four
+ 	mem.push null, a2, null
+	jmp.call null, null, null, @SORT
+	;get back a2 stack at four to three
+	mem.pop t0, null, null
+	;stack is at 3
+	alu.add a1, t0, #1
+	;stack is at 2
+	;descrement stack ptr
+	mem.pop a2, null, null
+	;decrement back to 0
+	mem.lds a0, null, #2
+	;second jump
+	jmp.call null, null, null, @SORT
 SORT_DOWN:
+	;third jump
+	jmp.ret null, null, null
 
 
 
 
+
+.data
+
+ARRY:
+	i64 4, 2, 5, 3, 1
 
 

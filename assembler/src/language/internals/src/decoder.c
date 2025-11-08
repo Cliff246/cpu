@@ -242,6 +242,10 @@ int get_mem_subpath(char *keyword)
 		"pop",
 		"sp",
 		"sfp",
+		"lds",
+		"sds",
+		"isp",		//increment stack ptr
+		"dsp"		//decrement stack ptr
 	};
 
 	const int opvalue[] = {
@@ -251,8 +255,10 @@ int get_mem_subpath(char *keyword)
 		MEM_POP,
 		MEM_SP,
 		MEM_SFP,
-
-
+		MEM_LDS,
+		MEM_SDS,
+		MEM_INCSP,
+		MEM_DECSP,
 	};
 
 
@@ -313,11 +319,12 @@ int get_sys_subpath(char *keyword)
 		"call",
 		"dcall",
 		"dset",
-		"djmp",
 	};
 
 	const int opvalue[] = {
-		SYS_CALL
+		SYS_CALL,
+		SYS_CALL_CD_PTR,
+		SYS_SET_CD_PTR,
 	};
 	int code = determine_code(keyword, sys_mnemonics, ARYSIZE(sys_mnemonics));
 	if(code != -1)

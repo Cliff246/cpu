@@ -10,20 +10,20 @@ void memory_submit(cpu_t *cpu, char subpath, int64_t rs1, int64_t rs2, int64_t i
 
 {
 	inst_t inst = decode_inst(cpu->curins);
-	uint64_t address;
+	uint64_t address, sd, ld;
 	if(immflag == 0)
 		imm = 0;
 	switch(inst.subpath)
 	{
 		case MEM_LD:
 			address = rs1 + rs2 + imm;
-			uint64_t ld = load(address);
+			ld = load(address);
 			printf("load %d = %d\n", address, ld);
 			cpu->co = ld;
 			break;
 		case MEM_SD:
 			address = rs2 + imm;
-			uint64_t sd = get_reg(rs1);
+			sd = get_reg(rs1);
 			printf("store [%d] = %d \n", address, sd );
 
 			store(address, sd);
@@ -41,7 +41,39 @@ void memory_submit(cpu_t *cpu, char subpath, int64_t rs1, int64_t rs2, int64_t i
 			set_sfp(rs1 + rs2 + imm);
 
 			break;
+		case MEM_LDS:
+			address = get_sp() - rs2 - imm;
+			ld = load(address);
+			printf("load %d = %d\n", address, ld);
+			cpu->co = ld;
+			break;
 
+		case MEM_SDS:
+			address = get_sp() + rs2 + imm;
+			sd = get_reg(rs1);
+			printf("store [%d] = %d \n", address, sd );
+
+			store(address, sd);
+			break;
+		case MEM_INCSP:
+
+			inc_sp(rs2 + imm);
+			break;
+		case MEM_DECSP:
+			dec_sp(rs2 + imm);
+
+			break;
+		case MEM_PUSH:
+
+			address = dec_sp(1);
+
+			store(address, rs1);
+			break;
+
+		case MEM_POP:
+			address = inc_sp(1);
+			cpu->co = load(address);
+			break;
 		default:
 			printf("nothing done\n");
 			break;

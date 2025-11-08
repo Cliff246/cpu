@@ -121,8 +121,16 @@
 #define MEM_PUSH	0x04
 //Memory pop
 #define MEM_POP		0x05
+//
+#define MEM_INCSP 0x0a
+//
+#define MEM_DECSP 0x09
 //memory get stack frame ptr, get stack frame
 #define MEM_SFP	0x06
+//memory ld at stack offset
+#define MEM_LDS	0x07
+//memory store at stack offset
+#define MEM_SDS 0x08
 
 
 //branch equal
