@@ -81,7 +81,7 @@ cmd_t *create_command(cli_context_t* ctx, cmdline_t cmdline)
 
 	cmd_t *cmd = &ctx->commands[ctx->count++];
 	cmd->line = cmdline;
-
+	cmd->token = 0;
 	return cmd;
 }
 
@@ -99,6 +99,7 @@ char *get_elem_line(cmdline_t *line, int i)
 	}
 	return NULL;
 }
+
 tok_t *get_tok_cmd(cmd_t *cmd, int i)
 {
 	if(cmd->line.lex->slen > i && i >= 0)
@@ -111,6 +112,10 @@ tok_t *get_tok_cmd(cmd_t *cmd, int i)
 	}
 }
 
+tok_t *next_tok_cmd(cmd_t *cmd)
+{
+	return get_tok_cmd(cmd, cmd->token++);
+}
 cmdpacket_t create_cmdpacket(cmdline_t line)
 {
 

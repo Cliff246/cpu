@@ -35,6 +35,9 @@ typedef struct cmdpacket
 typedef struct command
 {
 	cmdline_t line;
+	
+	int token;
+
 	cmdpacket_t packet;
 
 }cmd_t;
