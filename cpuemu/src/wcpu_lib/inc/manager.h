@@ -2,6 +2,8 @@
 #define __MANAGER_HEADER__
 
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdint.h>
 #include "cli.h"
 
 #define MAX_BREAKPOINTS 100
@@ -30,8 +32,9 @@ typedef struct globalstate
 }globalstate_t;
 
 
-
-
+void fill_binary(uint64_t *bin, size_t length);
+size_t file_len(FILE *fp);
+void load_file(const char *file_name);
 
 extern globalstate_t globalstate;
 

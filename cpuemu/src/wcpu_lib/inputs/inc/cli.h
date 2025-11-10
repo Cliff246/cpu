@@ -35,7 +35,7 @@ typedef struct cmdpacket
 typedef struct command
 {
 	cmdline_t line;
-	
+
 	int token;
 
 	cmdpacket_t packet;
@@ -54,6 +54,11 @@ typedef struct cli_context
 
 char *get_elem_line(cmdline_t *line, int i);
 tok_t *get_tok_cmd(cmd_t *cmd, int i);
+tok_t *next_tok_cmd(cmd_t *cmd);
+tok_t *peek_tok_cmd(cmd_t *cmd);
+
+
+
 char *read_line(void);
 
 cmdline_t create_line(char *str);

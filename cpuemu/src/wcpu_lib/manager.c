@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "code_decoder.h"
+#include "hydra.h"
 
 void fill_binary(uint64_t *bin, size_t length)
 {
@@ -143,63 +144,6 @@ void print_cmd(cmd_t *cmd)
 {
 
 
-	tok_t *tok1 = get_tok_cmd(cmd, 1);
-	char *arg1 = tok1->token;
-	if(!strcmp(arg1, "regs"))
-	{
-		print_regs();
-	}
-	else if(!strcmp(arg1, "reg"))
-	{
-		tok_t *tok2 = get_tok_cmd(cmd, 2);
-		if(tok2)
-			return;
-		if(tok2->type == TOK_INT)
-		{
-			int reg = atoi(tok2->token);
-			printf("r:%d = %d", reg, get_reg(reg));
-			return;
-		}
-	}
-	else if(!strcmp(arg1, "mem"))
-	{
-
-		tok_t *tok2 = get_tok_cmd(cmd, 2);
-		tok_t *tok3 = get_tok_cmd(cmd, 3);
-		if(!tok2 || !tok3)
-		{
-			memory_print(components.mem, 0, 50);
-
-			return;
-
-		}
-		if(tok2->type == TOK_INT && tok3->type == TOK_INT)
-		{
-			int start = atoi(tok2->token);
-			int stop = atoi(tok3->token);
-			memory_print(components.mem, start, stop);
-
-		}
-		else
-		{
-			memory_print(components.mem, 0, 50);
-
-		}
-
-
-	}
-	else if(!strcmp(arg1, "inst"))
-	{
-		inst_t inst = decode_inst(components.cpu->curins);
-		//print_inst(&inst);
-		char *itext = convert_inst_to_text(&inst);
-		printf("%s\n", itext);
-		free(itext);
-	}
-	else
-	{
-		printf("invalid print statement\n");
-	}
 
 
 }
@@ -207,87 +151,31 @@ void print_cmd(cmd_t *cmd)
 
 void step_cmd(cmd_t *cmd)
 {
-	step_cpu();
-	step_cpu();
-	step_cpu();
-	step_cpu();
-	step_cpu();
+
 }
 
 void break_cmd(cmd_t *cmd)
 {
-	char *arg1 = get_elem_line(&cmd->line, 1);
+
 
 }
 
 void load_cmd(cmd_t *cmd)
 {
-	tok_t *tok1 = get_tok_cmd(cmd, 1);
-	if(tok1->type == TOK_STRING)
-	{
-		load_file(tok1->token);
 
-	}
 
 }
 
 void run_cmd(cmd_t *cmd)
 {
-	char *arg1 = get_elem_line(&cmd->line, 1);
-	if(arg1 == NULL)
-	{
-		globalstate.runfor = 100;
-		globalstate.running = true;
-	}
-	else
-	{
-		globalstate.runfor = atoi(arg1);
-		globalstate.running = true;
 
-	}
 
 }
 
 
 bool basic_input_manager(cmd_t *cmd)
 {
-	char *tok1 = get_elem_line(&cmd->line, 0);
-	if(!strcmp(tok1, "print"))
-	{
-		print_cmd(cmd);
-		return false;
-	}
-	else if(!strcmp(tok1,  "step"))
-	{
-		step_cmd(cmd);
-		return false;
-	}
-	else if(!strcmp(tok1, "break"))
-	{
-		break_cmd(cmd);
-		return false;
-	}
-	else if(!strcmp(tok1, "load"))
-	{
-		load_cmd(cmd);
-		return false;
-
-	}
-	else if(!strcmp(tok1, "run"))
-	{
-		run_cmd(cmd);
-		return true;
-	}
-	else if(!strcmp(tok1, "init"))
-	{
-		startup_cpu();
-		return false;
-	}
-	else
-	{
-		printf("invalid command\n");
-		return false;
-	}
+	hydra(cmd);
 
 
 }
