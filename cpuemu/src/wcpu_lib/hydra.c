@@ -27,7 +27,7 @@ void hydra(cmd_t *cmd)
 	tok_t *first_keyword = next_tok_cmd(cmd);
 	if(first_keyword == NULL)
 	{
-		printf("must enter line");
+		printf("must enter line\n");
 	}
 	else
 	{
@@ -51,7 +51,7 @@ void hydra(cmd_t *cmd)
 		}
 		if(ran == false)
 		{
-			printf("cmd not recognized");
+			printf("cmd not recognized\n");
 		}
 	}
 
