@@ -3,11 +3,28 @@
 
 #include "core.h"
 
+inst_t get_inst_from_op(operation_t *op);
 
-void push_scd(cpu_t *cpu, cd_frame_t frame);
-cd_frame_t pop_scd(cpu_t *cpu);
 
-cd_frame_t get_frame_from_address(cpu_t *cpu, uint64_t address);
+
+void push_scd(cpu_t *cpu, code_desc_t desc);
+code_desc_t pop_scd(cpu_t *cpu);
+code_desc_t get_desc_from_address(cpu_t *cpu, uint64_t address);
+
+
+reg_file_t get_current_file(cpu_t *cpu);
+reg_file_t get_mode_file(cpu_t *cpu, pmode_t mode);
+
+
+operation_t fill_operation(uint32_t inst, int64_t imm);
+
+void decode_operation(operation_t *op);
+
+
+void set_current_file(cpu_t *cpu, reg_file_t file);
+
+void set_mode_file(cpu_t *cpu, reg_file_t file, pmode_t mode);
+
 
 uint64_t get_ipc(void);
 uint64_t get_pc(void);
@@ -45,7 +62,7 @@ int64_t get_reg(int reg);
 //register set
 void set_reg(int reg, int64_t content);
 
-cd_frame_t get_frame(pmode_t mode);
-void set_frame(pmode_t mode, cd_frame_t frame);
+code_desc_t get_desc(pmode_t mode);
+void set_desc(pmode_t mode, code_desc_t desc);
 
 #endif

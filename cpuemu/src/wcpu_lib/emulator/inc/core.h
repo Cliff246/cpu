@@ -37,7 +37,7 @@ typedef struct
     int      valid;
 } bookmark_t;
 
-typedef struct cd_frame
+typedef struct code_desc
 {
 	//code description ptr
 	uint64_t cd_ptr;
@@ -50,27 +50,21 @@ typedef struct cd_frame
 
 	//frame pc, frame ipc
 	uint64_t pc, ipc;
-}cd_frame_t;
+}code_desc_t;
 
-typedef struct regstack
+typedef struct stack_reg
 {
 	//stack ptr,
 	//stack frame
 	uint64_t sp, sf;
 	//stack code description
 	uint64_t scd;
-}regstack_t;
+}stack_reg_t;
 
 typedef struct interreg
 {
 	uint64_t rpc, ripc, gp, tp;
-}interreg_t;
-
-typedef struct
-{
-
-}live_wires_t;
-
+}inter_reg_t;
 
 typedef struct instruction
 {
@@ -82,56 +76,66 @@ typedef struct instruction
 	char  selflag ;
 	char  reallocflag ;
 	char  immflag;
-	int64_t imm;
 }inst_t;
 
+typedef struct instbundle
+{
+	bool decoded;
+	inst_t inst;
+	uint64_t raw;
+}instbundle_t;
 
+
+typedef enum immtype
+{
+	IMM_UNKNOWN,
+	IMM_FALSE,
+	IMM_TRUE,
+	IMM_REFERENCE,
+	IMM_REALLOC,
+	IMM_KEY
+}immtype_t;
+
+typedef struct immbundle
+{
+	immtype_t type;
+	int64_t imm;
+}immbundle_t;
+
+typedef struct operation
+{
+
+	instbundle_t inst;
+	immbundle_t imm;
+
+}operation_t;
+
+
+typedef struct regfile
+{
+
+	int64_t iregs[64];
+	double fregs[64];
+
+	stack_reg_t stack;
+	inter_reg_t inter;
+	code_desc_t desc;
+
+
+
+}reg_file_t;
 
 typedef struct
 {
-
-
 	//general regs
-	int64_t regs[64];
-
-	int64_t kregs[64];
-
-	//instruction pc and imm_pc
-	//kernal stack pointer and stack frame
-	regstack_t u_stack, k_stack;
-	//kernal/user mode return pc and ipc
-	//kernal/user mode general ptr
-	//kernal/user mode thread ptr
-	interreg_t u_ireg, k_ireg;
-	//cpu mode
+	reg_file_t user, kernal;
 	pmode_t mode;
-	//kernal and usr stack code description ptr
-
-	//
-	cd_frame_t u_cd, k_cd;
-
-	//kernal frame data table ptr and length
-	uint64_t k_fdt_ptr, k_fdt_len;
-	//user frame data table ptr and len
-	uint64_t u_fdt_ptr, u_fdt_len;
-
-	//kernal function table ptr and length
-	uint64_t k_fn_table_ptr, k_fn_table_len;
-	//user function table ptr
-	uint64_t u_fn_table_ptr, u_fn_table_len;
-
-	//user mode frame
-	uint64_t u_mode_frame;
-	//book marks filled;
-
 
 	bool has_jumped;
 
 	stages_t stage;
 
-	int64_t curimm;
-	int32_t curins;
-	inst_t inst;
+	operation_t op;
 	//current input 1, 2, 3
 	int64_t ci1, ci2, ci3;
 	//current output

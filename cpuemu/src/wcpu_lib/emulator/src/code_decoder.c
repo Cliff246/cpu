@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-char path_codes[16][PATH_STR_SIZE] = 
+char path_codes[16][PATH_STR_SIZE] =
 {
 	[PATH_ALU] = "alu",
 	[PATH_MEM] = "mem",
@@ -18,24 +18,24 @@ char path_codes[16][PATH_STR_SIZE] =
 
 };
 
-	
 
-		
-		
-		
-		
-		
-		
-		
-		
-		
-	
+
+
+
+
+
+
+
+
+
+
+
 	   //increment stack ptr
-	
-		
-char subpath_codes[16][0xff][PATH_STR_SIZE] = 
+
+
+char subpath_codes[16][0xff][PATH_STR_SIZE] =
 {
-	[PATH_ALU] = 
+	[PATH_ALU] =
 	{
 		[ALU_ADD  ]	=	"add",
 		[ALU_SUB ]	=	"sub",
@@ -60,7 +60,7 @@ char subpath_codes[16][0xff][PATH_STR_SIZE] =
 		[ALU_CNE ]	=	"cne",
 		[ALU_CEQ ]	=	"ceq",
 	},
-	[PATH_MEM] = 
+	[PATH_MEM] =
 	{
 		[MEM_LD  ]= "ld",
 		[MEM_SD  ]=	"sd",
@@ -68,13 +68,13 @@ char subpath_codes[16][0xff][PATH_STR_SIZE] =
 		[MEM_POP ]=	"pop",
 		[MEM_SP  ]=	"sp",
 		[MEM_SFP ]=	"sfp",
-		[MEM_LDS ]=	"lds",	
-		[MEM_SDS ]=	"sds",	 	
-		[MEM_INCSP]="isp",	
-		[MEM_DECSP]="dsp",	
+		[MEM_LDS ]=	"lds",
+		[MEM_SDS ]=	"sds",
+		[MEM_INCSP]="isp",
+		[MEM_DECSP]="dsp",
 
 	},
-	[PATH_JMP] = 
+	[PATH_JMP] =
 	{
 		[JP_JMP] = "jmp",
 		[JP_BNE] = "bne",
@@ -84,13 +84,13 @@ char subpath_codes[16][0xff][PATH_STR_SIZE] =
 		[JP_CALL]= "call",
 		[JP_RET] = "ret",
 		[JP_BLEU]= "bleu",
-		[JP_BLTU]= "bltu",   	
+		[JP_BLTU]= "bltu",
 	},
-	[PATH_SYS] = 
+	[PATH_SYS] =
 	{
 
 	},
-	[PATH_FPU] = 
+	[PATH_FPU] =
 	{
 
 	}
@@ -105,11 +105,11 @@ void int_to_str(int val, char buf[INT_TO_STR_SIZE])
 	while(val != 0)
 	{
 		int rem = val % 10;
-		buf[i++] = '0' + rem; 
+		buf[i++] = '0' + rem;
 		val /= 10;
 	}
 	reverse(buf);
-	
+
 }
 
 int path_to_string(char buffer[PATH_STR_SIZE], int code)
@@ -125,7 +125,8 @@ int path_to_string(char buffer[PATH_STR_SIZE], int code)
 
 int subpath_to_string(char buffer[PATH_STR_SIZE], int path, int subpath)
 {
-	strcpy(buffer, subpath_codes[path][subpath]);	
+	//printf("subpath %d %s\n", subpath, (char *)subpath_codes[path][subpath]);
+	strcpy(buffer, subpath_codes[path][subpath]);
 	return 0;
 }
 
@@ -138,9 +139,9 @@ int register_to_string(char buffer[REG_STR_SIZE], unsigned reg, char selflag)
 	if(reg == 0)
 	{
 		buffer[1] = '0';
-		return 0;	
+		return 0;
 	}
-	
+
 	char numbuf[INT_TO_STR_SIZE];
 	int_to_str(reg, numbuf);
 
@@ -150,43 +151,56 @@ int register_to_string(char buffer[REG_STR_SIZE], unsigned reg, char selflag)
 	return 0;
 }
 
-char *inst_to_text_static_buffer(inst_t *inst) 
+char *operation_to_text_static_buffer(operation_t *op)
 {
+	inst_t inst;
+	if(op->inst.decoded == false)
+	{
+		uint32_t raw = op->inst.raw;
+		//printf("decode op in text %d\n", raw);
+		inst = decode_inst(raw);
+	}
+	else
+	{
+		inst = get_inst_from_op(op);
+	}
+	//print_inst(&inst);
+
 
 	static char buffer[1000];
 	memset(buffer, 0, sizeof(buffer)/sizeof(*buffer));
 	char pathbuf[PATH_STR_SIZE] = {0};
-	path_to_string(pathbuf, inst->path);
+	path_to_string(pathbuf, inst.path);
 	char subpathbuf[PATH_STR_SIZE] = {0};
-	subpath_to_string(subpathbuf, inst->path, inst->subpath);	
-	char rdbuf[REG_STR_SIZE] = {0};	
-	register_to_string(rdbuf, inst->rd, 0);
-	char rs1buf[REG_STR_SIZE] = {0};	
-	register_to_string(rs1buf, inst->rs1, 0);
+	subpath_to_string(subpathbuf, inst.path, inst.subpath);
+	char rdbuf[REG_STR_SIZE] = {0};
+	register_to_string(rdbuf, inst.rd, 0);
+	char rs1buf[REG_STR_SIZE] = {0};
+	register_to_string(rs1buf, inst.rs1, 0);
 	char rs2buf[REG_STR_SIZE] = {0};
-	register_to_string(rs2buf, inst->rs2, inst->selflag);
+	register_to_string(rs2buf, inst.rs2, inst.selflag);
 
-	if(inst->immflag)
+	if(inst.immflag)
 	{
 
-		sprintf(buffer, "%s.%s %s, %s, %s, %lld", pathbuf, subpathbuf, rdbuf, rs1buf, rs2buf, inst->imm); 
+		sprintf(buffer, "%s.%s %s, %s, %s, %lld", pathbuf, subpathbuf, rdbuf, rs1buf, rs2buf, op->imm.imm);
 	}
 	else
 	{
 
-		sprintf(buffer, "%s.%s %s, %s, %s", pathbuf, subpathbuf, rdbuf, rs1buf, rs2buf); 
+		sprintf(buffer, "%s.%s %s, %s, %s", pathbuf, subpathbuf, rdbuf, rs1buf, rs2buf);
 	}
 	return buffer;
 
 }
 
 
-char *convert_inst_to_text(inst_t *inst)
+char *convert_operation_to_text(operation_t *op)
 {
-	
-	
+
+
 	char *string = calloc(4 + 8 + 2 + 3 + 2 + 3 + 5 + 20 + 1, sizeof(char));
 
-	strcpy(string, inst_to_text_static_buffer(inst));
+	strcpy(string, operation_to_text_static_buffer(op));
 	return string;
 }

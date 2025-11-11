@@ -9,11 +9,10 @@
 void memory_submit(cpu_t *cpu, char subpath, int64_t rs1, int64_t rs2, int64_t imm, char immflag )
 
 {
-	inst_t inst = decode_inst(cpu->curins);
 	uint64_t address, sd, ld;
 	if(immflag == 0)
 		imm = 0;
-	switch(inst.subpath)
+	switch(subpath)
 	{
 		case MEM_LD:
 			address = rs1 + rs2 + imm;
@@ -43,13 +42,13 @@ void memory_submit(cpu_t *cpu, char subpath, int64_t rs1, int64_t rs2, int64_t i
 		case MEM_LDS:
 			address = get_sp() + rs2 + imm;
 			ld = load(address);
-			printf("load %d = %d\n", address, ld);
+			printf("load %lld = %lld\n", address, ld);
 			cpu->co = ld;
 			break;
 
 		case MEM_SDS:
 			address = get_sp() + rs2 + imm;
-			printf("store [%d] = %d \n", address, rs1);
+			printf("store [%lld] = %lld \n", address, rs1);
 
 			store(address, rs1);
 			break;
@@ -63,13 +62,14 @@ void memory_submit(cpu_t *cpu, char subpath, int64_t rs1, int64_t rs2, int64_t i
 			break;
 		case MEM_PUSH:
 
-			address = dec_sp(1);
+			address = inc_sp(1);
 
 			store(address, rs1);
+			
 			break;
 
 		case MEM_POP:
-			address = inc_sp(1);
+			address = dec_sp(1);
 			cpu->co = load(address);
 			break;
 		default:

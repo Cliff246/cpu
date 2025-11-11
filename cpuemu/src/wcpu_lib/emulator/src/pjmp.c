@@ -71,18 +71,11 @@ uint64_t find_immediate_from_rel_table(cpu_t *cpu, uint64_t address)
 	uint64_t ct_address = 0;
 	uint64_t ct_len = 0;
 	uint64_t cd_ptr = 0;
-	if(cpu->mode == KERNAL)
-	{
-		cd_ptr = cpu->k_cd.cd_ptr;
-		ct_address = cpu->k_cd.ct_ptr;
-		ct_len = cpu->k_cd.ct_len;
-	}
-	else
-	{
-		cd_ptr = cpu->u_cd.cd_ptr;
-		ct_address = cpu->u_cd.ct_ptr;
-		ct_len = cpu->u_cd.ct_len;
-	}
+	reg_file_t file = get_current_file(cpu);
+	cd_ptr = file.desc.cd_ptr;
+	ct_address = file.desc.ct_ptr;
+	ct_len = file.desc.ct_len;
+
 
 	//check in book marks
 	uint64_t idx = bookmark_index(address, cd_ptr);
@@ -136,13 +129,13 @@ uint64_t find_immediate_from_rel_table(cpu_t *cpu, uint64_t address)
 
 void call_to_outside(cpu_t *cpu, uint64_t rel_addr, uint64_t cd_addr)
 {
-	cd_frame_t old_frame = get_frame(cpu->mode);
+	code_desc_t old_frame = get_desc(cpu->mode);
 
 	push_scd(cpu, old_frame);
 
-	cd_frame_t current_frame = get_frame_from_address(cpu, cd_addr);
+	code_desc_t current_frame = get_desc_from_address(cpu, cd_addr);
 
-	set_frame(cpu->mode, current_frame);
+	set_desc(cpu->mode, current_frame);
 
   	uint64_t imm = find_immediate_from_rel_table(cpu, rel_addr);
     set_pc(rel_addr);
@@ -151,8 +144,8 @@ void call_to_outside(cpu_t *cpu, uint64_t rel_addr, uint64_t cd_addr)
 
 void ret_from_outside(cpu_t *cpu)
 {
-    cd_frame_t frame = pop_scd(cpu);
-    set_frame(cpu->mode, frame);
+    code_desc_t frame = pop_scd(cpu);
+    set_desc(cpu->mode, frame);
     set_pc(frame.pc);
     set_ipc(frame.ipc);
 }
@@ -174,13 +167,15 @@ void jump_to(cpu_t *cpu, uint64_t address)
 
 void jump_call(cpu_t *cpu, uint64_t target, char immf)
 {
-	store(get_sp(), get_pc() + 1);
+	store(inc_sp(1), get_pc() + 1);
 	store(inc_sp(1), get_ipc() + ((immf)? 1: 0)) ;
 	store(inc_sp(1), get_sfp());
-	inc_sp(1);
 	memory_print(components.mem, 1000, 1010);
-	set_sfp(get_sp());
+	//printf("\n\nipc %d\n\n", get_ipc());
 
+	//printf("sp = %d\n", get_sp());
+	set_sfp(get_sp());
+	printf("CALL before sp=%lu sfp=%lu\n", get_sp(), get_sfp());
 
 	jump_to(cpu, target);
 
@@ -190,15 +185,16 @@ void jump_return(cpu_t *cpu)
 {
 	set_sp(get_sfp());
 
-	uint64_t sfp = load(dec_sp(1));
-	uint64_t ipc = load(dec_sp(1));
-	uint64_t pc = load(dec_sp(1));
+    uint64_t sfp = load(dec_sp(1));   // last pushed
+    uint64_t ipc = load(dec_sp(1));   // second pushed
+    uint64_t pc  = load(dec_sp(1));
+	printf("RET after sp=%lu sfp=%lu\n", get_sp(), get_sfp());
 
 	set_sfp(sfp);
 	set_ipc(ipc);
 	set_pc(pc);
 	cpu->has_jumped = true;
-
+	//printf("RET pop pc=%lu ipc=%lu sfp=%lu\n", pc, ipc, sfp);
 }
 
 
@@ -229,13 +225,15 @@ void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t rd, int64_t rs1, int64_t 
 			if((int64_t)rs1 < (int64_t)rs2)
 			{
 				jump_to(cpu, imm);
+				printf("branch less equals %d %d\n", rs1, rs2);
+
 			}
 			break;
 		case JP_BLE:
 			if((int64_t)rs1 <= (int64_t)rs2)
 			{
 				jump_to(cpu, imm);
-
+				printf("branch less than equals %d %d\n", rs1, rs2);
 			}
 			break;
 

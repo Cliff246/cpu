@@ -107,6 +107,7 @@ int on_breakpoint(void)
 			return i;
 		}
 	}
+	return -1;
 }
 
 void step_handler(void)
@@ -115,7 +116,7 @@ void step_handler(void)
 	{
 		return;
 	}
-	if(globalstate.runfor <= 0)
+	if(globalstate.runfor < 0)
 	{
 		globalstate.running = 0;
 		return;
@@ -123,6 +124,7 @@ void step_handler(void)
 	else
 	{
 		globalstate.runfor--;
+		//printf("%d\n",globalstate.runfor);
 	}
 	int brk = on_breakpoint();
 	if(brk != -1)
@@ -175,9 +177,8 @@ void run_cmd(cmd_t *cmd)
 
 bool basic_input_manager(cmd_t *cmd)
 {
-	hydra(cmd);
-
-
+	bool run = hydra(cmd);
+	return run;
 }
 
 

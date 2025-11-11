@@ -12,8 +12,8 @@
 
 void system_submit(cpu_t *cpu)
 {
-
-	switch(decode_inst(cpu->curins).subpath)
+	inst_t inst = get_inst_from_op(&cpu->op);
+	switch(inst.subpath)
 	{
 		case SYS_SET_CD_PTR:
 			sys_set_cd_ptr(cpu, cpu->co);
@@ -27,33 +27,22 @@ void system_submit(cpu_t *cpu)
 
 void sys_set_cd_ptr(cpu_t *cpu, uint64_t rd)
 {
-	if(cpu->mode == KERNAL)
-	{
-		cpu->k_cd.cd_ptr = rd;
 
-	}
-	else
-	{
-		cpu->k_cd.cd_ptr = rd;
-	}
+	reg_file_t file = get_current_file(cpu);
+	
+	file.desc.cd_ptr = rd;
+	set_current_file(cpu, file);
 }
 
 void sys_call_cd_ptr(cpu_t *cpu, uint64_t rd)
 {
 
-	if(cpu->mode == KERNAL)
-	{
-		uint64_t address = CPU(u_cd.cd_ptr);
-		cd_frame_t frame = get_frame_from_address(cpu, rd);
-		set_frame(KERNAL, frame);
-	}
-	else
-	{
-		uint64_t address = CPU(u_cd.cd_ptr);
-		cd_frame_t frame = get_frame_from_address(cpu, rd);
-		set_frame(USER, frame);
+	reg_file_t file =  get_current_file(cpu);
 
-	}
+	uint64_t address = file.desc.cd_ptr;
+	code_desc_t frame = get_desc_from_address(cpu, rd);
+	set_desc(cpu->mode, frame);
+
 
 }
 

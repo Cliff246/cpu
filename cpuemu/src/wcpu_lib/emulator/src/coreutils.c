@@ -3,40 +3,135 @@
 #include "coreutils.h"
 #include "flags.h"
 #include <string.h>
-
+#include <stdio.h>
 #define CCPU(part) components.cpu->part
 #define MEMLD(address) load(address)
 
 
-void push_scd(cpu_t *cpu, cd_frame_t frame)
+inst_t get_inst_from_op(operation_t *op)
 {
-	uint64_t stack_cd = (cpu->mode == KERNAL)? cpu->k_stack.scd: cpu->u_stack.scd;
-	stack_cd -= 9;
-
-	store(stack_cd, frame.cd_ptr);
-	store(stack_cd + 1, frame.ct_ptr);
-	store(stack_cd + 2, frame.ct_len);
-	store(stack_cd + 3, frame.pc_ptr);
-	store(stack_cd + 4, frame.pc_len);
-	store(stack_cd + 5, frame.ipc_ptr);
-	store(stack_cd + 6, frame.ipc_len);
-	store(stack_cd + 7, frame.pc);
-	store(stack_cd + 8, frame.ipc);
-
-
-	if(cpu->mode == KERNAL)
-		cpu->k_stack.scd = stack_cd;
+	inst_t inst;
+	if(op->inst.decoded == true)
+	{
+		inst = op->inst.inst;
+	}
 	else
-		cpu->u_stack.scd = stack_cd;
+	{
+		inst = decode_inst((uint32_t)op->inst.raw);
+	}
+	return inst;
+
 }
 
-cd_frame_t pop_scd(cpu_t *cpu)
+
+
+operation_t fill_operation(uint32_t inst, int64_t imm)
 {
-	uint64_t stack_cd = (cpu->mode == KERNAL)? cpu->k_stack.scd: cpu->u_stack.scd;
+	operation_t op = {0};
+	op.inst.decoded = false;
+	op.inst.inst = decode_inst(inst);
+	op.inst.raw = inst;
+   	op.imm.type = IMM_UNKNOWN;
+	op.imm.imm = imm;
+	//printf("filled %d imm %lld\n", inst, imm);
+	return op;
+}
+
+
+void decode_operation(operation_t *op)
+{
+	if(op->inst.decoded)
+	{
+		return;
+	}
+	inst_t inst = decode_inst(op->inst.raw);
+	op->inst.inst = inst;
+	op->imm.type = (inst.immflag)? IMM_TRUE : IMM_FALSE;
+
+}
+
+
+reg_file_t get_current_file(cpu_t *cpu)
+{
+
+	if(cpu->mode == USER)
+	{
+		return cpu->user;
+	}
+	else
+	{
+		return cpu->kernal;
+	}
+
+}
+
+reg_file_t get_mode_file(cpu_t *cpu, pmode_t mode)
+{
+	if(mode == USER)
+	{
+		return cpu->user;
+	}
+	else
+	{
+		return cpu->kernal;
+	}
+}
+void set_current_file(cpu_t *cpu, reg_file_t file)
+{
+
+	if(cpu->mode == USER)
+	{
+		cpu->user = file;
+	}
+	else
+	{
+		cpu->kernal = file;
+	}
+}
+
+void set_mode_file(cpu_t *cpu, reg_file_t file, pmode_t mode)
+{
+	if(mode == USER)
+	{
+		cpu->user = file;
+	}
+	else
+	{
+		cpu->kernal = file;
+	}
+}
+
+void push_scd(cpu_t *cpu, code_desc_t desc)
+{
+
+	reg_file_t file = get_current_file(cpu);
+
+	uint64_t stack_cd =  file.stack.scd;
+	stack_cd -= 9;
+
+	store(stack_cd, desc.cd_ptr);
+	store(stack_cd + 1, desc.ct_ptr);
+	store(stack_cd + 2, desc.ct_len);
+	store(stack_cd + 3, desc.pc_ptr);
+	store(stack_cd + 4, desc.pc_len);
+	store(stack_cd + 5, desc.ipc_ptr);
+	store(stack_cd + 6, desc.ipc_len);
+	store(stack_cd + 7, desc.pc);
+	store(stack_cd + 8, desc.ipc);
+
+	file.stack.scd = stack_cd;
+	set_current_file(cpu,file);
+}
+
+code_desc_t pop_scd(cpu_t *cpu)
+{
+	reg_file_t file = get_current_file(cpu);
+
+	uint64_t stack_cd =  file.stack.scd;
 
 
 
-	cd_frame_t frame = {
+	code_desc_t desc = {
 		.cd_ptr = load(stack_cd),
 		.ct_ptr = load(stack_cd + 1),
 		.ct_len = load(stack_cd + 2),
@@ -49,13 +144,14 @@ cd_frame_t pop_scd(cpu_t *cpu)
 
 	};
 
-	if(cpu->mode == KERNAL)
-		cpu->k_stack.scd = stack_cd + 9;
-	else
-		cpu->u_stack.scd = stack_cd + 9;
-	return frame;
+	file.stack.scd += 9;
+	set_current_file(cpu, file);
+	return desc;
 }
-cd_frame_t get_frame_from_address(cpu_t *cpu, uint64_t address)
+
+
+
+code_desc_t get_desc_from_address(cpu_t *cpu, uint64_t address)
 {
 	int64_t cdtb_ptr = load(address);
 	int64_t cdtb_len = load(address + 1);
@@ -65,7 +161,7 @@ cd_frame_t get_frame_from_address(cpu_t *cpu, uint64_t address)
 	int64_t imm_len = load(address + 5);
 	//set_pc(inst_ptr);
 	//set_ipc(imm_ptr);
-	cd_frame_t frame = {
+	code_desc_t frame = {
 		.cd_ptr = address,
 		.ct_ptr = cdtb_ptr,
 		.ct_len = cdtb_len,
@@ -82,127 +178,140 @@ cd_frame_t get_frame_from_address(cpu_t *cpu, uint64_t address)
 
 uint64_t get_ipc(void)
 {
-	return (CCPU(mode) == KERNAL) ? CCPU(k_cd.ipc) : CCPU(u_cd.ipc);
+	return (CCPU(mode) == KERNAL) ? CCPU(kernal.desc.ipc) : CCPU(user.desc.ipc);
 }
 uint64_t get_pc(void)
 {
-	return (CCPU(mode) == KERNAL) ? CCPU(k_cd.pc) : CCPU(u_cd.pc);
+	return (CCPU(mode) == KERNAL) ? CCPU(kernal.desc.pc) : CCPU(user.desc.pc);
 }
 
 void set_ipc(uint64_t set)
 {
 	if (CCPU(mode) == KERNAL)
-		CCPU(k_cd.ipc) = set;
+		CCPU(kernal.desc.ipc) = set;
 	else
-		CCPU(u_cd.ipc) = set;
+		CCPU(user.desc.ipc) = set;
 }
 
 void set_pc(uint64_t set)
 {
 	if (CCPU(mode) == KERNAL)
-		CCPU(k_cd.pc) = set;
+		CCPU(kernal.desc.pc) = set;
 	else
-		CCPU(u_cd.pc) = set;
+		CCPU(user.desc.pc) = set;
 	// printf("%d should be | is %d\n", set, CCPU(k_pc));
 }
 
 void inc_ipc(uint64_t inc)
 {
 	if (CCPU(mode) == KERNAL)
-		CCPU(k_cd.ipc) += inc;
+		CCPU(kernal.desc.ipc) += inc;
 	else
-		CCPU(u_cd.ipc) += inc;
+		CCPU(user.desc.ipc) += inc;
 }
 
 void inc_pc(uint64_t inc)
 {
 	if (CCPU(mode) == KERNAL)
-		CCPU(k_cd.pc) += inc;
+		CCPU(kernal.desc.pc) += inc;
 	else
-		CCPU(u_cd.pc) += inc;
+		CCPU(user.desc.pc) += inc;
 }
 
 uint64_t get_pc_offset(void)
 {
-	return (CCPU(mode) == KERNAL) ? CCPU(k_cd.pc_ptr) : CCPU(u_cd.pc_ptr);
+	return (CCPU(mode) == KERNAL) ? CCPU(kernal.desc.pc_ptr) : CCPU(user.desc.pc_ptr);
 }
 uint64_t get_ipc_offset(void)
 {
 
-	return (CCPU(mode) == KERNAL) ? CCPU(k_cd.ipc_ptr) : CCPU(u_cd.ipc_ptr);
+	return (CCPU(mode) == KERNAL) ? CCPU(kernal.desc.ipc_ptr) : CCPU(user.desc.ipc_ptr);
 }
 
 uint64_t get_pc_len(void)
 {
 
-	return (CCPU(mode) == KERNAL) ? CCPU(k_cd.pc_len) : CCPU(u_cd.pc_len);
+	return (CCPU(mode) == KERNAL) ? CCPU(kernal.desc.pc_len) : CCPU(user.desc.pc_len);
 }
 uint64_t get_ipc_len(void)
 {
 
-	return (CCPU(mode) == KERNAL) ? CCPU(k_cd.ipc_len) : CCPU(u_cd.ipc_len);
+	return (CCPU(mode) == KERNAL) ? CCPU(kernal.desc.ipc_len) : CCPU(user.desc.ipc_len);
 }
 
 uint64_t get_sp(void)
 {
-	return (CCPU(mode) == KERNAL) ? CCPU(k_stack.sp) : CCPU(u_stack.sp);
+	return (CCPU(mode) == KERNAL) ? CCPU(kernal.stack.sp) : CCPU(user.stack.sp);
 }
 
 void set_sp(uint64_t set)
 {
 	if (CCPU(mode) == KERNAL)
-		CCPU(k_stack.sp) = set;
+		CCPU(kernal.stack.sp) = set;
 	else
-		CCPU(u_stack.sp) = set;
+		CCPU(user.stack.sp) = set;
 }
 
 uint64_t get_sfp(void)
 {
-	return (CCPU(mode) == KERNAL) ? CCPU(k_stack.sf) : CCPU(u_stack.sf);
+	return (CCPU(mode) == KERNAL) ? CCPU(kernal.stack.sf) : CCPU(user.stack.sf);
 }
 
 void set_sfp(uint64_t set)
 {
 	if (CCPU(mode) == KERNAL)
-		CCPU(k_stack.sf) = set;
+		CCPU(kernal.stack.sf) = set;
 	else
-		CCPU(u_stack.sf) = set;
+		CCPU(user.stack.sf) = set;
 }
 
 uint64_t dec_sp(uint64_t degree)
 {
 	uint64_t val;
 	if (CCPU(mode) == KERNAL)
-		val = (CCPU(k_stack.sp) -= degree);
+	{
+		(CCPU(kernal.stack.sp) -= degree);
+		val = CCPU(kernal.stack.sp);
+
+	}
 	else
-		val = (CCPU(u_stack.sp) -= degree);
+	{
+		(CCPU(user.stack.sp) -= degree);
+		val = CCPU(kernal.stack.sp);
+
+	}
 	return val;
 }
 uint64_t inc_sp(uint64_t degree)
 {
 	uint64_t val;
-
 	if (CCPU(mode) == KERNAL)
-		val = (CCPU(k_stack.sp) += degree);
-	else
-		val = (CCPU(u_stack.sp) += degree);
-	return val;
-}
-
-cd_frame_t get_frame(pmode_t mode)
-{
-	return (mode == KERNAL) ? CCPU(k_cd) : CCPU(u_cd);
-}
-
-void set_frame(pmode_t mode, cd_frame_t frame)
-{
-	if (mode == KERNAL)
 	{
-		CCPU(k_cd) = frame;
+		val = CCPU(kernal.stack.sp);
+		(CCPU(kernal.stack.sp) += degree);
 	}
 	else
 	{
-		CCPU(u_cd) = frame;
+		val = CCPU(user.stack.sp);
+		(CCPU(user.stack.sp) += degree);
+	}
+	return val;
+}
+
+code_desc_t get_desc(pmode_t mode)
+{
+	return (mode == KERNAL) ? CCPU(kernal.desc) : CCPU(user.desc);
+}
+
+void set_desc(pmode_t mode, code_desc_t frame)
+{
+	if (mode == KERNAL)
+	{
+		CCPU(kernal.desc) = frame;
+	}
+	else
+	{
+		CCPU(user.desc) = frame;
 	}
 }
 
@@ -216,11 +325,11 @@ int64_t get_reg(int reg)
 	if (CCPU(mode) == KERNAL)
 	{
 
-		return CCPU(kregs)[reg];
+		return CCPU(kernal.iregs)[reg];
 	}
 	else
 	{
-		return CCPU(regs)[reg];
+		return CCPU(user.iregs)[reg];
 	}
 }
 
@@ -234,12 +343,12 @@ void set_reg(int reg, int64_t content)
 	if (CCPU(mode) == KERNAL)
 	{
 
-		CCPU(kregs)
+		CCPU(kernal.iregs)
 		[reg] = content;
 	}
 	else
 	{
-		CCPU(regs)
+		CCPU(user.iregs)
 		[reg] = content;
 	}
 }
