@@ -46,13 +46,18 @@ typedef struct imm_literal
 	inst_lit_type_t lit_type;
 }imm_lit_t;
 
+
+
+
+
 typedef struct instruction
 {
 	char path;
 	char subpath;
-	char rd;
 	char rs1;
 	char rs2;
+	char rs3;
+	char accflag;
 	char realocflag;
 	char selflag;
 	char immflag;
@@ -76,10 +81,10 @@ inst_t create_instruction(parse_node_t *node);
 void invalid_inst(parse_node_t *node, inst_t *inst);
 
 
-void inst_no_imm(parse_node_t *node, inst_t *inst);
+void inst_no_imm(parse_node_t *node, inst_t *inst, int offset);
 
 
-void inst_imm(parse_node_t *node, inst_t *inst);
+void inst_imm(parse_node_t *node, inst_t *inst, int offset);
 
 
 

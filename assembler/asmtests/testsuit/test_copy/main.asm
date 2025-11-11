@@ -8,7 +8,7 @@
 
 MAIN:
 	mem.sp null, null, null, 1000
-
+	mem.sfp null, null, null, 1000
 
 	alu.add a0, zero, zero, dest
 	alu.add a1, zero, zero, source

@@ -179,16 +179,20 @@ char *operation_to_text_static_buffer(operation_t *op)
 	register_to_string(rs1buf, inst.rs1, 0);
 	char rs2buf[REG_STR_SIZE] = {0};
 	register_to_string(rs2buf, inst.rs2, inst.selflag);
-
+	char static_accflag[2][2] = {
+		[0] = "",
+		[1] = "!"
+	};
+	char *accflag = (inst.accflag)? static_accflag[1]:static_accflag[0];
 	if(inst.immflag)
 	{
 
-		sprintf(buffer, "%s.%s %s, %s, %s, %lld", pathbuf, subpathbuf, rdbuf, rs1buf, rs2buf, op->imm.imm);
+		sprintf(buffer, "%s.%s%s %s, %s, %s, %lld", pathbuf, subpathbuf,accflag, rdbuf, rs1buf, rs2buf, op->imm.imm);
 	}
 	else
 	{
 
-		sprintf(buffer, "%s.%s %s, %s, %s", pathbuf, subpathbuf, rdbuf, rs1buf, rs2buf);
+		sprintf(buffer, "%s.%s%s %s, %s, %s", pathbuf, subpathbuf,accflag, rdbuf, rs1buf, rs2buf);
 	}
 	return buffer;
 

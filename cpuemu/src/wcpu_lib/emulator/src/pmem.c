@@ -40,7 +40,7 @@ void memory_submit(cpu_t *cpu, char subpath, int64_t rs1, int64_t rs2, int64_t i
 
 			break;
 		case MEM_LDS:
-			address = get_sp() + rs2 + imm;
+			address = get_sp()  + rs2 + imm;
 			ld = load(address);
 			printf("load %lld = %lld\n", address, ld);
 			cpu->co = ld;
@@ -65,7 +65,7 @@ void memory_submit(cpu_t *cpu, char subpath, int64_t rs1, int64_t rs2, int64_t i
 			address = inc_sp(1);
 
 			store(address, rs1);
-			
+
 			break;
 
 		case MEM_POP:

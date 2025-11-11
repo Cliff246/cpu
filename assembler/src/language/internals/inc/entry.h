@@ -4,11 +4,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+
 #include "parser.h"
 #include "decoder.h"
 #include "instruction.h"
 #include "metaop.h"
-
+#include "psudeoop.h"
 
 
 typedef enum entry_type
@@ -16,6 +17,7 @@ typedef enum entry_type
 	ENTRY_UNKNOWN,
 	ENTRY_INST,
 	ENTRY_MOP,
+	ENTRY_POP,
 }entry_type_t;
 
 
@@ -33,6 +35,7 @@ typedef struct
 	{
 		inst_t inst;
 		mop_t mop;
+		pop_t pop;
 
 	} entry;
 

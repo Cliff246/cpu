@@ -214,11 +214,13 @@ void writeback_cpu(void)
 inst_t decode_inst(int32_t instr)
 {
 	inst_t in = {0};
-	in.path = (instr >> 28) & 0xF;
-	in.subpath = (instr >> 21) & 0x7F;
-	in.rd = (instr >> 15) & 0x3F;
-	in.rs1 = (instr >> 9) & 0x3F;
-	in.rs2 = (instr >> 3) & 0x3F;
+	in.path = (instr >> 29) & 0x3f;
+	in.subpath = (instr >> 22) & 0x7F;
+	in.rd = (instr >> 16) & 0x3F;
+	in.rs1 = (instr >> 10) & 0x3F;
+
+	in.rs2 = (instr >> 4) & 0x3F;
+	in.accflag = (instr >> 3) & 0x01;
 	in.selflag = (instr >> 2) & 0x01;
 
 	in.reallocflag = (instr >> 1) & 0x01;
@@ -242,7 +244,7 @@ uint64_t encode(uint64_t path, uint64_t subpath, uint64_t rd, uint64_t rs1, uint
 void print_inst(inst_t *inst)
 {
 	inst_t op = *inst;
-	printf("p: %d: sp: %d, rd: %d, rs1: %d, rs2: %d, selflag: %d, reallocflag: %d, f: %d\n", op.path, op.subpath, op.rd, op.rs1, op.rs2, op.selflag, op.reallocflag, op.immflag);
+	printf("p: %d: sp: %d, rd: %d, rs1: %d, rs2: %d,accflag selflag: %d, reallocflag: %d, f: %d\n", op.path, op.subpath, op.rd, op.rs1, op.rs2,op.accflag, op.selflag, op.reallocflag, op.immflag);
 }
 
 void init_components(void)

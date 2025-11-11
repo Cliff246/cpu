@@ -11,7 +11,7 @@ typedef enum
 	TOK_COMMA, TOK_DOT,
 	TOK_SYMBOL,
     TOK_NEWLINE, TOK_EOF,
-	TOK_COMMENT,
+	TOK_COMMENT, TOK_EXCLAIM,
 	TOK_EMPTY,
 } tok_type_t;
 

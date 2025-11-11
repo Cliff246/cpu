@@ -218,6 +218,15 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 		//emit error and recover
 	}
 	add_child(n, make_node(NODE_SUBPATH, subpath));
+	tok_t *ahead = peek(ctx);
+
+	if(ahead->type == TOK_EXCLAIM)
+	{
+		tok_t *exclaim = expect(ctx, TOK_EXCLAIM);
+		add_child(n, make_node(NODE_EXCLAIM, exclaim));
+
+	}
+
 
 	tok_t *sep = expect(ctx, TOK_IDENT);
 	if(!sep)

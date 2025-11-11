@@ -68,14 +68,15 @@ typedef struct interreg
 
 typedef struct instruction
 {
-	char  path;
-	char  subpath;
-	char  rd ;
-	char  rs1 ;
-	char  rs2 ;
-	char  selflag ;
-	char  reallocflag ;
-	char  immflag;
+	char path;
+	char subpath;
+	char rd ;
+	char rs1 ;
+	char rs2 ;
+	char accflag;
+	char selflag ;
+	char reallocflag ;
+	char immflag;
 }inst_t;
 
 typedef struct instbundle
