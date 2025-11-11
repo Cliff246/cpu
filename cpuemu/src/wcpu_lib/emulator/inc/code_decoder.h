@@ -10,6 +10,7 @@ extern char subpath_codes[16][0xff][8];
 
 int path_to_string(char buffer[PATH_STR_SIZE], int code);
 
-char *convert_inst_to_text(inst_t *inst);
+char *operation_to_text_static_buffer(operation_t *op); 
+char *convert_operation_to_text(operation_t *op);
 
 #endif

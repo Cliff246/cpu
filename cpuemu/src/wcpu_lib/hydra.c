@@ -3,7 +3,7 @@
 #include "manager.h"
 #include "coreutils.h"
 #include "code_decoder.h"
-
+#include "disassembler.h"
 #include <stdbool.h>
 
 #include <stdio.h>
@@ -17,12 +17,13 @@ hydra_entry_t hydra_list[] =
 	{"break", break_head},
 	{"run", run_head},
 	{"load", load_head},
+	{"exit", exit_head},
 	{NULL, NULL}
 };
 
 
 
-void hydra(cmd_t *cmd)
+bool hydra(cmd_t *cmd)
 {
 	tok_t *first_keyword = next_tok_cmd(cmd);
 	if(first_keyword == NULL)
@@ -31,7 +32,7 @@ void hydra(cmd_t *cmd)
 	}
 	else
 	{
-		bool ran = false;
+		bool ran = false, result = false;
 		hydra_entry_t *entry = hydra_list;
 		//linear search yes but so be it
 		//well mostly linear
@@ -40,7 +41,7 @@ void hydra(cmd_t *cmd)
 		{
 			if(!strcmp(keyword, entry->keyword))
 			{
-				entry->head(cmd);
+				result = entry->head(cmd);
 				ran = true;
 				break;
 			}
@@ -52,27 +53,38 @@ void hydra(cmd_t *cmd)
 		if(ran == false)
 		{
 			printf("cmd not recognized\n");
+			return false;
 		}
+		return result;
 	}
-
+	return false;
 
 }
 
-void step_head(cmd_t *cmd)
+bool step_head(cmd_t *cmd)
 {
 	step_cpu();
 	step_cpu();
 	step_cpu();
 	step_cpu();
 	step_cpu();
+	tok_t *tok1 = next_tok_cmd(cmd);
+	return false;
 }
 
-void break_head(cmd_t *cmd)
+bool exit_head(cmd_t *cmd)
 {
-	char *arg1 = get_elem_line(&cmd->line, 1);
+	exit(0);
 }
 
-void load_head(cmd_t *cmd)
+bool break_head(cmd_t *cmd)
+{
+
+	tok_t *tok1 = next_tok_cmd(cmd);
+	return false;
+}
+
+bool load_head(cmd_t *cmd)
 {
 	tok_t *tok1 = next_tok_cmd(cmd);
 	if(tok1->type == TOK_STRING)
@@ -80,9 +92,10 @@ void load_head(cmd_t *cmd)
 		load_file(tok1->token);
 
 	}
+	return false;
 }
 
-void print_head(cmd_t *cmd)
+bool print_head(cmd_t *cmd)
 {
 	tok_t *tok1 = next_tok_cmd(cmd);
 	char *arg1 = tok1->token;
@@ -94,13 +107,21 @@ void print_head(cmd_t *cmd)
 	{
 		tok_t *tok2 = next_tok_cmd(cmd);
 		if(tok2)
-			return;
+			return false;
 		if(tok2->type == TOK_INT)
 		{
 			int reg = atoi(tok2->token);
-			printf("r:%d = %d", reg, get_reg(reg));
-			return;
+			printf("r:%d = %lld", reg, get_reg(reg));
+			return false;
 		}
+	}
+	else if(!strcmp(arg1, "sp"))
+	{
+		printf("%d\n", get_sp());
+	}
+	else if(!strcmp(arg1, "sfp"))
+	{
+		printf("%d\n", get_sfp());
 	}
 	else if(!strcmp(arg1, "mem"))
 	{
@@ -111,7 +132,7 @@ void print_head(cmd_t *cmd)
 		{
 			memory_print(components.mem, 0, 50);
 
-			return;
+			return false;
 
 		}
 		if(tok2->type == TOK_INT && tok3->type == TOK_INT)
@@ -131,31 +152,69 @@ void print_head(cmd_t *cmd)
 	}
 	else if(!strcmp(arg1, "inst"))
 	{
-		inst_t inst = decode_inst(components.cpu->curins);
 		//print_inst(&inst);
-		char *itext = convert_inst_to_text(&inst);
+
+		operation_t *op = &components.cpu->op;
+		//printf("decoded %d\n", op->inst.decoded);
+		char *itext = convert_operation_to_text(op);
 		printf("%s\n", itext);
 		free(itext);
+	}
+	else if(!strcmp(arg1, "block"))
+	{
+
+		code_block_t *block = create_block_from_current_description(components.cpu, 0, 100);
+
+		for(int i =  0; i < block->op_count ; ++i)
+		{
+			char *c = convert_operation_to_text(&block->ops[i]);
+			if(get_pc() == i)
+			{
+				printf("%3d: \t%s\n",i, c);
+			}
+			else
+			{
+				printf("%3d: %s\n", i, c);
+
+			}
+			free(c);
+		}
+		free(block->ops);
+		free(block);
+
 	}
 	else
 	{
 		printf("invalid print statement\n");
 	}
 
+	return false;
 }
 
-void run_head(cmd_t *cmd)
+bool run_head(cmd_t *cmd)
 {
-	char *arg1 = get_elem_line(&cmd->line, 1);
-	if(arg1 == NULL)
+	tok_t *first = next_tok_cmd(cmd);
+	if(first == NULL)
 	{
+
+		globalstate.runfor = 0;
+		globalstate.running = true;
+	}
+	else if(first->type == TOK_END)
+	{
+		printf("step\n");
 		globalstate.runfor = 100;
 		globalstate.running = true;
 	}
 	else
 	{
-		globalstate.runfor = atoi(arg1);
+
+		printf("runn\n");
+		char *str = first->token;
+
+		globalstate.runfor = atoi(str);
 		globalstate.running = true;
 
 	}
+	return true;
 }

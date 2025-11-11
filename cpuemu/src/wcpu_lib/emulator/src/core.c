@@ -12,7 +12,8 @@
 #include <errno.h>
 #include <string.h>
 #include <stdbool.h>
-#include <coreutils.h>
+#include "coreutils.h"
+#include <assert.h>
 
 ldst_type memtype;
 #define CCPU(part) components.cpu->part
@@ -40,6 +41,8 @@ uint64_t stream_out[255] = {0};
 
 uint64_t load(uint64_t address)
 {
+	//printf("load [%d]\n", address);
+
 	if (memtype == ldst_fake)
 	{
 		return stream_in[address % (sizeof(stream_in) / sizeof(stream_in[0]))];
@@ -52,6 +55,7 @@ uint64_t load(uint64_t address)
 
 void store(uint64_t address, int64_t value)
 {
+	//printf("store [%d] = %d\n", address, value);
 	if (memtype == ldst_fake)
 	{
 		stream_out[address % (sizeof(stream_out) / sizeof(stream_out[0]))] = value;
@@ -115,39 +119,45 @@ void fetch_cpu(void)
 	CCPU(ci1) = 0;
 	CCPU(ci2) = 0;
 	CCPU(ci3) = 0;
-
 	uint64_t pc = get_pc();
 	uint64_t ipc = get_ipc();
+	//printf("FETCH pc=%lu ipc=%lu mem[pc]=0x%08x\n", get_pc(), get_ipc(), get_inst_at_pc_address(get_pc()));
+	//printf("FETCH: sp=%d sfp=%d\n", get_sp(), get_sfp());
+	assert(pc <= get_pc_len() * 2);
+	assert(ipc <= get_ipc_len());
 #if DEBUG_MODE == 1
 	// printf("fpc: %llu fipc: %llu\n", get_pc(), get_ipc());
 	// printf("current imm: %d\n", CCPU(curimm));
 	// printf("pc: %llu ipc: %llu\n", pc, ipc);
 
-#endif
 	//printf("pc %d\n", pc);
+#endif
 
 
-	CCPU(curins) = (uint32_t)get_inst_at_pc_address(pc);
-	CCPU(curimm) = (int64_t)MEMLD(ipc + get_ipc_offset());
-	CCPU(inst) = decode_inst(CCPU(curins));
-	CCPU(inst).imm = CCPU(curimm);
+	uint32_t instbin  = (uint32_t)get_inst_at_pc_address(pc);
+	int64_t immbin = (int64_t)MEMLD(ipc + get_ipc_offset());
+	//printf("%d %lld\n", instbin, immbin);
+	CCPU(op) = fill_operation(instbin, immbin);
+
 	CCPU(has_jumped) = false;
 }
 void decode_cpu(void)
 {
-	inst_t inst = decode_inst(CCPU(curins));
-	print_inst(&inst);
-
+	decode_operation(&CCPU(op));
+	//print_inst(&CCPU(op).inst.inst);
 #if DEBUG_MODE == 1
 
 #endif
 }
 void execute_cpu(void)
 {
-	inst_t inst = decode_inst(CCPU(curins));
+	inst_t inst = get_inst_from_op(&CCPU(op));
 	int64_t rs1_n = inst.rs1, rs2_n = inst.rs2;
 	int64_t rs1_d = get_reg(rs1_n);
 	int64_t rs2_d =  get_reg(rs2_n);
+
+	int64_t imm = CCPU(op).imm.imm;
+
 	if(inst.selflag)
 	{
 		rs2_d = rs2_n;
@@ -156,13 +166,13 @@ void execute_cpu(void)
 	{
 
 
-		printf("%d %d \n", rs1_d, rs2_d);
+		//printf("%lld %lld \n", rs1_d, rs2_d);
 
 
-		alu_submit(components.alu, inst.subpath, rs1_d, rs2_d, CCPU(curimm), inst.immflag);
+		alu_submit(components.alu, inst.subpath, rs1_d, rs2_d, imm, inst.immflag);
 		alu_step(components.alu);
 		CCPU(co) = components.alu->regdest;
-		printf("dest %d\n",  components.alu->regdest);
+		//printf("dest %lld\n",  components.alu->regdest);
 
 
 	}
@@ -173,11 +183,11 @@ void execute_cpu(void)
 	else if (inst.path == PATH_JMP)
 	{
 
-		jump_submit(components.cpu, inst.subpath, 0, rs1_d, rs2_d, CCPU(curimm), inst.immflag);
+		jump_submit(components.cpu, inst.subpath, 0, rs1_d, rs2_d, imm, inst.immflag);
 	}
 	else if (inst.path == PATH_MEM)
 	{
-		memory_submit(components.cpu, inst.subpath, rs1_d, rs2_d, CCPU(curimm), inst.immflag);
+		memory_submit(components.cpu, inst.subpath, rs1_d, rs2_d, imm, inst.immflag);
 	}
 }
 
@@ -189,7 +199,7 @@ void memory_cpu(void)
 void writeback_cpu(void)
 {
 
-	inst_t inst = decode_inst(CCPU(curins));
+	inst_t inst = CCPU(op).inst.inst;
 
 	set_reg(inst.rd, CCPU(co));
 	if (!CCPU(has_jumped))

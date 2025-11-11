@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include "cli.h"
 
+#include <stdbool.h>
+
 #define MAX_BREAKPOINTS 100
 
 typedef struct file
