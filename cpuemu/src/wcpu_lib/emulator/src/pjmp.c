@@ -60,7 +60,7 @@ uint64_t closest_rel(cpu_t *cpu, uint64_t ct_addr, uint64_t ct_len, uint64_t rel
 	}
 
 	uint64_t relative = load(ct_addr + closest);
-	printf("c:%ld r:%ld\n", closest, relative);
+	//printf("c:%ld r:%ld\n", closest, relative);
 	return relative;
 }
 
@@ -82,7 +82,7 @@ uint64_t find_immediate_from_rel_table(cpu_t *cpu, uint64_t address)
 
 	if(cpu->bookmarks[idx].valid && cpu->bookmarks[idx].cd_addr == cd_ptr)
 	{
-		printf("bookmarked\n");
+		//printf("bookmarked\n");
 		return get_from_bookmark(cpu, address, cd_ptr);
 	}
 
@@ -102,12 +102,12 @@ uint64_t find_immediate_from_rel_table(cpu_t *cpu, uint64_t address)
 	}
 	uint64_t inst_addr = (address / CODE_DESC_STRIDE);
 	uint64_t imm_addr = load(closest + ct_address);
-	printf("%d address\n", address);
+	//printf("%d address\n", address);
 	for(int i = 0; i < CODE_DESC_STRIDE; ++i)
 	{
 		uint32_t instruction = get_inst_at_pc_address(inst_addr);
 
-		printf("iaddr: %ld instruction: %x\n", inst_addr, instruction);
+		//printf("iaddr: %ld instruction: %x\n", inst_addr, instruction);
 		if(address == inst_addr)
 			break;
 		if ((instruction & 0x1) > 0)
@@ -117,7 +117,7 @@ uint64_t find_immediate_from_rel_table(cpu_t *cpu, uint64_t address)
 		inst_addr++;
 
 	}
-	printf("\ninst address: %llu with imm address:%llu\n\n", inst_addr, imm_addr );
+	//printf("\ninst address: %llu with imm address:%llu\n\n", inst_addr, imm_addr );
 	cpu->bookmarks[idx].inst_addr = inst_addr ;
 
 	cpu->bookmarks[idx].imm_addr  = imm_addr;
@@ -156,7 +156,7 @@ void jump_to(cpu_t *cpu, uint64_t address)
 	uint64_t imm = find_immediate_from_rel_table(cpu, address);
 	//print_regs();
 
-	printf("\njumpto pc=%d ipc=%d\n\n", address, imm );
+	//printf("\njumpto pc=%d ipc=%d\n\n", address, imm );
 	//jump to
 	set_pc(address);
 	set_ipc(imm);
@@ -170,12 +170,12 @@ void jump_call(cpu_t *cpu, uint64_t target, char immf)
 	store(inc_sp(1), get_pc() + 1);
 	store(inc_sp(1), get_ipc() + ((immf)? 1: 0)) ;
 	store(inc_sp(1), get_sfp());
-	memory_print(components.mem, 1000, 1010);
+	//memory_print(components.mem, 1000, 1010);
 	//printf("\n\nipc %d\n\n", get_ipc());
 
 	//printf("sp = %d\n", get_sp());
 	set_sfp(get_sp());
-	printf("CALL before sp=%lu sfp=%lu\n", get_sp(), get_sfp());
+	//printf("CALL before sp=%lu sfp=%lu\n", get_sp(), get_sfp());
 
 	jump_to(cpu, target);
 
@@ -188,7 +188,7 @@ void jump_return(cpu_t *cpu)
     uint64_t sfp = load(dec_sp(1));   // last pushed
     uint64_t ipc = load(dec_sp(1));   // second pushed
     uint64_t pc  = load(dec_sp(1));
-	printf("RET after sp=%lu sfp=%lu\n", get_sp(), get_sfp());
+	//printf("RET after sp=%lu sfp=%lu\n", get_sp(), get_sfp());
 
 	set_sfp(sfp);
 	set_ipc(ipc);
@@ -198,7 +198,7 @@ void jump_return(cpu_t *cpu)
 }
 
 
-void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t rd, int64_t rs1, int64_t rs2, int64_t imm, char immf)
+void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t rs1, int64_t rs2, int64_t imm, char immf)
 {
 	//print_regs();
 
@@ -225,7 +225,7 @@ void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t rd, int64_t rs1, int64_t 
 			if((int64_t)rs1 < (int64_t)rs2)
 			{
 				jump_to(cpu, imm);
-				printf("branch less equals %d %d\n", rs1, rs2);
+				//printf("branch less equals %d %d\n", rs1, rs2);
 
 			}
 			break;
@@ -233,7 +233,7 @@ void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t rd, int64_t rs1, int64_t 
 			if((int64_t)rs1 <= (int64_t)rs2)
 			{
 				jump_to(cpu, imm);
-				printf("branch less than equals %d %d\n", rs1, rs2);
+				//printf("branch less than equals %d %d\n", rs1, rs2);
 			}
 			break;
 

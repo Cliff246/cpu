@@ -2,7 +2,6 @@
 #define __CPU_CLI__
 
 #include "token.h"
-#include "cmdsys.h"
 #include "cliparser.h"
 
 #include <stdbool.h>
@@ -24,11 +23,6 @@ typedef struct cmdline
 }cmdline_t;
 
 
-typedef struct cmdpacket
-{
-
-}cmdpacket_t;
-
 
 
 
@@ -38,7 +32,6 @@ typedef struct command
 
 	int token;
 
-	cmdpacket_t packet;
 
 }cmd_t;
 
@@ -66,7 +59,6 @@ cmdline_t create_line(char *str);
 void create_cli_context(cli_context_t *ctx);
 
 
-cmdpacket_t create_cmdpacket(cmdline_t line);
 
 
 cmd_t *create_command(cli_context_t* ctx, cmdline_t cmdline);

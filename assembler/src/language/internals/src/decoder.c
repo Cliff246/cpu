@@ -74,12 +74,12 @@ int get_register(char *keyword)
 		"x55", "tix", "t15",
 		"x56", "tiy", "t16",
 		"x57", "tiz", "t17",
-		"x58", "hi",
-		"x59", "lo",
-		"x60", "px",
-		"x61", "py",
-		"x62", "mask",
-		"x63", "rp",
+		"x58", "t18",
+		"x59", "t19",
+		"x60", "t20",
+		"x61", "t21",
+		"x62", "t22",
+		"x63", "acc",
 	};
 
 	int regvalue[] = {
@@ -237,26 +237,26 @@ int get_mem_subpath(char *keyword)
 {
 	const char *const mem_mnemonics[] = {
 		"ld",
-		"sd",
+		"st",
 		"push",
 		"pop",
 		"sp",
 		"sfp",
 		"lds",
-		"sds",
+		"sts",
 		"isp",		//increment stack ptr
 		"dsp"		//decrement stack ptr
 	};
 
 	const int opvalue[] = {
-		MEM_LD,
-		MEM_SD,
+		MEM_LDI,
+		MEM_STI,
 		MEM_PUSH,
 		MEM_POP,
 		MEM_SP,
 		MEM_SFP,
 		MEM_LDS,
-		MEM_SDS,
+		MEM_STS,
 		MEM_INCSP,
 		MEM_DECSP,
 	};

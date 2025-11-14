@@ -122,8 +122,4 @@ tok_t *peek_tok_cmd(cmd_t *cmd)
 	return get_tok_cmd(cmd, cmd->token);
 }
 
-cmdpacket_t create_cmdpacket(cmdline_t line)
-{
-	cmdpacket_t packet = {};
-	return packet;
-}
+

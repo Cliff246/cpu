@@ -66,8 +66,8 @@ const char *get_mem_inst_str(int i)
 {
 	switch(i)
 	{
-		MEM_CASE(LD);
-		MEM_CASE(SD);
+		MEM_CASE(LDI);
+		MEM_CASE(STI);
 		MEM_CASE(PUSH);
 		MEM_CASE(POP);
 		MEM_CASE(SP);

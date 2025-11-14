@@ -49,10 +49,11 @@ static modfrag_data_t module_data_resolve(scope_t *scope)
 	//TODO
 
 	uint64_t size = 0;
+	printf("module data resolve\n");
+
 	for(int i = 0; i < scope->entries.count; ++i )
 	{
 		entry_t *entry = scope->entries.entries[i];
-
 
 		if(entry->type == ENTRY_MOP)
 		{

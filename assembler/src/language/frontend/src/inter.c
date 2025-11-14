@@ -225,11 +225,11 @@ void context_resolve(context_t *ctx)
 	}
 
 	ctx->resolved = true;
-	print_depth(ctx->head, 0);
+	//print_depth(ctx->head, 0);
 	//print_hash_table(ctx->alias_map);
-	print_directives(ctx);
-	print_publics(ctx);
-	print_defines(ctx);
+	//print_directives(ctx);
+	//print_publics(ctx);
+	//print_defines(ctx);
 	#undef OVERLAPPING_MAXIMUM
 }
 

@@ -6,65 +6,64 @@
 #include <coreutils.h>
 #include <stdio.h>
 
-void memory_submit(cpu_t *cpu, char subpath, int64_t rs1, int64_t rs2, int64_t imm, char immflag )
+void memory_submit(cpu_t *cpu, char subpath, int64_t lane1, int64_t lane2, int64_t lane3, char immflag )
 
 {
 	uint64_t address, sd, ld;
-	if(immflag == 0)
-		imm = 0;
+
 	switch(subpath)
 	{
-		case MEM_LD:
-			address = rs1 + rs2 + imm;
+		case MEM_LDI:
+			address = lane1 + lane2 + lane3;
 			ld = load(address);
-			printf("load %d = %d\n", address, ld);
+			//printf("load [[%d+%d+%d]=%d] = %d\n", lane1, lane2, lane3, address, ld);
 			cpu->co = ld;
 			break;
-		case MEM_SD:
-			address = rs2 + imm;
-			printf("store [%d] = %d \n", address, rs1 );
+		case MEM_STI:
+			address = lane2 + lane3;
+			//printf("store [[%d+%d]=%d] = %d \n",lane2, lane3, address, lane1 );
 
-			store(address, rs1);
+			store(address, lane1);
 			break;
 
 		case MEM_SP:
 			//dest to co
 			cpu->co = get_sp();
-			set_sp(rs1 + rs2 + imm);
+			set_sp(lane1 + lane2 + lane3);
 
 			break;
 		case MEM_SFP:
 			//dest to co
 			cpu->co = get_sfp();
-			set_sfp(rs1 + rs2 + imm);
+			set_sfp(lane1 + lane2 + lane3);
 
 			break;
 		case MEM_LDS:
-			address = get_sp()  + rs2 + imm;
+			address = get_sp() + lane2 + lane3;
 			ld = load(address);
-			printf("load %lld = %lld\n", address, ld);
+			//printf("load %lld = %lld\n", address, ld);
 			cpu->co = ld;
 			break;
 
-		case MEM_SDS:
-			address = get_sp() + rs2 + imm;
-			printf("store [%lld] = %lld \n", address, rs1);
+		case MEM_STS:
+			address = get_sp() + lane2 + lane3;
+			//printf("store [%lld] = %lld \n", address, lane1);
 
-			store(address, rs1);
+			store(address, lane1);
 			break;
 		case MEM_INCSP:
 
-			inc_sp(rs2 + imm);
+			inc_sp(lane2 + lane3);
 			break;
 		case MEM_DECSP:
-			dec_sp(rs2 + imm);
+			dec_sp(lane2 + lane3);
 
 			break;
 		case MEM_PUSH:
 
 			address = inc_sp(1);
 
-			store(address, rs1);
+			store(address, lane1);
 
 			break;
 
@@ -73,7 +72,7 @@ void memory_submit(cpu_t *cpu, char subpath, int64_t rs1, int64_t rs2, int64_t i
 			cpu->co = load(address);
 			break;
 		default:
-			printf("nothing done\n");
+			//printf("nothing done\n");
 			break;
 	}
 }

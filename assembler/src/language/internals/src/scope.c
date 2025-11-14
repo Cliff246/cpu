@@ -85,7 +85,10 @@ void create_ref_from_parser(scope_t *scope, parse_node_t *head)
 
 	//creates the references
 	implement_reference(ref, head);
-
+	if(ref->has_error)
+	{
+		scope->errors++;
+	}
 	//set sid
 	ref->sid = scope->segment.sid;
 	ref->locale_offset = scope->entries.count;

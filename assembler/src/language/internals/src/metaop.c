@@ -138,8 +138,9 @@ data_holder_t decode_integer(parse_node_t *head)
 
 	for(int i = 0; i < word_size; ++i)
 	{
-
 		char *tok = head->children[i]->tok->lexeme;
+		printf("%s\n", tok);
+
 		number_type_t type = get_number_type(tok);
 		int64_t imm = 0;
 		if(type == NUM_INT)

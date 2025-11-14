@@ -55,7 +55,7 @@ INST(SUBU)
 
 INST(AND)
 {
-	printf("%lld %lld %lld\n", RS1, IMM, RS1 & IMM);
+	//printf("%lld %lld %lld\n", RS1, IMM, RS1 & IMM);
 	OPT(&);
 	//printf("%lld\n", DEST);
 }
@@ -85,9 +85,9 @@ INST(SRA)
 }
 INST(DIV)
 {
-	printf("divide\n");
+	//printf("divide\n");
 	int64_t divident = FLAG(IMM, RS2);
-	printf("divide %d %d %d\n", RS1, divident, RS1 / divident);
+	//printf("divide %d %d %d\n", RS1, divident, RS1 / divident);
 
 	if(divident == 0)
 	{
@@ -266,7 +266,7 @@ void alu_submit(alu_t *alu, char subpath, int64_t rs1, int64_t rs2, int64_t imm,
 {
 	alu->reg1 = rs1;
 	alu->reg2 = rs2;
-	alu->reg3 = (immflag)? imm : 0;
+	alu->reg3 = imm;
 	alu->regdest = 0;
 	alu->subpath = subpath;
 	alu->flag = immflag;

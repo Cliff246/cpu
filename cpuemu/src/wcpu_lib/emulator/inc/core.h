@@ -70,9 +70,9 @@ typedef struct instruction
 {
 	char path;
 	char subpath;
-	char rd ;
 	char rs1 ;
 	char rs2 ;
+	char rs3 ;
 	char accflag;
 	char selflag ;
 	char reallocflag ;
@@ -125,6 +125,8 @@ typedef struct regfile
 
 
 }reg_file_t;
+
+#define REG_ACC 63
 
 typedef struct
 {

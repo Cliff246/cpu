@@ -24,9 +24,9 @@
 
 
 //instruction convention is always
-//4			7		6		6		  6	     1	         1              1
-//[31:28] [27:21] [20:15] [14:9]   [8:3]    [2]        [1]   		   [0]
-//path    subpath  rd      rs1     rs2    selflag  reallocflag        immf
+//3			7		6		6		  6	     1 	       1	      1              1
+//[31:28] [27:21] [20:15] [15:10]   [9:4]   [3] 	  [2]        [1]   		   [0]
+//path    subpath  rd      rs1     rs2     accflag	selflag  reallocflag        immf
 
 
 //realloc has the associated immediate turn into a key thats reallocable. so you can do dynamic code with constants
@@ -35,15 +35,7 @@
 
 #define STR(x) #x
 
-//immf 00 = NONE
-#define IMMF_EMPTY 		0
-
-//immf 01 = QUARTER DWORD
-#define IMMF_QUARTER	1
-//immf 10 = HALF DWORD
-#define IMMF_HALF		2
-//immf 11 = FULL PULL
-#define IMMF_FULL		3
+//immf 00 = NON
 
 
 
@@ -90,31 +82,62 @@
 #define ALU_MULU	0x0d
 //multiply unsigned signed
 #define ALU_MULUS	0x0e
-#define ALU_DIVU 	0x20
+#define ALU_DIVU 	0x0f
 //not
-#define ALU_NOT 	0x0f
+#define ALU_NOT 	0x10
 //compare less than
-#define ALU_CLT		0x10
+#define ALU_CLT		0x11
 //compare less than equals
-#define ALU_CLE		0x11
+#define ALU_CLE		0x12
 //compare less than unsigned
-#define ALU_CLTU	0x12
+#define ALU_CLTU	0x13
 //compare equals
-#define ALU_CEQ		0x13
+#define ALU_CEQ		0x14
 //compare not equals
-#define ALU_CNE		0x14
+#define ALU_CNE		0x15
+//compare cle
+#define ALU_CLEU 	0x16
+//set byte
+#define ALU_COR		0x17
 
+#define ALU_CAND	0x18
+//sets byte
+
+
+
+//sign exten
+#define ALU_SIEX	0x1f
 
 //get rd from rs2
 
+//less than move
+//dest = (lane2 < lane3)? lane1: 0
+#define ALU_LTMV	0x20
+//dest = (lane2 <= lane3)? lane1 : 0
+#define ALU_LEMV	0x21
+//dest = (lane2 == lane3)? lane1 : 0
+#define ALU_EQMV	0x22
+//dest = (lane2 != lane3)? lane1 : 0
+#define ALU_NEMV	0x23
+
+
+//useful
+//dest = max(lane1, (bin)? lane2: lane3)
+#define ALU_MAX		0x28
+//dest = min(lane1, (bin)? lane2: lane3)
+#define ALU_MIN		0x29
+
+#define ALU_POPCNT	0x2a
+
+#define ALU_RAND	0x2b
 
 
 
 //MEMORY
 //Memory load
-#define MEM_LD 		0x00
+#define MEM_LDI 	0x00
 //Memory store
-#define MEM_SD		0x01
+#define MEM_STI		0x01
 //MEMORY get stack ptr, set stack ptr
 #define MEM_SP	0x02
 //Memory Push
@@ -130,7 +153,13 @@
 //memory ld at stack offset
 #define MEM_LDS	0x07
 //memory store at stack offset
-#define MEM_SDS 0x08
+#define MEM_STS 0x08
+
+//memory load float
+#define MEM_LDF	0x09
+//memory store float
+#define MEM_STF	0x0a
+
 
 
 //branch equal
@@ -194,6 +223,7 @@
 #define SYS_FLUSH				0x0d
 
 
+
 //Syscalls
 #define SYS_CALL				0x0e
 //sysbreak
@@ -230,7 +260,142 @@
 #define SYS_REL_QUERY_PTR		0x1e
 #define SYS_REL_CHECK_PTR		0x1f
 
+#define SYS_HALT				0xa0
+
+#define SYS
+
+#define SYS_STRIKE				0xa1
+
 //FPU
+//add
+//(lane1 + lane2)
+//packed 2 times
+//
+#define FPU_FADD				0x00
+//subtract
+//(lane1 - lane2)
+
+//packed
+#define FPU_FSUB				0x01
+
+//multiply add (lane1 * lane2 + lane3)
+#define FPU_FMADD				0x02
+
+//multiply sub (lane1 * lane2 - lane3)
+#define FPU_FMSUB				0x03
+
+//multiply	(lane1 * lane2)
+#define FPU_FMUL				0x04
+
+//deiv
+#define FPU_FDIV				0x05
+
+//sqrt
+#define FPU_FSQRT				0x06
+
+//sign injection
+#define FPU_FSGNJ				0x07
+
+//sign neg injection
+#define FPU_FSGNJN				0x08
+
+//sign xor injection
+#define FPU_FSGNJX				0x09
+
+//min
+#define FPU_FMIN				0x0a
+//max
+#define FPU_FMAX				0x0b
+//convert to signed int
+#define FPU_FCVI				0x0c
+
+//convert to unsigned int
+#define FPU_FCVU				0x0d
+
+//convert from int
+#define FPU_ICVF				0x0e
+
+//convert from unsigned int
+#define FPU_UCVF				0x0f
+
+//move float to interger file
+#define FPU_FMVI				0x10
+//move int to float file
+#define FPU_IMVF				0x11
+//float equal
+#define FPU_FEQ					0x12
+//float less than
+#define FPU_FLT					0x13
+//float less than equal
+#define FPU_FLE					0x14
+//float cclassify
+#define FPU_FCLASS				0x15
+//float cosine
+#define FPU_FCOS				0x17
+
+#define FPU_FSIN				0x18
+
+//double add
+#define FPU_DADD				0x19
+
+#define FPU_DSUB				0x20
+
+#define FPU_DMADD				0x21
+
+//multiply sub (lane1 * lane2 - lane3)
+#define FPU_DMSUB				0x22
+
+//multiply	(lane1 * lane2)
+#define FPU_DMUL				0x23
+
+//deiv
+#define FPU_DDIV				0x24
+
+//sqrt
+#define FPU_DSQRT				0x25
+
+//sign injection
+#define FPU_DSGNJ				0x26
+
+//sign neg injection
+#define FPU_DSGNJN				0x27
+
+//sign xor injection
+#define FPU_DSGNJX				0x28
+
+//min
+#define FPU_DMIN				0x29
+//max
+#define FPU_DMAX				0x2a
+//convert to signed int
+#define FPU_DCVI				0x2b
+
+//convert to unsigned int
+#define FPU_DCVU				0x2c
+
+//convert from int
+#define FPU_DCVF				0x2d
+
+//convert from unsigned int
+#define FPU_UCVD				0x2e
+
+//move float to interger file
+#define FPU_DMVI				0x2f
+//move int to float file
+#define FPU_IMVD				0x30
+//float equal
+#define FPU_DEQ					0x31
+//float less than
+#define FPU_DLT					0x32
+//float less than equal
+#define FPU_DLE					0x33
+//float cclassify
+#define FPU_DCLASS				0x34
+//float cosine
+#define FPU_DCOS				0x35
+
+#define FPU_DSIN				0x36
+
 
 //TODO
 

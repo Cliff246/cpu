@@ -269,22 +269,21 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 	size_t table_iter = 0;
 	bool failed = false;
 
-
 	for(int fi = 0; fi < mod->size; ++fi)
 	{
 		modfrag_t *frag;
 		frag = &mod->fragments[mod->emit_order[fi]];
-		//printf("emit order %d\n", mod->emit_order[fi]);
+		printf("emit order %d\n", mod->emit_order[fi]);
 		scope_t *scope = get_scope_from_ref(ll, frag->ref);
 		//printf("%s\n", get_filename_from_id(scope->segment.fid));
 
 		//printf("run\n");
 		for(int si = 0; si < scope->entries.count; ++si)
 		{
-			//printf("enty %d %d\n", si, scope->entries.count);
+			printf("enty %d %d\n", si, scope->entries.count);
 			entry_t *entry = scope->entries.entries[si];
 
-			if(imm_iter % 128 == 0)
+			if(inst_iter % 128 == 0)
 			{
 				table[table_iter++] = imm_iter;
 			}
@@ -456,7 +455,7 @@ segout_t create_segout(linker_t *ll, region_t *region)
 {
 
 	segout_t out = {0};
-	//printf("output %d\n", region->mod->type);
+	printf("output %d\n", region->mod->type);
 	switch(region->mod->type)
 	{
 		case MODULE_CODE:
@@ -620,7 +619,6 @@ void print_over_fragment(linker_t *lk, modfrag_t *frag)
 		entry_t *entry = scope->entries.entries[ei];
 		print_entry(entry);
 	}
-
 }
 
 
@@ -631,9 +629,9 @@ void print_over_module(linker_t *lk, module_t *mod)
 	//module iter
 	for(int mi = 0; mi < mod->size; mi++)
 	{
+
 		modfrag_t *frag = &mod->fragments[mod->emit_order[mi]];
 		print_over_fragment(lk, frag);
-
 	}
 }
 
@@ -644,6 +642,7 @@ void print_over_outorder(linker_t *lk, outorder_t *oo)
 	//ri = region iterator
 	for(int ri = 0; ri < oo->count; ++ri)
 	{
+
 		region_t *region = oo->regions[ri];
 
 		print_over_module(lk, region->mod);

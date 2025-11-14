@@ -8,15 +8,6 @@
 #include "parser.h"
 #include "entry.h"
 
-typedef enum access_modifier
-{
-	ACCESS_INVAL,
-	ACCESS_PUBLIC,
-	ACESSS_PRIVATE,
-
-
-}refmod_t;
-
 #define REFERENCE_STRING_SIZE 100
 
 typedef struct reference
@@ -37,17 +28,18 @@ typedef struct reference
 	uint64_t locale_offset;
 	uint64_t fragment_offset;
 	uint64_t absolute_offset;
-
 	uint64_t resolved_address;
 
 	//public or
-	refmod_t access_modifier;
 	parse_node_t *head;
 	//
 
 	//
 	bool resolved;
 	bool implemented;
+	bool has_error;
+
+
 }ref_t;
 
 parse_node_t *get_arguments_under_reference(ref_t *ref);

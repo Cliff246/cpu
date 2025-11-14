@@ -65,7 +65,7 @@ inst_t decode_inst(uint32_t instr)
 uint32_t encode_inst(inst_t *inst)
 {
 
-	return ((inst->path << 29) | (inst->subpath << 22) | (inst->rs1 << 16) | (inst->rs2 << 10) | (inst->rs3 << 4) | (inst->accflag << 3) | ((inst->selflag << 2)) | ((inst->realocflag << 1) & 0x1) | inst->immflag);
+	return ((inst->path << 29) | (inst->subpath << 22) | (inst->rs1 << 16) | (inst->rs2 << 10) | (inst->rs3 << 4) | (inst->accflag << 3) | ((inst->selflag << 2)) | ((inst->realocflag << 1)) | inst->immflag);
 }
 
 
@@ -146,7 +146,7 @@ int fill_instruction_start(parse_node_t *node, inst_t *inst)
 	}
 
 
-	printf("<%s>\n",node->children[offset]->tok->lexeme);
+	//printf("<%s>\n",node->children[offset]->tok->lexeme);
 
 	int rd = get_register(node->children[offset]->tok->lexeme);
 	if(rd == -1)
@@ -158,7 +158,7 @@ int fill_instruction_start(parse_node_t *node, inst_t *inst)
 	}
 	offset++;
 
-	printf("<%s>\n",node->children[offset]->tok->lexeme);
+	//printf("<%s>\n",node->children[offset]->tok->lexeme);
 	int rs1 = get_register(node->children[offset]->tok->lexeme);
 	if(rs1 == -1)
 	{
@@ -171,7 +171,7 @@ int fill_instruction_start(parse_node_t *node, inst_t *inst)
 
 
 	offset++;
-	printf("<%s>\n",node->children[offset]->tok->lexeme);
+	//printf("<%s>\n",node->children[offset]->tok->lexeme);
 
 
 	char *rs2_str = node->children[offset]->tok->lexeme;
@@ -198,8 +198,8 @@ int fill_instruction_start(parse_node_t *node, inst_t *inst)
 	}
 	offset++;
 	inst->rs1 = rd;
-	inst->rs1 = rs1;
-	inst->rs2 = rs2;
+	inst->rs2 = rs1;
+	inst->rs3 = rs2;
 	return offset;
 }
 
@@ -228,8 +228,9 @@ void inst_imm(parse_node_t *node, inst_t *inst, int offset)
 
 	number_type_t type = get_number_type(final);
 	uint64_t imm = 0;
-	printf("final: %s %d\n", final, type);
-
+	//printf("final: %s %d\n", final, type);
+	inst->realocflag = 0;
+	inst->immflag = 1;
 	if(type != NUM_NONE)
 	{
 		if(type == NUM_INT)
@@ -248,9 +249,14 @@ void inst_imm(parse_node_t *node, inst_t *inst, int offset)
 		inst->imm.ilit.lit = imm;
 		inst->imm.ilit.lit_type = INST_LIT_UNSET;
 	}
+	else if(!strcmp(final, "acc"))
+	{
+		inst->imm_type = INSTIMM_NONE,
+		inst->immflag = 0;
+		inst->realocflag = 1;
+	}
 	else
 	{
-		//printf("%s\n", final);
 
 		if(final[0] == '@')
 		{
@@ -283,8 +289,7 @@ void inst_imm(parse_node_t *node, inst_t *inst, int offset)
 	}
 
 	//printf("%s %d\n", final, imm);
-	inst->realocflag = 0;
-	inst->immflag = 1;
+
 }
 
 
@@ -300,14 +305,14 @@ inst_t create_instruction(parse_node_t *node)
 	int offset = fill_instruction_start(node, &inst);
 	if(offset < node->child_count)
 	{
-		printf("instruction imm %d child %d\n", offset, node->child_count);
+		//printf("instruction imm %d child %d\n", offset, node->child_count);
 
 		inst_imm(node, &inst, offset);
 
 	}
 	else
 	{
-		printf("instruction no imm %d child %d\n", offset, node->child_count);
+		//printf("instruction no imm %d child %d\n", offset, node->child_count);
 
 		inst_no_imm(node, &inst, offset);
 

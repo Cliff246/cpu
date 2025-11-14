@@ -123,7 +123,7 @@ void fetch_cpu(void)
 	uint64_t ipc = get_ipc();
 	//printf("FETCH pc=%lu ipc=%lu mem[pc]=0x%08x\n", get_pc(), get_ipc(), get_inst_at_pc_address(get_pc()));
 	//printf("FETCH: sp=%d sfp=%d\n", get_sp(), get_sfp());
-	assert(pc <= get_pc_len() * 2);
+	assert(pc  <= (get_pc_len() * 2));
 	assert(ipc <= get_ipc_len());
 #if DEBUG_MODE == 1
 	// printf("fpc: %llu fipc: %llu\n", get_pc(), get_ipc());
@@ -152,24 +152,52 @@ void decode_cpu(void)
 void execute_cpu(void)
 {
 	inst_t inst = get_inst_from_op(&CCPU(op));
-	int64_t rs1_n = inst.rs1, rs2_n = inst.rs2;
-	int64_t rs1_d = get_reg(rs1_n);
-	int64_t rs2_d =  get_reg(rs2_n);
 
-	int64_t imm = CCPU(op).imm.imm;
 
-	if(inst.selflag)
+	int64_t rs1_n = inst.rs1, rs2_n = inst.rs2, rs3_n = inst.rs3;
+	uint64_t imm = (inst.immflag)? CCPU(op).imm.imm : 0;
+
+	if(inst.immflag == 0 && inst.reallocflag == 1)
 	{
-		rs2_d = rs2_n;
+
+		imm = get_reg(REG_ACC);
 	}
+
+	//print_inst(&inst);
+	int64_t rs1_d = (inst.accflag)? get_reg(rs1_n) : 0;
+	int64_t rs2_d = get_reg(rs2_n);
+	int64_t rs3_d = (inst.selflag)? rs3_n : get_reg(rs3_n);
+
+	int64_t lane1;
+	int64_t lane2;
+	int64_t lane3;
+
+	if(inst.accflag)
+	{
+		lane1 = rs1_d;
+		lane2 = rs2_d;
+		lane3 = rs3_d + imm;
+
+	}
+	else
+	{
+		lane1 = rs2_d;
+		lane2 = rs3_d;
+		lane3 = imm;
+	}
+
+	//printf("[accflag %d] [%d]=%lld [%d]=%lld [%d]=%lld\n",inst.accflag, rs1_n, lane1, rs2_n, lane2, rs3_n, lane3);
+
+
 	if (inst.path == PATH_ALU)
 	{
+
 
 
 		//printf("%lld %lld \n", rs1_d, rs2_d);
 
 
-		alu_submit(components.alu, inst.subpath, rs1_d, rs2_d, imm, inst.immflag);
+		alu_submit(components.alu, inst.subpath, lane1, lane2, lane3, inst.immflag);
 		alu_step(components.alu);
 		CCPU(co) = components.alu->regdest;
 		//printf("dest %lld\n",  components.alu->regdest);
@@ -183,11 +211,11 @@ void execute_cpu(void)
 	else if (inst.path == PATH_JMP)
 	{
 
-		jump_submit(components.cpu, inst.subpath, 0, rs1_d, rs2_d, imm, inst.immflag);
+		jump_submit(components.cpu, inst.subpath, lane1, lane2, lane3, inst.immflag);
 	}
 	else if (inst.path == PATH_MEM)
 	{
-		memory_submit(components.cpu, inst.subpath, rs1_d, rs2_d, imm, inst.immflag);
+		memory_submit(components.cpu, inst.subpath, lane1, lane2, lane3, inst.immflag);
 	}
 }
 
@@ -201,7 +229,19 @@ void writeback_cpu(void)
 
 	inst_t inst = CCPU(op).inst.inst;
 
-	set_reg(inst.rd, CCPU(co));
+
+	if(inst.accflag)
+	{
+		//printf("%d\n", REG_ACC);
+
+		set_reg(REG_ACC, CCPU(co));
+	}
+	else
+	{
+		//printf("%d\n", inst.rs1);
+		set_reg(inst.rs1, CCPU(co));
+	}
+
 	if (!CCPU(has_jumped))
 	{
 		inc_pc(1);
@@ -216,13 +256,12 @@ inst_t decode_inst(int32_t instr)
 	inst_t in = {0};
 	in.path = (instr >> 29) & 0x3f;
 	in.subpath = (instr >> 22) & 0x7F;
-	in.rd = (instr >> 16) & 0x3F;
-	in.rs1 = (instr >> 10) & 0x3F;
+	in.rs1 = (instr >> 16) & 0x3F;
+	in.rs2 = (instr >> 10) & 0x3F;
 
-	in.rs2 = (instr >> 4) & 0x3F;
+	in.rs3 = (instr >> 4) & 0x3F;
 	in.accflag = (instr >> 3) & 0x01;
 	in.selflag = (instr >> 2) & 0x01;
-
 	in.reallocflag = (instr >> 1) & 0x01;
 	in.immflag = instr & 0x1;
 	return in;
@@ -231,20 +270,14 @@ inst_t decode_inst(int32_t instr)
 int32_t encode_inst(inst_t *inst)
 {
 
-	return ((inst->path << 28) | (inst->subpath << 21) | (inst->rd << 15) | (inst->rs1 << 9) | (inst->rs2 << 3) | (inst->selflag << 2) | (inst->reallocflag << 1) | inst->immflag);
+	return ((inst->path << 29) | (inst->subpath << 22) | (inst->rs1 << 16) | (inst->rs1 << 10) | (inst->rs2 << 4) | (inst->accflag << 3) | (inst->selflag << 2) | (inst->reallocflag << 1) | inst->immflag);
 }
 
-uint64_t encode(uint64_t path, uint64_t subpath, uint64_t rd, uint64_t rs1, uint64_t rs2, uint64_t aux, uint64_t immf)
-{
-	uint64_t inst = ((path & 0xF) << 28) | ((subpath & 0x7F) << 21) | ((rd & 0x3f) << 15) | ((rs1 & 0x3f) << 9) | ((rs2 & 0x3f) << 3) | ((aux & 0xf) << 1) | (immf);
-	// print_bin(inst, 32, 1);
-	return inst;
-}
 
 void print_inst(inst_t *inst)
 {
 	inst_t op = *inst;
-	printf("p: %d: sp: %d, rd: %d, rs1: %d, rs2: %d,accflag selflag: %d, reallocflag: %d, f: %d\n", op.path, op.subpath, op.rd, op.rs1, op.rs2,op.accflag, op.selflag, op.reallocflag, op.immflag);
+	printf("p: %d: sp: %d, rd: %d, rs1: %d, rs2: %d,accflag %d, selflag: %d, reallocflag: %d, f: %d\n", op.path, op.subpath, op.rs1, op.rs2, op.rs3,op.accflag, op.selflag, op.reallocflag, op.immflag);
 }
 
 void init_components(void)

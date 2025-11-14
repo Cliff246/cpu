@@ -54,7 +54,7 @@ void parse_assembler_args(asmtarget_t *target)
 		{
 			if(i + 1 < argc)
 			{
-				set_output_file(target, argv[i]);
+				set_output_file(target, argv[++i]);
 			}
 			else
 			{

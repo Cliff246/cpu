@@ -62,14 +62,14 @@ char subpath_codes[16][0xff][PATH_STR_SIZE] =
 	},
 	[PATH_MEM] =
 	{
-		[MEM_LD  ]= "ld",
-		[MEM_SD  ]=	"sd",
+		[MEM_LDI ]= "ld",
+		[MEM_STS ]=	"st",
 		[MEM_PUSH]=	"push",
 		[MEM_POP ]=	"pop",
 		[MEM_SP  ]=	"sp",
 		[MEM_SFP ]=	"sfp",
 		[MEM_LDS ]=	"lds",
-		[MEM_SDS ]=	"sds",
+		[MEM_STS ]=	"sts",
 		[MEM_INCSP]="isp",
 		[MEM_DECSP]="dsp",
 
@@ -174,11 +174,11 @@ char *operation_to_text_static_buffer(operation_t *op)
 	char subpathbuf[PATH_STR_SIZE] = {0};
 	subpath_to_string(subpathbuf, inst.path, inst.subpath);
 	char rdbuf[REG_STR_SIZE] = {0};
-	register_to_string(rdbuf, inst.rd, 0);
+	register_to_string(rdbuf, inst.rs1, 0);
 	char rs1buf[REG_STR_SIZE] = {0};
-	register_to_string(rs1buf, inst.rs1, 0);
+	register_to_string(rs1buf, inst.rs2, 0);
 	char rs2buf[REG_STR_SIZE] = {0};
-	register_to_string(rs2buf, inst.rs2, inst.selflag);
+	register_to_string(rs2buf, inst.rs3, inst.selflag);
 	char static_accflag[2][2] = {
 		[0] = "",
 		[1] = "!"

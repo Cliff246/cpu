@@ -75,12 +75,14 @@ int main(int argc, char *argv[])
 		set_outorder_positions(oo, buffer, oo->count);
 		resolve_positions(oo);
 		fix_addresses(lk, oo);
-		print_over_outorder(lk, oo);
-
+		//print_over_outorder(lk, oo);
 		segout_t outs[oo->count];
 		for(int ri = 0; ri < oo->count; ++ri)
 		{
+			printf("done\n");
+
 			outs[ri] = create_segout(lk, oo->regions[ri]);
+
 		}
 		output_t *out =  combine_segouts(outs, oo->count);
 		write_out(out, target.output_file);

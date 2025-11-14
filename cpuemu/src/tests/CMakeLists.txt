@@ -1,6 +1,7 @@
 
 set(WCPU_TESTS ${WCPU_TESTS}
-	${CMAKE_CURRENT_SOURCE_DIR}/tests_entry.c
+	${CMAKE_CURRENT_SOURCE_DIR}/tests.c
+	${CMAKE_CURRENT_SOURCE_DIR}/testrunner.c
 )
 
 
@@ -11,8 +12,13 @@ add_executable(wcpu_tests ${WCPU_TESTS})
 target_link_libraries(wcpu_tests
 	wcpu_lib
 )
+include_directories(wcpu_tests
+	${CMAKE_CURRENT_SOURCE_DIR}/inc
+)
+
 
 target_include_directories(wcpu_tests PRIVATE
+
 	wcpu_lib
 )
 

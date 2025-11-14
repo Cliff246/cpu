@@ -46,16 +46,15 @@ PARTITION_WHILE_1:
 	;i += 1
 	alu.add t1, t1, #1
 	;get the offsets
-
 	alu.add t8, t1, g0
 	alu.add t9, t2, g0
 	;swap the two
-	mem.ld t5, t8, zero
+	mem.ld t5, t1, g0
 
-	mem.ld t6, t9, zero
+	mem.ld t6, t2, g0
 
-	mem.sd null, t5, t9
-	mem.sd null, t6, t8
+	mem.sd! t5, t2, g0
+	mem.sd! t6, t1, g0
 
 PARTITION_END:
 	alu.add t2, t2, #1
