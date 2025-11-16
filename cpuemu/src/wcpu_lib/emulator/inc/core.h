@@ -145,7 +145,7 @@ typedef struct
 	int64_t co;
 
 	bookmark_t bookmarks[BOOKMARKS_MAX];
-
+	bool stop;
 } weirdo_cpu_t, cpu_t;
 
 

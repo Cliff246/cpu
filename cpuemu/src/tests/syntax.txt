@@ -1,0 +1,18 @@
+
+
+
+verb:
+//get
+//is
+//
+noun:
+//register
+//memory
+//program
+
+adjective:
+//10
+//100
+//400
+
+verb noun

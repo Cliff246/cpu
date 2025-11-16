@@ -1,4 +1,4 @@
-.text a
+.text 
 run:
 	jmp.jmp x0, x0, x0, @open
 	alu.div zero, x0, x0

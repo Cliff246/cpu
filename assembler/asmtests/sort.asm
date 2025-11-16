@@ -54,8 +54,8 @@ PARTITION_WHILE_1:
 
 	mem.ld t6, t9, zero
 
-	mem.sd null, t5, t9
-	mem.sd null, t6, t8
+	mem.st null, t5, t9
+	mem.st null, t6, t8
 
 PARTITION_END:
 	alu.add t2, t2, #1
@@ -73,8 +73,8 @@ PARTITION_END:
 	mem.ld t11, t13, zero
 
 
-	mem.sd null, t10, t13
-	mem.sd null, t11, t12
+	mem.st null, t10, t13
+	mem.st null, t11, t12
 	;set g0
 	alu.add g1, t1, zero
 

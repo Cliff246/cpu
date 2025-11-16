@@ -63,7 +63,7 @@ char subpath_codes[16][0xff][PATH_STR_SIZE] =
 	[PATH_MEM] =
 	{
 		[MEM_LDI ]= "ld",
-		[MEM_STS ]=	"st",
+		[MEM_STI ]=	"st",
 		[MEM_PUSH]=	"push",
 		[MEM_POP ]=	"pop",
 		[MEM_SP  ]=	"sp",
@@ -88,7 +88,7 @@ char subpath_codes[16][0xff][PATH_STR_SIZE] =
 	},
 	[PATH_SYS] =
 	{
-
+		[SYS_BREAK] = "break",
 	},
 	[PATH_FPU] =
 	{

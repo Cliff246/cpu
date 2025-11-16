@@ -127,24 +127,69 @@ char *get_error_type_str(error_type_t code)
 	return buffer;
 }
 
+
+static void print_errelm_inval(errelm_t *err)
+{
+	fprintf(stderr, "unknown element_type\n");
+}
+
+static void print_errelm_file(errelm_t *err)
+{
+	errelm_file_t file = err->elem.file;
+	fprintf(stderr, "file name: %s\n", file.name);
+}
+
+static void print_errelm_line(errelm_t *err)
+{
+	errelm_line_t line = err->elem.line;
+	fprintf(stderr,"line:%d col: %d\n", line.line, line.column);
+}
+
+static void print_errelm_token(errelm_t *err)
+{
+	errelm_token_t errtok = err->elem.token;
+	tok_t *tok = errtok.token;
+	print_token(tok);
+}
+
+static void print_errelm_string(errelm_t *err)
+{
+
+}
+
+typedef void (*print_errelm_fn)(errelm_t *);
+
+print_errelm_fn errelm_fn_print_ary[] =
+{
+	[ERRELM_INVAL] = print_errelm_inval,
+	[ERRELM_FILE] = print_errelm_file,
+	[ERRELM_LINE] = print_errelm_line,
+	[ERRELM_TOKEN] = print_errelm_token,
+	[ERRELM_STRING] = print_errelm_string,
+};
+
+
 void error_element_printer(errelm_t *elm)
 {
 	fprintf(stderr, "\t");
-	switch(elm->type)
-	{
 
-		case ERRELM_FILE:
-			errelm_file_t file = elm->elem.file;
-			fprintf(stderr,"file name: %s\n", file.name);
-			break;
-		case ERRELM_LINE:
-		 	errelm_line_t line =  elm->elem.line;
-			fprintf(stderr,"line:%d col: %d\n", line.line, line.column);
-			break;
-		default:
-			fprintf(stderr, "unknown element_type\n");
-			break;
+	if(elm->type >= ARYSIZE(errelm_fn_print_ary))
+	{
+		print_errelm_inval(elm);
+		return;
 	}
+
+
+	print_errelm_fn func = errelm_fn_print_ary[elm->type];
+
+
+	if(func == NULL)
+	{
+		print_errelm_inval(elm);
+	}
+
+	func(elm);
+
 }
 
 

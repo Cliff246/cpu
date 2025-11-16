@@ -280,7 +280,6 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 		//printf("run\n");
 		for(int si = 0; si < scope->entries.count; ++si)
 		{
-			printf("enty %d %d\n", si, scope->entries.count);
 			entry_t *entry = scope->entries.entries[si];
 
 			if(inst_iter % 128 == 0)
@@ -295,7 +294,7 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 			}
 			inst_t *instruction = &entry->entry.inst;
 			//printf("content %s\n", entry->node->tok->lexeme);
-			//print_inst(instruction);
+			print_inst(instruction);
 
 			if(instruction->immflag )
 			{
@@ -305,11 +304,16 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 				{
 					//should do local and global conversion here
 					char *tempref = instruction->imm.iref.ref;
+
+					if(tempref == NULL)
+					{
+						printf("temp ref null \n");
+					}
+
 					symbol_t *sym = resolve_symbol(tempref, ll, frag);
 
 					if(!sym)
 					{
-
 						errelm_line_t line = {.column = entry->node->tok->locale.col, .line = entry->node->tok->locale.row};
 						errelm_file_t file = {.name = get_path_from_identifier(entry->node->tok->locale.file)};
 						char buffer[1025] = {0};
@@ -317,7 +321,6 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 
 						errelm_t elmline = errelm_create_line_element(line);
 						errelm_t elmfile =  errelm_create_file_element(file);
-						//printf("emit stage\n");
 						emit_error(KEY_ERROR, buffer, 2, elmfile, elmline);
 						//printf("emit stage2\n");
 

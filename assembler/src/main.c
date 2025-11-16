@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
 	errno = 0;
 
 	generate_target(argc, argv);
+	printf("load context\n");
 
 
 	for(int filldesc = 0; filldesc < target.inputs_count; ++filldesc)
@@ -46,8 +47,10 @@ int main(int argc, char *argv[])
 		linker_t *lk = create_linker();
 		for(int i = 0; i < target.inputs_count; ++i)
 		{
+
 			contexts[i] = load_context(get_fdesc(i));
 			context_resolve(contexts[i]);
+
 			add_context_to_linker(lk, contexts[i]);
 		}
 
@@ -60,7 +63,7 @@ int main(int argc, char *argv[])
 		print_globals(lk);
 		//printf("%s\n", get_filename_from_context(contexts[0]));
 		build_module_stack(lk);
-		printf("build modules\n");
+		//printf("build modules\n");
 		outorder_t *oo = create_outorder(lk);
 
 		int buffer[100] = {0};

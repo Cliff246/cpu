@@ -138,7 +138,12 @@ void step_handler(void)
 
 	}
 
-
+	if(components.cpu->stop == true)
+	{
+		globalstate.running = false;
+		globalstate.runfor = 0;
+		components.cpu->stop = false;
+	}
 
 }
 

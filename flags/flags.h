@@ -262,9 +262,7 @@
 
 #define SYS_HALT				0xa0
 
-#define SYS
-
-#define SYS_STRIKE				0xa1
+#define SYS_STRIKE				0xa2
 
 //FPU
 //add

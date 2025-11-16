@@ -174,7 +174,7 @@ void context_resolve(context_t *ctx)
 				escape(1);
 			}
 			apply_directive(ctx, dir);
-			LOG("directive %s\n", dir->head->tok->lexeme);
+			//LOG("directive %s\n", dir->head->tok->lexeme);
 
 
 		}

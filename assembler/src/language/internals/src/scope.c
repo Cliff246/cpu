@@ -67,7 +67,6 @@ void add_symbol_to_scope(scope_t *scope, symbol_t *sym)
 	//printf("add reference\n");
 	if(scope->symbols.alloc == 0)
 	{
-
 		scope->symbols.symbols = CALLOC((scope->symbols.alloc = 100), symbol_t *);
 	}
 	else if(scope->symbols.alloc <= scope->symbols.count)
@@ -126,6 +125,42 @@ scope_t create_scope(parse_node_t *head)
 	parse_node_t *seg_node = head->children[1];
 
 	scope.segment = create_segment(arg_node);
+
+	if(scope.segment.has_ref >= 0)
+	{
+
+		if(scope.segment.has_ref < SEGMENT_MAX_ARGUMENTS)
+		{
+			seg_arg_t *arg = &scope.segment.args[scope.segment.has_ref];
+			if(arg->used == true)
+			{
+				ref_t *ref = create_reference((char *)arg->arg);
+
+				int row = get_token_row(head->tok), col = get_token_col(head->tok), fid = get_token_file(head->tok), sid = scope.segment.sid;
+
+				implement_reference_manually(ref, fid, sid, row, col);
+				ref->byte_offset = 0;
+				ref->locale_offset = 0;
+
+				symbol_t *sym = create_symbol_with_ref(ref);
+				add_symbol_to_scope(&scope, sym);
+			}
+			else
+			{
+				LOG("scope segment arguments is over the maximum arguments %s %s\n", get_token_lexme(head->tok) ,get_filename_from_id(get_token_file(head->tok)));
+				escape(1);
+			}
+		}
+		else
+		{
+				LOG("scope segment has reference is out of range %s %s\n", get_token_lexme(head->tok) ,get_filename_from_id(get_token_file(head->tok)));
+				escape(1);
+
+		}
+
+	}
+
+
 
 
 	for(int i = 0; i < seg_node->child_count; ++i)

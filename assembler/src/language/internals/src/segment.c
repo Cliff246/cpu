@@ -126,7 +126,10 @@ static void generate_argument_data(seg_t *seg)
 {
 
 	bool tag_state = false;
+	bool ref_state = false;
 	bool at_state = false;
+
+
 	for(int i = 0; i < SEGMENT_MAX_ARGUMENTS; ++i)
 	{
 		seg_arg_t *arg = &seg->args[i];
@@ -140,11 +143,17 @@ static void generate_argument_data(seg_t *seg)
 			seg->state_tag = true;
 			seg->tag = assiociate_tag(arg->arg);
 			tag_state = false;
-
+			arg->used = true;
 		}
 		else if(at_state)
 		{
 
+		}
+		else if(ref_state)
+		{
+			seg->has_ref = i;
+			arg->used = true;
+			ref_state = false;
 		}
 
 		// segment tag
@@ -163,6 +172,10 @@ static void generate_argument_data(seg_t *seg)
 			//LOG("Start state set\n", 0);
 			seg->start_state = true;
 		}
+		else if(!strcmp(arg->arg, "ref"))
+		{
+			ref_state = true;
+		}
 		else
 		{
 			tag_state = false;
@@ -180,6 +193,7 @@ seg_t create_segment(parse_node_t *head)
 	init_tag_store();
 	static int segid = 0;
 	seg_t segment = {0};
+	segment.has_ref = -1;
 	segment.sid = segid;
 
 	if(segid >= MAX_SEGID)
@@ -209,7 +223,7 @@ seg_t create_segment(parse_node_t *head)
 	//
 	segment.segtype = get_seg_type(head->tok->lexeme);
 	segment.fid = head->tok->locale.file;
-	LOG("seg type %d\n", segment.segtype, 0);
+	//LOG("seg type %d\n", segment.segtype, 0);
 	segment_ids_to_tag[segid++] = segment.tag;
 	return segment;
 }

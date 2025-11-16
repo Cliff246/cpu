@@ -25,6 +25,10 @@ typedef enum error_element_type
 	ERRELM_FILE,
 	ERRELM_LINE,
 	ERRELM_TOKEN,
+	ERRELM_STRING,
+
+
+
 }error_element_type_t;
 
 
@@ -39,7 +43,10 @@ typedef struct errelm_line
 	size_t column;
 }errelm_line_t;
 
-
+typedef struct errelm_string
+{
+	char *string;
+}errelm_string_t;
 
 typedef struct errelm_token
 {
@@ -55,6 +62,7 @@ typedef struct error_element
 		errelm_file_t file;
 		errelm_line_t line;
 		errelm_token_t token;
+		errelm_string_t string;
 	}elem;
 }errelm_t;
 

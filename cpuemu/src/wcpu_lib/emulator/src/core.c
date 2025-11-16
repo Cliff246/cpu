@@ -186,7 +186,7 @@ void execute_cpu(void)
 		lane3 = imm;
 	}
 
-	//printf("[accflag %d] [%d]=%lld [%d]=%lld [%d]=%lld\n",inst.accflag, rs1_n, lane1, rs2_n, lane2, rs3_n, lane3);
+	printf("[accflag %d] [%d]=%lld [%d]=%lld [%d]=%lld\n",inst.accflag, rs1_n, lane1, rs2_n, lane2, rs3_n, lane3);
 
 
 	if (inst.path == PATH_ALU)

@@ -49,5 +49,8 @@ parse_node_t *get_entries_under_reference(ref_t *ref);
 ref_t *create_reference(char *key);
 void print_ref(ref_t *ref);
 void implement_reference(ref_t *ref, parse_node_t *head);
+void implement_reference_manually(ref_t *ref, int fid, int sid, int row, int col);
+
+
 void free_reference(ref_t *ptr);
 #endif

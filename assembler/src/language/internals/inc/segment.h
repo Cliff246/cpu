@@ -11,7 +11,7 @@
 #define MAX_TAGS 100
 extern int segment_ids_to_tag[MAX_SEGID];
 
-#define MAX_TAG_SIZE 10
+#define MAX_TAG_SIZE 20
 
 typedef struct tag_store
 {
@@ -44,7 +44,7 @@ typedef enum segment_type
 	ISEG_CODE,			//combined unified code blocks
 }seg_type_t;
 
-#define SEGMENT_ARUGMENT_STRING_SIZE 100
+#define SEGMENT_ARUGMENT_STRING_SIZE 30
 
 typedef struct segment_argument
 {
@@ -53,19 +53,24 @@ typedef struct segment_argument
 }seg_arg_t;
 
 
-#define SEGMENT_MAX_ARGUMENTS 5
+#define SEGMENT_MAX_ARGUMENTS 10
 
 typedef struct segment
 {
 	seg_type_t segtype;
+	seg_arg_t args[SEGMENT_MAX_ARGUMENTS];
+
 	int sid;
 	int fid;
-	seg_arg_t args[SEGMENT_MAX_ARGUMENTS];
+	int has_ref;
+	int tag;
 	bool state_refat;
 	//todo do ref at
 	bool state_tag;
 	bool start_state;
-	int tag;
+
+
+
 
 }seg_t;
 

@@ -46,7 +46,12 @@ typedef struct
 void free_token(tok_t *ptr);
 lexer_ctx_t *create_token_stream(char *src, size_t file_id);
 void print_token(tok_t *tok);
+
+char *get_tok_type_string(tok_type_t type);
+char *printable_tok(tok_t *tok);
+
 int get_token_row(tok_t *tok);
 int get_token_file(tok_t *tok);
 int get_token_col(tok_t *tok);
+char *get_token_lexme(tok_t *tok);
 #endif

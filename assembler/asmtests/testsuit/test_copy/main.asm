@@ -1,6 +1,6 @@
 
 
-%imp "copy.asm"
+%imp "asmtests/testsuit/test_copy/copy.asm"
 %order std dat
 %def COPY
 

@@ -61,9 +61,9 @@
  55 | x55  | tix, t15  | Temporary iterator x
  56 | x56  | tiy, t16  | Temporary iterator y
  57 | x57  | tiz, t17  | Temporary iterator z
- 58 | x58  | t18   | Temporary 18 \ (simply predefined name does nothing unique)
- 59 | x59  | t19   | Temporary 19  \ (simply predefined name does nothing unique)
+ 58 | x58  | t18   | Temporary 182
+ 59 | x59  | t19   | Temporary 19
  60 | x60  | t20   | Temporary 20
  61 | x61  | t21   | Temporary 21
  62 | x62  | t22   |   Temporary 22
- 63 | x63  | acc   | return pointer
+ 63 | x63  | acc   | acc

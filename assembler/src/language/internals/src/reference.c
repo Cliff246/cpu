@@ -34,27 +34,31 @@ void print_ref(ref_t *ref)
 ref_t *create_reference( char *key)
 {
 	ref_t *ref = CALLOC(1, ref_t);
+	ref->sid = -1;
+	ref->row = -1;
+	ref->col = -1;
+	ref->fid = -1;
+	ref->implemented = false;
+	ref->resolved = false;
+	ref->resolved_address = 0;
+	ref->has_error = false;
 
 
 	if(valid_name(key))
 	{
+
+		//return valid refernece if key is not acc
 		if(strcmp(key, "acc"))
 		{
 			strncpy(ref->ref_string, key, REFERENCE_STRING_SIZE);
-			ref->resolved = false;
-			ref->implemented = false;
-			ref->resolved_address = 0;
-			ref->has_error = false;
 
 			return ref;
 		}
-
-
-
 	}
-	ref->resolved = false;
-	ref->implemented = false;
-	ref->resolved_address = 0;
+
+
+
+
 	ref->has_error = true;
 	return ref;
 
@@ -77,6 +81,11 @@ parse_node_t *get_entries_under_reference(ref_t *ref)
 
 void implement_reference(ref_t *ref, parse_node_t *head)
 {
+	if(ref->implemented == true)
+	{
+		LOG("already implemented key %s\n", ref->ref_string);
+		return;
+	}
 	if(head->child_count != 2)
 	{
 		printf("references should implement two children implmeneted %s\n", head->child_count);
@@ -88,17 +97,34 @@ void implement_reference(ref_t *ref, parse_node_t *head)
 		create_ref_error(head->tok, head->tok->lexeme);
 
 	}
-
-	ref->row = head->tok->locale.row;
-	ref->col = head->tok->locale.col;
-	ref->fid = head->tok->locale.file;
+	ref->sid = -1;
+	ref->row = get_token_row(head->tok);
+	ref->col = get_token_col(head->tok);
+	ref->fid = get_token_file(head->tok);
 
 	ref->head = head;
-	ref->resolved = false;
 	ref->implemented = true;
+
+	ref->resolved = false;
 	ref->locale_offset = 0;
 	ref->resolved_address = 0;
 
 
 }
 
+void implement_reference_manually(ref_t *ref, int fid, int sid, int row, int col)
+{
+
+	if(ref->implemented == true)
+	{
+		LOG("already implemented key %s\n", ref->ref_string);
+		return;
+	}
+	ref->head = NULL;
+	ref->row = row;
+	ref->col = col;
+	ref->sid = sid;
+	ref->fid = fid;
+	ref->implemented = true;
+	ref->resolved = false;
+}

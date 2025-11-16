@@ -392,7 +392,75 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 
 	for(int i = 0; i < ctx->count; ++i)
 	{
-		//print_token(&ctx->toks[i]);
+		print_token(&ctx->toks[i]);
 	}
 	return ctx;
+}
+
+
+char *tok_type_strings[] =
+{
+	[TOK_INVAL] = "inval",
+	[TOK_TOKEN] = "token",
+	[TOK_IDENT] = "identation",
+	[TOK_NUMBER] = "number",
+	[TOK_STRING] = "string",
+	[TOK_SEGMENT] = "segment",
+	[TOK_REFERENCE] = "reference",
+	[TOK_COLON] = "colon",
+	[TOK_FOLLOWING] = "follows",
+	[TOK_PERCENT] = "percent",
+	[TOK_COMMA] = "comma",
+	[TOK_DOT] = "period/dot",
+	[TOK_SYMBOL] = "symbol",
+	[TOK_NEWLINE] = "newline",
+	[TOK_EOF] = "end of file",
+	[TOK_COMMENT] = "comment",
+	[TOK_EXCLAIM] = "exclamation mark",
+	[TOK_EMPTY] = "empty",
+};
+
+char *get_token_lexme(tok_t *tok)
+{
+	if(tok == NULL)
+		return NULL;
+	else
+	{
+		return tok->lexeme;
+	}
+}
+
+char *get_tok_type_string(tok_type_t type)
+{
+
+	if(type < ARYSIZE(tok_type_strings) && type >= 0)
+	{
+		return tok_type_strings[type];
+	}
+	else
+	{
+		return tok_type_strings[TOK_INVAL];
+	}
+}
+
+
+char *printable_tok(tok_t *tok)
+{
+	if(tok == NULL)
+		return NULL;
+	char *type = get_tok_type_string(tok->type);
+	char *lexme = get_token_lexme(tok);
+
+	const char fmt[] = "[type: %s, str: %s]";
+
+	size_t type_size = strlen(type);
+
+	size_t lexme_size = strlen(lexme);
+
+	size_t total_size = ARYSIZE(fmt) + type_size + lexme_size + 1;
+
+	char *printable = CALLOC(total_size, char);
+
+	sprintf(printable, (const char *)fmt, type, lexme);
+	return printable;
 }

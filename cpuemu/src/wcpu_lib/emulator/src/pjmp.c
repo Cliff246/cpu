@@ -198,50 +198,50 @@ void jump_return(cpu_t *cpu)
 }
 
 
-void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t rs1, int64_t rs2, int64_t imm, char immf)
+void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t lane1, int64_t lane2, int64_t lane3, char immf)
 {
 	//print_regs();
-
+	printf("subpath:%d l1:%d l2:%d l3:%d\n", subpath, lane1, lane2, lane3);
 	switch(subpath)
 	{
 		case JP_JMP:
 			//TODO revalute how this will be done
-			jump_to(cpu, rs1 + rs2 + imm);
+			jump_to(cpu, lane1 + lane2 + lane3);
 			break;
 		case JP_BEQ:
-			if(rs1 == rs2)
+			if(lane1 == lane2)
 			{
-				jump_to(cpu, imm);
+				jump_to(cpu, lane3);
 			}
 			break;
 		case JP_BNE:
-			if(rs1 != rs2)
+			if(lane1 != lane2)
 			{
-			 	jump_to(cpu, imm);
+			 	jump_to(cpu, lane3);
 
 			}
 			break;
 		case JP_BLT:
-			if((int64_t)rs1 < (int64_t)rs2)
+			if((int64_t)lane1 < (int64_t)lane2)
 			{
-				jump_to(cpu, imm);
-				//printf("branch less equals %d %d\n", rs1, rs2);
+				jump_to(cpu, lane3);
+				//printf("branch less equals %d %d\n", lane1, lane2);
 
 			}
 			break;
 		case JP_BLE:
-			if((int64_t)rs1 <= (int64_t)rs2)
+			if((int64_t)lane1 <= (int64_t)lane2)
 			{
-				jump_to(cpu, imm);
-				//printf("branch less than equals %d %d\n", rs1, rs2);
+				jump_to(cpu, lane3);
+				//printf("branch less than equals %d %d\n", lane1, lane2);
 			}
 			break;
 
 		case JP_CALL:
 			{
 
-				//TODO revaluate if rs1 + rs2 + imm should be done
-				jump_call(cpu, rs1 + rs2 + imm, immf);
+				//TODO revaluate if lane1 + lane2 + lane3 should be done
+				jump_call(cpu, lane1 + lane2 + lane3, immf);
 			}
 			break;
 		case JP_RET:
@@ -250,16 +250,16 @@ void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t rs1, int64_t rs2, int64_t
 			}
 			break;
 		case JP_BLEU:
-			if((uint64_t)rs1 <= (uint64_t)rs2)
+			if((uint64_t)lane1 <= (uint64_t)lane2)
 			{
-				jump_to(cpu, imm);
+				jump_to(cpu, lane3);
 			}
 			break;
 
 		case JP_BLTU:
-			if((uint64_t)rs1 < (uint64_t)rs2)
+			if((uint64_t)lane1 < (uint64_t)lane2)
 			{
-				jump_to(cpu, imm);
+				jump_to(cpu, lane3);
 			}
 			break;
 

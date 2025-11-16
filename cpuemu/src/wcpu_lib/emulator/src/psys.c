@@ -21,6 +21,9 @@ void system_submit(cpu_t *cpu)
 		case SYS_CALL_CD_PTR:
 			sys_call_cd_ptr(cpu, cpu->co);
 			break;
+		case SYS_BREAK:
+			cpu->stop = true;
+			break;
 	}
 }
 
@@ -29,7 +32,7 @@ void sys_set_cd_ptr(cpu_t *cpu, uint64_t rd)
 {
 
 	reg_file_t file = get_current_file(cpu);
-	
+
 	file.desc.cd_ptr = rd;
 	set_current_file(cpu, file);
 }

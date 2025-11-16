@@ -49,7 +49,7 @@ static modfrag_data_t module_data_resolve(scope_t *scope)
 	//TODO
 
 	uint64_t size = 0;
-	printf("module data resolve\n");
+	//printf("module data resolve\n");
 
 	for(int i = 0; i < scope->entries.count; ++i )
 	{
@@ -129,7 +129,7 @@ void append_scope_ref(struct linker *lk, module_t *mod, int ctx_id, int local_in
 	mf->ref.ctx_id = ctx_id;
 	mf->ref.locale_index = local_index;
 	module_type_t current =  segment_type_to_module_type(get_scope_from_ref(lk, mf->ref)->segment.segtype);
-
+	printf("%d\n", mod->type);
 	if(mod->type == MODULE_UNSET)
 	{
 		mod->type = current;

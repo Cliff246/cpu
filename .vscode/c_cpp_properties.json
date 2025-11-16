@@ -9,7 +9,8 @@
                 "${workspaceFolder}/assembler/src/language/frontend/inc",
                 "${workspaceFolder}/assembler/src/commons/src",
                 "${workspaceFolder}/cpuemu/src/wcpu_lib/inputs/inc",
-                "${workspaceFolder}/cpuemu/src/wcpu_lib/emulator/inc"
+                "${workspaceFolder}/cpuemu/src/wcpu_lib/emulator/inc",
+                "${workspaceFolder}/cpuemu/src/tests/inc"
             ],
             "defines": [
                 "_DEBUG",
