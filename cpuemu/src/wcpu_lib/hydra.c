@@ -74,6 +74,7 @@ bool step_head(cmd_t *cmd)
 
 bool exit_head(cmd_t *cmd)
 {
+	basic_export();
 	exit(0);
 }
 
@@ -198,22 +199,23 @@ bool run_head(cmd_t *cmd)
 	{
 
 		globalstate.runfor = 0;
-		globalstate.running = true;
+		set_flag(FLAG_RUNNING);
 	}
 	else if(first->type == TOK_END)
 	{
 		printf("step\n");
 		globalstate.runfor = 100;
-		globalstate.running = true;
+		set_flag(FLAG_RUNNING);
+
 	}
 	else
 	{
 
 		printf("runn\n");
 		char *str = first->token;
-
 		globalstate.runfor = atoi(str);
-		globalstate.running = true;
+		set_flag(FLAG_RUNNING);
+
 
 	}
 	return true;

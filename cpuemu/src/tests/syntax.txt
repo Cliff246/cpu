@@ -1,10 +1,11 @@
 
 
 
-verb:
-//get
-//is
-//
+
+get(X10) 10 == assert fails else
+
+
+
 noun:
 //register
 //memory

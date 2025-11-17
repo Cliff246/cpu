@@ -45,12 +45,11 @@ bool open_sourcefile(sourcefile_t *sf)
 	{
 		return false;
 	}
-
-
-	FILE *fp = fopen(sf->path, "rb");
+	FILE *fp = fopen(sf->path, "w");
 
 	if(fp == NULL || errno != 0)
 	{
+		perror("could not open file");
 		return false;
 	}
 	sf->file = fp;
@@ -173,10 +172,10 @@ char *read_sourcefile(sourcefile_t *sf, int length)
 	}
 }
 
-void write_sourcefile(sourcefile_t *sf, char *content, int start)
+void write_sourcefile(sourcefile_t *sf, char *content)
 {
 
-	if(!get_isopen_sourcefile(sf) || start < 0 || content == NULL)
+	if(!get_isopen_sourcefile(sf) || content == NULL)
 	{
 		perror("write with invalid paramaters");
 		return;
@@ -191,6 +190,25 @@ void write_sourcefile(sourcefile_t *sf, char *content, int start)
 	}
 
 	fwrite(content, sizeof(char), content_len, get_sourcefile_fp(sf));
+
+	sf->modified = true;
+}
+
+void add_newline_sourcefile(sourcefile_t *sf)
+{
+	if(!get_isopen_sourcefile(sf))
+	{
+		perror("write with invalid paramaters");
+		return;
+	}
+
+
+	if(sf->haslength)
+	{
+		sf->haslength = false;
+		sf->length = 0;
+	}
+	fputc('\n', get_sourcefile_fp(sf));
 
 	sf->modified = true;
 }

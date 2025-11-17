@@ -8,6 +8,7 @@ set(CPU_C_FILES ${CPU_C_FILES}
 	${CMAKE_CURRENT_SOURCE_DIR}/manager.c
 	${CMAKE_CURRENT_SOURCE_DIR}/hydra.c
 	${CMAKE_CURRENT_SOURCE_DIR}/disassembler.c
+	${CMAKE_CURRENT_SOURCE_DIR}/export.c
 )
 
 

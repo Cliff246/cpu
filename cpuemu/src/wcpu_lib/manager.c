@@ -5,11 +5,21 @@
 #include "core.h"
 #include "coreutils.h"
 #include "cli.h"
+#include "common.h"
+#include "code_decoder.h"
+#include "hydra.h"
+#include "export.h"
+
+#include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include "code_decoder.h"
-#include "hydra.h"
+
+static cpu_t *global_cpu(void)
+{
+	return components.cpu;
+}
 
 void fill_binary(uint64_t *bin, size_t length)
 {
@@ -57,34 +67,280 @@ void load_file(const char *file_name)
 }
 
 
+
+
 globalstate_t globalstate =
 {
-	.argc = 0,
-	.argv = 0,
+	.args = {.argc = 0, .argv = 0},
 	.ctx = {0},
-	.has_debuger = false,
 	.breakpoints = {-1},
-	.running = false,
 	.runfor = 0
+
+
 };
+
+#define GLBST globalstate
+
+
+bool get_flag(gsflag_t flag)
+{
+	return GLBST.flags[flag];
+}
+
+void set_flag(gsflag_t flag)
+{
+	GLBST.flags[flag] = true;
+}
+
+void clr_flag(gsflag_t flag)
+{
+	GLBST.flags[flag] = false;
+}
+
+#define IS_RUNNING get_flag(FLAG_RUNNING)
+
+
+typedef void (*handle_argstate)(char *, bool);
+#define HANDLE_STATE(name) void handle_ ## name ## _state (char *keyword, bool reset)
+
+struct argstate
+{
+	char *string;
+	bool set;
+	int follows;
+	int current;
+	handle_argstate handle;
+};
+
+
+static enum arg_state_class
+{
+	__debug_state,
+	__export_state,
+	__log_state,
+	__source_state,
+	__ignore_state,
+	__test_state,
+	__set_state,
+	//do not remove the end
+	__end__,
+};
+
+
+HANDLE_STATE(debug)
+{
+	if(reset)
+	{
+
+	}
+}
+
+HANDLE_STATE(source)
+{
+	static int count = 0;
+	printf("source %s\n", keyword);
+	if(get_flag(FLAG_HAS_SOURCE))
+	{
+		printf("too many exports %s\n", keyword);
+		exit(1);
+	}
+
+	if(reset)
+		count = 0;
+	else
+		count++;
+
+
+	if(count == 1)
+	{
+
+		globalstate.source_path = strdup(keyword);
+		set_flag(FLAG_HAS_SOURCE);
+	}
+}
+
+HANDLE_STATE(export)
+{
+	static int count = 0;
+
+	if(get_flag(FLAG_EXPORT))
+	{
+		printf("too many exports %s\n", keyword);
+		exit(1);
+	}
+
+	if(reset)
+		count = 0;
+	else
+		count++;
+
+
+	if(count == 1)
+	{
+
+		globalstate.export_path = strdup(keyword);
+		set_flag(FLAG_EXPORT);
+	}
+}
+
+HANDLE_STATE(ignore)
+{
+	set_flag(FLAG_IGNORE_BREAK);
+}
+
+HANDLE_STATE(log)
+{
+
+	static bool log_state = 0;
+
+	if(reset)
+	{
+
+	}
+}
+
+HANDLE_STATE(test)
+{
+	static bool testing_enabled = false;
+	if(testing_enabled == true)
+	{
+		return;
+	}
+
+	set_flag(FLAG_TESTING);
+
+}
+
+HANDLE_STATE(set)
+{
+
+}
+
+
+#define FILL_ARGSTATE(keyword, holdfor, function) {.string = keyword, .set = false, .follows = holdfor,  .handle = function}
+
+struct argstate states[] =
+{
+	[__debug_state] = FILL_ARGSTATE("d", 0, handle_debug_state),
+	[__export_state] = FILL_ARGSTATE("e", 1, handle_export_state ),
+	[__log_state] = FILL_ARGSTATE("l", 1, handle_export_state),
+	[__source_state] = FILL_ARGSTATE("s", 1, handle_source_state),
+	[__ignore_state] = FILL_ARGSTATE("i", 1, handle_ignore_state),
+	[__test_state] = FILL_ARGSTATE("test", 0, handle_test_state),
+	[__set_state] = FILL_ARGSTATE("=", 1, handle_set_state),
+
+	//do not move end
+	[__end__] = {.follows = 0, .handle = NULL, .set = false, .string = "INVALID STRING DONT USE LOL"},
+};
+
+#define STATES_LEN (ARYSIZE(states) - 1)
+
+
+void parse_args(void)
+{
+	static bool hasparsed = false;
+
+	if(hasparsed == true)
+		return;
+	hasparsed = true;
+	global_arguments_t ga = GLBST.args;
+
+	if(ga.argc == 1)
+	{
+		printf("not enough args\n");
+		exit(1);
+	}
+	if(ga.argc >= MAX_EMUARGUMENTS)
+	{
+		printf("too many arguments\n");
+		exit(1);
+	}
+
+
+
+
+	for(int i = 0; i < ga.argc && i < MAX_EMUARGUMENTS; ++i)
+	{
+		char *tmp_arg = ga.argv[i];
+		//check iterator
+		for(int ci = 0; ci < STATES_LEN; ++ci)
+		{
+			if(states[ci].set == true)
+			{
+				printf("is set %d\n", ci);
+				struct argstate *tmp_state = &states[ci];
+				tmp_state->current --;
+				if(tmp_state->current <= 0)
+				{
+					tmp_state->set = false;
+				}
+				tmp_state->handle(tmp_arg, false);
+			}
+		}
+
+
+		if(tmp_arg[0] == '-' )
+		{
+			char *next = tmp_arg + 1;
+			//state iterator
+			bool found_one = false;
+			for(int si = 0; si < STATES_LEN; ++si)
+			{
+				if(!strcmp(next, states[si].string))
+				{
+					printf("found one %s\n", next);
+ 					states[si].set = true;
+					states[si].current = states[si].follows;
+					states[si].handle(next, true);
+					found_one = true;
+				}
+			}
+			if(found_one == false)
+			{
+				printf("invalid argument %s \n", tmp_arg);
+				exit(1);
+			}
+
+		}
+
+	}
+
+}
 
 void init(int argc, char **argv)
 {
 
-	globalstate.argc = argc;
-	globalstate.argv = argv;
+	globalstate.args.argc = argc;
+	globalstate.args.argv = argv;
+	//after seting args
+	parse_args();
 	create_cli_context(&globalstate.ctx);
+
+
+
+
 
 
 	init_components();
 	create_cpu();
 
-	if(argc == 2)
+
+	if(get_flag(FLAG_HAS_SOURCE))
 	{
-		load_file(argv[1]);
-		startup_cpu();
+		load_file(GLBST.source_path);
 	}
-	update();
+	startup_cpu();
+
+	if(get_flag(FLAG_TESTING))
+	{
+
+	}
+	else
+	{
+		update();
+
+	}
+
 }
 
 cmd_t *input(void)
@@ -112,13 +368,10 @@ int on_breakpoint(void)
 
 void step_handler(void)
 {
-	if(!globalstate.running)
-	{
-		return;
-	}
+
 	if(globalstate.runfor < 0)
 	{
-		globalstate.running = 0;
+		clr_flag(FLAG_RUNNING);
 		return;
 	}
 	else
@@ -129,7 +382,7 @@ void step_handler(void)
 	int brk = on_breakpoint();
 	if(brk != -1)
 	{
-		globalstate.running = false;
+		clr_flag(FLAG_RUNNING);
 		return;
 	}
 	for(int i = 0; i < 5; ++i)
@@ -137,12 +390,13 @@ void step_handler(void)
 		step_cpu();
 
 	}
-
-	if(components.cpu->stop == true)
+	cpu_t *cpu = global_cpu();
+	if(cpu->stop == true && get_flag(FLAG_IGNORE_BREAK) == false)
 	{
-		globalstate.running = false;
+		clr_flag(FLAG_RUNNING);
+
 		globalstate.runfor = 0;
-		components.cpu->stop = false;
+		cpu->stop = false;
 	}
 
 }
@@ -154,6 +408,30 @@ void print_cmd(cmd_t *cmd)
 
 
 }
+
+void basic_export(void)
+{
+	if(!get_flag(FLAG_EXPORT))
+		return;
+
+	export_bundle_t *bnd = create_export_bundle(GLBST.export_path);
+
+	for(int i = 0; i < 64; ++i)
+	{
+		export_packet_t regexp = create_packet_register(i, 0, 0, get_reg(i), EXPORT_MODE_INT);
+		add_packet_to_bundle(bnd, regexp);
+	}
+
+	for(int im = 0; im < 100; ++im)
+	{
+		export_packet_t memexp = create_packet_memory(load(im), im);
+		add_packet_to_bundle(bnd, memexp);
+
+	}
+
+	export_dump(bnd);
+}
+
 
 
 void step_cmd(cmd_t *cmd)
@@ -200,7 +478,7 @@ void update(void)
 		bool skip = basic_input_manager(inp);
 		if(skip)
 		{
-			while(globalstate.running)
+			while(IS_RUNNING)
 			{
 				step_handler();
 

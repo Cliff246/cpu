@@ -1,42 +1,84 @@
 #ifndef __MANAGER_HEADER__
 #define __MANAGER_HEADER__
 
-#include <stdbool.h>
+
+#include "cli.h"
 #include <stdio.h>
 #include <stdint.h>
-#include "cli.h"
-
 #include <stdbool.h>
 
 #define MAX_BREAKPOINTS 100
+#define MAX_EMUARGUMENTS 100
 
-typedef struct file
+
+
+#define FLAG_TYPE_ENUM(X)	\
+	X(EMPTY)				\
+	X(HAS_SOURCE)			\
+	X(RUNNING)				\
+	X(HAS_DEBUGGER)			\
+	X(EXPORT)				\
+	X(IGNORE_BREAK)			\
+	X(TESTING)				\
+	X(ONLY_RUNFOR)			\
+
+
+#define EX(val) FLAG_ ## val,
+
+typedef enum globalstate_flag
 {
-	char *name;
-	int id;
-}file_t;
+	FLAG_TYPE_ENUM(EX)
+}gsflag_t;
 
+
+
+#define CX(val) + 1
+
+#define GSFLAG_COUNT (0 FLAG_TYPE_ENUM(CX))
+
+typedef struct arguments
+{
+	int argc;
+	char **argv;
+
+
+
+}global_arguments_t;
+
+typedef struct breakpoint
+{
+	int index;
+}brkpnt_t;
 
 
 typedef struct globalstate
 {
-	int argc;
-	char **argv;
+
+	global_arguments_t args;
 	cli_context_t ctx;
-	bool has_debuger;
-	bool running;
+
 
 	int runfor;
 	int breakpoints[MAX_BREAKPOINTS];
 
+	bool flags[GSFLAG_COUNT];
 
+	char *export_path;
+
+	char *source_path;
 
 }globalstate_t;
 
 
+bool get_flag(gsflag_t flag);
+void set_flag(gsflag_t flag);
+void clr_flag(gsflag_t flag);
+
 void fill_binary(uint64_t *bin, size_t length);
 size_t file_len(FILE *fp);
 void load_file(const char *file_name);
+
+void basic_export(void);
 
 extern globalstate_t globalstate;
 
@@ -45,6 +87,8 @@ void step_handler(void);
 void init(int argc, char **argv);
 
 void update(void);
+void testing(void);
+
 
 #endif
 
