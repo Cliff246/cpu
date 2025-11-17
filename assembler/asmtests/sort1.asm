@@ -12,7 +12,7 @@ START:
 	mem.sfp zero, zero, zero, 1000
 	alu.add g0, zero, zero, ARRY
 	alu.add a0, zero, zero
-	alu.add a1, zero, #5
+	alu.add a1, zero, #10
 	jmp.call null, null, null, @SORT
 
 EXIT:
@@ -115,5 +115,5 @@ SORT_DOWN:
 .data
 
 ARRY:
-	i64 10, 7, 8, 9, 1, 5
+	i64 10, 7, 8, 9, 1, 5, 120, 23, 123, 5, 120
 
