@@ -82,12 +82,11 @@ typedef struct context_directives
 
 
 //tores the locals
-typedef struct locales
+typedef struct directive_locale
 {
-
 	local_t *locales;
 	size_t size;
-}locale_t;
+}directive_locale_t;
 
 
 typedef struct alias
@@ -107,7 +106,7 @@ typedef struct context
 	prev_ctx_t staged_ctx;
 	//holds the results of the ref_table ptr
 
-	locale_t locales;
+	directive_locale_t locales;
 
 
 	alias_t *aliases;

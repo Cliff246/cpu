@@ -103,6 +103,7 @@ context_t *load_context(file_desc_t *desc)
 	}
 	ctx->locales.size = 0;
 	ctx->locales.locales = NULL;
+
 	//print_depth(ctx->head, 0);
 
 	//this is over kill likely

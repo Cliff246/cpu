@@ -15,7 +15,7 @@ typedef enum
 	TOK_EMPTY,
 } tok_type_t;
 
-typedef struct locale
+typedef struct toklocale
 {
 	int row, col, file;
 }toklocale_t;
