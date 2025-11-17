@@ -146,6 +146,7 @@ typedef struct
 
 	bookmark_t bookmarks[BOOKMARKS_MAX];
 	bool stop;
+	bool program_over;
 } weirdo_cpu_t, cpu_t;
 
 

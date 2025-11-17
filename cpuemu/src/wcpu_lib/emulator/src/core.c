@@ -31,6 +31,7 @@ cpu_t *create_cpu(void)
 		errno = ENOMEM;
 		return NULL;
 	}
+	ptr->program_over = false;
 	return ptr;
 }
 
@@ -123,8 +124,14 @@ void fetch_cpu(void)
 	uint64_t ipc = get_ipc();
 	//printf("FETCH pc=%lu ipc=%lu mem[pc]=0x%08x\n", get_pc(), get_ipc(), get_inst_at_pc_address(get_pc()));
 	//printf("FETCH: sp=%d sfp=%d\n", get_sp(), get_sfp());
-	assert(pc  <= (get_pc_len() * 2));
-	assert(ipc <= get_ipc_len());
+	if(pc  > (get_pc_len() * 2))
+	{
+		CCPU(program_over) = true;
+	}
+	if(ipc > get_ipc_len())
+	{
+		CCPU(program_over) = true;
+	}
 #if DEBUG_MODE == 1
 	// printf("fpc: %llu fipc: %llu\n", get_pc(), get_ipc());
 	// printf("current imm: %d\n", CCPU(curimm));
@@ -186,7 +193,7 @@ void execute_cpu(void)
 		lane3 = imm;
 	}
 
-	printf("[accflag %d] [%d]=%lld [%d]=%lld [%d]=%lld\n",inst.accflag, rs1_n, lane1, rs2_n, lane2, rs3_n, lane3);
+	LOG("[accflag %d] [%d]=%lld [%d]=%lld [%d]=%lld\n",inst.accflag, rs1_n, lane1, rs2_n, lane2, rs3_n, lane3);
 
 
 	if (inst.path == PATH_ALU)

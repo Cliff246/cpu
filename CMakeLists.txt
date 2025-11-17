@@ -12,3 +12,10 @@ add_custom_target(copy_stl ALL
             ${CMAKE_BINARY_DIR}/stl
     COMMENT "Copying tests directory to build"
 )
+
+add_custom_target(copy_tests ALL
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests
+            ${CMAKE_BINARY_DIR}
+    COMMENT "Copying tests directory to build"
+)

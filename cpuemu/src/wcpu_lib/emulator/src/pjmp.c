@@ -201,7 +201,7 @@ void jump_return(cpu_t *cpu)
 void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t lane1, int64_t lane2, int64_t lane3, char immf)
 {
 	//print_regs();
-	printf("subpath:%d l1:%d l2:%d l3:%d\n", subpath, lane1, lane2, lane3);
+	LOG("subpath:%d l1:%d l2:%d l3:%d\n", subpath, lane1, lane2, lane3);
 	switch(subpath)
 	{
 		case JP_JMP:

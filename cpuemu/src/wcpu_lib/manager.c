@@ -129,16 +129,13 @@ static enum arg_state_class
 
 HANDLE_STATE(debug)
 {
-	if(reset)
-	{
-
-	}
+	logger_set = true;
 }
 
 HANDLE_STATE(source)
 {
 	static int count = 0;
-	printf("source %s\n", keyword);
+	//printf("source %s\n", keyword);
 	if(get_flag(FLAG_HAS_SOURCE))
 	{
 		printf("too many exports %s\n", keyword);
@@ -267,7 +264,7 @@ void parse_args(void)
 		{
 			if(states[ci].set == true)
 			{
-				printf("is set %d\n", ci);
+				//printf("is set %d\n", ci);
 				struct argstate *tmp_state = &states[ci];
 				tmp_state->current --;
 				if(tmp_state->current <= 0)
@@ -288,7 +285,7 @@ void parse_args(void)
 			{
 				if(!strcmp(next, states[si].string))
 				{
-					printf("found one %s\n", next);
+					//printf("found one %s\n", next);
  					states[si].set = true;
 					states[si].current = states[si].follows;
 					states[si].handle(next, true);
@@ -309,7 +306,7 @@ void parse_args(void)
 
 void init(int argc, char **argv)
 {
-
+	logger_set = false;
 	globalstate.args.argc = argc;
 	globalstate.args.argv = argv;
 	//after seting args
@@ -333,6 +330,8 @@ void init(int argc, char **argv)
 
 	if(get_flag(FLAG_TESTING))
 	{
+		testing();
+		basic_export();
 
 	}
 	else
@@ -491,4 +490,24 @@ void update(void)
 
 
 
+}
+
+
+#define TEST_CYCLES 1000
+void testing(void)
+{
+	//TODO make this actually not like static
+	for(int i = 0; i < TEST_CYCLES; ++i)
+	{
+		for(int i = 0; i < 5; ++i)
+		{
+			if(global_cpu()->program_over)
+			{
+				return;
+			}
+			step_cpu();
+
+		}
+
+	}
 }

@@ -203,7 +203,6 @@ bool run_head(cmd_t *cmd)
 	}
 	else if(first->type == TOK_END)
 	{
-		printf("step\n");
 		globalstate.runfor = 100;
 		set_flag(FLAG_RUNNING);
 
@@ -211,7 +210,6 @@ bool run_head(cmd_t *cmd)
 	else
 	{
 
-		printf("runn\n");
 		char *str = first->token;
 		globalstate.runfor = atoi(str);
 		set_flag(FLAG_RUNNING);

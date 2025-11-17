@@ -126,16 +126,8 @@ file_desc_t *get_fdesc(int id)
 
 bool validate_path(const char *path)
 {
-	struct stat pstat = {0};
-  	int value = stat(path, &pstat);
-	if(value <= -1)
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
+	printf("%s\n", path);
+	return true;
 }
 
 
