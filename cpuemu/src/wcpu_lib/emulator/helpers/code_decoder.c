@@ -1,12 +1,13 @@
 #include "code_decoder.h"
-#include "core.h"
-#include "coreutils.h"
 #include "flags.h"
 #include "common.h"
+#include "wcpu_isa.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+
+
 
 char path_codes[16][PATH_STR_SIZE] =
 {
@@ -153,17 +154,8 @@ int register_to_string(char buffer[REG_STR_SIZE], unsigned reg, char selflag)
 
 char *operation_to_text_static_buffer(operation_t *op)
 {
-	inst_t inst;
-	if(op->inst.decoded == false)
-	{
-		uint32_t raw = op->inst.raw;
-		//printf("decode op in text %d\n", raw);
-		inst = decode_inst(raw);
-	}
-	else
-	{
-		inst = get_inst_from_op(op);
-	}
+	inst_t inst = op->ins;
+
 	//print_inst(&inst);
 
 
@@ -187,7 +179,7 @@ char *operation_to_text_static_buffer(operation_t *op)
 	if(inst.immflag)
 	{
 
-		sprintf(buffer, "%s.%s%s %s, %s, %s, %lld", pathbuf, subpathbuf,accflag, rdbuf, rs1buf, rs2buf, op->imm.imm);
+		sprintf(buffer, "%s.%s%s %s, %s, %s, %lld", pathbuf, subpathbuf,accflag, rdbuf, rs1buf, rs2buf, op->imm);
 	}
 	else
 	{

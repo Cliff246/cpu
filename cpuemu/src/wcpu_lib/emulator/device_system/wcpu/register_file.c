@@ -1,58 +1,6 @@
-
-#include "core.h"
-#include "flags.h"
-#include <string.h>
-#include <stdio.h>
+#include "register_file.h"
 #include <stdint.h>
-#include <stdbool.h>
-
-#define CCPU(part) components.cpu->part
-#define MEMLD(address) load(address)
-
-
-inst_t get_inst_from_op(operation_t *op)
-{
-	inst_t inst;
-	if(op->inst.decoded == true)
-	{
-		inst = op->inst.inst;
-	}
-	else
-	{
-		inst = decode_inst((uint32_t)op->inst.raw);
-	}
-	return inst;
-
-}
-
-
-
-operation_t fill_operation(uint32_t inst, int64_t imm)
-{
-	operation_t op = {0};
-	op.inst.decoded = false;
-	op.inst.inst = decode_inst(inst);
-	op.inst.raw = inst;
-   	op.imm.type = IMM_UNKNOWN;
-	op.imm.imm = imm;
-	//printf("filled %d imm %lld\n", inst, imm);
-	return op;
-}
-
-
-void decode_operation(operation_t *op)
-{
-	if(op->inst.decoded)
-	{
-		return;
-	}
-	inst_t inst = decode_inst(op->inst.raw);
-	op->inst.inst = inst;
-	op->imm.type = (inst.immflag)? IMM_TRUE : IMM_FALSE;
-
-}
-
-
+/*
 reg_file_t get_current_file(cpu_t *cpu)
 {
 
@@ -355,21 +303,4 @@ void set_reg(int reg, int64_t content)
 	}
 }
 
-
-uint32_t get_inst_at_pc_address(uint64_t address)
-{
-
-
-
-	uint64_t dest = (address / 2) + get_pc_offset();
-	if(address % 2 == 0)
-	{
-		return (uint32_t)((uint64_t)(MEMLD(dest) >> 32) & 0xffffffff);
-
-	}
-	else
-	{
-		return (uint32_t)((MEMLD(dest) & 0xffffffff));
-	}
-}
-
+*/

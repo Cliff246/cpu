@@ -8,16 +8,28 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/device_configurer.c
 #wcpu device
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/core.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/coreutils.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/dev_wcpu.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/palu.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/pjmp.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/pmem.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/psys.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/fetcher.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/aggregator.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/register_file.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/lsu.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_part.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/cache.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_isa.c
+
+#mattress
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/mattress.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/mattress_interface
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric.c
+#fabric details
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/palu.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/pjmp.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/pmem.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/psys.c
+#device fakeio
 
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/fakeio/dev_fakeio.c
-
+#device fakeram
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/ram/dev_ram.h
 
 	${CMAKE_CURRENT_SOURCE_DIR}/helpers/debug.c
@@ -33,6 +45,8 @@ include_directories(wcpu_lib_emulator PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/bus
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/fakeio
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/ram
 	${CMAKE_CURRENT_SOURCE_DIR}/helpers
@@ -47,6 +61,9 @@ target_include_directories(wcpu_lib_emulator PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/bus
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress
+
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/fakeio
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/ram
 	${CMAKE_CURRENT_SOURCE_DIR}/helpers

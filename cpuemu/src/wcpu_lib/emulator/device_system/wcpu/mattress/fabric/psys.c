@@ -1,11 +1,7 @@
 
-#include "psys.h"
-#include "cpumemory.h"
-#include "core.h"
-#include "coreutils.h"
 #include <stdio.h>
-#include <coreutils.h>
 
+/*
 
 #define INST(S, M, A)  SYS_ ## S ## _ ## M ## _ ## A
 #define CPU(item) cpu->item
@@ -51,3 +47,5 @@ void sys_call_cd_ptr(cpu_t *cpu, uint64_t rd)
 
 #undef CPU
 #undef INST
+
+*/

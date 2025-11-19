@@ -3,7 +3,7 @@
 
 #include "manager.h"
 //#include "core.h"
-#include "coreutils.h"
+//#include "coreutils.h"
 #include "cli.h"
 #include "common.h"
 #include "code_decoder.h"
@@ -16,10 +16,10 @@
 #include <stdio.h>
 #include <string.h>
 
-static cpu_t *global_cpu(void)
-{
+//static cpu_t *global_cpu(void)
+//{
 	//return components.cpu;
-}
+//}
 
 void fill_binary(uint64_t *bin, size_t length)
 {
@@ -389,13 +389,13 @@ void step_handler(void)
 		step_cpu();
 
 	}
-	cpu_t *cpu = global_cpu();
-	if(cpu->stop == true && get_flag(FLAG_IGNORE_BREAK) == false)
+	//cpu_t *cpu = global_cpu();
+	//if(cpu->stop == true && get_flag(FLAG_IGNORE_BREAK) == false)
 	{
 		clr_flag(FLAG_RUNNING);
 
 		globalstate.runfor = 0;
-		cpu->stop = false;
+		//cpu->stop = false;
 	}
 
 }
@@ -501,11 +501,11 @@ void testing(void)
 	{
 		for(int i = 0; i < 5; ++i)
 		{
-			if(global_cpu()->program_over)
+			//if(global_cpu()->program_over)
 			{
 				return;
 			}
-			step_cpu();
+			//step_cpu();
 
 		}
 

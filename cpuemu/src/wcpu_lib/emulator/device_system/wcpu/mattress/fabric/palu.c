@@ -1,4 +1,3 @@
-#include "palu.h"
 #include "flags.h"
 #include <stdint.h>
 #include <errno.h>
@@ -8,6 +7,7 @@
 
 //just some nice macros
 //
+/*
 
 static uint64_t arithmetic_shift_right(uint64_t value, uint64_t shift)
 {
@@ -290,3 +290,4 @@ int alu_poll(alu_t *alu)
 	return alu->complete;
 }
 
+*/

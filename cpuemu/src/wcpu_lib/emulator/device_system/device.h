@@ -2,7 +2,8 @@
 #define __DEVICE_HEADER__
 
 #include "dev_wcpu.h"
-#include "ram.h"
+#include "dev_ram.h"
+#include "dev_fakeio.h"
 
 typedef enum device_type
 {
