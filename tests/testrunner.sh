@@ -27,13 +27,13 @@ testcase() {
 		$EMU "-s" $outfile "-e" $emuout "-test" > /dev/null
 
 		if cmp $emuout $emucmp > /dev/null 2>&1; then
-			echo "passed"
+			echo "[passed]"
 		else
-			echo "failed"
+			echo "[failed] emulator step"
 
 		fi
 	else
-		echo "failed build step"
+		echo "[failed] build step"
 
 
 	fi
