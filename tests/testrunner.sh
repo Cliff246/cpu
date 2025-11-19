@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 
 
@@ -13,26 +13,38 @@ fail=0
 
 testdir="testcases"
 
-function testcase {
+testcase() {
 
-	local asmfile="${1}/*.asm"
-	local outfile="${1}/test.bin"
-	local asmbin="${1}/assembly.bin"
-	$ASM $asmfile "-o" $outfile
+	asmfile=$1/*.asm
+	outfile=$1/test.bin
+	asmbin=$1/assembly.bin
+	$ASM $asmfile "-o" "$outfile" > /dev/null
 
-	cmp $outfile ${asmbin}
+	if cmp $outfile "${asmbin}" > /dev/null 2>&1; then
+		emuout=$1/emu.qa
+		emucmp=$1/expect.txt
 
-	local emuout="${1}/emu.qa"
-	local emucmp="${1}/expect.txt"
-	$EMU "-s" $outfile "-e" $emuout "-test"
-	echo "completed"
+		$EMU "-s" $outfile "-e" $emuout "-test" > /dev/null
+
+		if cmp $emuout $emucmp > /dev/null 2>&1; then
+			echo "passed"
+		else
+			echo "failed"
+
+		fi
+	else
+		echo "failed build step"
+
+
+	fi
+
 	return
 }
 
 
 for i in "${testdir}"/*
 do
-	echo $i
+	echo "test:" "$i"
 	testcase $i
 
 
