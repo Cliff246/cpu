@@ -1,9 +1,11 @@
 
-
-#include "coreutils.h"
+#include "core.h"
 #include "flags.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
+
 #define CCPU(part) components.cpu->part
 #define MEMLD(address) load(address)
 

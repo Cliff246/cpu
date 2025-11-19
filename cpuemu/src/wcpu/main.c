@@ -1,5 +1,4 @@
 #include "core.h"
-#include "cpumemory.h"
 #include "flags.h"
 
 #include "common.h"

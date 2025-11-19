@@ -131,7 +131,7 @@ bool print_head(cmd_t *cmd)
 		tok_t *tok3 = next_tok_cmd(cmd);
 		if(!tok2 || !tok3)
 		{
-			memory_print(components.mem, 0, 50);
+			//memory_print(components.mem, 0, 50);
 
 			return false;
 
@@ -140,12 +140,12 @@ bool print_head(cmd_t *cmd)
 		{
 			int start = atoi(tok2->token);
 			int stop = atoi(tok3->token);
-			memory_print(components.mem, start, stop);
+			//memory_print(components.mem, start, stop);
 
 		}
 		else
 		{
-			memory_print(components.mem, 0, 50);
+			//memory_print(components.mem, 0, 50);
 
 		}
 
@@ -155,16 +155,16 @@ bool print_head(cmd_t *cmd)
 	{
 		//print_inst(&inst);
 
-		operation_t *op = &components.cpu->op;
+		//operation_t *op = &components.cpu->op;
 		//printf("decoded %d\n", op->inst.decoded);
-		char *itext = convert_operation_to_text(op);
-		printf("%s\n", itext);
-		free(itext);
+		//char *itext = convert_operation_to_text(op);
+		//printf("%s\n", itext);
+		//free(itext);
 	}
 	else if(!strcmp(arg1, "block"))
 	{
-
-		code_block_t *block = create_block_from_current_description(components.cpu, 0, 100);
+/*
+		//code_block_t *block = create_block_from_current_description(components.cpu, 0, 100);
 
 		for(int i =  0; i < block->op_count ; ++i)
 		{
@@ -182,7 +182,7 @@ bool print_head(cmd_t *cmd)
 		}
 		free(block->ops);
 		free(block);
-
+*/
 	}
 	else
 	{

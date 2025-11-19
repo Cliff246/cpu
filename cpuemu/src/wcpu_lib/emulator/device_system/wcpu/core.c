@@ -2,7 +2,6 @@
 #include "flags.h"
 #include "palu.h"
 #include "psys.h"
-#include "cpumemory.h"
 
 #include "pjmp.h"
 #include "debug.h"
@@ -21,7 +20,6 @@ ldst_type memtype;
 
 #define DROPCPU print_cpu_state(components.cpu);
 
-components_t components;
 
 cpu_t *create_cpu(void)
 {
@@ -40,32 +38,6 @@ cpu_t *create_cpu(void)
 uint64_t stream_in[255] = {0};
 uint64_t stream_out[255] = {0};
 
-uint64_t load(uint64_t address)
-{
-	//printf("load [%d]\n", address);
-
-	if (memtype == ldst_fake)
-	{
-		return stream_in[address % (sizeof(stream_in) / sizeof(stream_in[0]))];
-	}
-	else
-	{
-		return memory_read(components.mem, address);
-	}
-}
-
-void store(uint64_t address, int64_t value)
-{
-	//printf("store [%d] = %d\n", address, value);
-	if (memtype == ldst_fake)
-	{
-		stream_out[address % (sizeof(stream_out) / sizeof(stream_out[0]))] = value;
-	}
-	else
-	{
-		memory_write(components.mem, address, value);
-	}
-}
 
 void step_cpu(void)
 {
@@ -287,29 +259,7 @@ void print_inst(inst_t *inst)
 	printf("p: %d: sp: %d, rd: %d, rs1: %d, rs2: %d,accflag %d, selflag: %d, reallocflag: %d, f: %d\n", op.path, op.subpath, op.rs1, op.rs2, op.rs3,op.accflag, op.selflag, op.reallocflag, op.immflag);
 }
 
-void init_components(void)
-{
 
-	cpu_t *cpu = create_cpu();
-
-	memory_t *mem = create_memory(10000);
-	alu_t *alu = create_alu();
-
-	components.cpu = cpu;
-	components.mem = mem;
-	components.alu = alu;
-}
-
-void free_components(void)
-{
-	free(components.cpu);
-	free(components.mem->content);
-	free(components.mem);
-	free(components.alu);
-	components.cpu = NULL;
-	components.mem = NULL;
-	components.alu = NULL;
-}
 
 void print_cpu_state(cpu_t *cpu)
 {

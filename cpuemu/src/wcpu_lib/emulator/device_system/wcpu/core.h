@@ -1,13 +1,11 @@
 
-#ifndef __CORE__
-#define __CORE__
+#ifndef __CORE_HEADER__
+#define __CORE_HEADER__
 
 #include <stdint.h>
 #include <stdbool.h>
 
 #include "common.h"
-#include "cpumemory.h"
-#include "palu.h"
 
 #define BOOKMARKS_MAX 128
 
@@ -194,16 +192,8 @@ void store(uint64_t address, int64_t value);
 void print_inst(inst_t *inst);
 void print_regs(void);
 
-typedef struct
-{
-	memory_t *mem;
-	cpu_t *cpu;
-	alu_t *alu;
-}components_t;
 
 
-void init_components(void);
-void free_components(void);
-extern components_t components;
+
 
 #endif

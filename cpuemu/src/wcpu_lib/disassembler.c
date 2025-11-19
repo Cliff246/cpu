@@ -2,7 +2,6 @@
 #include "core.h"
 #include "code_decoder.h"
 #include "coreutils.h"
-#include "cpumemory.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>

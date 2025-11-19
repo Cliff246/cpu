@@ -1,5 +1,5 @@
-#ifndef __COREUTILS__
-#define __COREUTILS__
+#ifndef __COREUTILS_HEADER__
+#define __COREUTILS_HEADER__
 
 #include "core.h"
 

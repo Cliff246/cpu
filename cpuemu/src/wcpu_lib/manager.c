@@ -2,7 +2,7 @@
 
 
 #include "manager.h"
-#include "core.h"
+//#include "core.h"
 #include "coreutils.h"
 #include "cli.h"
 #include "common.h"
@@ -18,7 +18,7 @@
 
 static cpu_t *global_cpu(void)
 {
-	return components.cpu;
+	//return components.cpu;
 }
 
 void fill_binary(uint64_t *bin, size_t length)
@@ -27,7 +27,7 @@ void fill_binary(uint64_t *bin, size_t length)
 	for(size_t i = 0; i < length; ++i)
 	{
 
-		memory_write(components.mem, i, bin[i] );
+		//memory_write(components.mem, i, bin[i] );
 	}
 }
 
