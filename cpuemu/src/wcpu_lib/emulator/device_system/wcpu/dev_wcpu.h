@@ -9,9 +9,10 @@ typedef struct wcpu
 
 	core_t core;
 
-
+	int port_behaviour;
 
 }dev_wcpu_t;
+
 
 
 

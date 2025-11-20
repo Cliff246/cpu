@@ -1,6 +1,6 @@
 
 set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
-	${CMAKE_CURRENT_SOURCE_DIR}/emucore.c
+	${CMAKE_CURRENT_SOURCE_DIR}/emucore.cpp
 #bus
 	${CMAKE_CURRENT_SOURCE_DIR}/bus/bus.c
 #device core
@@ -16,13 +16,21 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_part.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/cache.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_isa.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/ledger.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/alu.c
 
 #mattress
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/mattress.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/mattress_interface
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/mattress_interface.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/mattress_packet.c
+
+
 #fabric details
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/palu.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric_lane.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric_register.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric_bus.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric_executer.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/pjmp.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/pmem.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/psys.c

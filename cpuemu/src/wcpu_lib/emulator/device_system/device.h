@@ -18,26 +18,33 @@ typedef enum device_type
 
 typedef union device_option
 {
+	dev_wcpu_t *cpu;
+	dev_ram_t *ram;
+	dev_fakeio_t *fakeio;
 
 }device_option_t;
 
 
 
-typedef void (clock_fn)(device_t *device);
-typedef bool (hook_address_fn)(device_t *device, int64_t hook);
 
 
 typedef struct device
 {
 	device_type_t type;
 
-
+	int error;
 
 	device_option_t ptr;
 
 
+
+
 }device_t;
 
+
+device_t *create_device(device_type_t *type);
+
+void step_device(device_t *device);
 
 
 

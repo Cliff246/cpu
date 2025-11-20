@@ -11,7 +11,8 @@
 	X(CACHE)				\
 	X(AGGREGATOR)			\
 	X(MATTRESS)				\
-
+	X(FETCHER)				\
+	X(LEDGER)				\
 
 
 

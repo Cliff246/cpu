@@ -3,10 +3,34 @@
 
 #include <stdint.h>
 
+#define FETCHER_INSTRUCTION_BUFFER 16
+#define FETCHER_IMMEDIATE_BUFFER 4
+#define FETCHER_REQUEST_BUFFER 4
+
+
+typedef struct fetch_request
+{
+	int64_t address;
+
+}fetch_request_t;
+
 typedef struct fetcher
 {
 
+
+
+
+	int32_t insts[FETCHER_INSTRUCTION_BUFFER];
+	int64_t imms[FETCHER_IMMEDIATE_BUFFER];
+
+
+
+
 }fetcher_t;
+
+
+fetcher_t *create_fetcher(void);
+
 
 
 uint32_t get_inst_at_pc_address(uint64_t address);
