@@ -1,8 +1,8 @@
 
 set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
-	${CMAKE_CURRENT_SOURCE_DIR}/emucore.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/emucore.c
 #bus
-	${CMAKE_CURRENT_SOURCE_DIR}/bus/bus.c
+
 #device core
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/device.c
 
@@ -30,7 +30,7 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric_lane.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric_register.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric_bus.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric_executer.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric_execution.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/pjmp.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/pmem.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/psys.c

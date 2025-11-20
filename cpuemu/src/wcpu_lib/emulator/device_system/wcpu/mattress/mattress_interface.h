@@ -6,7 +6,7 @@
 
 
 
-typedef struct mattress_interface_state
+typedef enum mattress_interface_state
 {
 	MATTRESS_INTERFACE_INVAL,
 	MATTRESS_INTERFACE_WORKING,

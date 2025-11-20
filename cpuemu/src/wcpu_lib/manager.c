@@ -20,6 +20,7 @@
 //{
 	//return components.cpu;
 //}
+/*
 
 void fill_binary(uint64_t *bin, size_t length)
 {
@@ -303,9 +304,13 @@ void parse_args(void)
 	}
 
 }
-
+*/
 void init(int argc, char **argv)
 {
+
+
+}
+/*
 	logger_set = false;
 	globalstate.args.argc = argc;
 	globalstate.args.argv = argv;
@@ -511,3 +516,4 @@ void testing(void)
 
 	}
 }
+*/

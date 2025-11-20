@@ -10,6 +10,7 @@
 #include "mattress_packet.h"
 #include "aggregator.h"
 #include "mattress_interface.h"
+#include "wcpu_part.h"
 
 typedef enum mattress_unit_type
 {
@@ -42,8 +43,8 @@ typedef struct mattress_unit
 
 
 //supposed to be 'component' connected to the mattress
-mattress_unit_t *create_mattress_unit(mattress_unit_type_t type);
-
+mattress_unit_t *wcpu_mattress_unit_generate(mattress_unit_type_t type);
+void wcpu_mattress_unit_update(mattress_unit_t *unit);
 
 
 
@@ -53,5 +54,9 @@ typedef struct mattress
 	mattress_unit_t units[MATTRESS_TOTAL_FABRICS];
 
 }mattress_t;
+
+
+part_ptr_t wcpu_mattress_generate(void);
+void wcpu_mattress_update(part_ptr_t mattress);
 
 #endif

@@ -1,6 +1,7 @@
 #ifndef __FABRIC_HEADER__
 #define __FABRIC_HEADER__
 
+
 #include "fabric_lane.h"
 #include "alu.h"
 #include "fabric_register.h"
@@ -14,7 +15,7 @@
 	X(BUS)						\
 
 #define COMPONENT_NAME(C) FABRIC_COMPONENT_ ## C
-
+#undef X
 #define X(x) COMPONENT_NAME(x),
 typedef enum fabric_component_type
 {
@@ -27,18 +28,10 @@ typedef enum fabric_component_type
 #define X(x) + 1
 
 #define COMPONENTS_LENGTH (0 COMPONENT_TYPES_LIST(X))
-
 typedef struct fabric_component
 {
 	fabric_component_type_t type;
-
-	union
-	{
-		alu_t *alu;
-		fabric_register_file_t *fabregs;
-		fabric_control_t *controler;
-		fabric_bus_t *bus;
-	}component;
+	void *component;
 
 }fabric_component_t;
 
@@ -72,6 +65,8 @@ typedef struct fabric
 
 
 }fabric_t;
+
+#undef X
 
 fabric_t *create_fabric(void);
 

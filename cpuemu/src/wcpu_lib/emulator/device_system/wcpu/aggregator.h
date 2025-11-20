@@ -1,6 +1,7 @@
 #ifndef __AGGREGATOR_HEADER__
 #define __AGGREGATOR_HEADER__
 
+#include "wcpu_part.h"
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -23,9 +24,10 @@ typedef struct aggregator
 
 }aggregator_t;
 
-aggregator_t *create_aggregator(void);
+part_ptr_t wcpu_aggregator_generate(void);
 
 
-void aggregator_step(aggregator_t *aggregator);
+
+void wcpu_aggregator_update(part_ptr_t aggregator);
 
 #endif

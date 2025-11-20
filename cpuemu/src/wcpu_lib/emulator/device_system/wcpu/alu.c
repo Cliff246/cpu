@@ -1,9 +1,22 @@
 #include "flags.h"
+#include "alu.h"
 #include <stdint.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
+
+
+part_ptr_t wcpu_alu_generate(void)
+{
+
+}
+
+void wcpu_alu_upadate(part_ptr_t alu)
+{
+
+}
+
 
 //just some nice macros
 //

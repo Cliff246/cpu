@@ -2,6 +2,8 @@
 #define __LSU_HEADER__
 
 #include <stdint.h>
+#include "wcpu_part.h"
+
 
 #define MAX_LSU_ENTRIES 128
 
@@ -14,7 +16,7 @@ typedef struct lsu_entry
 }lsu_entry_t;
 
 
-typedef struct wcpu_lsu
+typedef struct lsu
 {
 	lsu_entry_t entries[MAX_LSU_ENTRIES];
 
@@ -22,6 +24,9 @@ typedef struct wcpu_lsu
 
 
 }lsu_t;
+
+part_ptr_t wcpu_lsu_generate(void);
+void wcpu_lsu_update(part_ptr_t lsu);
 
 uint64_t load(uint64_t address);
 

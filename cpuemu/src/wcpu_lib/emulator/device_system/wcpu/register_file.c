@@ -1,5 +1,19 @@
 #include "register_file.h"
+#include "wcpu_part_ptr.h"
 #include <stdint.h>
+
+//converts to (reg_file_t)
+part_ptr_t wcpu_regfile_generate(void)
+{
+
+}
+
+
+//converts to (reg_file_t)
+void wcpu_regfile_update(part_ptr_t regfile)
+{
+
+}
 /*
 reg_file_t get_current_file(cpu_t *cpu)
 {

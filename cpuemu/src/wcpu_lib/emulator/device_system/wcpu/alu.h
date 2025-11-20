@@ -1,6 +1,8 @@
 #ifndef _ALU_HEADER__
 #define _ALU_HEADER__
 
+#include "wcpu_part_ptr.h"
+
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -109,7 +111,7 @@ typedef enum micro_alu_lu_order1
 
 
 //order 2 enum list
-typedef enum micro_alu_lu_order1
+typedef enum micro_alu_lu_order2
 {
 	MALU_LU_ORDER_LIST2(MALU_2X)
 }malu_lu_ord2_t;
@@ -178,7 +180,7 @@ typedef struct global_alu
 
 	logic_unit_t stage2_units[GALU_2X_SIZE];
 	global_lu_ord1_t stage1_unit;
-	global_lu_ord2_t stage1_unit;
+	global_lu_ord2_t stage2_unit;
 
 
 }global_alu_t;
@@ -208,11 +210,11 @@ typedef struct alu
 
 void set_alu_instructions(void);
 
-alu_t *create_alu(void);
+part_ptr_t wcpu_alu_generate(void);
 
 void alu_submit(alu_t *alu, char subpath, int64_t rs1, int64_t rs2, int64_t imm, char immflag);
 
-void alu_step(alu_t *alu);
+void wcpu_alu_upadate(part_ptr_t alu);
 
 int alu_poll(alu_t *alu);
 

@@ -1,4 +1,4 @@
-#ifndef __DEVICE_HEADER_
+#ifndef __DEVICE_HEADER__
 #define __DEVICE_HEADER__
 
 #include "dev_wcpu.h"
@@ -14,37 +14,29 @@ typedef enum device_type
 	DEVICE_RAM,
 }device_type_t;
 
-
-
-typedef union device_option
-{
-	dev_wcpu_t *cpu;
-	dev_ram_t *ram;
-	dev_fakeio_t *fakeio;
-
-}device_option_t;
-
-
-
-
-
 typedef struct device
 {
 	device_type_t type;
 
 	int error;
 
-	device_option_t ptr;
-
-
-
-
+	void *ptr;
 }device_t;
 
+typedef device_t *(*init_device)(device_type_t type);
+typedef void (*step_device)(device_t *device);
 
-device_t *create_device(device_type_t *type);
+typedef struct device_class
+{
+	init_device init;
+	step_device update;
 
-void step_device(device_t *device);
+}device_class_t;
+
+
+device_t *device_generate(device_type_t type);
+
+void device_update(device_t *device);
 
 
 

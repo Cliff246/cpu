@@ -21,6 +21,8 @@ char *to_string(char ch);
 
 void *realloc_safe(void *ptr, size_t count, size_t size);
 
+
+
 void logit(char *fmt, size_t line, char *filename, ...);
 
 #define DEFAULT_BUFFER 1024

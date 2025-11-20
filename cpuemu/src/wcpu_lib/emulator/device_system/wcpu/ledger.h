@@ -5,6 +5,8 @@
 #define LEDGER_EPOCH_LIMIT 128
 #define LEDGER_EDGE_LIMIT 4
 
+#include "wcpu_part.h"
+
 
 typedef struct ledger_entry
 {
@@ -19,7 +21,8 @@ typedef struct ledger
 
 }ledger_t;
 
-ledger_t *create_ledger();
+part_ptr_t wcpu_ledger_generate(void);
+void wcpu_ledger_update(part_ptr_t ledger);
 
 
 

@@ -18,3 +18,12 @@ uint32_t get_inst_at_pc_address(uint64_t address)
 	}
 }
 
+part_ptr_t wcpu_fetcher_generate(void)
+{
+
+}
+
+void wcpu_fetcher_update(part_ptr_t fetcher)
+{
+
+}

@@ -2,6 +2,8 @@
 #define __REGISTER_FILE_HEADER__
 
 #include <stdint.h>
+#include "wcpu_part_ptr.h"
+
 #define BOOKMARKS_MAX 128
 #define REG_ACC 63
 
@@ -36,21 +38,6 @@ typedef struct interreg
 	uint64_t rpc, ripc, gp, tp;
 }inter_reg_t;
 
-
-typedef struct regfile
-{
-
-	int64_t iregs[64];
-	double fregs[64];
-
-	stack_reg_t stack;
-	inter_reg_t inter;
-	code_desc_t desc;
-
-
-
-}regfile_t;
-
 typedef struct
 {
     uint64_t inst_addr;
@@ -65,6 +52,22 @@ typedef struct
 }bookmark_file_t;
 
 
+typedef struct regfile
+{
+
+	int64_t iregs[64];
+
+	stack_reg_t stack;
+	inter_reg_t inter;
+	code_desc_t desc;
+
+	bookmark_file_t bookmarks;
+
+}regfile_t;
+
+
+part_ptr_t wcpu_regfile_generate(void);
+void wcpu_regfile_update(part_ptr_t regfile);
 
 
 void print_regs(void);

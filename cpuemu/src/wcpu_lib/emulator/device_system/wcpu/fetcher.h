@@ -1,6 +1,7 @@
 #ifndef __FETCHER_HEADER__
 #define __FETCHER_HEADER__
 
+#include "wcpu_part_ptr.h"
 #include <stdint.h>
 
 #define FETCHER_INSTRUCTION_BUFFER 16
@@ -29,8 +30,9 @@ typedef struct fetcher
 }fetcher_t;
 
 
-fetcher_t *create_fetcher(void);
+part_ptr_t wcpu_fetcher_generate(void);
 
+void wcpu_fetcher_update(part_ptr_t fetcher);
 
 
 uint32_t get_inst_at_pc_address(uint64_t address);
