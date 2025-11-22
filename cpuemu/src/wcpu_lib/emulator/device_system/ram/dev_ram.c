@@ -8,6 +8,17 @@
 
 #include <errno.h>
 
+
+device_t *device_ram_generate(void)
+{
+
+}
+
+void device_ram_update(device_t *device)
+{
+
+}
+
 dev_ram_t *create_memory(int64_t length)
 {
 	dev_ram_t *ptr = (dev_ram_t *)malloc(sizeof(dev_ram_t));
@@ -42,6 +53,7 @@ int64_t read_ram(dev_ram_t *ram, int64_t address)
 	}
 	else
 	{
+
 		errno = ERANGE;
 		return 0;
 	}

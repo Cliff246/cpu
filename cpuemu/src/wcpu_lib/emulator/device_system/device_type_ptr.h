@@ -8,9 +8,9 @@ typedef struct device_fakeio dev_fakeio_t;
 
 #define DEVICE_TYPE_ENUM(X) 	\
 	X(INVAL)					\
-	X(WCPU)					\
+	X(WCPU)						\
 	X(FAKEIO)					\
-	X(RAM)					\
+	X(RAM)						\
 
 #define DEVICE_TYPE_NAME_RESOLVE(name) DEVICE_ ## name
 
@@ -25,6 +25,9 @@ typedef enum device_type
 
 #define DEVICES_TYPE_COUNT (0 DEVICE_TYPE_ENUM(DEVICE_TYPE_NAME_COUNTER))
 
+#define DEVICE_ID_INVAL -1
+
+typedef int dev_id_t;
 
 typedef union device_type_ptr
 {

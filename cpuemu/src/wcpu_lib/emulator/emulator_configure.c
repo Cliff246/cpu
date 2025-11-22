@@ -208,7 +208,7 @@ emuconfig_t *create_emuconfig_internal(emu_internal_src_t src)
 
 
 
-	parese_emuconfig_setting(config);
+	parse_emuconfig_setting(config);
 
 
 	return config;

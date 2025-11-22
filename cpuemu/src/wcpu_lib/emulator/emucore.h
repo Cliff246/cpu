@@ -2,19 +2,36 @@
 #define __EMULATOR_CORE__
 
 #include "device.h"
-#include "device_configurer.h"
 #include "emulator_configure.h"
+#include <stdlib.h>
+
+typedef struct emulator_device_slot
+{
+	//the start and length of devices
+	size_t address_start;
+	size_t address_length;
+	//the device index
+	size_t device_index;
+
+	//the device id
+	int device_id;
+}emu_dev_slot_t;
+
 
 typedef struct emulator
 {
 	emuconfig_t *config;
 	device_t **device_list;
+	emu_dev_slot_t *device_slots;
 	int device_count;
 
 
 }emulator_t;
 
 emulator_t *emulator_generate(emuconfig_t *config);
+
+
+device_t *emulator_device_by_address(emulator_t *emulator, size_t address);
 
 //todo
 

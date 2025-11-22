@@ -7,7 +7,8 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 #device core
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/device.c
 
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/device_configurer.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/device_message.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/device_mailbox.c
 #wcpu device
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/dev_wcpu.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/fetcher.c
@@ -39,7 +40,7 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/fakeio/dev_fakeio.c
 #device fakeram
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/ram/dev_ram.h
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/ram/dev_ram.c
 
 	${CMAKE_CURRENT_SOURCE_DIR}/helpers/debug.c
 	${CMAKE_CURRENT_SOURCE_DIR}/helpers/code_decoder.c
