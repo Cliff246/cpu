@@ -123,3 +123,4 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 .vscode/
+.vscode/c_cpp_properties.json
