@@ -1,9 +1,11 @@
+#include "device.h"
+#include "device_type_ptr.h"
 #include "dev_ram.h"
 
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <coreutils.h>
+
 #include <errno.h>
 
 dev_ram_t *create_memory(int64_t length)

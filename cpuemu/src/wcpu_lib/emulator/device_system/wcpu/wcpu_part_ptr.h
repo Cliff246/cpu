@@ -23,4 +23,5 @@ typedef union wcpu_part_ptr
 	aggregator_t *aggregator;
 	void *raw;
 }part_ptr_t;
+
 #endif

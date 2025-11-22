@@ -1,29 +1,26 @@
 #ifndef __DEVICE_HEADER__
 #define __DEVICE_HEADER__
 
-#include "dev_wcpu.h"
-#include "dev_ram.h"
-#include "dev_fakeio.h"
 
-typedef enum device_type
-{
-	DEVICE_INVAL,
-	DEVICE_WCPU,
-	DEVICE_FAKEIO,
-	DEVICE_DEBUGER,
-	DEVICE_RAM,
-}device_type_t;
+#include "device_type_ptr.h"
+
+
+typedef struct device_class device_class_t;
+
 
 typedef struct device
 {
 	device_type_t type;
-
 	int error;
-
-	void *ptr;
+	//timers
+	int timer_current;
+	int timer_numerator;
+	int timer_denominator;
+	//device ptr
+	device_type_ptr_t device;
 }device_t;
 
-typedef device_t *(*init_device)(device_type_t type);
+typedef device_t *(*init_device)(void);
 typedef void (*step_device)(device_t *device);
 
 typedef struct device_class
@@ -33,6 +30,7 @@ typedef struct device_class
 
 }device_class_t;
 
+extern device_class_t device_vtable;
 
 device_t *device_generate(device_type_t type);
 

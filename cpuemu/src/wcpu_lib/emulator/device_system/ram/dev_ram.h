@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 #include <errno.h>
+#include "device_type_ptr.h"
+#include "device.h"
 
 typedef struct device_ram
 {
@@ -12,6 +14,9 @@ typedef struct device_ram
 
 
 dev_ram_t create_ram(uint64_t size);
+
+device_t *device_ram_generate(void);
+void device_ram_update(device_t *device);
 
 
 void write_ram(dev_ram_t *ram, int64_t address, int64_t data);
