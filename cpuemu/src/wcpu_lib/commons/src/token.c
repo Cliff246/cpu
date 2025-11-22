@@ -316,7 +316,7 @@ toklex_t *lex_string(const char *string)
 
 	}
 	emit(tl, TOK_END, to_string('%'));
-
+	tl->index = 0;
 	return tl;
 }
 
@@ -334,3 +334,60 @@ void print_toklex(toklex_t *tl)
 	}
 }
 
+void free_tokstring(tok_t *token)
+{
+	free(token->token);
+
+}
+void free_toklex(toklex_t *toklex)
+{
+	for(int i = 0; i < toklex->tcount; ++i)
+	{
+		free_tokstring(&toklex->tokens[i]);
+
+	}
+	free(toklex->tokens);
+	free(toklex->string);
+	free(toklex);
+}
+
+void reset_toklex(toklex_t *tl)
+{
+	tl->index = 0;
+}
+
+tok_t *get_toklex(toklex_t *tl, int index)
+{
+
+	if(index >= tl->tcount || index < 0)
+	{
+		return NULL;
+	}
+	else
+	{
+		tok_t *tok = &tl->tokens[index];
+		//printf("%s\n", tok->token);
+		return tok;
+	}
+}
+
+
+tok_t *peek_toklex(toklex_t *tl)
+{
+	if(tl->index >= tl->tcount)
+	{
+		return NULL;
+	}
+	return &tl->tokens[tl->index++];
+}
+
+bool expect_toklex(toklex_t *tl, tok_type_t type)
+{
+	tok_t *tok = peek_toklex(tl);
+	if(tok == NULL)
+		return false;
+	else
+	{
+		return (tok->type == type)? true : false;
+	}
+}

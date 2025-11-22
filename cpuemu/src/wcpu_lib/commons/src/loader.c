@@ -1,5 +1,6 @@
 
 #include "loader.h"
+#include "common.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,22 +17,23 @@ static void force_close_sourcefile(sourcefile_t *sf)
 	sf->opened = false;
 	return;
 }
+
 bool get_canopen_sourcefile(sourcefile_t *sf)
 {
-	if(!get_isopen_sourcefile(sf))
+	if(get_isopen_sourcefile(sf))
 	{
 		return true;
 	}
-	FILE* test = fopen(sf->path, "rb");
+
+	FILE* test = fopen(sf->path, "r");
 	if(test == NULL)
 	{
-		errno = 0;
+
 
 		return false;
 	}
 	else
 	{
-		errno = 0;
 		fclose(test);
 		return true;
 	}
@@ -41,11 +43,11 @@ bool get_canopen_sourcefile(sourcefile_t *sf)
 
 bool open_sourcefile(sourcefile_t *sf)
 {
-	if(sf->opened == true)
+	if(get_isopen_sourcefile(sf))
 	{
 		return false;
 	}
-	FILE *fp = fopen(sf->path, "w");
+	FILE *fp = fopen(sf->path, "rw");
 
 	if(fp == NULL || errno != 0)
 	{
@@ -172,6 +174,54 @@ char *read_sourcefile(sourcefile_t *sf, int length)
 	}
 }
 
+char *readline_sourcefile(sourcefile_t *sf)
+{
+
+	if(!get_isopen_sourcefile(sf))
+	{
+		perror("read with invalid paramaters");
+
+		return NULL;
+	}
+
+	size_t guess = 20;
+
+	char *content = calloc(guess + 1, sizeof(char));
+	if(content == NULL)
+	{
+		perror("could not alloacte enought memory\n");
+		return NULL;
+	}
+
+
+	int current = 0;
+	FILE *fp = get_sourcefile_fp(sf);
+	while(1)
+	{
+		char ch = fgetc(fp);
+		if(!feof(fp) && ch != 10)
+		{
+			//printf("current %c\n", ch);
+			if(current >= guess)
+			{
+				guess *= 2;
+				content = realloc_safe(content, guess, sizeof(char));
+			}
+			content[current++] = (char)ch;
+		}
+		else
+		{
+			break;
+		}
+
+	}
+
+
+
+	return content;
+}
+
+
 void write_sourcefile(sourcefile_t *sf, char *content)
 {
 
@@ -231,10 +281,6 @@ FILE *get_sourcefile_fp(sourcefile_t *sf)
 
 
 
-sourcefile_t *sourcefile_create(char *path)
-{
-
-}
 
 
 int get_sourcefile_length(sourcefile_t *sf)
@@ -292,4 +338,9 @@ sourcefile_t *create_sourcefile(char *path)
 
 	sf->path = dup;
 	return sf;
+}
+
+bool get_isend_sourcefile(sourcefile_t *sf)
+{
+	return (bool)feof(get_sourcefile_fp(sf));
 }

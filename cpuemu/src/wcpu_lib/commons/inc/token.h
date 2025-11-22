@@ -2,7 +2,7 @@
 #define __TOKEN__
 
 #include <stdlib.h>
-
+#include <stdbool.h>
 
 typedef enum token_type
 {
@@ -49,4 +49,15 @@ toklex_t *lex_string(const char *string);
 void print_toklex(toklex_t *tl);
 
 void print_tok(tok_t *token);
+
+void reset_toklex(toklex_t *tl);
+tok_t *get_toklex(toklex_t *tl, int index);
+tok_t *peek_toklex(toklex_t *tl);
+bool expect_toklex(toklex_t *tl, tok_type_t type);
+
+
+void free_tokstring(tok_t *token);
+void free_toklex(toklex_t *toklex);
+
+
 #endif

@@ -1,6 +1,7 @@
 
 set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 	${CMAKE_CURRENT_SOURCE_DIR}/emucore.c
+	${CMAKE_CURRENT_SOURCE_DIR}/emulator_configure.c
 #bus
 
 #device core

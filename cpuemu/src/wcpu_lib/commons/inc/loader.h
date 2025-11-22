@@ -32,11 +32,13 @@ bool open_sourcefile(sourcefile_t *sf);
 bool close_sourcefile(sourcefile_t *sf);
 
 char *read_sourcefile(sourcefile_t *sf, int length);
+char *readline_sourcefile(sourcefile_t *sf);
 void write_sourcefile(sourcefile_t *sf, char *content);
 void add_newline_sourcefile(sourcefile_t *sf);
 bool get_isopen_sourcefile(sourcefile_t *sf);
 
 bool set_cursor_sourcefile(sourcefile_t *sf, int cursor);
+bool get_isend_sourcefile(sourcefile_t *sf);
 int get_cursor_sourcefile(sourcefile_t *sf);
 void reset_cursor_sourcefile(sourcefile_t *sf);
 
