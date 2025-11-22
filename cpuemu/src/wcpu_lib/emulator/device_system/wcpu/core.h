@@ -13,21 +13,19 @@
 	X(FETCHER		, 1)				\
 	X(LEDGER 		, 1)				\
 	X(ALU 			, 1)				\
-	X(ALU 			, 1)				\
 
 #define CORE_PARTS_ADD(x, y) + (1 * y)
 #define COUNT_CORE_PARTS (0 CORE_PARTS_LIST(CORE_PARTS_ADD))
 
-typedef enum core_part_id
-{
-	CORE_PART_REGFILE,
-	CORE_PART_LSU,
-	CORE_PART_CACHE,
-	CORE_PART_AGGREGATOR,
-	CORE_PART_FETCHER,
-	CORE_PART_MATTRESS,
-}core_part_id_t;
+#define CORE_PART_NAME(X, Y) WCPU_PART_ ## X
+#define CORE_PART_NAME_ENUM(X, Y) CORE_PART_NAME(X, Y),
 
+
+
+
+#define CORE_PART_ORDER(X, Y) [CORE_PART_NAME(X, 0)] = {Y},
+
+extern int parts_order[];
 
 typedef struct
 {
@@ -35,8 +33,8 @@ typedef struct
 
 }core_t;
 
+static core_t *wcpu_create_core(void);
+
 core_t *wcpu_core_generate(void);
-
-void wcpu_core_update(void *);
-
+void wcpu_core_update(core_t *core);
 #endif

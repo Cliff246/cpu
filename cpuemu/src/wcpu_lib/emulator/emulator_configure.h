@@ -39,8 +39,6 @@ typedef struct emulator_config_device_settings
 	bool used;
 	device_type_t type;
 	toklex_t *toklex;
-
-
 }emuconfig_dev_settings_t;
 
 

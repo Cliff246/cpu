@@ -13,14 +13,14 @@
 typedef struct device_wcpu
 {
 
-	core_t core;
+	core_t *core;
 
 	int port_behaviour;
 
 }dev_wcpu_t;
 
 
-device_t *device_wcpu_generate(void);
+device_type_ptr_t device_wcpu_generate(device_t *device,emuconfig_dev_settings_t *settings);
 
 void device_wcpu_update(device_t *device);
 

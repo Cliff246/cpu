@@ -1,8 +1,15 @@
 #include "dev_wcpu.h"
+#include "core.h"
+#include <stdlib.h>
 
-
-device_t *device_wcpu_generate(void)
+device_type_ptr_t device_wcpu_generate(device_t *device,emuconfig_dev_settings_t *settings)
 {
+	dev_wcpu_t *cpu = calloc(1, sizeof(dev_wcpu_t));
+	cpu->core = wcpu_core_generate();
+
+	device_type_ptr_t ptr;
+	ptr.wcpu = cpu;
+	return ptr;
 
 }
 

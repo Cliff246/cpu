@@ -17,6 +17,7 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/lsu.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_part.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/cache.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/core.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_isa.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/ledger.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/alu.c
@@ -45,7 +46,7 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 	${CMAKE_CURRENT_SOURCE_DIR}/helpers/debug.c
 	${CMAKE_CURRENT_SOURCE_DIR}/helpers/code_decoder.c
 )
-
+set(CMAKE_BUILD_TYPE Debug)
 add_library(wcpu_lib_emulator ${CPU_CORE_EMULATOR} )
 
 include_directories(wcpu_lib_emulator PUBLIC

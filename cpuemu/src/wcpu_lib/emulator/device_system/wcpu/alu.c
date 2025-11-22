@@ -9,7 +9,10 @@
 
 part_ptr_t wcpu_alu_generate(void)
 {
+	alu_t *alu = calloc(1, sizeof(alu_t));
 
+	part_ptr_t pptr;
+	pptr.alu = alu;
 }
 
 void wcpu_alu_upadate(part_ptr_t alu)

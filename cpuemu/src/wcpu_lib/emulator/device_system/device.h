@@ -4,6 +4,8 @@
 #include "device_type_ptr.h"
 #include "device_message.h"
 #include "device_mailbox.h"
+#include "emulator_configure.h"
+
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -34,7 +36,7 @@ typedef struct device
 	device_type_ptr_t device;
 }device_t;
 
-typedef device_t *(*device_init)(void);
+typedef device_type_ptr_t (*device_init)(device_t *device, emuconfig_dev_settings_t *settings);
 typedef void (*device_step)(device_t *device);
 typedef dev_msg_t *(*device_read)(device_t *dev);
 typedef void     (*device_send)(device_t *dev, dev_msg_t *msg);
@@ -50,7 +52,7 @@ typedef struct device_class
 
 extern device_class_t device_vtable[DEVICES_TYPE_COUNT];
 
-device_t *device_generate(device_type_t type);
+device_t *device_generate(emuconfig_dev_settings_t *settings );
 
 void device_update(device_t *device);
 

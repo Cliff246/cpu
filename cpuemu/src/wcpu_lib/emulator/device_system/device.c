@@ -16,14 +16,15 @@ device_class_t device_vtable[DEVICES_TYPE_COUNT] =
 };
 
 
-
-device_t *device_generate(device_type_t type)
+device_t *device_generate(emuconfig_dev_settings_t *settings )
 {
 
+	device_t *device = calloc(1, sizeof(device_t));
+	device_type_t type = settings->type;
+	device->type = type;
+	device->device = device_vtable[type].init(device, settings);
 
-
-
-	return NULL;
+	return device;
 }
 
 

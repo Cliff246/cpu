@@ -5,6 +5,8 @@
 
 #include <stdint.h>
 
+#define CACHCE_CACHELINES_COUNT 128
+
 typedef struct cache_line
 {
 	char tag;
@@ -16,7 +18,7 @@ typedef struct cache_line
 typedef struct cache
 {
 	int width;
-	cacheline_t *lines;
+	cacheline_t lines[CACHCE_CACHELINES_COUNT];
 }cache_t;
 
 

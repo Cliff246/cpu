@@ -5,6 +5,8 @@
 #include <errno.h>
 #include "device_type_ptr.h"
 #include "device.h"
+#include "emulator_configure.h"
+
 
 typedef struct device_ram
 {
@@ -12,10 +14,10 @@ typedef struct device_ram
 	int64_t *content;
 }dev_ram_t;
 
+dev_ram_t *create_memory(int64_t length);
 
-dev_ram_t create_ram(uint64_t size);
 
-device_t *device_ram_generate(void);
+device_type_ptr_t device_ram_generate(device_t *device,emuconfig_dev_settings_t *settings);
 void device_ram_update(device_t *device);
 
 

@@ -101,11 +101,12 @@ static bool config_setting(emuconfig_t *ec)
 		exit(EXIT_FAILURE);
 	}
 	char *first_str = first->token;
+			printf("%s\n", first_str);
+
 	for(int i = 0; i < DEVICES_TYPE_COUNT; ++i)
 	{
 		if(test_device_name((device_type_t) i, first_str))
 		{
-			//printf("%s\n", first_str);
 
 			emuconfig_device_argparser_t argparser = emuconfig_dev_type_table[i].argparser_fn;
 			if(argparser == NULL)

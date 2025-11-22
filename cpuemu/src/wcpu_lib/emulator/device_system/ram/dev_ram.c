@@ -8,10 +8,15 @@
 
 #include <errno.h>
 
-
-device_t *device_ram_generate(void)
+device_type_ptr_t device_ram_generate(device_t *device, emuconfig_dev_settings_t *settings)
 {
+	device->address_range_start = 0;
+	device->address_range_length = 10000;
 
+	dev_ram_t *ram = create_memory(10000);
+	device_type_ptr_t ptr;
+	ptr.ram = ram;
+	return ptr;
 }
 
 void device_ram_update(device_t *device)

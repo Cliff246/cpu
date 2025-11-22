@@ -24,10 +24,10 @@ typedef union wcpu_part_ptr part_ptr_t;
 #define WCPU_PART_LIST(PART) 	\
 	PART(LSU)				  	\
 	PART(MATTRESS)			  	\
-	PART(REGISTER_FILE)	  		\
+	PART(REGFILE)	  			\
 	PART(FETCHER)				\
 	PART(CACHE)			 		\
-	PART(AGGREGATION)			\
+	PART(AGGREGATOR)			\
 	PART(LEDGER)				\
 	PART(FABRIC)				\
 	PART(ALU)					\

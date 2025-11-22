@@ -1,11 +1,15 @@
 #include "register_file.h"
 #include "wcpu_part_ptr.h"
 #include <stdint.h>
+#include <stdlib.h>
 
 //converts to (reg_file_t)
 part_ptr_t wcpu_regfile_generate(void)
 {
-
+	regfile_t *regfile = calloc(1, sizeof(regfile_t));
+	part_ptr_t pptr;
+	pptr.regfile = regfile;
+	return pptr;
 }
 
 
