@@ -34,6 +34,7 @@ emulator_t *emulator_generate(emuconfig_t *config);
 
 device_t *emulator_device_by_address(emulator_t *emulator, size_t address);
 
+void emulator_update(emulator_t *emu);
 //todo
 
 

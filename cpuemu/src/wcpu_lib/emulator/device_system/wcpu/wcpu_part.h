@@ -18,6 +18,7 @@
 
 typedef union wcpu_part_ptr part_ptr_t;
 
+#include "wcpu_part_bus.h"
 
 #include "wcpu_isa.h"
 
@@ -29,7 +30,6 @@ typedef union wcpu_part_ptr part_ptr_t;
 	PART(CACHE)			 		\
 	PART(AGGREGATOR)			\
 	PART(LEDGER)				\
-	PART(FABRIC)				\
 	PART(ALU)					\
 
 
@@ -52,9 +52,13 @@ typedef struct wcpu_part
 {
 	part_type_t type;
 	part_ptr_t ptr;
+	part_bus_t bus;
+	int id;
 }part_t;
 
-typedef void (*part_step)( part_ptr_t part);
+typedef void (*part_step)( part_t *part);
+typedef void (*part_import)( part_t *part);
+typedef void (*part_export)( part_t *part);
 typedef part_ptr_t (*part_init)(void);
 
 
@@ -63,7 +67,8 @@ typedef struct wcpu_part_class
 {
 	part_step step;
 	part_init init;
-
+	part_import import;
+	part_export export;
 
 }wcpu_part_class_t;
 
@@ -72,6 +77,8 @@ part_t *wcpu_part_generate(part_type_t type);
 
 void wcpu_part_step(part_t *part);
 
+part_signal_t part_bus_pop_signal(part_t *part);
+void part_bus_push_signal(part_t *part, part_signal_t signal);
 
 extern wcpu_part_class_t part_vtable[UNIQUE_PARTS];
 

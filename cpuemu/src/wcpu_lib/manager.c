@@ -311,7 +311,7 @@ void init(int argc, char **argv)
 	emuconfig_t *cf = create_emuconfig_internal(EMUCONFIG_INTERNAL_BASIC_CONSOLE);
 	printf("emulator \n");
 	emulator_t *emu = emulator_generate(cf);
-
+	emulator_update(emu);
 }
 /*
 	logger_set = false;

@@ -2,6 +2,7 @@
 
 #include "device.h"
 #include <stdlib.h>
+#include <assert.h>
 
 #include "dev_fakeio.h"
 #include "dev_ram.h"
@@ -22,8 +23,9 @@ device_t *device_generate(emuconfig_dev_settings_t *settings )
 	device_t *device = calloc(1, sizeof(device_t));
 	device_type_t type = settings->type;
 	device->type = type;
+	assert(device_vtable[type].init != NULL && "cannot init a device with no vtable fn");
 	device->device = device_vtable[type].init(device, settings);
-
+	assert(device->device.ptr != NULL && "device ptr cannot be null");
 	return device;
 }
 
@@ -32,5 +34,8 @@ device_t *device_generate(emuconfig_dev_settings_t *settings )
 
 void device_update(device_t *device)
 {
+	assert(device != NULL && "cannot update null device");
 
+	assert(device_vtable[device->type].update != NULL && "cannot update a device with no vtable fn");
+	device_vtable[device->type].update(device);
 }

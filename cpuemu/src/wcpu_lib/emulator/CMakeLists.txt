@@ -11,32 +11,34 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/device_mailbox.c
 #wcpu device
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/dev_wcpu.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/fetcher.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/aggregator.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/register_file.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/lsu.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_part.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/cache.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/core.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_isa.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/ledger.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/alu.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_part.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_part_bus.c
+
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/aggregator.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/register_file.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/lsu.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/cache.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/core.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/ledger.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/alu.c
 
 #mattress
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/mattress.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/mattress_interface.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/mattress_packet.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/mattress.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/mattress_interface.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/mattress_packet.c
 
 
 #fabric details
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric_lane.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric_register.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric_bus.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/fabric_execution.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/pjmp.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/pmem.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric/psys.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/fabric.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/fabric_lane.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/fabric_register.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/fabric_bus.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/fabric_execution.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/pjmp.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/pmem.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/psys.c
 #device fakeio
 
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/fakeio/dev_fakeio.c
@@ -56,8 +58,9 @@ include_directories(wcpu_lib_emulator PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/bus
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/fakeio
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/ram
 	${CMAKE_CURRENT_SOURCE_DIR}/helpers
@@ -72,8 +75,11 @@ target_include_directories(wcpu_lib_emulator PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/bus
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress/fabric
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/mattress
+
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress
+
 
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/fakeio
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/ram

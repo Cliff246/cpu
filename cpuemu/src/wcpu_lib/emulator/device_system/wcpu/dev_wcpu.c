@@ -15,7 +15,7 @@ device_type_ptr_t device_wcpu_generate(device_t *device,emuconfig_dev_settings_t
 
 void device_wcpu_update(device_t *device)
 {
-
+	wcpu_core_update(device->device.wcpu->core);
 }
 
 dev_msg_t *device_wcpu_read(device_t *dev);

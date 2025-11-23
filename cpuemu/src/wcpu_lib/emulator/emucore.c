@@ -178,5 +178,15 @@ device_t *emulator_device_by_address(emulator_t *emulator, size_t address)
 
 }
 
+
+void emulator_update(emulator_t *emu)
+{
+	for(int i = 0; i < emu->device_count; ++i)
+	{
+		printf("%d %d\n", i, emu->device_count);
+		device_update(emu->device_list[i]);
+	}
+}
 //todo
+
 void peek_system(char *cmd);
