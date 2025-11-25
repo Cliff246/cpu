@@ -8,6 +8,7 @@
 #include "wcpu_part.h"
 
 
+
 typedef struct ledger_entry
 {
 	char fabid;
@@ -22,7 +23,7 @@ typedef struct ledger
 }ledger_t;
 
 part_ptr_t wcpu_ledger_generate(void);
-void wcpu_ledger_update(part_ptr_t ledger);
+void wcpu_ledger_update(part_t *ledger);
 
 
 

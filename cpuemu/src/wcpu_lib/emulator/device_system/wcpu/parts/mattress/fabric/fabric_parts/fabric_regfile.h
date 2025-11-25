@@ -1,5 +1,5 @@
-#ifndef __FABRIC_REGISTER_HEADER__
-#define __FABRIC_REGISTER_HEADER__
+#ifndef __WCPU_FABRIC_REGFILE_HEADER__
+#define __WCPU_FABRIC_REGFILE_HEADER__
 
 #include <stdint.h>
 
@@ -27,7 +27,7 @@ typedef struct fabric_register_file
 	fabric_register_t fregs[FABRIC_REGISTERS_COUNT];
 
 
-}fabric_register_file_t;
+}fabric_regfile_t;
 
 
 

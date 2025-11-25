@@ -3,16 +3,20 @@
 
 
 #include "fabric_lane.h"
-#include "alu.h"
-#include "fabric_register.h"
-#include "fabric_controler.h"
+#include "fabric_alu.h"
+#include "fabric_regfile.h"
+#include "fabric_controller.h"
 #include "fabric_bus.h"
+#include "fabric_executer.h"
 
-#define COMPONENT_TYPES_LIST(X)	\
-	X(ALU)						\
-	X(REGISTERS)				\
-	X(CONTROLER)				\
+#define COMPONENT_TYPES_LIST(X)			\
+	X(FAB_ALU)						\
+	X(REGISTERS)					\
+	X(CONTROLER)					\
 	X(BUS)						\
+	X(EXECUTER)						\
+
+
 
 #define COMPONENT_NAME(C) FABRIC_COMPONENT_ ## C
 #undef X

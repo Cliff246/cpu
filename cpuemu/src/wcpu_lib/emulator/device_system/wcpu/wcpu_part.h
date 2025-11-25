@@ -6,7 +6,6 @@
 #include "fetcher.h"
 #include "lsu.h"
 #include "register_file.h"
-#include "mattress.h"
 #include "aggregator.h"
 #include "cache.h"
 #include "ledger.h"
@@ -15,8 +14,6 @@
 #include "alu.h"
 
 
-
-typedef union wcpu_part_ptr part_ptr_t;
 
 #include "wcpu_part_bus.h"
 
@@ -57,8 +54,8 @@ typedef struct wcpu_part
 }part_t;
 
 typedef void (*part_step)( part_t *part);
-typedef void (*part_import)( part_t *part);
-typedef void (*part_export)( part_t *part);
+typedef void (*part_import)( part_t *part, part_signal_t *signal);
+typedef bool (*part_export)( part_t *part, part_signal_t **siganl);
 typedef part_ptr_t (*part_init)(void);
 
 

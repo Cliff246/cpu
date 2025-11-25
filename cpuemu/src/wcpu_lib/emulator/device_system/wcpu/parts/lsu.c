@@ -9,7 +9,7 @@ part_ptr_t wcpu_lsu_generate(void)
 	return pptr;
 }
 
-void wcpu_lsu_update(part_ptr_t lsu)
+void wcpu_lsu_update(part_t *lsu)
 {
-
+	
 }

@@ -28,6 +28,6 @@ part_ptr_t wcpu_aggregator_generate(void);
 
 
 
-void wcpu_aggregator_update(part_ptr_t aggregator);
+void wcpu_aggregator_update(part_t *aggregator);
 
 #endif

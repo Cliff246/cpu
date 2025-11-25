@@ -56,6 +56,7 @@ typedef struct regfile
 {
 
 	int64_t iregs[64];
+	double fregs[64];
 
 	stack_reg_t stack;
 	inter_reg_t inter;
@@ -67,7 +68,7 @@ typedef struct regfile
 
 
 part_ptr_t wcpu_regfile_generate(void);
-void wcpu_regfile_update(part_ptr_t regfile);
+void wcpu_regfile_update(part_t *regfile);
 
 
 void print_regs(void);

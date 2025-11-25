@@ -39,7 +39,7 @@ typedef struct device
 typedef device_type_ptr_t (*device_init)(device_t *device, emuconfig_dev_settings_t *settings);
 typedef void (*device_step)(device_t *device);
 typedef dev_msg_t *(*device_read)(device_t *dev);
-typedef void     (*device_send)(device_t *dev, dev_msg_t *msg);
+typedef void (*device_send)(device_t *dev, dev_msg_t *msg);
 
 typedef struct device_class
 {

@@ -1,10 +1,10 @@
-#ifndef __LANE_RESOLVER_HEADER__
-#define __LANE_RESOLVER_HEADER__
+#ifndef __WCPU_FABRIC_PART_LANE_HEADER__
+#define __WCPU_FABRIC_PART_LANE_HEADER__
 
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "fabric_controler.h"
+#include "fabric_controller.h"
 
 typedef struct fabric_lane
 {

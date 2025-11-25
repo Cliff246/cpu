@@ -1,6 +1,7 @@
 #include "wcpu_part_ptr.h"
 #include "aggregator.h"
 #include <stdlib.h>
+#include <assert.h>
 
 part_ptr_t wcpu_aggregator_generate(void)
 {
@@ -11,8 +12,16 @@ part_ptr_t wcpu_aggregator_generate(void)
 }
 
 
-
-void wcpu_aggregator_update(part_ptr_t ptr)
+void wcpu_aggregator_update(part_t *aggregator)
 {
+	assert(aggregator == NULL && "aggregator cannot be null");
+
+	assert(aggregator->type == WCPU_PART_AGGREGATOR && "aggregator update ptr must have type of aggreagator");
+
+
+	aggregator_t *agr = aggregator->ptr.aggregator;
+
+
+
 
 }

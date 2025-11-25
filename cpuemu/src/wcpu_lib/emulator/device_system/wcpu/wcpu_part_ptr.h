@@ -24,4 +24,7 @@ typedef union wcpu_part_ptr
 	void *raw;
 }part_ptr_t;
 
+typedef struct wcpu_part part_t;
+
+
 #endif

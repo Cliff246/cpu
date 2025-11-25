@@ -57,6 +57,6 @@ typedef struct mattress
 
 
 part_ptr_t wcpu_mattress_generate(void);
-void wcpu_mattress_update(part_ptr_t mattress);
+void wcpu_mattress_update(part_t *mattress);
 
 #endif

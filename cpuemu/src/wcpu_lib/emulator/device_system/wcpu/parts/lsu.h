@@ -26,7 +26,7 @@ typedef struct lsu
 }lsu_t;
 
 part_ptr_t wcpu_lsu_generate(void);
-void wcpu_lsu_update(part_ptr_t lsu);
+void wcpu_lsu_update(part_t *lsu);
 
 uint64_t load(uint64_t address);
 

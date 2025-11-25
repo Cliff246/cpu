@@ -11,7 +11,7 @@ part_ptr_t wcpu_ledger_generate(void)
 	return pptr;
 }
 
-void wcpu_ledger_update(part_ptr_t ledger)
+void wcpu_ledger_update(part_t *ledger)
 {
 
 }

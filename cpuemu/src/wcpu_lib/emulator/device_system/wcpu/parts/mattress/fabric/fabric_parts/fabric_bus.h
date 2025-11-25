@@ -1,5 +1,5 @@
-#ifndef __FABRIC_BUS_HEADER__
-#define __FABRIC_BUS_HEADER__
+#ifndef __WCPU_FABRIC_PART_BUS_HEADER__
+#define __WCPU_FABRIC_PART_BUS_HEADER__
 
 
 #include "mattress_interface.h"
