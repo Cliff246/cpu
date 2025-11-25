@@ -16,7 +16,7 @@ typedef struct lsu_entry
 }lsu_entry_t;
 
 
-typedef struct lsu
+typedef struct wcpu_part_lsu
 {
 	lsu_entry_t entries[MAX_LSU_ENTRIES];
 

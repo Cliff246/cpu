@@ -15,7 +15,7 @@ typedef struct ledger_entry
 
 }ledger_entry_t;
 
-typedef struct ledger
+typedef struct wcpu_part_ledger
 {
 	int current_row;
 	ledger_entry_t entries[LEDGER_DEPENDENCIES_LIMIT][LEDGER_EPOCH_LIMIT][LEDGER_EDGE_LIMIT];

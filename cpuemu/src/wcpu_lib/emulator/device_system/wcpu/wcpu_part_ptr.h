@@ -1,14 +1,14 @@
 #ifndef __WCPU_PART_PTR_HEADER__
 #define __WCPU_PART_PTR_HEADER__
 
-typedef struct fetcher fetcher_t;
-typedef struct alu alu_t;
-typedef struct regfile regfile_t;
-typedef struct mattress mattress_t;
-typedef struct ledger ledger_t;
-typedef struct cache cache_t;
-typedef struct lsu lsu_t;
-typedef struct aggregator aggregator_t;
+typedef struct wcpu_part_fetcher 		fetcher_t;
+typedef struct wcpu_part_alu 			alu_t;
+typedef struct wcpu_part_regfile 		regfile_t;
+typedef struct wcpu_part_mattress 		mattress_t;
+typedef struct wcpu_part_ledger 		ledger_t;
+typedef struct wcpu_part_cache 			cache_t;
+typedef struct wcpu_part_lsu 			lsu_t;
+typedef struct wcpu_part_aggregator 	aggregator_t;
 
 
 typedef union wcpu_part_ptr

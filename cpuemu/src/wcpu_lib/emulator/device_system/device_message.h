@@ -5,40 +5,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define DEVICE_MESSAGE_LIST(X)	\
-	X(INVAL)					\
-	X(WRITE)					\
-	X(READ)						\
-
-#define DEVICE_MESSAGE_ENUM_RESOLVE(name) DEVICE_MESSAGE_ ## name
-
-#define DEVICE_MESSAGE_ENUM_NAME(X) DEVICE_MESSAGE_ENUM_RESOLVE(X),
-
-
-typedef enum device_message_type
-{
-	DEVICE_MESSAGE_LIST(DEVICE_MESSAGE_ENUM_NAME)
-
-}dev_msg_type_t;
-
-
-typedef struct device_message_content_write
-{
-	uint64_t address;
-	uint64_t value;
-}dev_msg_content_write;
-
-typedef struct device_message_content_read
-{
-	uint64_t address;
-}dev_msg_content_read;
-
-
-typedef union device_message_content
-{
-	dev_msg_content_write write;
-	dev_msg_content_read read;
-}dev_msg_content_t;
 
 
 typedef struct device_message
@@ -50,14 +16,34 @@ typedef struct device_message
 	//dst id
 	dev_id_t src_id, dst_id;
 
-	//msg type
-	dev_msg_type_t msg_type;
 
-	dev_msg_content_t msg;
+	uint64_t address;
+	uint64_t value;
+	bool sendback;
+
+	bool is_response;
+
 
 }dev_msg_t;
 
 
-dev_msg_t *device_message_create(device_type_t src_type, dev_id_t src_id, dev_id_t dest_id, dev_msg_type_t type, dev_msg_content_t content);
+dev_msg_t *device_message_create(device_type_t src_type, dev_id_t src_id, dev_id_t dest_id, bool sendback, uint64_t address, uint64_t value);
+
+
+void device_message_respond(dev_msg_t *msg, uint64_t value);
+
+uint64_t get_device_message_address(dev_msg_t *msg);
+
+bool get_device_message_sendback(dev_msg_t *msg);
+bool get_device_message_is_response(dev_msg_t *msg);
+
+dev_id_t get_device_message_src_id(dev_msg_t *msg);
+dev_id_t get_device_message_dst_id(dev_msg_t *msg);
+
+void print_device_message(dev_msg_t *msg);
+
+
+dev_msg_t *device_message_consume(dev_msg_t *msg);
+void device_message_release(dev_msg_t *msg);
 
 #endif

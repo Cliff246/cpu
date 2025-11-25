@@ -16,7 +16,7 @@ typedef struct fetch_request
 
 }fetch_request_t;
 
-typedef struct fetcher
+typedef struct wcpu_part_fetcher
 {
 
 

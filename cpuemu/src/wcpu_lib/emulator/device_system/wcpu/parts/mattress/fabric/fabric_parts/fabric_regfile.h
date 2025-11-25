@@ -1,31 +1,26 @@
-#ifndef __WCPU_FABRIC_REGFILE_HEADER__
-#define __WCPU_FABRIC_REGFILE_HEADER__
+#ifndef __WCPU_FABRIC_PART_REGFILE_HEADER__
+#define __WCPU_FABRIC_PART_REGFILE_HEADER__
 
+#include "fabric_internals.h"
 #include <stdint.h>
 
-#define FABRIC_REGISTERS_COUNT 32
 
 
-typedef struct fabric_reference_register
-{
-	int16_t reg_epoch;
-	char reg_index;
-	char reg_branch;
-}frreg_t;
 
-typedef struct fabric_register
+typedef struct wcpu_fabric_register
 {
 	int64_t value;
-	frreg_t ref;
+	fabric_regref_t rename;
 }fabric_register_t;
 
+#define FABRIC_REGISTERS_COUNT 64
 
 
-typedef struct fabric_register_file
+typedef struct wcpu_fabric_regfile
 {
 
 	fabric_register_t fregs[FABRIC_REGISTERS_COUNT];
-
+	
 
 }fabric_regfile_t;
 

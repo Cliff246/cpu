@@ -15,7 +15,7 @@ part_ptr_t wcpu_alu_generate(void)
 	pptr.alu = alu;
 }
 
-void wcpu_alu_upadate(part_t *alu)
+void wcpu_alu_update(part_t *alu)
 {
 
 }

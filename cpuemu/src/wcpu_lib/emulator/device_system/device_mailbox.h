@@ -4,6 +4,7 @@
 
 
 #include "device_message.h"
+#include <stdbool.h>
 
 #define DEVICE_MAILBOX_SIZE 20
 
@@ -14,11 +15,12 @@ typedef struct device_mailbox
 
 }dev_mailbox_t;
 
-int device_mailbox_put(dev_mailbox_t *mailbox, dev_msg_t *msg);
-int device_mailbox_get(dev_mailbox_t *mailbox, dev_msg_t **msg_ref);
+bool device_mailbox_put(dev_mailbox_t *mailbox, dev_msg_t *msg);
+bool device_mailbox_get(dev_mailbox_t *mailbox, dev_msg_t **msg_ref);
 
-void device_mailbox_init(dev_mailbox_t *mailbox);
+dev_mailbox_t *device_mailbox_init(void);
 
+void device_mailbox_print(dev_mailbox_t *mailbox);
 
 
 

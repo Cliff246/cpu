@@ -4,10 +4,14 @@
 
 #include "wcpu_part_ptr.h"
 
+typedef struct wcpu_alu_operation
+{
+
+}alu_op_t;
 
 
 //big fatty shared alu's and fpu's for the mattress to send to
-typedef struct alu
+typedef struct wcpu_part_alu
 {
 
 }alu_t;

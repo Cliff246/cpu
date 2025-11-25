@@ -1,5 +1,17 @@
 #include "fabric.h"
 
+
+
+fabric_t *create_fabric(void)
+{
+
+}
+
+void step_fabric(fabric_t *fabric)
+{
+
+}
+
 /*
 
 void step_cpu(void)

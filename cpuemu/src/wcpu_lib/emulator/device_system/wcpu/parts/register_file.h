@@ -1,5 +1,5 @@
-#ifndef __REGISTER_FILE_HEADER__
-#define __REGISTER_FILE_HEADER__
+#ifndef __WCPU_PART_REGISTER_FILE_HEADER__
+#define __WCPU_PART_REGISTER_FILE_HEADER__
 
 #include <stdint.h>
 #include "wcpu_part_ptr.h"
@@ -52,7 +52,7 @@ typedef struct
 }bookmark_file_t;
 
 
-typedef struct regfile
+typedef struct wcpu_part_regfile
 {
 
 	int64_t iregs[64];

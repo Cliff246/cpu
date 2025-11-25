@@ -1,46 +1,11 @@
 #ifndef __FABRIC_HEADER__
 #define __FABRIC_HEADER__
 
-
-#include "fabric_lane.h"
-#include "fabric_alu.h"
-#include "fabric_regfile.h"
-#include "fabric_controller.h"
-#include "fabric_bus.h"
-#include "fabric_executer.h"
-
-#define COMPONENT_TYPES_LIST(X)			\
-	X(FAB_ALU)						\
-	X(REGISTERS)					\
-	X(CONTROLER)					\
-	X(BUS)						\
-	X(EXECUTER)						\
+#include "fabric_part.h"
 
 
 
-#define COMPONENT_NAME(C) FABRIC_COMPONENT_ ## C
-#undef X
-#define X(x) COMPONENT_NAME(x),
-typedef enum fabric_component_type
-{
-	COMPONENT_TYPES_LIST(X)
-}fabric_component_type_t;
-
-#undef X
-
-#undef X
-#define X(x) + 1
-
-#define COMPONENTS_LENGTH (0 COMPONENT_TYPES_LIST(X))
-typedef struct fabric_component
-{
-	fabric_component_type_t type;
-	void *component;
-
-}fabric_component_t;
-
-
-#define FABRIC_COMPONENT_ORDER_ENUM(FCOMP) \
+#define FABRIC_PART_ORDER_ENUM(FCOMP) \
 	FCOMP(FAB_MICRO_ALU)		 	  \
 	FCOMP(FAB_REGFILE)				  \
 	FCOMP(FAB_BUS)					  \
@@ -58,15 +23,12 @@ typedef enum fabric_debug_flag
 
 
 
-typedef struct fabric
+typedef struct wcpu_fabric
 {
 
 	int fabric_id;
 	fabric_debug_flag_t debug_flag;
-	fabric_component_t components[COMPONENTS_LENGTH];
-
-
-
+	fabric_part_t parts[FABRIC_PARTS_LENGTH];
 
 }fabric_t;
 

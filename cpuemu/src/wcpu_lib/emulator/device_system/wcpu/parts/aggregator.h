@@ -1,23 +1,23 @@
-#ifndef __AGGREGATOR_HEADER__
-#define __AGGREGATOR_HEADER__
+#ifndef __WCPU_PART_AGGREGATOR_HEADER__
+#define __WCPU_PART_AGGREGATOR_HEADER__
 
 #include "wcpu_part.h"
 #include <stdlib.h>
 #include <stdint.h>
 
-typedef struct aggregate
+typedef struct merge_entry
 {
 	int pc;
 	int32_t inst;
 	int64_t imm;
-}aggregate_t;
+}merge_entry_t;
 
 #define AGGREGATOR_QUEUE_SIZE 8
 #define AGGREGATOR_MAX_EDGES 4
 
-typedef struct aggregator
+typedef struct wcpu_part_aggregator
 {
-	aggregate_t queue[AGGREGATOR_QUEUE_SIZE];
+	merge_entry_t queue[AGGREGATOR_QUEUE_SIZE];
 
 	int edges[AGGREGATOR_MAX_EDGES];
 

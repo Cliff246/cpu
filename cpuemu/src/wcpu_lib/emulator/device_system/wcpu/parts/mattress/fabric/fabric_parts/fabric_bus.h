@@ -5,10 +5,10 @@
 #include "mattress_interface.h"
 #include "mattress_packet.h"
 
-typedef struct fabric_bus
+typedef struct wcpu_fabric_bus
 {
-	mat_pkt_t pkt_out;
-	mat_pkt_t pkt_in;
+	mattress_packet_t pkt_out;
+	mattress_packet_t pkt_in;
 
 	int last_cycle_in;
 	int last_cycle_out;

@@ -1,5 +1,5 @@
-#ifndef __MATTRESS_INTERFACE__
-#define __MATTRESS_INTERFACE__
+#ifndef __WCPU_PART_MATTRESS_INTERFACE_HEADER__
+#define __WCPU_PART_MATTRESS_INTERFACE_HEADER__
 
 
 #include "mattress_packet.h"
@@ -19,29 +19,23 @@ typedef enum mattress_interface_state
 #define MATTRESS_INTERFACE_PACKET_LIMIT 10
 
 
-typedef struct mattress_port
+typedef struct wcpu_mattress_interface
 {
 	mattress_interface_state_t state;
-
 	//error code
 	int error;
+	//source
 	int mailbox_src;
+	mattress_packet_t *buffer_in[MATTRESS_INTERFACE_PACKET_LIMIT];
+	mattress_packet_t *buffer_out[MATTRESS_INTERFACE_PACKET_LIMIT];
+}mattress_interface_t;
 
+mattress_interface_t *create_matrix_interface(int src);
 
+bool has_interface_changed(mattress_interface_t *interface);
 
-	mat_pkt_t *buffer_in[MATTRESS_INTERFACE_PACKET_LIMIT];
-	mat_pkt_t *buffer_out[MATTRESS_INTERFACE_PACKET_LIMIT];
-
-
-
-}mat_port_t;
-
-mat_port_t *create_matrix_port(int src);
-
-bool has_port_changed(mat_port_t *port);
-
-mat_pkt_t *read_port_packet(mat_port_t *port);
-bool write_port_packet(mat_port_t *port, mat_pkt_t *pkt);
+mattress_packet_t *read_interface_packet(mattress_interface_t *interface);
+bool write_interface_packet(mattress_interface_t *interface, mattress_packet_t *pkt);
 
 
 #endif

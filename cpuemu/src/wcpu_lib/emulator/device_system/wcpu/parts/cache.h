@@ -1,5 +1,5 @@
-#ifndef __CACHE_HEADER__
-#define __CACHE_HEADER__
+#ifndef __WCPU_PART_CACHE_HEADER__
+#define __WCPU_PART_CACHE_HEADER__
 
 #include "wcpu_part.h"
 
@@ -15,7 +15,7 @@ typedef struct cache_line
 
 }cacheline_t;
 
-typedef struct cache
+typedef struct wcpu_part_cache
 {
 	int width;
 	cacheline_t lines[CACHCE_CACHELINES_COUNT];

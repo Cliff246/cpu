@@ -1,7 +1,10 @@
 #include "emucore.h"
-
+#include "device_mailbox.h"
+#include "device_message.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
+#include <stdbool.h>
 
 emulator_t *emulator_generate(emuconfig_t *config)
 {
@@ -28,8 +31,8 @@ emulator_t *emulator_generate(emuconfig_t *config)
 	}
 
 	emu->device_count = config->settings_index;
-	printf("%d\n", sizeof(emu_dev_slot_t));
-	printf("used %d\n", emu->device_count);
+	//printf("%d\n", sizeof(emu_dev_slot_t));
+	//printf("used %d\n", emu->device_count);
 
 	emu->device_slots = calloc(emu->device_count, sizeof(emu_dev_slot_t));
 
@@ -44,6 +47,7 @@ emulator_t *emulator_generate(emuconfig_t *config)
 		if(emu->config->settings[i].used == true)
 		{
 			device_t *dev = device_generate(&emu->config->settings[i]);
+			dev->device_id = i;
 			emu_dev_slot_t slot =
 			{
 				.device_index = i,
@@ -178,15 +182,76 @@ device_t *emulator_device_by_address(emulator_t *emulator, size_t address)
 
 }
 
+device_t *emulator_get_device_from_id(emulator_t *emu, dev_id_t *devid)
+{
+	assert(devid >= 0 && "device_id can never when searching == -1");
+	assert(devid < emu->device_count && "device id can never be over device count");
+	int index = (int)devid;
+	device_t *dev = emu->device_list[index];
+	return dev;
+}
+
+
+
 
 void emulator_update(emulator_t *emu)
 {
 	for(int i = 0; i < emu->device_count; ++i)
 	{
-		printf("%d %d\n", i, emu->device_count);
-		device_update(emu->device_list[i]);
+
+		device_t *dev = emu->device_list[i];
+
+		assert(dev != NULL && "device update found null device");
+
+		if(dev->type == DEVICE_RAM)
+		{
+			device_print(dev);
+		}
+		dev_mailbox_t *mb = get_device_mailbox(dev);
+
+		device_mailbox_print(mb);
+
+		dev_msg_t *get_msg;
+		bool mailbox_has = device_mailbox_get(mb, &get_msg);
+
+
+		if(mailbox_has == true)
+		{
+			device_read(dev, get_msg);
+		}
+
+
+		// update step
+		device_update(dev);
+		//send out step
+		//print_device(dev);
+
+		dev_msg_t *set_msg = device_send(dev);
+
+		//distrubute the message around
+		if(set_msg != NULL)
+		{
+
+			//check if it's on sendback or on release
+			bool sendback = get_device_message_sendback(set_msg);
+			dev_id_t dst;
+			if(sendback)
+			{
+				dst = get_device_message_src_id(set_msg);
+			}
+			else
+			{
+				dst = get_device_message_dst_id(set_msg);
+			}
+			//assume this is true
+			device_t *dst_device = emulator_get_device_from_id(emu, dst);
+
+			dev_mailbox_t *dst_mb = get_device_mailbox(dst_device);
+
+			bool could_put = device_mailbox_put(dst_mb, set_msg);
+			assert(could_put != false && "could put must never be false");
+
+		}
+
 	}
 }
-//todo
-
-void peek_system(char *cmd);

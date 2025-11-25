@@ -5,14 +5,12 @@
 #include <stdbool.h>
 
 #include "fabric_controller.h"
+#include "fabric_internals.h"
 
 typedef struct fabric_lane
 {
 	int64_t data;
-
-	int16_t reg_tag;
-	int16_t reg_epoch;
-	int16_t reg_branch;
+	fabric_regref_t ref;
 }fabric_lane_t;
 
 
@@ -21,7 +19,7 @@ typedef struct fabric_lane
 typedef struct fabric_lanes
 {
 	bool ready;
-	char dest;
+	int dest;
 	fabric_lane_t lane1;
 	fabric_lane_t lane2;
 	fabric_lane_t lane3;

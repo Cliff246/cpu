@@ -311,7 +311,22 @@ void init(int argc, char **argv)
 	emuconfig_t *cf = create_emuconfig_internal(EMUCONFIG_INTERNAL_BASIC_CONSOLE);
 	printf("emulator \n");
 	emulator_t *emu = emulator_generate(cf);
-	emulator_update(emu);
+
+	device_t *device_cpu =  emulator_get_device_from_id(emu, 0);
+	device_t *device_ram = emulator_get_device_from_id(emu, 2);
+	dev_msg_t *msg = device_message_create(DEVICE_WCPU, 0, 2, false, 10, 100);
+	dev_mailbox_t *mb = get_device_mailbox(device_ram);
+	device_mailbox_put(mb, msg);
+	for(int i = 0; i < 4; ++i)
+	{
+
+
+
+
+
+		emulator_update(emu);
+
+	}
 }
 /*
 	logger_set = false;

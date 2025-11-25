@@ -28,6 +28,9 @@ typedef struct emulator
 
 }emulator_t;
 
+
+device_t *emulator_get_device_from_id(emulator_t *emu, dev_id_t *devid);
+
 static void emulator_sort_slots(emulator_t *emu);
 emulator_t *emulator_generate(emuconfig_t *config);
 

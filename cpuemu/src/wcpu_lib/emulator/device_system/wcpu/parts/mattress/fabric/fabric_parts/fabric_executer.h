@@ -3,7 +3,7 @@
 
 typedef struct wcpu_fabric_executer
 {
-
+	
 }fabric_executer_t;
 
 #endif
