@@ -17,6 +17,7 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_part_signal.c
 
 
+
 #wcpu core
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/core/core.c
 
@@ -81,6 +82,7 @@ include_directories(wcpu_lib_emulator PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/bus
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/signal_types
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/core
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric
@@ -105,6 +107,7 @@ target_include_directories(wcpu_lib_emulator PUBLIC
 
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/core
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/signal_types
 
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/fabric_parts

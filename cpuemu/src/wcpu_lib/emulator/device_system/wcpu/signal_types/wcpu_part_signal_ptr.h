@@ -1,0 +1,43 @@
+#ifndef __WCPU_PART_SIGNAL_PTR_HEADER__
+#define __WCPU_PART_SIGNAL_PTR_HEADER__
+
+
+//X(SRC_PART, DEST_PART, NAME)
+
+
+#define PART_SIGNAL_LIST(X)	\
+	X(LSU)					\
+	X(CORE_INPUT)			\
+	X(CORE_OUTPUT)			\
+
+
+#define PART_SIGNAL_STRUCT_NAME(X) _part_signal_ ## X ## _t
+
+#define PART_SIGNAL_ENUM_NAME(X) PART_SIGNAL_TYPE_ ## X
+
+#define PART_SIGNAL_ENUM_IMPLEMENTATION(X) PART_SIGNAL_ENUM_NAME(X),
+
+typedef enum wcpu_part_signal_type
+{
+	PART_SIGNAL_LIST( PART_SIGNAL_ENUM_IMPLEMENTATION)
+}part_signal_type_t;
+
+#define PART_SIGNAL_STRUCT_IMPLEMENTATION(X) typedef struct wcpu_part_signal_ ## X PART_SIGNAL_STRUCT_NAME(X) ;
+
+//all the structs
+PART_SIGNAL_LIST(PART_SIGNAL_STRUCT_IMPLEMENTATION)
+
+
+#define PART_SIGNAL_UNION_ELEMENT_IMPLEMENTATION(X) PART_SIGNAL_STRUCT_NAME(X) *X;
+
+#define PART_SIGNAL_ENUM_ADDER(X) + 1
+#define PART_SIGNAL_ENUM_COUNT (0 PART_SIGNAL_LIST(PART_SIGNAL_ENUM_ADDER))
+
+typedef union part_signal_ptr
+{
+	PART_SIGNAL_LIST(PART_SIGNAL_UNION_ELEMENT_IMPLEMENTATION)
+	void *raw;
+}part_signal_content_ptr_t;
+
+
+#endif

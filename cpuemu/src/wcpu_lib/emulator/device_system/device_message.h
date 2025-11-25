@@ -15,7 +15,7 @@ typedef struct device_message
 	//src id
 	//dst id
 	dev_id_t src_id, dst_id;
-
+	int src_channel, dest_channel;
 
 	uint64_t address;
 	uint64_t value;

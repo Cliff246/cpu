@@ -8,6 +8,8 @@
 #include "device_message.h"
 
 #include <stdint.h>
+#include <stdbool.h>
+
 
 
 typedef struct device_wcpu
@@ -17,10 +19,13 @@ typedef struct device_wcpu
 
 	int port_behaviour;
 
+	bool has_out, has_in;
+	dev_msg_t *current_msg_out;
+	dev_msg_t *current_msg_in;
 }dev_wcpu_t;
 
 
-device_type_ptr_t device_wcpu_generate(device_t *device,emuconfig_dev_settings_t *settings);
+device_type_ptr_t device_wcpu_generate(device_t *device, emuconfig_dev_settings_t *settings);
 
 void device_wcpu_update(device_t *device);
 

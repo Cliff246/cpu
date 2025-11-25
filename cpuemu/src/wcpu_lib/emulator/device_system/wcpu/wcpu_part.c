@@ -10,8 +10,8 @@
 
 wcpu_part_class_t part_vtable[UNIQUE_PARTS] =
 {
-	[WCPU_PART_LSU] = {.init = wcpu_lsu_generate, .step = wcpu_lsu_update},
-	[WCPU_PART_MATTRESS] = {.init = wcpu_mattress_generate, NULL},
+	[WCPU_PART_LSU] = {.init = wcpu_lsu_generate, .step = wcpu_lsu_update, .export = wcpu_lsu_export, .import = wcpu_lsu_import},
+	[WCPU_PART_MATTRESS] = {.init = wcpu_mattress_generate, },
 	[WCPU_PART_CACHE] = {.init = wcpu_cache_generate, .step = wcpu_ledger_update},
 	[WCPU_PART_AGGREGATOR] = {.init = wcpu_aggregator_generate, .step = wcpu_aggregator_update},
 	[WCPU_PART_FETCHER] = {.init = wcpu_fetcher_generate, .step = wcpu_fetcher_update},
@@ -44,10 +44,10 @@ part_t *init_part(part_type_t type)
 }
 
 //step part
-void step_part(part_t *part)
+void wcpu_part_step(part_t *part)
 {
 
-	assert(part == NULL && "part cannot be null when stepping");
+	assert(part != NULL && "part cannot be null when stepping");
 	part_type_t type = part->type;
 	assert(type < 0 && type >= UNIQUE_PARTS && "part outside of bounds");
 
@@ -62,4 +62,15 @@ void step_part(part_t *part)
 part_t *wcpu_part_generate(part_type_t type)
 {
 	return init_part(type);
+}
+part_signal_t *part_bus_pop_signal(part_t *part)
+
+{
+	assert(part != NULL && "part cannot be null when poping signal");
+
+}
+void part_bus_push_signal(part_t *part, part_signal_t *signal)
+{
+	assert(part != NULL && "part cannot be null when poping signal");
+
 }

@@ -2,7 +2,9 @@
 #define __CORE_HEADER__
 
 #include "wcpu_part.h"
+#include "wcpu_part_signal_ptr.h"
 
+#include "wcpu_part_signal_core_io.h"
 
 #define CORE_PARTS_LIST(X)				\
 	X(REGFILE 		, 1)				\
@@ -27,8 +29,26 @@
 
 extern int parts_order[];
 
-typedef struct
+#define CORE_STATE_LIST(X)			\
+	X(INVAL)						\
+	X(DEBUG)						\
+	X(STOPPED)						\
+	X(RUNNING)						\
+	X(INIT)							\
+
+
+#define CORE_STATE_NAME(X) CORE_STATE_ ## X
+
+#define CORE_STATE_ENUM(X)	CORE_STATE_NAME(X),
+
+typedef enum wcpu_core_state
 {
+	CORE_STATE_LIST(CORE_STATE_ENUM)
+}core_state_t;
+
+typedef struct wcpu_core
+{
+	core_state_t state;
 	part_t *parts[COUNT_CORE_PARTS];
 
 }core_t;

@@ -13,7 +13,8 @@ bool push_signal_onto_channel(part_channel_t *channel, part_signal_t *signal)
 		fprintf(stderr,"to many signals on channel %d ", channel->size);
 		return false;
 	}
-	channel->signals[channel->size++] = signal;
+	channel->signals[channel->size++] = part_signal_consume(signal);
+
 	return true;
 }
 
@@ -28,5 +29,6 @@ bool pop_signal_off_channel(part_channel_t *channel, part_signal_t **signal)
 	}
 
 	*signal = channel->signals[channel->size--];
+	part_signal_release(*signal);
 	return true;
 }

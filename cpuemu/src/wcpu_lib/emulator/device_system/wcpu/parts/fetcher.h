@@ -18,16 +18,8 @@ typedef struct fetch_request
 
 typedef struct wcpu_part_fetcher
 {
-
-
-
-
 	int32_t insts[FETCHER_INSTRUCTION_BUFFER];
 	int64_t imms[FETCHER_IMMEDIATE_BUFFER];
-
-
-
-
 }fetcher_t;
 
 

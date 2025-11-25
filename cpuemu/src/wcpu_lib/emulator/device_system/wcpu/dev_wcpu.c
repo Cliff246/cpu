@@ -20,8 +20,10 @@ void device_wcpu_update(device_t *device)
 
 void device_wcpu_read(device_t *dev, dev_msg_t *send)
 {
-
+	
 }
+
+
 dev_msg_t *device_wcpu_send(device_t *dev)
 {
 	return NULL;
