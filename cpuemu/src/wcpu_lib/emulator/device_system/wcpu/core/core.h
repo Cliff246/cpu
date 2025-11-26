@@ -85,7 +85,7 @@ typedef struct wcpu_core
 
 
 		bool responded;
-	}core_io
+	}core_io;
 
 }core_t;
 

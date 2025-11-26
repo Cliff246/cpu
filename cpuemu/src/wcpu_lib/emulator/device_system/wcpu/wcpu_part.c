@@ -7,6 +7,9 @@
 #include "fetcher.h"
 #include "alu.h"
 #include <assert.h>
+#include <stdio.h>
+
+
 
 wcpu_part_class_t part_vtable[UNIQUE_PARTS] =
 {

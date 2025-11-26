@@ -1,6 +1,6 @@
 #include "wcpu_isa.h"
 #include <stdint.h>
-
+#include <stdio.h>
 
 inst_t decode_inst(int32_t instr)
 {

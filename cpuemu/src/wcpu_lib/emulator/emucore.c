@@ -17,9 +17,6 @@ emulator_t *emulator_generate(emuconfig_t *config)
 		exit(EXIT_FAILURE);
 	}
 
-
-
-
 	emu->config = config;
 
 	emu->device_list = calloc(config->settings_index, sizeof(device_t *));
@@ -58,18 +55,11 @@ emulator_t *emulator_generate(emuconfig_t *config)
 
 			emu->device_slots[i] = slot;
 			emu->device_list[i] = dev;
-
-
 		}
 	}
-
-
 	//sort the slots of the emulator
 	emulator_sort_slots(emu);
-
-
 	return emu;
-
 }
 
 //true is overlap and false is no overlap
@@ -97,8 +87,6 @@ static size_t partition(emulator_t *emu, size_t lo, size_t hi)
 {
 	size_t pivot = emu->device_slots[hi].address_start;
 
-
-
 	size_t i = lo;
 
 	for(size_t j = lo; j <= (hi - 1); ++j)
@@ -117,7 +105,6 @@ static size_t partition(emulator_t *emu, size_t lo, size_t hi)
 static void quicksort_emulator(emulator_t *emulator, size_t lo, size_t hi)
 {
 	if(lo >= hi) return;
-	printf("lo hi %d %d\n", lo, hi);
 	size_t pivot = partition(emulator, lo, hi);
 	if(pivot > 0)
 		quicksort_emulator(emulator, lo, pivot - 1);
@@ -142,7 +129,13 @@ static void emulator_sort_slots(emulator_t *emu)
                     i, i+1);
             exit(1);
         }
-		printf("%d %d %d %d\n", A->address_start, B->address_start, A->address_length, B->address_length);
+		size_t start_a = A->address_start;
+	   	size_t start_b = B->address_start;
+
+		size_t length_a = A->address_length;
+		size_t length_b = A->address_length;
+
+		printf("%lu %lu %lu %lu \n", start_a, start_b, length_a, length_b);
     }
 }
 
@@ -171,18 +164,13 @@ static int emulator_device_address_search(emulator_t *emulator, size_t address)
 }
 
 
+//TODO 
 device_t *emulator_device_by_address(emulator_t *emulator, size_t address)
 {
-
-
-
-
-
-
-
+	return NULL;
 }
 
-device_t *emulator_get_device_from_id(emulator_t *emu, dev_id_t *devid)
+device_t *emulator_get_device_from_id(emulator_t *emu, dev_id_t devid)
 {
 	assert(devid >= 0 && "device_id can never when searching == -1");
 	assert(devid < emu->device_count && "device id can never be over device count");

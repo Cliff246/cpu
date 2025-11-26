@@ -4,7 +4,6 @@
 #include "device_type_ptr.h"
 #include "device.h"
 #include "core.h"
-#include "wcpu_part.h"
 #include "device_message.h"
 
 #include <stdint.h>

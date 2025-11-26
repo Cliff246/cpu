@@ -22,7 +22,6 @@ typedef struct device_ram
 
 dev_ram_t *create_memory(int64_t length);
 
-
 device_type_ptr_t device_ram_generate(device_t *device,emuconfig_dev_settings_t *settings);
 void device_ram_update(device_t *device);
 void device_ram_read(device_t *dev, dev_msg_t *msg);

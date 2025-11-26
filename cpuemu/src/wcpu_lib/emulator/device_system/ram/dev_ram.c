@@ -55,13 +55,6 @@ void device_ram_update(device_t *device)
 	assert(device->type == DEVICE_RAM && "device must be of type ram");
 
 	//essentially skiped
-
-
-
-
-
-
-
 }
 
 
@@ -95,11 +88,6 @@ void device_ram_read(device_t *dev, dev_msg_t *msg)
 			ram->current_msg = msg;
 			ram->has_msg = true;
 		}
-
-
-
-
-
 	}
 	return;
 }
@@ -137,9 +125,6 @@ dev_msg_t *device_ram_send(device_t *dev)
 
 }
 
-
-
-
 int64_t read_ram(dev_ram_t *ram, int64_t address)
 {
 	assert(ram->length > address && address >= 0 && "read out of range");
@@ -150,11 +135,7 @@ void write_ram(dev_ram_t *ram, int64_t address, int64_t data)
 {
 	assert(ram->length > address && address >= 0 && "write out of range");
 	ram->content[address] = data;
-
-
 }
-
-
 
 void device_ram_print(device_t *dev)
 {
@@ -162,9 +143,8 @@ void device_ram_print(device_t *dev)
 
 	dev_ram_t *ram = dev->device.ram;
 
-
 	for(int i = 0; i < ram->length; ++i)
 	{
-		printf("[%lld] = [%lld]\n", i, read_ram(ram, i));
+		printf("[%d] = [%lld]\n", i, read_ram(ram, i));
 	}
 }

@@ -20,17 +20,13 @@ device_class_t device_vtable[DEVICES_TYPE_COUNT] =
 size_t get_device_address_start(device_t *device)
 {
 	assert(device != NULL && "device cannot be null");
-
 	return device->address_range_start;
-
 }
 
 size_t get_device_address_length(device_t *device)
 {
 	assert(device != NULL && "device cannot be null");
 	return device->address_range_length;
-
-
 }
 
 
@@ -38,7 +34,6 @@ size_t get_device_address_length(device_t *device)
 dev_mailbox_t *get_device_mailbox(device_t *dev)
 {
 	assert(dev != NULL && "device cannot be null");
-
 	assert(dev->mailbox != NULL && "device inbox cannot be null");
 	return dev->mailbox;
 
@@ -50,14 +45,12 @@ dev_mailbox_t *get_device_mailbox(device_t *dev)
 
 device_t *device_generate(emuconfig_dev_settings_t *settings )
 {
-
 	device_t *device = calloc(1, sizeof(device_t));
 	device_type_t type = settings->type;
 	device->type = type;
 	assert(device_vtable[type].init != NULL && "cannot init a device with no vtable fn");
 	device->device = device_vtable[type].init(device, settings);
 	assert(device->device.ptr != NULL && "device ptr cannot be null");
-
 
 	device->mailbox = device_mailbox_init();
 
@@ -72,14 +65,9 @@ void device_update(device_t *device)
 	assert(device != NULL && "cannot update null device");
 	assert(device->type != DEVICE_INVAL && "cannot update device_inval");
 
-
-
 	assert(device_vtable[device->type].update != NULL && "cannot update a device with no vtable fn");
 
-
-
-
-
+	//this is boring but yay
 	device_vtable[device->type].update(device);
 
 }
