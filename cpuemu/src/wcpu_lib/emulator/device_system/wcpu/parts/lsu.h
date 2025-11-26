@@ -34,7 +34,17 @@ typedef struct wcpu_part_lsu
 	lsu_entry_t entries[MAX_LSU_ENTRIES];
 	int entries_currently;
 
+	struct {
+		bool release;
+		int64_t value;
+		int64_t addr;
 
+	}output_signal;
+
+	struct {
+		bool release;
+		int64_t addr;
+	}input_signal;
 
 }lsu_t;
 
@@ -52,7 +62,8 @@ void wcpu_lsu_entry_clear(part_t *part, int index);
 void wcpu_lsu_entry_set(part_t *part, int index, int64_t address, int64_t value, lsu_entry_type_t type, int writeback_dest);
 
 lsu_entry_t wcpu_lsu_get(part_t *part, int index);
-
+void wcpu_lsu_entry_set_value(part_t *part, int index, int64_t value);
+void wcpu_lsu_entry_set_finished(part_t *part, int index, bool value);
 
 uint64_t load(uint64_t address);
 

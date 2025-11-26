@@ -1,16 +1,26 @@
-#ifndef __WCPU_PART_SIGNAL_LSU_ENTRY_HEADER__
-#define __WCPU_PART_SIGNAL_LSU_ENTRY_HEADER__
+#ifndef __WCPU_PART_SIGNAL_CORE_IO_HEADER__
+#define __WCPU_PART_SIGNAL_CORE_IO_HEADER__
 
-#include "wcpu_part_signal_core_io.h"
+#include "wcpu_part_signal_ptr.h"
 
-struct wcpu_part_signal_CORE_INPUT_t
+#include <stdint.h>
+
+struct wcpu_part_signal_CORE_INPUT
 {
+	int64_t addr;
+};
+
+struct wcpu_part_signal_CORE_OUTPUT
+{
+	int64_t addr;
+	int64_t value;
 
 };
 
-struct wcpu_part_signal_CORE_OUTPUT_t
+struct wcpu_part_signal_CORE_MEM_RESPONSE
 {
-
+	int64_t address;
+	int64_t load_value;
 };
 
 #endif

@@ -6,9 +6,22 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+void wcpu_core_clear_io(core_t *core)
+{
+	assert(core != NULL && "core cannot be null");
+
+	core->core_io.address = 0;
+	core->core_io.issued = false;
+	core->core_io.responded = false;
+	core->core_io.type = CORE_IO_NONE;
+	core->core_io.value = 0;
+}
+
 int parts_order[] = {
 	CORE_PARTS_LIST(CORE_PART_ORDER)
 };
+
+
 
 
 static core_t *wcpu_create_core(void)
@@ -16,13 +29,14 @@ static core_t *wcpu_create_core(void)
 	core_t *core =  calloc(1, sizeof(core_t));
 	assert(core != NULL && "core malloc cannot fail");
 	size_t current = 0;
-	for(int i = 0; i < COUNT_CORE_PARTS; ++i)
+	//current part type
+	for(int i = 0; i < COUNT_UNIQUE_CORE_PARTS; ++i)
 	{
 
 		for(int pi = 0; pi < parts_order[i]; ++pi)
 		{
 			core->parts[current++] = wcpu_part_generate(i);
-
+			core->locations[i][pi] = current;
 		}
 	}
 
@@ -47,7 +61,7 @@ void wcpu_core_update(core_t *core)
 }
 
 typedef void (*wcpu_signal_unique)(core_t *core, part_signal_t *signal);
-
+//core signal table, allows for special signals to be sent with core. allowing for the cpu to function
 typedef struct core_signal_handle
 {
 	wcpu_signal_unique fn;
@@ -55,24 +69,46 @@ typedef struct core_signal_handle
 
 }core_signal_handle_t;
 
-
+//just some stubs of the input and core
 void wcpu_core_input(core_t *core, part_signal_t *signal)
 {
+	assert(signal->signal_type == PART_SIGNAL_TYPE_CORE_INPUT && "signal type must be core input");
+	if(core->core_io.issued == false)
+	{
+		_part_signal_CORE_INPUT_t coreinp = *signal->ptr.CORE_INPUT;
+		core->core_io.issued = true;
+		core->core_io.type = CORE_IO_READ;
+		core->core_io.address = coreinp.addr;
+		//something like this
+		part_signal_consume(signal);
+	}
 
 }
 
 void wcpu_core_output(core_t *core, part_signal_t *signal)
 {
+	assert(signal->signal_type == PART_SIGNAL_TYPE_CORE_OUTPUT && "signal type must be core output");
+	if(core->core_io.issued == false)
+	{
+		_part_signal_CORE_OUTPUT_t coreout = *signal->ptr.CORE_OUTPUT;
+		core->core_io.issued = true;
+		core->core_io.type = CORE_IO_WRITE;
+		core->core_io.address = coreout.addr;
+		core->core_io.value = coreout.value;
 
+		//something like this
+		part_signal_consume(signal);
+	}
 }
 
 
-
+//static handles for all signal types
 static core_signal_handle_t signal_handles[] =
 {
 	[PART_SIGNAL_TYPE_LSU] = {.distrubutes = true, .fn = NULL},
 	[PART_SIGNAL_TYPE_CORE_INPUT] = {.distrubutes = false, .fn = wcpu_core_input},
-	[PART_SIGNAL_TYPE_CORE_OUTPUT] = {.distrubutes = false, .fn = wcpu_core_output}
+	[PART_SIGNAL_TYPE_CORE_OUTPUT] = {.distrubutes = false, .fn = wcpu_core_output},
+	[PART_SIGNAL_TYPE_CORE_MEM_RESPONSE] = {.distrubutes = true, .fn = NULL},
 };
 
 
@@ -81,6 +117,7 @@ static_assert((sizeof(signal_handles)/sizeof(signal_handles[0])) == PART_SIGNAL_
 
 void wcpu_core_handle_messages(core_t *core)
 {
+	assert(core != NULL && "core cannot be null");
 	for(int i = 0; i < COUNT_CORE_PARTS; ++i)
 	{
 		part_t *part = core->parts[i];
@@ -112,4 +149,34 @@ void wcpu_core_handle_messages(core_t *core)
 			}
 		}
 	}
+
+	//dispatch core signals around core_io to lsu
+
+	if(core->core_io.responded == true && core->core_io.issued == true)
+	{
+
+		_part_signal_CORE_MEM_RESPONSE_t *pscmr = calloc(1, sizeof(_part_signal_CORE_MEM_RESPONSE_t));
+		//sets the values
+		pscmr->address = core->core_io.address;
+		pscmr->load_value = core->core_io.value;
+
+		part_signal_content_ptr_t content;
+		content.CORE_MEM_RESPONSE = pscmr;
+		//this is really really stupid
+
+		//this essentially takes the first possible lsu and assumes its the source... need to fix this
+		int lsu_dev_id = core->locations[WCPU_PART_LSU][0];
+
+
+		//this psig might be lost lol
+		part_signal_t *psig = part_signal_create(PART_SIGNAL_TYPE_CORE_MEM_RESPONSE, -1, lsu_dev_id, content);
+		bool push_result = push_signal_onto_channel(&core->parts[psig->dst_id]->bus.import, psig);
+		assert(push_result == true && "push must always be true");
+		wcpu_core_clear_io(core);
+		//releases this signal in the core
+		part_signal_release(psig);
+
+	}
+
+
 }

@@ -1,10 +1,15 @@
 #ifndef __CORE_HEADER__
 #define __CORE_HEADER__
 
+#include "common.h"
+
 #include "wcpu_part.h"
 #include "wcpu_part_signal_ptr.h"
 
 #include "wcpu_part_signal_core_io.h"
+
+#include <stdint.h>
+#include <stdlib.h>
 
 #define CORE_PARTS_LIST(X)				\
 	X(REGFILE 		, 1)				\
@@ -18,6 +23,12 @@
 
 #define CORE_PARTS_ADD(x, y) + (1 * y)
 #define COUNT_CORE_PARTS (0 CORE_PARTS_LIST(CORE_PARTS_ADD))
+
+#define CORE_PARTS_ADD_UNIQUE(x, y) + 1
+#define COUNT_UNIQUE_CORE_PARTS (0 CORE_PARTS_LIST(CORE_PARTS_ADD_UNIQUE))
+
+
+
 
 #define CORE_PART_NAME(X, Y) WCPU_PART_ ## X
 #define CORE_PART_NAME_ENUM(X, Y) CORE_PART_NAME(X, Y),
@@ -46,18 +57,47 @@ typedef enum wcpu_core_state
 	CORE_STATE_LIST(CORE_STATE_ENUM)
 }core_state_t;
 
+
+typedef enum wcpu_core_io_type
+{
+	CORE_IO_NONE,
+
+	CORE_IO_READ,
+	CORE_IO_WRITE,
+}core_io_type_t;
+
 typedef struct wcpu_core
 {
 	core_state_t state;
 	part_t *parts[COUNT_CORE_PARTS];
 
+
+	//this is inefficent but oh well
+	int locations[COUNT_UNIQUE_CORE_PARTS][COUNT_CORE_PARTS];
+
+	//TODO determine if this is going to block writes with only one
+	struct
+	{
+		uint64_t address;
+		uint64_t value;
+		bool issued;
+		core_io_type_t type;
+
+
+		bool responded;
+	}core_io
+
 }core_t;
 
+
+
+void wcpu_core_clear_io(core_t *core);
 static core_t *wcpu_create_core(void);
 
 core_t *wcpu_core_generate(void);
 void wcpu_core_update(core_t *core);
 
 void wcpu_core_handle_messages(core_t *core);
+
 
 #endif

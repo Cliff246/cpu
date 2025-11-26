@@ -9,6 +9,7 @@
 	X(LSU)					\
 	X(CORE_INPUT)			\
 	X(CORE_OUTPUT)			\
+	X(CORE_MEM_RESPONSE)	\
 
 
 #define PART_SIGNAL_STRUCT_NAME(X) _part_signal_ ## X ## _t
