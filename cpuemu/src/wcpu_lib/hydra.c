@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
 hydra_entry_t hydra_list[] =
 {
 	{"print",  print_head},
@@ -63,11 +62,11 @@ bool hydra(cmd_t *cmd)
 
 bool step_head(cmd_t *cmd)
 {
-	step_cpu();
-	step_cpu();
-	step_cpu();
-	step_cpu();
-	step_cpu();
+	//step_cpu();
+	//step_cpu();
+	//step_cpu();
+	//step_cpu();
+	//step_cpu();
 	tok_t *tok1 = next_tok_cmd(cmd);
 	return false;
 }
@@ -102,7 +101,7 @@ bool print_head(cmd_t *cmd)
 	char *arg1 = tok1->token;
 	if(!strcmp(arg1, "regs"))
 	{
-		print_regs();
+		//print_regs();
 	}
 	else if(!strcmp(arg1, "reg"))
 	{
@@ -112,17 +111,20 @@ bool print_head(cmd_t *cmd)
 		if(tok2->type == TOK_INT)
 		{
 			int reg = atoi(tok2->token);
-			printf("r:%d = %lld", reg, get_reg(reg));
+			//TODO get reg
+			long long reg_value = 0;
+			printf("r:%d = %lld", reg, reg_value);
 			return false;
 		}
 	}
 	else if(!strcmp(arg1, "sp"))
 	{
-		printf("%d\n", get_sp());
+
+		//printf("%d\n", get_sp());
 	}
 	else if(!strcmp(arg1, "sfp"))
 	{
-		printf("%d\n", get_sfp());
+		//printf("%d\n", get_sfp());
 	}
 	else if(!strcmp(arg1, "mem"))
 	{
