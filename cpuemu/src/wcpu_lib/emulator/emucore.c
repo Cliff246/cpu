@@ -32,7 +32,8 @@ emulator_t *emulator_generate(emuconfig_t *config)
 	//printf("used %d\n", emu->device_count);
 
 	emu->device_slots = calloc(emu->device_count, sizeof(emu_dev_slot_t));
-
+	//add stable slots
+	emu->stable_slots = 0;
 	if(emu->device_slots == NULL)
 	{
 		perror("could not create device slots");
@@ -52,9 +53,13 @@ emulator_t *emulator_generate(emuconfig_t *config)
 				.address_start = dev->address_range_start,
 				.address_length = dev->address_range_length
 			};
+			if(get_device_has_address(dev))
+			{
+				emu->device_slots[emu->stable_slots++] = slot;
 
-			emu->device_slots[i] = slot;
+			}
 			emu->device_list[i] = dev;
+
 		}
 	}
 	//sort the slots of the emulator
@@ -116,8 +121,8 @@ static void emulator_sort_slots(emulator_t *emu)
 	if (emu->device_count == 0)
         return;
 
-    quicksort_emulator(emu, 0, emu->device_count - 1);
- 	for (size_t i = 0; i + 1 < emu->device_count; i++)
+    quicksort_emulator(emu, 0, emu->stable_slots - 1);
+ 	for (size_t i = 0; i + 1 < emu->stable_slots; i++)
     {
         emu_dev_slot_t *A = &emu->device_slots[i];
         emu_dev_slot_t *B = &emu->device_slots[i+1];
@@ -135,7 +140,7 @@ static void emulator_sort_slots(emulator_t *emu)
 		size_t length_a = A->address_length;
 		size_t length_b = A->address_length;
 
-		printf("%lu %lu %lu %lu \n", start_a, start_b, length_a, length_b);
+		//printf("%lu %lu %lu %lu \n", start_a, start_b, length_a, length_b);
     }
 }
 
@@ -146,28 +151,56 @@ static void emulator_sort_slots(emulator_t *emu)
 static int emulator_device_address_search(emulator_t *emulator, size_t address)
 {
 	size_t low = 0;
-	size_t high = emulator->device_count - 1;
+	size_t high = emulator->stable_slots - 1;
 	size_t mid = 0;
 	while(low <= high)
 	{
 		mid = low + (high - low) / 2;
-
-		size_t mid_value = emulator->device_slots[mid].address_start;
-		if(mid_value == address)
-			return mid;
-		if(mid_value < address)
-			low = mid + 1;
-		else
+		emu_dev_slot_t *slot =  &emulator->device_slots[mid];
+		size_t start = slot->address_start;
+		size_t end = slot->address_length + start;
+		//printf("%d %d\n", start, end);
+		if(address < start)
+		{
 			high = mid - 1;
+
+		}
+		else if(address >= end)
+		{
+			low = mid + 1;
+		}
+		else
+		{
+			return mid;
+
+		}
 	}
-	return mid;
+	return -1;
 }
 
 
-//TODO 
-device_t *emulator_device_by_address(emulator_t *emulator, size_t address)
+//TODO
+bool emulator_get_device_from_address(emulator_t *emulator, device_t **dev, size_t address)
 {
-	return NULL;
+	assert(emulator != NULL && "emulator cannot be null");
+	assert(dev != NULL && "cannot give back nothing");
+	//emulator_print_slots(emulator);
+	int index = emulator_device_address_search(emulator, address);
+	if(index == -1)
+	{
+		printf("no slots found\n");
+		assert(0);
+	}
+	emu_dev_slot_t slot = emulator->device_slots[index];
+	//printf("index %d %d %d %d \n", index, slot.address_start,slot.address_length,  address);
+
+	if(address >= slot.address_start && address < slot.address_start + slot.address_length)
+	{
+		*dev = emulator->device_list[slot.device_index];
+		return true;
+	}
+
+	return false;
 }
 
 device_t *emulator_get_device_from_id(emulator_t *emu, dev_id_t devid)
@@ -184,62 +217,138 @@ device_t *emulator_get_device_from_id(emulator_t *emu, dev_id_t devid)
 
 void emulator_update(emulator_t *emu)
 {
-	for(int i = 0; i < emu->device_count; ++i)
+
+
+	printf("\nREAD STAGE\n\n");
+	for(int ia= 0; ia < emu->device_count; ++ia)
 	{
 
-		device_t *dev = emu->device_list[i];
-
+		device_t *dev = emu->device_list[ia];
 		assert(dev != NULL && "device update found null device");
 
-		if(dev->type == DEVICE_RAM)
-		{
-			device_print(dev);
-		}
 		dev_mailbox_t *mb = get_device_mailbox(dev);
-
-		device_mailbox_print(mb);
-
+		//device_mailbox_print(mb);
 		dev_msg_t *get_msg;
 		bool mailbox_has = device_mailbox_get(mb, &get_msg);
 
-
+		//fill the msg_arg
 		if(mailbox_has == true)
 		{
 			device_read(dev, get_msg);
-		}
 
+		}
+		printf("\n");
+
+		device_print(dev);
+
+	}
+
+	printf("\nUPDATE STAGE\n\n");
+
+	for(int ib = 0; ib < emu->device_count; ++ib)
+	{
+		device_t *dev = emu->device_list[ib];
+		assert(dev != NULL && "device update found null device");
+		device_update(dev);
+		printf("\n");
+
+		device_print(dev);
 
 		// update step
-		device_update(dev);
 		//send out step
-		//print_device(dev);
+	}
+	printf("\nWRITE STAGE\n\n");
 
+	for(int ic = 0; ic < emu->device_count; ++ic)
+	{
+		device_t *dev = emu->device_list[ic];
+		assert(dev != NULL && "device update found null device");
+		printf("\n");
+		device_print(dev);
 		dev_msg_t *set_msg = device_send(dev);
+
 
 		//distrubute the message around
 		if(set_msg != NULL)
 		{
 
+
+			bool has_dst = get_device_message_has_dst(set_msg);
+
+
 			//check if it's on sendback or on release
-			bool sendback = get_device_message_sendback(set_msg);
-			dev_id_t dst;
-			if(sendback)
+			dev_msg_type_t type = get_device_message_type(set_msg);
+
+			//check if it's a response
+
+
+			device_t *dst_device;
+			//print_device_message(set_msg);
+			dev_id_t dst = -1;
+			//print_device_message(set_msg);
+			//printf("\n");
+			if(type == DEVMSG_READ_RESPOND)
 			{
 				dst = get_device_message_src_id(set_msg);
+				dst_device = emulator_get_device_from_id(emu, dst);
+
 			}
+
+			else if(has_dst)
+			{
+				//printf("has dest %d %d\n", has_dst, set_msg->dst_id);
+				dst = get_device_message_dst_id(set_msg);
+				dst_device = emulator_get_device_from_id(emu, dst);
+
+			}
+			//get dest from address
 			else
 			{
-				dst = get_device_message_dst_id(set_msg);
+
+				size_t address = (size_t)get_device_message_address(set_msg);
+
+				bool found_device =  emulator_get_device_from_address(emu, &dst_device, address);
+				//checks if in that devices range
+				if(found_device == false)
+				{
+					assert(0 && "cannot address out of range");
+				}
+				//should be safe.
+
 			}
+
 			//assume this is true
-			device_t *dst_device = emulator_get_device_from_id(emu, dst);
-
 			dev_mailbox_t *dst_mb = get_device_mailbox(dst_device);
-
 			bool could_put = device_mailbox_put(dst_mb, set_msg);
 			assert(could_put != false && "could put must never be false");
 
-		}
 
+
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+static void print_slot(emu_dev_slot_t *slot, int index)
+{
+	printf("slot:%d, start:%d, stop:%d, devid:%d, dev_index:%d\n", index, slot->address_start, slot->address_length, slot->device_id, slot->device_index);
+}
+
+void emulator_print_slots(emulator_t *emu)
+{
+	for(int i = 0; i < emu->stable_slots; ++i)
+	{
+		print_slot(&emu->device_slots[i], i);
 	}
 }

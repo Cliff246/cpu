@@ -26,10 +26,12 @@ typedef struct device_wcpu
 
 device_type_ptr_t device_wcpu_generate(device_t *device, emuconfig_dev_settings_t *settings);
 
-void device_wcpu_update(device_t *device);
+void device_wcpu_update(device_t *dev);
 
 void device_wcpu_read(device_t *dev, dev_msg_t *send);
 
 dev_msg_t *device_wcpu_send(device_t *dev);
+void device_wcpu_print(device_t *dev);
+
 
 #endif

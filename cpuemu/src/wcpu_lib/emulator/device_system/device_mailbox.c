@@ -49,6 +49,14 @@ void device_mailbox_print(dev_mailbox_t *mailbox)
 {
 	for(int i = 0; i < DEVICE_MAILBOX_SIZE; ++i)
 	{
-		print_device_message(mailbox->msg_ring[i]);
+		dev_msg_t *msg = mailbox->msg_ring[i];
+		printf("[%d] = [", i);
+
+		if(msg != NULL)
+		{
+			print_device_message(msg);
+		}
+		printf("]\n");;
+
 	}
 }

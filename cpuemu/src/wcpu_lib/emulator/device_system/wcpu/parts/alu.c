@@ -20,6 +20,15 @@ void wcpu_alu_update(part_t *alu)
 
 }
 
+void wcpu_alu_import( part_t *part, part_signal_t *signal)
+{
+
+}
+bool wcpu_alu_export( part_t *part, part_signal_t **signal)
+{
+	return false;
+}
+
 
 //just some nice macros
 //

@@ -73,8 +73,10 @@ part_t *wcpu_part_generate(part_type_t type);
 
 void wcpu_part_step(part_t *part);
 
-part_signal_t *part_bus_pop_signal(part_t *part);
-void part_bus_push_signal(part_t *part, part_signal_t *signal);
+void wcpu_part_import(part_t *part, part_signal_t *signal);
+bool wcpu_part_export(part_t *part, part_signal_t **signal);
+
+
 
 extern wcpu_part_class_t part_vtable[UNIQUE_PARTS];
 

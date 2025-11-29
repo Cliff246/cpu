@@ -4,6 +4,8 @@
 #include "wcpu_part_ptr.h"
 #include "wcpu_part.h"
 #include <stdint.h>
+#include <stdbool.h>
+#include "wcpu_part_signal.h"
 
 #define FETCHER_INSTRUCTION_BUFFER 16
 #define FETCHER_IMMEDIATE_BUFFER 4
@@ -26,7 +28,8 @@ typedef struct wcpu_part_fetcher
 part_ptr_t wcpu_fetcher_generate(void);
 
 void wcpu_fetcher_update(part_t *fetcher);
-
+void wcpu_fetcher_import( part_t *part, part_signal_t *signal);
+bool wcpu_fetcher_export( part_t *part, part_signal_t **signal);
 
 uint32_t get_inst_at_pc_address(uint64_t address);
 

@@ -32,5 +32,15 @@ part_ptr_t wcpu_fetcher_generate(void)
 
 void wcpu_fetcher_update(part_t *fetcher)
 {
-	assert(fetcher == NULL && "fetcher part cannot be null");
+	assert(fetcher != NULL && "fetcher part cannot be null");
+}
+
+void wcpu_fetcher_import( part_t *part, part_signal_t *signal)
+{
+
+}
+
+bool wcpu_fetcher_export( part_t *part, part_signal_t **signal)
+{
+	return false;
 }

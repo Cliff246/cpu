@@ -6,8 +6,7 @@
 #include "device_message.h"
 #include <stdbool.h>
 
-#define DEVICE_MAILBOX_SIZE 20
-
+#define DEVICE_MAILBOX_SIZE 5
 typedef struct device_mailbox
 {
 	dev_msg_t *msg_ring[DEVICE_MAILBOX_SIZE];

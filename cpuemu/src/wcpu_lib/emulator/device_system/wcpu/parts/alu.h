@@ -3,6 +3,8 @@
 
 
 #include "wcpu_part_ptr.h"
+#include "wcpu_part_signal.h"
+#include <stdbool.h>
 
 typedef struct wcpu_alu_operation
 {
@@ -20,5 +22,7 @@ typedef struct wcpu_part_alu
 part_ptr_t wcpu_alu_generate(void);
 
 void wcpu_alu_update(part_t *ptr);
+void wcpu_alu_import( part_t *part, part_signal_t *signal);
+bool wcpu_alu_export( part_t *part, part_signal_t **signal);
 
 #endif

@@ -15,8 +15,19 @@ device_type_ptr_t device_ram_generate(device_t *device, emuconfig_dev_settings_t
 {
 	device->address_range_start = 0;
 	device->address_range_length = 20;
+	device->has_address = true;
 
-	dev_ram_t *ram = create_memory(20);
+	dev_ram_t *ram = create_memory(device->address_range_length);
+
+
+
+	for(int i = 0; i < ram->length; ++i)
+	{
+		ram->content[i] = i;
+	}
+
+
+
 	device_type_ptr_t ptr;
 	ptr.ram = ram;
 	return ptr;
@@ -74,19 +85,23 @@ void device_ram_read(device_t *dev, dev_msg_t *msg)
 	else
 	{
 		assert(ram->has_msg == false && "ram cannot over write a inflight message");
-
-		if(get_device_message_sendback(msg) == false)
+		ram->current_msg = msg;
+		dev_msg_type_t type = get_device_message_type(msg);
+		if(type == DEVMSG_WRITE)
 		{
 			write_ram(ram, msg->address, msg->value);
-			device_message_release(msg);
-			ram->current_msg = NULL;
+			device_message_release(&ram->current_msg);
 			ram->has_msg = false;
+
+		}
+		else if(type == DEVMSG_READ_SEND)
+		{
+			device_message_consume(&ram->current_msg );
+			ram->has_msg = true;
 		}
 		else
 		{
-			device_message_consume(msg);
-			ram->current_msg = msg;
-			ram->has_msg = true;
+			assert(0 && "invalid message type");
 		}
 	}
 	return;
@@ -105,7 +120,7 @@ dev_msg_t *device_ram_send(device_t *dev)
 	}
 	else
 	{
-		dev_msg_t *current = device_message_consume(ram->current_msg);
+		dev_msg_t *current = ram->current_msg;
 
 		//get the read address
 		uint64_t read_address = get_device_message_address(current);
@@ -142,6 +157,12 @@ void device_ram_print(device_t *dev)
 	assert(dev != NULL && "device must not be null");
 
 	dev_ram_t *ram = dev->device.ram;
+	if(ram->has_msg)
+	{
+		printf("\tram msg: ");
+		print_device_message(ram->current_msg);
+		printf("\n");
+	}
 
 	for(int i = 0; i < ram->length; ++i)
 	{

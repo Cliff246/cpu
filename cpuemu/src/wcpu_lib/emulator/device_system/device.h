@@ -23,6 +23,7 @@ typedef struct device
 
 	dev_id_t device_id;
 
+
 	size_t address_range_start;
 	size_t address_range_length;
 
@@ -33,6 +34,9 @@ typedef struct device
 	int timer_denominator;
 	//device ptr
 	device_type_ptr_t device;
+
+	bool has_address;
+
 }device_t;
 
 
@@ -58,6 +62,7 @@ typedef struct device_class
 
 size_t get_device_address_start(device_t *device);
 size_t get_device_address_length(device_t *device);
+bool get_device_has_address(device_t *device);
 
 
 //avoid modifying the mailbox through direct gets and sets

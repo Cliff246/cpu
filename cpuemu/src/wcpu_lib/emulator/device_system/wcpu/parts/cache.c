@@ -18,3 +18,11 @@ void wcpu_cache_update(part_t *cache)
 }
 
 
+void wcpu_cache_import( part_t *part, part_signal_t *signal)
+{
+
+}
+bool wcpu_cache_export( part_t *part, part_signal_t **signal)
+{
+	return false;
+}

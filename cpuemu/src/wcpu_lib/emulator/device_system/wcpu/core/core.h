@@ -73,7 +73,12 @@ typedef struct wcpu_core
 
 
 	//this is inefficent but oh well
+	//stores all the 
 	int locations[COUNT_UNIQUE_CORE_PARTS][COUNT_CORE_PARTS];
+
+
+
+
 
 	//TODO determine if this is going to block writes with only one
 	struct
@@ -82,8 +87,6 @@ typedef struct wcpu_core
 		uint64_t value;
 		bool issued;
 		core_io_type_t type;
-
-
 		bool responded;
 	}core_io;
 

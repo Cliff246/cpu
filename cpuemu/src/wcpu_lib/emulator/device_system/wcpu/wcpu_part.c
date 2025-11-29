@@ -14,13 +14,13 @@
 wcpu_part_class_t part_vtable[UNIQUE_PARTS] =
 {
 	[WCPU_PART_LSU] = {.init = wcpu_lsu_generate, .step = wcpu_lsu_update, .export = wcpu_lsu_export, .import = wcpu_lsu_import},
-	[WCPU_PART_MATTRESS] = {.init = wcpu_mattress_generate, },
-	[WCPU_PART_CACHE] = {.init = wcpu_cache_generate, .step = wcpu_ledger_update},
-	[WCPU_PART_AGGREGATOR] = {.init = wcpu_aggregator_generate, .step = wcpu_aggregator_update},
-	[WCPU_PART_FETCHER] = {.init = wcpu_fetcher_generate, .step = wcpu_fetcher_update},
-	[WCPU_PART_REGFILE] = {.init = wcpu_regfile_generate},
-	[WCPU_PART_LEDGER] = {.init = wcpu_ledger_generate},
-	[WCPU_PART_ALU] = {.init = wcpu_alu_generate},
+	[WCPU_PART_MATTRESS] = {.init = wcpu_mattress_generate, .step = wcpu_mattress_update, .export = wcpu_mattress_export, .import = wcpu_mattress_import },
+	[WCPU_PART_CACHE] = {.init = wcpu_cache_generate, .step = wcpu_cache_update, .export = wcpu_cache_export, .import = wcpu_cache_import},
+	[WCPU_PART_AGGREGATOR] = {.init = wcpu_aggregator_generate, .step = wcpu_aggregator_update, .import = wcpu_aggregator_import, .export = wcpu_aggregator_export},
+	[WCPU_PART_FETCHER] = {.init = wcpu_fetcher_generate, .step = wcpu_fetcher_update, .export = wcpu_fetcher_export, .import = wcpu_fetcher_import},
+	[WCPU_PART_REGFILE] = {.init = wcpu_regfile_generate, .step = wcpu_regfile_update, .export = wcpu_regfile_export, .import = wcpu_regfile_import},
+	[WCPU_PART_LEDGER] = {.init = wcpu_ledger_generate, .step = wcpu_ledger_update, .export = wcpu_ledger_export, .import = wcpu_ledger_import},
+	[WCPU_PART_ALU] = {.init = wcpu_alu_generate, .step = wcpu_alu_update, .export = wcpu_alu_export, .import = wcpu_alu_import},
 };
 
 
@@ -28,7 +28,7 @@ wcpu_part_class_t part_vtable[UNIQUE_PARTS] =
 part_t *init_part(part_type_t type)
 {
 	static int part_id = 0;
-	printf("type: %d\n", type);
+	//printf("type: %d\n", type);
 	assert(type >= 0 && type < UNIQUE_PARTS && "part outside of bounds");
 
 	wcpu_part_class_t funcs = part_vtable[type];
@@ -52,10 +52,11 @@ void wcpu_part_step(part_t *part)
 
 	assert(part != NULL && "part cannot be null when stepping");
 	part_type_t type = part->type;
-	assert(type < 0 && type >= UNIQUE_PARTS && "part outside of bounds");
+	printf("%d\n", type);
+	assert(type >= 0 && type < UNIQUE_PARTS && "part outside of bounds");
 
 	wcpu_part_class_t funcs = part_vtable[type];
-	assert(funcs.step == NULL && "part must not have a defined step");
+	assert(funcs.step != NULL && "part must not have a defined step");
 
 
 	funcs.step(part);
@@ -66,14 +67,31 @@ part_t *wcpu_part_generate(part_type_t type)
 {
 	return init_part(type);
 }
-part_signal_t *part_bus_pop_signal(part_t *part)
 
+
+void wcpu_part_import(part_t *part, part_signal_t *signal)
 {
-	assert(part != NULL && "part cannot be null when poping signal");
+	assert(part != NULL && "part cannot be null when stepping");
+	part_type_t type = part->type;
+	assert(type >= 0 && type < UNIQUE_PARTS && "part outside of bounds");
 
+	wcpu_part_class_t funcs = part_vtable[type];
+	assert(funcs.import != NULL && "part must not have a defined import");
+	funcs.import(part, signal);
+	return;
 }
-void part_bus_push_signal(part_t *part, part_signal_t *signal)
-{
-	assert(part != NULL && "part cannot be null when poping signal");
 
+bool wcpu_part_export(part_t *part, part_signal_t **signal)
+{
+	assert(part != NULL && "part cannot be null when stepping");
+	part_type_t type = part->type;
+	assert(type >= 0 && type < UNIQUE_PARTS && "part outside of bounds");
+
+	wcpu_part_class_t funcs = part_vtable[type];
+	assert(funcs.export != NULL && "part must not have a defined export");
+
+
+	bool result = funcs.export(part, &signal);
+
+	return result;
 }

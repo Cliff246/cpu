@@ -12,7 +12,7 @@ device_class_t device_vtable[DEVICES_TYPE_COUNT] =
 {
 	[DEVICE_INVAL] = {.init = NULL, .update = NULL,.read = NULL, .send = NULL, .print = NULL},
 	[DEVICE_FAKEIO] = {.init = device_fakeio_generate, .update = device_fakeio_update,.read = device_fakeio_read, .send= device_fakeio_send, .print = NULL},
-	[DEVICE_WCPU] = {.init = device_wcpu_generate, .update = device_wcpu_update,.read = device_wcpu_read, .send = device_wcpu_send, .print = NULL},
+	[DEVICE_WCPU] = {.init = device_wcpu_generate, .update = device_wcpu_update,.read = device_wcpu_read, .send = device_wcpu_send, .print = device_wcpu_print},
 	[DEVICE_RAM] = {.init = device_ram_generate, .update = device_ram_update,.read = device_ram_read, .send = device_ram_send, .print = device_ram_print},
 };
 
@@ -58,7 +58,10 @@ device_t *device_generate(emuconfig_dev_settings_t *settings )
 }
 
 
-
+bool get_device_has_address(device_t *device)
+{
+	return device->has_address;
+}
 
 void device_update(device_t *device)
 {
@@ -112,7 +115,13 @@ static char *device_type_str[] =
 void device_print(device_t *device)
 {
 	printf("devid:%d type:%s\n", (int)device->device_id, device_type_str[device->type]);
+	if(device_vtable[device->type].print == NULL)
+	{
+		printf("no implementation\n");
+	}
+	else
+	{
+		device_vtable[device->type].print(device);
 
-	assert(device_vtable[device->type].print != NULL && "device doesnt have a pri9nt function");
-	device_vtable[device->type].print(device);
+	}
 }

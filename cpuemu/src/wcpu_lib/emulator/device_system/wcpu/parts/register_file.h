@@ -2,7 +2,9 @@
 #define __WCPU_PART_REGISTER_FILE_HEADER__
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "wcpu_part_ptr.h"
+#include "wcpu_part_signal.h"
 
 #define BOOKMARKS_MAX 128
 #define REG_ACC 63
@@ -69,6 +71,8 @@ typedef struct wcpu_part_regfile
 
 part_ptr_t wcpu_regfile_generate(void);
 void wcpu_regfile_update(part_t *regfile);
+void wcpu_regfile_import( part_t *part, part_signal_t *signal);
+bool wcpu_regfile_export( part_t *part, part_signal_t **signal);
 
 
 void print_regs(void);

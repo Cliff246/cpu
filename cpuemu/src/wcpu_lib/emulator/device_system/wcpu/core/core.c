@@ -22,10 +22,12 @@ int parts_order[] = {
 };
 
 
-
+#define WCPU_SIGNALS_ALLOC 1000
 
 static core_t *wcpu_create_core(void)
 {
+
+
 	core_t *core =  calloc(1, sizeof(core_t));
 	assert(core != NULL && "core malloc cannot fail");
 	size_t current = 0;
@@ -38,7 +40,12 @@ static core_t *wcpu_create_core(void)
 			core->parts[current++] = wcpu_part_generate(i);
 			core->locations[i][pi] = current;
 		}
+
+
+
+
 	}
+
 
 	return core;
 }
@@ -51,12 +58,60 @@ core_t *wcpu_core_generate(void)
 
 void wcpu_core_update(core_t *core)
 {
+	static int counter = 4;
+
+	if(core->core_io.issued != true)
+	{
+		core->core_io.issued = true;
+		core->core_io.type = CORE_IO_READ;
+		core->core_io.address = counter++;
+		core->core_io.responded = false;
+	}
+
 	//printf("update core\n");
 	//deploy core messages
 	wcpu_core_handle_messages(core);
 
-	//do updates or whaterver
 
+
+	part_signal_t *signals;
+
+
+	//import all of the messages by popping off your imports
+	for(int ia = 0; ia < COUNT_CORE_PARTS; ++ia)
+	{
+		part_t *part = core->parts[ia];
+
+		part_signal_t *signal;
+
+		while(pop_signal_off_channel(&part->bus.import, &signal))
+		{
+			wcpu_part_import(part, signal);
+		}
+	}
+
+	for(int ib =0; ib < COUNT_CORE_PARTS; ++ib)
+	{
+		part_t *part = core->parts[ib];
+
+		wcpu_part_step(part);
+
+	}
+	for(int ic =0; ic < COUNT_CORE_PARTS; ++ic)
+	{
+		part_t *part = core->parts[ic];
+		part_signal_t *signal;
+		while(wcpu_part_export(part, &signal))
+		{
+			if(signal == NULL)
+				continue;
+			bool push_result = push_signal_onto_channel(&part->bus.export, signal);
+			if(push_result == false)
+			{
+				continue;
+			}
+		}
+	}
 
 }
 
@@ -172,8 +227,11 @@ void wcpu_core_handle_messages(core_t *core)
 		part_signal_t *psig = part_signal_create(PART_SIGNAL_TYPE_CORE_MEM_RESPONSE, -1, lsu_dev_id, content);
 		bool push_result = push_signal_onto_channel(&core->parts[psig->dst_id]->bus.import, psig);
 		assert(push_result == true && "push must always be true");
-		wcpu_core_clear_io(core);
+		//wcpu_core_clear_io(core);
 		//releases this signal in the core
+
+		printf("%d", core->core_io.value);
+
 		part_signal_release(psig);
 
 	}

@@ -11,7 +11,6 @@
 typedef struct wcpu_part_channel
 {
 	part_signal_t *signals[CHANNEL_MAX_SIGNALS];
-	int size;
 	int index;
 }part_channel_t;
 

@@ -33,7 +33,6 @@
 //selflag turns rs2 into a number... as in, dont load rs2 convert it into a 6 bit number
 
 
-#define STR(x) #x
 
 //immf 00 = NON
 

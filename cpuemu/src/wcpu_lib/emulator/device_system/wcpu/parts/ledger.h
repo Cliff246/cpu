@@ -6,7 +6,8 @@
 #define LEDGER_EDGE_LIMIT 4
 
 #include "wcpu_part.h"
-
+#include "wcpu_part_signal.h"
+#include <stdbool.h>
 
 
 typedef struct ledger_entry
@@ -25,6 +26,7 @@ typedef struct wcpu_part_ledger
 part_ptr_t wcpu_ledger_generate(void);
 void wcpu_ledger_update(part_t *ledger);
 
-
+void wcpu_ledger_import( part_t *part, part_signal_t *signal);
+bool wcpu_ledger_export( part_t *part, part_signal_t **signal);
 
 #endif

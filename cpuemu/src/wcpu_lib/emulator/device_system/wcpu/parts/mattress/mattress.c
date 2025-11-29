@@ -15,3 +15,13 @@ void wcpu_mattress_update(part_t *mattress)
 {
 
 }
+
+void wcpu_mattress_import( part_t *part, part_signal_t *signal)
+{
+
+}
+
+bool wcpu_mattress_export( part_t *part, part_signal_t **signal)
+{
+	return false;
+}
