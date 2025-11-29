@@ -5,6 +5,20 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+
+
+
+typedef enum aggregator_command_type
+{
+	AGGREGATOR_CMD_INVAL,
+	AGGREGATOR_CMD_OPEN_EDGE,
+	AGGREGATOR_CMD_CLOSE_EDGE,
+	AGGREGATOR_CMD_SPLIT_EDGE,
+	AGGREGATOR_CMD_FILLED,
+	AGGREGATOR_CMD_HALT,
+	AGGREGATOR_CMD_FLUSH,
+}aggregator_command_type_t;
+
 typedef struct merge_entry
 {
 	int pc;

@@ -5,7 +5,7 @@
 #include "aggregator.h"
 #include "register_file.h"
 #include "fetcher.h"
-#include "alu.h"
+#include "mau.h"
 #include <assert.h>
 #include <stdio.h>
 
@@ -20,7 +20,7 @@ wcpu_part_class_t part_vtable[UNIQUE_PARTS] =
 	[WCPU_PART_FETCHER] = {.init = wcpu_fetcher_generate, .step = wcpu_fetcher_update, .export = wcpu_fetcher_export, .import = wcpu_fetcher_import},
 	[WCPU_PART_REGFILE] = {.init = wcpu_regfile_generate, .step = wcpu_regfile_update, .export = wcpu_regfile_export, .import = wcpu_regfile_import},
 	[WCPU_PART_LEDGER] = {.init = wcpu_ledger_generate, .step = wcpu_ledger_update, .export = wcpu_ledger_export, .import = wcpu_ledger_import},
-	[WCPU_PART_ALU] = {.init = wcpu_alu_generate, .step = wcpu_alu_update, .export = wcpu_alu_export, .import = wcpu_alu_import},
+	[WCPU_PART_MAU] = {.init = wcpu_mau_generate, .step = wcpu_mau_update, .export = wcpu_mau_export, .import = wcpu_mau_import},
 };
 
 
@@ -91,7 +91,7 @@ bool wcpu_part_export(part_t *part, part_signal_t **signal)
 	assert(funcs.export != NULL && "part must not have a defined export");
 
 
-	bool result = funcs.export(part, &signal);
+	bool result = funcs.export(part, signal);
 
 	return result;
 }

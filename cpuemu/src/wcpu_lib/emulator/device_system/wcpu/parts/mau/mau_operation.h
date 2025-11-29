@@ -1,0 +1,5 @@
+#ifndef __WCPU_PART_ALU_OPERATION_HEADER__
+#define __WCPU_PART_ALU_OPERATION_HEADER__
+
+
+#endif

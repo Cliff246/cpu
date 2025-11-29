@@ -11,7 +11,7 @@
 #include "ledger.h"
 #include "mattress.h"
 #include "fabric.h"
-#include "alu.h"
+#include "mau.h"
 
 
 
@@ -27,7 +27,7 @@
 	PART(CACHE)			 		\
 	PART(AGGREGATOR)			\
 	PART(LEDGER)				\
-	PART(ALU)					\
+	PART(MAU)					\
 
 
 #define NAME_PART(n) WCPU_PART_ ## n

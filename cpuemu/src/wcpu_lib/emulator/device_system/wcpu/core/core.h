@@ -19,7 +19,7 @@
 	X(MATTRESS		, 1)				\
 	X(FETCHER		, 1)				\
 	X(LEDGER 		, 1)				\
-	X(ALU 			, 1)				\
+	X(MAU 			, 1)				\
 
 #define CORE_PARTS_ADD(x, y) + (1 * y)
 #define COUNT_CORE_PARTS (0 CORE_PARTS_LIST(CORE_PARTS_ADD))
@@ -73,7 +73,7 @@ typedef struct wcpu_core
 
 
 	//this is inefficent but oh well
-	//stores all the 
+	//stores all the
 	int locations[COUNT_UNIQUE_CORE_PARTS][COUNT_CORE_PARTS];
 
 

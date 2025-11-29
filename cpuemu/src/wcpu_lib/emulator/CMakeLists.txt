@@ -25,11 +25,20 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 #wcpu parts
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/aggregator.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/register_file.c
+
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/lsu.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/cache.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/ledger.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/alu.c
+#ledger
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/ledger/ledger.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/ledger/ledger_operation.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/ledger/ledger_tensor.c
+
+#mau
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mau/mau.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mau/mau_operation.c
+
+#regfile
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/regfile/register_file.c
 
 #mattress
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/mattress.c
@@ -85,6 +94,9 @@ include_directories(wcpu_lib_emulator PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/signal_types
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/core
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/regfile
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mau
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/ledger
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/fabric_parts
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/shared
@@ -108,7 +120,9 @@ target_include_directories(wcpu_lib_emulator PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/core
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/signal_types
-
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/ledger
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/regfile
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mau
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/fabric_parts
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/shared

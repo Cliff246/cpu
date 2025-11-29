@@ -10,6 +10,10 @@
 	X(CORE_INPUT)			\
 	X(CORE_OUTPUT)			\
 	X(CORE_MEM_RESPONSE)	\
+	X(REG_TRANSFER)			\
+	X(AGGREGATOR_COMMAND)	\
+	X(LEDGER_TRANSFER)		\
+
 
 
 #define PART_SIGNAL_STRUCT_NAME(X) _part_signal_ ## X ## _t

@@ -1,5 +1,5 @@
 #include "flags.h"
-#include "alu.h"
+#include "mau.h"
 #include <stdint.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -7,24 +7,24 @@
 #include <stdio.h>
 
 
-part_ptr_t wcpu_alu_generate(void)
+part_ptr_t wcpu_mau_generate(void)
 {
-	alu_t *alu = calloc(1, sizeof(alu_t));
+	mau_t *mau = calloc(1, sizeof(mau_t));
 
 	part_ptr_t pptr;
-	pptr.alu = alu;
+	pptr.mau = mau;
 }
 
-void wcpu_alu_update(part_t *alu)
+void wcpu_mau_update(part_t *mau)
 {
 
 }
 
-void wcpu_alu_import( part_t *part, part_signal_t *signal)
+void wcpu_mau_import( part_t *part, part_signal_t *signal)
 {
 
 }
-bool wcpu_alu_export( part_t *part, part_signal_t **signal)
+bool wcpu_mau_export( part_t *part, part_signal_t **signal)
 {
 	return false;
 }
@@ -41,7 +41,7 @@ static uint64_t arithmetic_shift_right(uint64_t value, uint64_t shift)
 	{ // if sign bit set
 		mask = (~0ULL) << (64 - shift);
 	}
-	return (value >> shift) | mask;
+	return (vmaue >> shift) | mask;
 }
 
 

@@ -9,18 +9,13 @@
 #include "wcpu_part_signal.h"
 #include <stdbool.h>
 
+#include "ledger_operation.h"
+#include "ledger_tensor.h"
 
-typedef struct ledger_entry
-{
-	char fabid;
-
-}ledger_entry_t;
 
 typedef struct wcpu_part_ledger
 {
-	int current_row;
-	ledger_entry_t entries[LEDGER_DEPENDENCIES_LIMIT][LEDGER_EPOCH_LIMIT][LEDGER_EDGE_LIMIT];
-
+	ledger_tensor_t tensor;
 }ledger_t;
 
 part_ptr_t wcpu_ledger_generate(void);

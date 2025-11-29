@@ -58,15 +58,7 @@ core_t *wcpu_core_generate(void)
 
 void wcpu_core_update(core_t *core)
 {
-	static int counter = 4;
 
-	if(core->core_io.issued != true)
-	{
-		core->core_io.issued = true;
-		core->core_io.type = CORE_IO_READ;
-		core->core_io.address = counter++;
-		core->core_io.responded = false;
-	}
 
 	//printf("update core\n");
 	//deploy core messages
@@ -74,7 +66,6 @@ void wcpu_core_update(core_t *core)
 
 
 
-	part_signal_t *signals;
 
 
 	//import all of the messages by popping off your imports
@@ -97,6 +88,7 @@ void wcpu_core_update(core_t *core)
 		wcpu_part_step(part);
 
 	}
+
 	for(int ic =0; ic < COUNT_CORE_PARTS; ++ic)
 	{
 		part_t *part = core->parts[ic];
@@ -163,7 +155,15 @@ static core_signal_handle_t signal_handles[] =
 	[PART_SIGNAL_TYPE_LSU] = {.distrubutes = true, .fn = NULL},
 	[PART_SIGNAL_TYPE_CORE_INPUT] = {.distrubutes = false, .fn = wcpu_core_input},
 	[PART_SIGNAL_TYPE_CORE_OUTPUT] = {.distrubutes = false, .fn = wcpu_core_output},
+	//todo
 	[PART_SIGNAL_TYPE_CORE_MEM_RESPONSE] = {.distrubutes = true, .fn = NULL},
+	//todo
+	[PART_SIGNAL_TYPE_REG_TRANSFER] = {.distrubutes = true, .fn = NULL},
+
+	//todo
+	[PART_SIGNAL_TYPE_LEDGER_TRANSFER] = {false, NULL},
+	//todo
+	[PART_SIGNAL_TYPE_AGGREGATOR_COMMAND] = {false, NULL},
 };
 
 
