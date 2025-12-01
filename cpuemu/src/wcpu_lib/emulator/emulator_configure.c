@@ -1,9 +1,14 @@
 #include "loader.h"
 #include "emulator_configure.h"
+#include "device_list.h"
+#include "dev_fakeio_device_config_setting.h"
+#include "dev_ram_device_config_setting.h"
+#include "dev_wcpu_device_config_setting.h"
 #include <stdlib.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <string.h>
+
 
 char *internal_source_paths[] =
 {
@@ -32,7 +37,7 @@ static bool argparser_fakeio(emuconfig_dev_settings_t *settings)
 }
 
 //device type keyword list
-emuconfig_dev_type_t emuconfig_dev_type_table[DEVICES_TYPE_COUNT] =
+emuconfig_dev_type_t emuconfig_dev_type_table[DEVICES_LIST_TYPE_COUNT] =
 {
 	[DEVICE_INVAL] = {.argparser_fn = NULL, .keyword = "INVAL"},
 	[DEVICE_RAM] = {.argparser_fn = argparser_ram, .keyword = "RAM"},
@@ -103,7 +108,7 @@ static bool config_setting(emuconfig_t *ec)
 	char *first_str = first->token;
 			printf("%s\n", first_str);
 
-	for(int i = 0; i < DEVICES_TYPE_COUNT; ++i)
+	for(int i = 0; i < DEVICES_LIST_TYPE_COUNT; ++i)
 	{
 		if(test_device_name((device_type_t) i, first_str))
 		{

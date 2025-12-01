@@ -1,4 +1,4 @@
-#include "device_type_ptr.h"
+#include "device_list.h"
 
 #include "device.h"
 #include <stdlib.h>
@@ -8,7 +8,7 @@
 #include "dev_ram.h"
 #include "dev_wcpu.h"
 
-device_class_t device_vtable[DEVICES_TYPE_COUNT] =
+device_class_t device_vtable[DEVICES_LIST_TYPE_COUNT] =
 {
 	[DEVICE_INVAL] = {.init = NULL, .update = NULL,.read = NULL, .send = NULL, .print = NULL},
 	[DEVICE_FAKEIO] = {.init = device_fakeio_generate, .update = device_fakeio_update,.read = device_fakeio_read, .send= device_fakeio_send, .print = NULL},
@@ -104,11 +104,11 @@ dev_msg_t *device_send(device_t *device)
 	return new_msg;
 }
 
-#define DEVICE_TYPE_ENUM_AS_STRING(X) #X,
+#define DEVICE_TYPE_ENUM_AS_STRING(X, Y) #X,
 
 static char *device_type_str[] =
 {
-	DEVICE_TYPE_ENUM(DEVICE_TYPE_ENUM_AS_STRING)
+	DEVICE_LIST(DEVICE_TYPE_ENUM_AS_STRING)
 };
 
 

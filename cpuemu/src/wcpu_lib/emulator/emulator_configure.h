@@ -2,7 +2,7 @@
 #define __EMULATOR_CONFIGURE_HEADER__
 
 #include "loader.h"
-#include "device_type_ptr.h"
+#include "device_list.h"
 #include "token.h"
 
 #include <stdbool.h>
@@ -39,6 +39,8 @@ typedef struct emulator_config_device_settings
 	bool used;
 	device_type_t type;
 	toklex_t *toklex;
+	device_config_setting_ptr_t ptr;
+
 }emuconfig_dev_settings_t;
 
 
@@ -52,7 +54,9 @@ typedef struct emuconfig_device_type
 	char *keyword;
 } emuconfig_dev_type_t;
 
-extern emuconfig_dev_type_t emuconfig_dev_type_table[DEVICES_TYPE_COUNT];
+
+
+extern emuconfig_dev_type_t emuconfig_dev_type_table[DEVICES_LIST_TYPE_COUNT];
 
 
 

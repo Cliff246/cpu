@@ -4,8 +4,9 @@
 
 #include <stdint.h>
 #include "device.h"
-#include "device_type_ptr.h"
+#include "device_list.h"
 #include "emulator_configure.h"
+#include "dev_fakeio_device_config_setting.h"
 
 typedef struct device_fakeio
 {

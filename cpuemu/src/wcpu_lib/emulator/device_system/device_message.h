@@ -1,7 +1,7 @@
 #ifndef __DEVICE_MESSAGE_HEADER__
 #define __DEVICE_MESSAGE_HEADER__
 
-#include "device_type_ptr.h"
+#include "device_list.h"
 #include "common.h"
 #include <stdint.h>
 #include <stdbool.h>

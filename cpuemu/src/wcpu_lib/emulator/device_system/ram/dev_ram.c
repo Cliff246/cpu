@@ -1,5 +1,5 @@
 #include "device.h"
-#include "device_type_ptr.h"
+#include "device_list.h"
 #include "dev_ram.h"
 
 #include <stdint.h>

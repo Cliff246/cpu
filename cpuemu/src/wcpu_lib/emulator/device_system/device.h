@@ -1,7 +1,7 @@
 #ifndef __DEVICE_HEADER__
 #define __DEVICE_HEADER__
 
-#include "device_type_ptr.h"
+#include "device_list.h"
 #include "device_message.h"
 #include "device_mailbox.h"
 #include "emulator_configure.h"
@@ -69,7 +69,7 @@ bool get_device_has_address(device_t *device);
 dev_mailbox_t *get_device_mailbox(device_t *dev);
 
 //the vtable for are the device implementations
-extern device_class_t device_vtable[DEVICES_TYPE_COUNT];
+extern device_class_t device_vtable[DEVICES_LIST_TYPE_COUNT];
 
 
 //generate devices

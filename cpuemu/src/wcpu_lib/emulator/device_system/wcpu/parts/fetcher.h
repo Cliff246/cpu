@@ -2,7 +2,6 @@
 #define __FETCHER_HEADER__
 
 #include "wcpu_part_ptr.h"
-#include "wcpu_part.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include "wcpu_part_signal.h"

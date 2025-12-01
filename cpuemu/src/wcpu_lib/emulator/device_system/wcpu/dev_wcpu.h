@@ -1,7 +1,7 @@
 #ifndef __DEVICE_WCPU__
 #define __DEVICE_WCPU__
 
-#include "device_type_ptr.h"
+#include "device_list.h"
 #include "device.h"
 #include "core.h"
 #include "device_message.h"

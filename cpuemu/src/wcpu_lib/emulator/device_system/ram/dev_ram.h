@@ -2,7 +2,7 @@
 #define __RAM_HEADER__
 
 
-#include "device_type_ptr.h"
+#include "device_list.h"
 #include "device.h"
 #include "emulator_configure.h"
 #include <stdint.h>
