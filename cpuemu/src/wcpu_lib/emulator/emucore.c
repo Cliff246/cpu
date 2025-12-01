@@ -29,7 +29,7 @@ emulator_t *emulator_generate(emuconfig_t *config)
 
 	emu->device_count = config->settings_index;
 	//printf("%d\n", sizeof(emu_dev_slot_t));
-	//printf("used %d\n", emu->device_count);
+	printf("used %d\n", emu->device_count);
 
 	emu->device_slots = calloc(emu->device_count, sizeof(emu_dev_slot_t));
 	//add stable slots
@@ -42,25 +42,20 @@ emulator_t *emulator_generate(emuconfig_t *config)
 
 	for(int i = 0; i < emu->device_count; ++i)
 	{
-		if(emu->config->settings[i].used == true)
+		device_t *dev = device_generate(emu->config->settings[i]);
+		dev->device_id = i;
+		emu_dev_slot_t slot =
 		{
-			device_t *dev = device_generate(&emu->config->settings[i]);
-			dev->device_id = i;
-			emu_dev_slot_t slot =
-			{
-				.device_index = i,
-				.device_id = dev->device_id,
-				.address_start = dev->address_range_start,
-				.address_length = dev->address_range_length
-			};
-			if(get_device_has_address(dev))
-			{
-				emu->device_slots[emu->stable_slots++] = slot;
-
-			}
-			emu->device_list[i] = dev;
-
+			.device_index = i,
+			.device_id = dev->device_id,
+			.address_start = dev->address_range_start,
+			.address_length = dev->address_range_length
+		};
+		if(get_device_has_address(dev))
+		{
+			emu->device_slots[emu->stable_slots++] = slot;
 		}
+		emu->device_list[i] = dev;
 	}
 	//sort the slots of the emulator
 	emulator_sort_slots(emu);

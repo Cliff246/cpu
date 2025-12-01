@@ -57,4 +57,9 @@ typedef union device_config_setting_ptr
 	void *ptr;
 }device_config_setting_ptr_t;
 
+#define DEVICE_TYPE_ENUM_AS_STRING(X, Y) #X,
+
+extern char *device_type_str[];
+
+
 #endif

@@ -48,7 +48,7 @@ typedef void (*device_step_fn)(device_t *device);
 typedef void (*device_read_fn)(device_t *dev, dev_msg_t *msg);
 typedef dev_msg_t *(*device_send_fn)(device_t *dev);
 typedef void (*device_print_fn)(device_t *dev);
-
+typedef void (*device_cmd_fn)(device_t *dev, device_command_t *cmd);
 
 typedef struct device_class
 {
@@ -57,6 +57,7 @@ typedef struct device_class
 	device_read_fn read;
 	device_send_fn send;
 	device_print_fn print;
+	device_cmd_fn cmd;
 }device_class_t;
 
 

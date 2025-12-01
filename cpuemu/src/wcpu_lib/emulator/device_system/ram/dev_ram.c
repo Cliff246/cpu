@@ -9,24 +9,97 @@
 #include <errno.h>
 #include <assert.h>
 
+static void fill_binary(dev_ram_t *ram, uint64_t *bin, size_t length)
+{
+
+	for(size_t i = 0; i < length; ++i)
+	{
+		write_ram(ram, i, bin[i]);
+	}
+}
+
+static size_t file_len(FILE *fp)
+{
+	if(!fp)
+		return 0;
+
+	size_t current = ftell(fp);
+
+	fseek(fp, 0, SEEK_END);
+	size_t address = ftell(fp);
+
+	fseek(fp, current, SEEK_SET);
+	return address;
+}
+
+
+static dev_ram_t *load_file(const char *file_name)
+{
+	FILE *fp = fopen(file_name, "rb");
+	if(fp == NULL)
+	{
+		printf("file: %s not openable\n", file_name);
+		exit(1);
+
+	}
+	size_t len = file_len(fp);
+	char *bytes = (char *)calloc(len, sizeof(char));
+	fread(bytes, 8, len / 8, fp);
+	dev_ram_t *ram = create_memory(len/8);
+
+	uint64_t *bin = (uint64_t *)bytes;
+
+	fill_binary(ram, bin, len / sizeof(uint64_t));
+	free(bytes);
+	return ram;
+}
+
+
+
 
 //this is not correct but it works for now, it doesnt work at offsets so if i try to load at 10000 and it starts at 9000 it wont load at 1000 it will load at 10000
 device_type_ptr_t device_ram_generate(device_t *device, emuconfig_dev_settings_t *settings)
 {
-	device->address_range_start = 0;
-	device->address_range_length = 20;
-	device->has_address = true;
-
-	dev_ram_t *ram = create_memory(device->address_range_length);
 
 
-
-	for(int i = 0; i < ram->length; ++i)
+	dev_ram_config_setting_t *config = settings->command->setting.ram;
+	dev_ram_t *ram;
+	if(config->use_filename == true)
 	{
-		ram->content[i] = i;
+		ram = load_file(config->filename);
+
+
 	}
+	else
+	{
+		printf("%d\n", config->size);
+		if(config->use_size == true)
+		{
+			device->address_range_length = config->size;
+
+		}
+		else
+		{
+			device->address_range_length = 1000;
+
+		}
 
 
+
+
+	 	ram = create_memory(device->address_range_length);
+
+
+
+		for(int i = 0; i < ram->length; ++i)
+		{
+			ram->content[i] = 0;
+		}
+
+
+	}
+	device->address_range_start = 0;
+	device->has_address = true;
 
 	device_type_ptr_t ptr;
 	ptr.ram = ram;

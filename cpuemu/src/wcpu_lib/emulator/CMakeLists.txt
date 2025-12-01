@@ -2,6 +2,8 @@
 set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 	${CMAKE_CURRENT_SOURCE_DIR}/emucore.c
 	${CMAKE_CURRENT_SOURCE_DIR}/emulator_configure.c
+#emulator device argparser
+	${CMAKE_CURRENT_SOURCE_DIR}/emulator_device_argparser/emulator_device_argparser.c
 #bus
 
 #device core
@@ -9,13 +11,16 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/device_message.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/device_mailbox.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/device_command.c
 
 
 
 
-#wcpu commons
+#wcpu device
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/dev_wcpu.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/dev_wcpu_device_config_setting.c
+
+#wcpu commmons
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_commons/wcpu_isa.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_commons/wcpu_part.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_commons/wcpu_part_bus.c
@@ -99,7 +104,7 @@ include_directories(wcpu_lib_emulator PUBLIC
 	${CMAKE_SOURCE_DIR}/flags/
 
 	${CMAKE_CURRENT_SOURCE_DIR}/
-	${CMAKE_CURRENT_SOURCE_DIR}/bus
+	${CMAKE_CURRENT_SOURCE_DIR}/emulator_device_argparser
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu
 
@@ -135,7 +140,7 @@ target_include_directories(wcpu_lib_emulator PUBLIC
 	${CMAKE_SOURCE_DIR}/flags/
 
 	${CMAKE_CURRENT_SOURCE_DIR}/
-	${CMAKE_CURRENT_SOURCE_DIR}/bus
+	${CMAKE_CURRENT_SOURCE_DIR}/emulator_device_argparser
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu
 

@@ -11,9 +11,29 @@
 device_class_t device_vtable[DEVICES_LIST_TYPE_COUNT] =
 {
 	[DEVICE_INVAL] = {.init = NULL, .update = NULL,.read = NULL, .send = NULL, .print = NULL},
-	[DEVICE_FAKEIO] = {.init = device_fakeio_generate, .update = device_fakeio_update,.read = device_fakeio_read, .send= device_fakeio_send, .print = NULL},
-	[DEVICE_WCPU] = {.init = device_wcpu_generate, .update = device_wcpu_update,.read = device_wcpu_read, .send = device_wcpu_send, .print = device_wcpu_print},
-	[DEVICE_RAM] = {.init = device_ram_generate, .update = device_ram_update,.read = device_ram_read, .send = device_ram_send, .print = device_ram_print},
+	[DEVICE_FAKEIO] = {
+		.init = device_fakeio_generate,
+		.update = device_fakeio_update,
+		.read = device_fakeio_read,
+		.send= device_fakeio_send,
+		.print = NULL
+	},
+
+	[DEVICE_WCPU] = {
+		.init = device_wcpu_generate,
+		.update = device_wcpu_update,
+		.read = device_wcpu_read,
+		.send = device_wcpu_send,
+		.print = device_wcpu_print
+	},
+
+	[DEVICE_RAM] = {
+		.init = device_ram_generate,
+		.update = device_ram_update,
+		.read = device_ram_read,
+		.send = device_ram_send,
+		.print = device_ram_print
+	},
 };
 
 
@@ -46,10 +66,16 @@ dev_mailbox_t *get_device_mailbox(device_t *dev)
 device_t *device_generate(emuconfig_dev_settings_t *settings )
 {
 	device_t *device = calloc(1, sizeof(device_t));
-	device_type_t type = settings->type;
+
+
+	assert(settings->command != NULL && "settings command cannot be null");
+
+	device_type_t type = settings->command->type;
 	device->type = type;
+	printf("%d\n", device->type);
 	assert(device_vtable[type].init != NULL && "cannot init a device with no vtable fn");
 	device->device = device_vtable[type].init(device, settings);
+
 	assert(device->device.ptr != NULL && "device ptr cannot be null");
 
 	device->mailbox = device_mailbox_init();
@@ -104,9 +130,8 @@ dev_msg_t *device_send(device_t *device)
 	return new_msg;
 }
 
-#define DEVICE_TYPE_ENUM_AS_STRING(X, Y) #X,
 
-static char *device_type_str[] =
+char *device_type_str[] =
 {
 	DEVICE_LIST(DEVICE_TYPE_ENUM_AS_STRING)
 };
