@@ -1,0 +1,8 @@
+#ifndef __DEVICE_CONFIG_SETTING_HEADER__
+#define __DEVICE_CONFIG_SETTING_HEADER__
+
+
+
+
+
+#endif

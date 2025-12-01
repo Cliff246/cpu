@@ -9,12 +9,17 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/device_message.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/device_mailbox.c
-#wcpu device
+
+
+
+
+#wcpu commons
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/dev_wcpu.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_isa.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_part.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_part_bus.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_part_signal.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/dev_wcpu_device_config_setting.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_commons/wcpu_isa.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_commons/wcpu_part.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_commons/wcpu_part_bus.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_commons/wcpu_part_signal.c
 
 
 
@@ -26,7 +31,6 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/aggregator.c
 
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/lsu.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/cache.c
 #ledger
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/ledger/ledger.c
@@ -39,6 +43,9 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 
 #regfile
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/regfile/register_file.c
+
+#lsu
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/lsu/lsu.c
 
 #mattress
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/mattress.c
@@ -75,12 +82,16 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 #device fakeio
 
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/fakeio/dev_fakeio.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/fakeio/dev_fakeio_device_config_setting.c
 #device fakeram
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/ram/dev_ram.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/ram/dev_ram_device_config_setting.c
 
 	${CMAKE_CURRENT_SOURCE_DIR}/helpers/debug.c
 	${CMAKE_CURRENT_SOURCE_DIR}/helpers/code_decoder.c
 )
+
+
 set(CMAKE_BUILD_TYPE Debug)
 add_library(wcpu_lib_emulator ${CPU_CORE_EMULATOR} )
 
@@ -91,21 +102,32 @@ include_directories(wcpu_lib_emulator PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/bus
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/signal_types
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/core
+
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/core
+#commons
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_commons
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_commons/signal_types
+#parts
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/lsu
+
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/ledger
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/regfile
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mau
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/ledger
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress
+
+#fabric on mattress
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/fabric_parts
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/shared
 
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress
+
+#device fakeio
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/fakeio
+#device ram
+
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/ram
 	${CMAKE_CURRENT_SOURCE_DIR}/helpers
-
 
 )
 
@@ -119,18 +141,27 @@ target_include_directories(wcpu_lib_emulator PUBLIC
 
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/core
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/signal_types
+#commons
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_commons
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_commons/signal_types
+#parts
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/lsu
+
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/ledger
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/regfile
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mau
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress
+
+#fabric on mattress
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/fabric_parts
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/shared
 
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress
 
-
+#device fakeio
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/fakeio
+#device ram
+
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/ram
 	${CMAKE_CURRENT_SOURCE_DIR}/helpers
 	wcpu_lib_commons
