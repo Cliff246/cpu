@@ -29,7 +29,15 @@ bool pop_signal_off_channel(part_channel_t *channel, part_signal_t **signal)
 		return false;
 	}
 
-	*signal = channel->signals[channel->index--];
+	*signal = channel->signals[--channel->index];
 	//part_signal_release(*signal);
 	return true;
+}
+
+void print_part_channel(part_channel_t *channel)
+{
+	for(int i = 0; i < channel->index; ++i)
+	{
+		part_signal_print(&channel->signals[i]);
+	}
 }

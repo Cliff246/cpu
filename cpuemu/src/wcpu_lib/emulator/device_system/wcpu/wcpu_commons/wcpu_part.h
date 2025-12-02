@@ -77,7 +77,9 @@ void wcpu_part_import(part_t *part, part_signal_t *signal);
 bool wcpu_part_export(part_t *part, part_signal_t **signal);
 
 
-
 extern wcpu_part_class_t part_vtable[UNIQUE_PARTS];
+
+extern char *part_type_strs[UNIQUE_PARTS];
+
 
 #endif

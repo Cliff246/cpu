@@ -11,34 +11,11 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define CORE_PARTS_LIST(X)				\
-	X(REGFILE 		, 1)				\
-	X(LSU     		, 1)				\
-	X(CACHE   		, 1)				\
-	X(AGGREGATOR	, 1)				\
-	X(MATTRESS		, 1)				\
-	X(FETCHER		, 1)				\
-	X(LEDGER 		, 1)				\
-	X(MAU 			, 1)				\
-
-#define CORE_PARTS_ADD(x, y) + (1 * y)
-#define COUNT_CORE_PARTS (0 CORE_PARTS_LIST(CORE_PARTS_ADD))
-
-#define CORE_PARTS_ADD_UNIQUE(x, y) + 1
-#define COUNT_UNIQUE_CORE_PARTS (0 CORE_PARTS_LIST(CORE_PARTS_ADD_UNIQUE))
 
 
 
+#define CORE_PART_ORDER(X, Y) [CORE_PART_NAME(X)] = Y,
 
-#define CORE_PART_NAME(X, Y) WCPU_PART_ ## X
-#define CORE_PART_NAME_ENUM(X, Y) CORE_PART_NAME(X, Y),
-
-
-
-
-#define CORE_PART_ORDER(X, Y) [CORE_PART_NAME(X, 0)] = Y,
-
-extern int parts_order[];
 
 #define CORE_STATE_LIST(X)			\
 	X(INVAL)						\
@@ -69,12 +46,11 @@ typedef enum wcpu_core_io_type
 typedef struct wcpu_core
 {
 	core_state_t state;
-	part_t *parts[COUNT_CORE_PARTS];
-
+	part_t *parts[UNIQUE_PARTS];
+	bool startup;
 
 	//this is inefficent but oh well
 	//stores all the
-	int locations[COUNT_UNIQUE_CORE_PARTS][COUNT_CORE_PARTS];
 
 
 

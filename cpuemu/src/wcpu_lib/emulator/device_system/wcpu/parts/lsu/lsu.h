@@ -64,6 +64,8 @@ void wcpu_lsu_entry_set(part_t *part, int index, int64_t address, int64_t value,
 lsu_entry_t wcpu_lsu_get(part_t *part, int index);
 void wcpu_lsu_entry_set_value(part_t *part, int index, int64_t value);
 void wcpu_lsu_entry_set_finished(part_t *part, int index, bool value);
+static void lsu_print_entry(lsu_entry_t *entry);
+void wcpu_lsu_print_entries(part_t *part);
 
 uint64_t load(uint64_t address);
 

@@ -8,6 +8,8 @@
 //has to be exactly this name
 struct wcpu_part_signal_LSU
 {
+
+	//load 0 store 1
 	bool loadstore;
 	int64_t address;
 	int64_t value;

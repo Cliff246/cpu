@@ -72,7 +72,7 @@ device_t *device_generate(emuconfig_dev_settings_t *settings )
 
 	device_type_t type = settings->command->type;
 	device->type = type;
-	printf("%d\n", device->type);
+	//printf("%d\n", device->type);
 	assert(device_vtable[type].init != NULL && "cannot init a device with no vtable fn");
 	device->device = device_vtable[type].init(device, settings);
 
@@ -149,4 +149,16 @@ void device_print(device_t *device)
 		device_vtable[device->type].print(device);
 
 	}
+}
+
+
+void device_cmd(device_t *device, device_command_t *cmd)
+{
+	assert(device != NULL && "cannot update null device");
+	assert(device->type != DEVICE_INVAL && "cannot update device_inval");
+
+
+	assert(device_vtable[device->type].cmd != NULL && "device doesnt have a read function");
+
+	device_vtable[device->type].cmd(device, cmd);
 }

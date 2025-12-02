@@ -14,6 +14,8 @@ static bool argparser_wcpu(emuconfig_dev_settings_t *settings)
 {
 	return true;
 }
+
+//TODO this is cringe fix this
 static bool argparser_ram(emuconfig_dev_settings_t *settings)
 {
 
@@ -35,7 +37,7 @@ static bool argparser_ram(emuconfig_dev_settings_t *settings)
 			//fix this as well... also really dangerous
 			ram->use_filename = true;
 			ram->filename = strdup(tok->token);
-			printf("using filename %s\n",ram->filename);
+			//printf("using filename %s\n",ram->filename);
 		}
 		else if(tok->type == TOK_INT)
 		{
@@ -106,7 +108,7 @@ bool emulator_device_argparser_head(emuconfig_dev_settings_t *settings, emuconfi
 	settings->command = device_command_generate(type->type);
 	assert(settings->command != NULL);
 	settings->command->type = type->type;
-	printf("command type %d\n", settings->command->type);
+	//printf("command type %d\n", settings->command->type);
 	bool result = type->argparser_fn(settings);
 	return result;
 }

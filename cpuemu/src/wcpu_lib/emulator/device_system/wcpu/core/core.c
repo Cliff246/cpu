@@ -1,6 +1,7 @@
 #include "core.h"
 #include "wcpu_part_signal_ptr.h"
 #include "wcpu_part_signal_core_io.h"
+#include "wcpu_part_signal_fetcher_command.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
@@ -17,10 +18,6 @@ void wcpu_core_clear_io(core_t *core)
 	core->core_io.value = 0;
 }
 
-int parts_order[] = {
-	CORE_PARTS_LIST(CORE_PART_ORDER)
-};
-
 
 #define WCPU_SIGNALS_ALLOC 1000
 
@@ -32,21 +29,19 @@ static core_t *wcpu_create_core(void)
 	assert(core != NULL && "core malloc cannot fail");
 	size_t current = 0;
 	//current part type
-	for(int i = 0; i < COUNT_UNIQUE_CORE_PARTS; ++i)
+	for(int i = 0; i < UNIQUE_PARTS; ++i)
 	{
 
-		for(int pi = 0; pi < parts_order[i]; ++pi)
-		{
-			core->parts[current++] = wcpu_part_generate(i);
-			core->locations[i][pi] = current;
-		}
-
+		part_t *part = wcpu_part_generate(i);
+		//order it
+		assert(i == part->id);
+		core->parts[current++] = part;
 
 
 
 	}
 
-
+	core->startup = true;
 	return core;
 }
 
@@ -64,24 +59,42 @@ void wcpu_core_update(core_t *core)
 	//deploy core messages
 	wcpu_core_handle_messages(core);
 
+	if(core->startup == true)
+	{
+		_part_signal_FETCHER_COMMAND_t *fetch_cmd = calloc(1, sizeof(_part_signal_FETCHER_COMMAND_t));
+		assert(fetch_cmd != NULL);
 
 
+		fetch_cmd->address = 0;
+		fetch_cmd->code_desc_swap = true;
+
+		part_signal_content_ptr_t pscp;
+		pscp.FETCHER_COMMAND = fetch_cmd;
+
+		part_signal_t *signal = part_signal_create(PART_SIGNAL_TYPE_FETCHER_COMMAND, -1, WCPU_PART_FETCHER, pscp);
+		bool push = push_signal_onto_channel(&core->parts[WCPU_PART_FETCHER]->bus.import, signal);
+		assert(push == true);
+		core->startup = false;
+	}
 
 
 	//import all of the messages by popping off your imports
-	for(int ia = 0; ia < COUNT_CORE_PARTS; ++ia)
+	for(int ia = 0; ia < UNIQUE_PARTS; ++ia)
 	{
 		part_t *part = core->parts[ia];
 
 		part_signal_t *signal;
-
+		//print_part_channel(&part->bus.import);
+		int count = 0;
 		while(pop_signal_off_channel(&part->bus.import, &signal))
 		{
+			part_signal_print(signal);
 			wcpu_part_import(part, signal);
 		}
+
 	}
 
-	for(int ib =0; ib < COUNT_CORE_PARTS; ++ib)
+	for(int ib =0; ib < UNIQUE_PARTS; ++ib)
 	{
 		part_t *part = core->parts[ib];
 
@@ -89,7 +102,7 @@ void wcpu_core_update(core_t *core)
 
 	}
 
-	for(int ic =0; ic < COUNT_CORE_PARTS; ++ic)
+	for(int ic =0; ic < UNIQUE_PARTS; ++ic)
 	{
 		part_t *part = core->parts[ic];
 		part_signal_t *signal;
@@ -164,6 +177,7 @@ static core_signal_handle_t signal_handles[] =
 	[PART_SIGNAL_TYPE_LEDGER_TRANSFER] = {false, NULL},
 	//todo
 	[PART_SIGNAL_TYPE_AGGREGATOR_COMMAND] = {false, NULL},
+	[PART_SIGNAL_TYPE_FETCHER_COMMAND] = {.distrubutes = true, .fn = NULL}
 };
 
 
@@ -173,7 +187,7 @@ static_assert((sizeof(signal_handles)/sizeof(signal_handles[0])) == PART_SIGNAL_
 void wcpu_core_handle_messages(core_t *core)
 {
 	assert(core != NULL && "core cannot be null");
-	for(int i = 0; i < COUNT_CORE_PARTS; ++i)
+	for(int i = 0; i < UNIQUE_PARTS; ++i)
 	{
 		part_t *part = core->parts[i];
 		assert(part != NULL && "assert must always be correct");
@@ -183,8 +197,7 @@ void wcpu_core_handle_messages(core_t *core)
  		{
 			assert(signal->signal_type >= 0 && "signal cannot have a type less than 0");
 			assert(signal->signal_type < PART_SIGNAL_ENUM_COUNT && "signal type out of range");
-			assert(signal->dst_id >= 0 && signal->dst_id < COUNT_CORE_PARTS && "dst id is not valid ");
-
+			assert(signal->dst_id >= 0 && signal->dst_id < UNIQUE_PARTS && "dst id is not valid ");
 
 
 			//do a unique signal operation in the core
@@ -220,7 +233,7 @@ void wcpu_core_handle_messages(core_t *core)
 		//this is really really stupid
 
 		//this essentially takes the first possible lsu and assumes its the source... need to fix this
-		int lsu_dev_id = core->locations[WCPU_PART_LSU][0];
+		int lsu_dev_id = core->parts[WCPU_PART_LSU];
 
 
 		//this psig might be lost lol
@@ -230,7 +243,6 @@ void wcpu_core_handle_messages(core_t *core)
 		//wcpu_core_clear_io(core);
 		//releases this signal in the core
 
-		printf("%d", core->core_io.value);
 
 		part_signal_release(psig);
 

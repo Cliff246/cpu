@@ -23,6 +23,12 @@ wcpu_part_class_t part_vtable[UNIQUE_PARTS] =
 	[WCPU_PART_MAU] = {.init = wcpu_mau_generate, .step = wcpu_mau_update, .export = wcpu_mau_export, .import = wcpu_mau_import},
 };
 
+#define PART_TYPE_STRING(X) [WCPU_PART_ ## X] = #X ,
+
+extern char *part_type_strs[UNIQUE_PARTS] = {
+	WCPU_PART_LIST(PART_TYPE_STRING)
+};
+
 
 //should be a safe way to init a function
 part_t *init_part(part_type_t type)
@@ -52,7 +58,7 @@ void wcpu_part_step(part_t *part)
 
 	assert(part != NULL && "part cannot be null when stepping");
 	part_type_t type = part->type;
-	printf("%d\n", type);
+	//printf("%d\n", type);
 	assert(type >= 0 && type < UNIQUE_PARTS && "part outside of bounds");
 
 	wcpu_part_class_t funcs = part_vtable[type];

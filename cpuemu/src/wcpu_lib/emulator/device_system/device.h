@@ -85,6 +85,7 @@ void device_read(device_t *device, dev_msg_t *msg);
 dev_msg_t *device_send(device_t *device);
 
 void device_print(device_t *device);
+void device_cmd(device_t *device, device_command_t *cmd);
 
 
 #endif

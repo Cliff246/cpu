@@ -19,14 +19,22 @@ typedef struct fetch_request
 
 typedef struct wcpu_part_fetcher
 {
-	int32_t insts[FETCHER_INSTRUCTION_BUFFER];
-	int64_t imms[FETCHER_IMMEDIATE_BUFFER];
+	bool doload;
+	int64_t toload;
+
+	//temp bullshit should goto register file
+	bool load_code_descriptor;
+	bool finished_code_descriptor;
+	int64_t code_descriptor_address;
+	int code_descriptor_count;
+	int64_t code_descriptor_chunk[6];
+
 }fetcher_t;
 
 
 part_ptr_t wcpu_fetcher_generate(void);
 
-void wcpu_fetcher_update(part_t *fetcher);
+void wcpu_fetcher_update(part_t *part);
 void wcpu_fetcher_import( part_t *part, part_signal_t *signal);
 bool wcpu_fetcher_export( part_t *part, part_signal_t **signal);
 

@@ -24,7 +24,7 @@ typedef struct wcpu_part_bus
 	part_channel_t import;
 	part_channel_t export;
 
-	bool dealt;
+	
 
 
 }part_bus_t;
@@ -33,7 +33,7 @@ typedef struct wcpu_part_bus
 bool push_signal_onto_channel(part_channel_t *channel, part_signal_t *signal);
 bool pop_signal_off_channel(part_channel_t *channel, part_signal_t **signal);
 
-
+void print_part_channel(part_channel_t *channel);
 
 
 #endif

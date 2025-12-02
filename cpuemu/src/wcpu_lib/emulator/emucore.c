@@ -29,7 +29,7 @@ emulator_t *emulator_generate(emuconfig_t *config)
 
 	emu->device_count = config->settings_index;
 	//printf("%d\n", sizeof(emu_dev_slot_t));
-	printf("used %d\n", emu->device_count);
+	//printf("used %d\n", emu->device_count);
 
 	emu->device_slots = calloc(emu->device_count, sizeof(emu_dev_slot_t));
 	//add stable slots
@@ -232,9 +232,9 @@ void emulator_update(emulator_t *emu)
 			device_read(dev, get_msg);
 
 		}
-		printf("\n");
+		//printf("\n");
 
-		device_print(dev);
+		//device_print(dev);
 
 	}
 
@@ -245,9 +245,9 @@ void emulator_update(emulator_t *emu)
 		device_t *dev = emu->device_list[ib];
 		assert(dev != NULL && "device update found null device");
 		device_update(dev);
-		printf("\n");
+		//printf("\n");
 
-		device_print(dev);
+		//device_print(dev);
 
 		// update step
 		//send out step
@@ -258,8 +258,8 @@ void emulator_update(emulator_t *emu)
 	{
 		device_t *dev = emu->device_list[ic];
 		assert(dev != NULL && "device update found null device");
-		printf("\n");
-		device_print(dev);
+		//printf("\n");
+		//device_print(dev);
 		dev_msg_t *set_msg = device_send(dev);
 
 

@@ -88,7 +88,7 @@ void wcpu_lsu_update(part_t *lsu)
 	//
 
 
-
+	wcpu_lsu_print_entries(lsu);
 
 
 
@@ -105,6 +105,7 @@ void wcpu_lsu_import( part_t *part, part_signal_t *signal)
 	if(signal->signal_type == PART_SIGNAL_TYPE_CORE_MEM_RESPONSE)
 	{
 
+		printf("recieved mem response\n");
 
 		//linear search for entry with the signals
 
@@ -210,4 +211,24 @@ bool wcpu_lsu_export( part_t *part, part_signal_t **signal)
 	return false;
 }
 
+static void lsu_print_entry(lsu_entry_t *entry)
+{
+	printf("addr:%d value:%d writeback:%d awaiting:%d finished:%d\n", entry->address, entry->value, entry->writeback_dst, entry->awaiting, entry->finished);
+}
 
+void wcpu_lsu_print_entries(part_t *part)
+{
+	assert(part != NULL && "part cannot be null");
+	assert(part->type == WCPU_PART_LSU && "part type for import must be of type WCPU_PART_LSU");
+	lsu_t *lsu = part->ptr.lsu;
+
+	for(int i = 0; i < MAX_LSU_ENTRIES; ++i)
+	{
+		lsu_entry_t *entry = &lsu->entries[i];
+		if(entry->awaiting == true)
+		{
+			lsu_print_entry(entry);
+
+		}
+	}
+}
