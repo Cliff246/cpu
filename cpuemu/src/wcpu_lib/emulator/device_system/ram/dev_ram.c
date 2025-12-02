@@ -150,7 +150,8 @@ void device_ram_read(device_t *dev, dev_msg_t *msg)
 
 	dev_ram_t *ram = dev->device.ram;
 
-	if(msg == NULL)
+//this is flawed, can overwrite and unset current memoey operation, added current_msg == NULL check
+	if(msg == NULL && ram->current_msg == NULL)
 	{
 		ram->current_msg = NULL;
 		ram->has_msg = false;
