@@ -51,6 +51,7 @@ static dev_ram_t *load_file(const char *file_name)
 
 	fill_binary(ram, bin, len / sizeof(uint64_t));
 	free(bytes);
+	fclose(fp);
 	return ram;
 }
 
