@@ -232,7 +232,7 @@ bool wcpu_lsu_export( part_t *part, part_signal_t **signal)
 				*signal = psig;
 				wcpu_lsu_entry_clear(part, i);
 				lsu->entries_currently--;
-				return false;
+				return true;
 			}
 		}
 

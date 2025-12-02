@@ -131,7 +131,7 @@ void device_wcpu_read(device_t *dev, dev_msg_t *msg)
 		return;
 	}
 	wcpu->current_msg_in = msg;
-	device_message_consume(&wcpu->current_msg_in);
+	//device_message_consume(&wcpu->current_msg_in);
 
 	wcpu->has_in = true;
 

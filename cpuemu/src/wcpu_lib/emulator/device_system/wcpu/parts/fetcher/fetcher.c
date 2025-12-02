@@ -89,15 +89,17 @@ void wcpu_fetcher_import( part_t *part, part_signal_t *signal)
 
 			}
 
-
-
 		}
-
 	}
+	//strong assumption here
 	if(signal->signal_type == PART_SIGNAL_TYPE_LSU)
 	{
 		_part_signal_LSU_t *lsu = signal->ptr.LSU;
-		printf("fetcher loading %d %d\n",lsu->address, lsu->value);
+		if(fetcher->load_code_descriptor == true)
+		{
+			//this is fucked
+			fetcher->code_descriptor_chunk[lsu->address] = lsu->value;
+		}
 	}
 
 	part_signal_consume(&signal);
@@ -114,7 +116,7 @@ bool wcpu_fetcher_export( part_t *part, part_signal_t **signal)
 
 	if(fetcher->doload == true)
 	{
-		printf("load %d\n", fetcher->toload);
+
 		_part_signal_LSU_t *pull = calloc(1, sizeof(_part_signal_LSU_t));
 		assert(pull != NULL);
 

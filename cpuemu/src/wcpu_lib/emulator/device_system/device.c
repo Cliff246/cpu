@@ -112,6 +112,7 @@ void device_read(device_t *device, dev_msg_t *msg)
 
 	device_vtable[device->type].read(device, msg);
 
+	device_message_release(&msg);
 
 
 }
@@ -126,6 +127,9 @@ dev_msg_t *device_send(device_t *device)
 	assert(device_vtable[device->type].send != NULL && "device doesnt have a read function");
 
 	dev_msg_t *new_msg = device_vtable[device->type].send(device);
+	if(new_msg == NULL)
+		return NULL;
+	device_message_consume(&new_msg);
 
 	return new_msg;
 }

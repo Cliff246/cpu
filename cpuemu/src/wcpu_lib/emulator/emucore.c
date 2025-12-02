@@ -261,7 +261,6 @@ void emulator_update(emulator_t *emu)
 		device_t *dev = emu->device_list[ic];
 		assert(dev != NULL && "device update found null device");
 		//printf("\n");
-		//device_print(dev);
 		dev_msg_t *set_msg = device_send(dev);
 
 
@@ -322,6 +321,8 @@ void emulator_update(emulator_t *emu)
 
 
 		}
+		device_print(dev);
+
 	}
 
 

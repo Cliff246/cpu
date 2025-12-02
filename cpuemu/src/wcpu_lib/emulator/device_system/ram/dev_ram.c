@@ -201,10 +201,11 @@ dev_msg_t *device_ram_send(device_t *dev)
 		uint64_t correct_read = read_address -  dev->address_range_start;
 		assert(correct_read < ram->length && "correct read must not be invalid");
 
-		uint64_t respond = read_ram(ram, correct_read);
+		int64_t respond = read_ram(ram, correct_read);
 
 		//the response a bit brittle
 		device_message_respond(current, respond);
+		device_message_release(&current);
 
 		ram->has_msg = false;
 		ram->current_msg = NULL;

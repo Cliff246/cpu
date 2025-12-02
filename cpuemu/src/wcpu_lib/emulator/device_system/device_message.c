@@ -9,7 +9,7 @@ char *device_message_type_string[] =
 	DEVICE_MESSAGE_TYPE_LIST(DEVICE_MESSAGE_TYPE_STRING)
 };
 
-dev_msg_t *device_message_create(device_type_t src_type, dev_id_t src_id, dev_id_t dest_id, dev_msg_type_t type, uint64_t address, uint64_t value)
+dev_msg_t *device_message_create(device_type_t src_type, dev_id_t src_id, dev_id_t dest_id, dev_msg_type_t type, uint64_t address, int64_t value)
 {
 	dev_msg_t *msg = calloc(1, sizeof(dev_msg_t));
 	assert(msg != NULL && "failed calloc");
@@ -39,7 +39,7 @@ dev_msg_t *device_message_create(device_type_t src_type, dev_id_t src_id, dev_id
 }
 
 
-void device_message_respond(dev_msg_t *msg, uint64_t value)
+void device_message_respond(dev_msg_t *msg, int64_t value)
 {
 	assert(msg != NULL && "cannot respond to null message");
 
@@ -104,10 +104,6 @@ bool device_message_consume(dev_msg_t **msg)
 	if(*msg == NULL)
 		return false;
 	(*msg)->ref_count++;
-	if((*msg)->ref_count < 1)
-	{
-		return false;
-	}
 	return true;
 }
 
@@ -117,10 +113,12 @@ bool device_message_release(dev_msg_t **msg)
 	assert(*msg != NULL && "cannot get message from bad reference");
 
 	(*msg)->ref_count--;
+	printf("free %p %d\n", *msg, (*msg)->ref_count);
+
 	if((*msg)->ref_count <= 0)
 	{
-		*msg = NULL;
 		free(*msg);
+		*msg = NULL;
 		return false;
 	}
 	return true;

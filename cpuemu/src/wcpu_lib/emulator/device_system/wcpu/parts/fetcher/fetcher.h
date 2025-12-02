@@ -25,7 +25,7 @@ typedef struct wcpu_part_fetcher
 	//temp bullshit should goto register file
 	bool load_code_descriptor;
 	bool finished_code_descriptor;
-	int64_t code_descriptor_address;
+	uint64_t code_descriptor_address;
 	int code_descriptor_count;
 	int64_t code_descriptor_chunk[6];
 

@@ -60,7 +60,7 @@ typedef struct wcpu_core
 	struct
 	{
 		uint64_t address;
-		uint64_t value;
+		int64_t value;
 		bool issued;
 		core_io_type_t type;
 		bool responded;

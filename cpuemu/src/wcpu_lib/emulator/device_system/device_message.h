@@ -36,10 +36,9 @@ typedef struct device_message
 	//src id
 	//dst id
 	dev_id_t src_id, dst_id;
-	int src_channel, dest_channel;
 
 	uint64_t address;
-	uint64_t value;
+	int64_t value;
 
 
 	dev_msg_type_t type;
@@ -47,13 +46,14 @@ typedef struct device_message
 	bool has_dst;
 
 
+
 }dev_msg_t;
 
 
-dev_msg_t *device_message_create(device_type_t src_type, dev_id_t src_id, dev_id_t dest_id, dev_msg_type_t type, uint64_t address, uint64_t value);
+dev_msg_t *device_message_create(device_type_t src_type, dev_id_t src_id, dev_id_t dest_id, dev_msg_type_t type, uint64_t address, int64_t value);
 
 
-void device_message_respond(dev_msg_t *msg, uint64_t value);
+void device_message_respond(dev_msg_t *msg, int64_t value);
 
 uint64_t get_device_message_address(dev_msg_t *msg);
 
