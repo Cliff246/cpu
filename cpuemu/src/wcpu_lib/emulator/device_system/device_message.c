@@ -94,7 +94,7 @@ void print_device_message(dev_msg_t *msg)
 {
 	if(msg == NULL)
 		return;
-	printf("src_id:%d, dst_id:%d, has_dst:%d, msg_type: %s address: %lld, value: %lld, refcount:%d", msg->src_id, msg->dst_id,  msg->has_dst,device_message_type_string[msg->type] , msg->address, msg->value, msg->ref_count);
+	printf("ptr:%p src_id:%d, dst_id:%d, has_dst:%d, msg_type: %s address: %lld, value: %lld, refcount:%d",msg, msg->src_id, msg->dst_id,  msg->has_dst,device_message_type_string[msg->type] , msg->address, msg->value, msg->ref_count);
 }
 
 bool device_message_consume(dev_msg_t **msg)

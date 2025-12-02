@@ -133,6 +133,7 @@ dev_msg_t *device_send(device_t *device)
 
 char *device_type_str[] =
 {
+	"INVAL",
 	DEVICE_LIST(DEVICE_TYPE_ENUM_AS_STRING)
 };
 

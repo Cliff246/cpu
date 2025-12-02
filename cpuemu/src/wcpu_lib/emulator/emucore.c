@@ -180,6 +180,8 @@ bool emulator_get_device_from_address(emulator_t *emulator, device_t **dev, size
 	assert(emulator != NULL && "emulator cannot be null");
 	assert(dev != NULL && "cannot give back nothing");
 	//emulator_print_slots(emulator);
+	//printf("address %d\n", address);
+
 	int index = emulator_device_address_search(emulator, address);
 	if(index == -1)
 	{
@@ -222,7 +224,7 @@ void emulator_update(emulator_t *emu)
 		assert(dev != NULL && "device update found null device");
 
 		dev_mailbox_t *mb = get_device_mailbox(dev);
-		//device_mailbox_print(mb);
+		device_mailbox_print(mb);
 		dev_msg_t *get_msg;
 		bool mailbox_has = device_mailbox_get(mb, &get_msg);
 
@@ -232,7 +234,7 @@ void emulator_update(emulator_t *emu)
 			device_read(dev, get_msg);
 
 		}
-		//printf("\n");
+		printf("\n");
 
 		//device_print(dev);
 

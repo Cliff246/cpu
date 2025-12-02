@@ -90,6 +90,7 @@ void device_wcpu_update(device_t *dev)
 		//release in the wcpu
 		wcpu->current_msg_in = NULL;
 		wcpu->has_in = false;
+		wcpu->sent = false;
 
 	}
 
@@ -98,7 +99,7 @@ void device_wcpu_update(device_t *dev)
 	wcpu_core_update(dev->device.wcpu->core);
 
 	//handle the output case
-	if(core->core_io.issued == true)
+	if(core->core_io.issued == true && wcpu->has_out == false && wcpu->sent == false)
 	{
 
 		const device_type_t this_type = DEVICE_WCPU;
@@ -137,7 +138,6 @@ void device_wcpu_read(device_t *dev, dev_msg_t *msg)
 
 
 
-
 }
 
 
@@ -150,24 +150,19 @@ dev_msg_t *device_wcpu_send(device_t *dev)
 
 
 	dev_wcpu_t *wcpu = dev->device.wcpu;
-	if(wcpu->has_out)
+	if(wcpu->has_out == true && wcpu->sent == false)
 	{
 		dev_msg_t *msg = wcpu->current_msg_out;
-
-
-
 
 		assert(msg != NULL && "msg cannot be null when outputting");
 
 		wcpu->has_out = false;
-		wcpu->current_msg_out = NULL;
-
+		wcpu->sent = true;
 		return msg;
 
 	}
 	else
 	{
-		//no message to send out
 		return NULL;
 	}
 

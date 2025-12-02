@@ -8,12 +8,14 @@
 //
 bool push_signal_onto_channel(part_channel_t *channel, part_signal_t *signal)
 {
-	if(channel->index > CHANNEL_MAX_SIGNALS || channel->index < 0)
+	//printf("channel index: %d\n", channel->index);
+	if(channel->index >= CHANNEL_MAX_SIGNALS || channel->index < 0)
 	{
-		fprintf(stderr,"to many signals on channel %d ", channel->index);
+		printf("to many signals on channel %d\n", channel->index);
 		return false;
 	}
 	channel->signals[channel->index++] = signal;
+	part_signal_consume(&signal);
 
 	return true;
 }
@@ -30,7 +32,8 @@ bool pop_signal_off_channel(part_channel_t *channel, part_signal_t **signal)
 	}
 
 	*signal = channel->signals[--channel->index];
-	//part_signal_release(*signal);
+	part_signal_release(signal);
+
 	return true;
 }
 

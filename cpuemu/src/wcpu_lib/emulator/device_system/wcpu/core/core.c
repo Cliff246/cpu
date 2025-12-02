@@ -132,6 +132,7 @@ typedef struct core_signal_handle
 //just some stubs of the input and core
 void wcpu_core_input(core_t *core, part_signal_t *signal)
 {
+	printf("core input\n");
 	assert(signal->signal_type == PART_SIGNAL_TYPE_CORE_INPUT && "signal type must be core input");
 	if(core->core_io.issued == false)
 	{
@@ -140,7 +141,7 @@ void wcpu_core_input(core_t *core, part_signal_t *signal)
 		core->core_io.type = CORE_IO_READ;
 		core->core_io.address = coreinp.addr;
 		//something like this
-		part_signal_consume(signal);
+		part_signal_consume(&signal);
 	}
 
 }
@@ -150,6 +151,8 @@ void wcpu_core_output(core_t *core, part_signal_t *signal)
 	assert(signal->signal_type == PART_SIGNAL_TYPE_CORE_OUTPUT && "signal type must be core output");
 	if(core->core_io.issued == false)
 	{
+		printf("core output\n");
+
 		_part_signal_CORE_OUTPUT_t coreout = *signal->ptr.CORE_OUTPUT;
 		core->core_io.issued = true;
 		core->core_io.type = CORE_IO_WRITE;
@@ -157,7 +160,7 @@ void wcpu_core_output(core_t *core, part_signal_t *signal)
 		core->core_io.value = coreout.value;
 
 		//something like this
-		part_signal_consume(signal);
+		part_signal_consume(&signal);
 	}
 }
 
@@ -197,12 +200,12 @@ void wcpu_core_handle_messages(core_t *core)
  		{
 			assert(signal->signal_type >= 0 && "signal cannot have a type less than 0");
 			assert(signal->signal_type < PART_SIGNAL_ENUM_COUNT && "signal type out of range");
-			assert(signal->dst_id >= 0 && signal->dst_id < UNIQUE_PARTS && "dst id is not valid ");
 
 
 			//do a unique signal operation in the core
 			if(signal_handles[signal->signal_type].fn != NULL)
 			{
+				printf("do handle\n");
 				signal_handles[signal->signal_type].fn(core, signal);
 			}
 			if(signal_handles[signal->signal_type].distrubutes)
@@ -220,7 +223,7 @@ void wcpu_core_handle_messages(core_t *core)
 
 	//dispatch core signals around core_io to lsu
 
-	if(core->core_io.responded == true && core->core_io.issued == true)
+	if(core->core_io.responded == true )
 	{
 
 		_part_signal_CORE_MEM_RESPONSE_t *pscmr = calloc(1, sizeof(_part_signal_CORE_MEM_RESPONSE_t));
@@ -233,18 +236,19 @@ void wcpu_core_handle_messages(core_t *core)
 		//this is really really stupid
 
 		//this essentially takes the first possible lsu and assumes its the source... need to fix this
-		int lsu_dev_id = core->parts[WCPU_PART_LSU];
+
 
 
 		//this psig might be lost lol
-		part_signal_t *psig = part_signal_create(PART_SIGNAL_TYPE_CORE_MEM_RESPONSE, -1, lsu_dev_id, content);
+		part_signal_t *psig = part_signal_create(PART_SIGNAL_TYPE_CORE_MEM_RESPONSE, -1, WCPU_PART_LSU, content);
 		bool push_result = push_signal_onto_channel(&core->parts[psig->dst_id]->bus.import, psig);
 		assert(push_result == true && "push must always be true");
 		//wcpu_core_clear_io(core);
 		//releases this signal in the core
+		core->core_io.responded = false;
+		core->core_io.issued = false;
 
-
-		part_signal_release(psig);
+		part_signal_release(&psig);
 
 	}
 

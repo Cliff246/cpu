@@ -49,7 +49,7 @@ typedef struct wcpu_part_lsu
 }lsu_t;
 
 part_ptr_t wcpu_lsu_generate(void);
-void wcpu_lsu_update(part_t *lsu);
+void wcpu_lsu_update(part_t *part);
 
 void wcpu_lsu_import( part_t *part, part_signal_t *signal);
 bool wcpu_lsu_export( part_t *part, part_signal_t **signal);

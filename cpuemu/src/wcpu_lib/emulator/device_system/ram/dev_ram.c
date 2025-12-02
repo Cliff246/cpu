@@ -67,7 +67,7 @@ device_type_ptr_t device_ram_generate(device_t *device, emuconfig_dev_settings_t
 	if(config->use_filename == true)
 	{
 		ram = load_file(config->filename);
-
+		device->address_range_length =ram->length;
 
 	}
 	else

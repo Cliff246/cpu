@@ -92,9 +92,15 @@ void wcpu_fetcher_import( part_t *part, part_signal_t *signal)
 
 
 		}
-		//part_signal_consume(signal);
 
 	}
+	if(signal->signal_type == PART_SIGNAL_TYPE_LSU)
+	{
+		_part_signal_LSU_t *lsu = signal->ptr.LSU;
+		printf("fetcher loading %d %d\n",lsu->address, lsu->value);
+	}
+
+	part_signal_consume(&signal);
 
 
 

@@ -19,6 +19,7 @@ typedef struct device_wcpu
 	int port_behaviour;
 
 	bool has_out, has_in;
+	bool sent;
 	dev_msg_t *current_msg_out;
 	dev_msg_t *current_msg_in;
 }dev_wcpu_t;

@@ -82,13 +82,28 @@ part_ptr_t wcpu_lsu_generate(void)
 	return pptr;
 }
 
-void wcpu_lsu_update(part_t *lsu)
+void wcpu_lsu_update(part_t *part)
 {
 	//must fill in the device message loads and stores. then convert and correct the right entries for export. or skip the ones still loading
 	//
+	assert(part != NULL && "part cannot be null");
+	assert(part->type == WCPU_PART_LSU && "part type for import must be of type WCPU_PART_LSU");
+	lsu_t *lsu = part->ptr.lsu;
+	if(lsu->input_signal.release == false)
+	{
+		for(int i = 0; i < MAX_LSU_ENTRIES; ++i)
+		{
+			lsu_entry_t entry = wcpu_lsu_get(part, i);
+			if(entry.awaiting == true && entry.finished == false)
+			{
+				lsu->input_signal.addr = entry.address;
+				lsu->input_signal.release = true;
+			break;
+			}
+		}
+	}
 
-
-	wcpu_lsu_print_entries(lsu);
+	wcpu_lsu_print_entries(part);
 
 
 
@@ -122,8 +137,13 @@ void wcpu_lsu_import( part_t *part, part_signal_t *signal)
 				success = true;
 			}
 		}
-		assert(success == true && "must find entry in that matches load");
-		part_signal_consume(signal);
+		if(success == false)
+		{
+			printf("response address %d\n", mem_response.address);
+			assert(success == true && "must find entry in that matches load");
+
+		}
+		part_signal_consume(&signal);
 	}
 	else
 	{
@@ -134,7 +154,7 @@ void wcpu_lsu_import( part_t *part, part_signal_t *signal)
 		lsu_entry_type_t type = (signal_content->loadstore == true)? LSU_ENTRY_READ : LSU_ENTRY_WIRTE;
 
 		wcpu_lsu_entry_set(part, lsu->entries_currently, signal_content->address, signal_content->value, type, signal->src_id);
-		part_signal_consume(signal);
+		part_signal_consume(&signal);
 		lsu->entries_currently++;
 	}
 
@@ -148,7 +168,7 @@ bool wcpu_lsu_export( part_t *part, part_signal_t **signal)
 	assert(part->type == WCPU_PART_LSU && "part type for import must be of type WCPU_PART_LSU");
 	lsu_t *lsu = part->ptr.lsu;
 
-
+	//read
 	if(lsu->input_signal.release == true)
 	{
 
@@ -168,6 +188,7 @@ bool wcpu_lsu_export( part_t *part, part_signal_t **signal)
 		lsu->input_signal.release = false;
 		return true;
 	}
+	//write
 	if(lsu->output_signal.release == true)
 	{
 
@@ -190,16 +211,31 @@ bool wcpu_lsu_export( part_t *part, part_signal_t **signal)
 
 	if(lsu->entries_currently > 0)
 	{
-		lsu_entry_t entry =  wcpu_lsu_get(part, lsu->entries_currently - 1);
+		for(int i = 0; i < MAX_LSU_ENTRIES; ++i)
+		{
+			lsu_entry_t entry =  wcpu_lsu_get(part, i);
+			if(entry.awaiting == true && entry.finished == true)
+			{
 
-		if(entry.awaiting == true && entry.finished == true)
-		{
-			//pull
+				_part_signal_LSU_t *lsuout = calloc(1, sizeof(_part_signal_LSU_t));
+				assert(lsuout != NULL && "cannot fail calloc");
+
+
+				lsuout->value = entry.value;
+				lsuout->address = entry.address;
+				lsuout->loadstore = true;
+
+				part_signal_content_ptr_t pscp;
+				pscp.LSU = lsuout;
+
+				part_signal_t *psig = part_signal_create(PART_SIGNAL_TYPE_LSU, part->id, entry.writeback_dst, pscp);
+				*signal = psig;
+				wcpu_lsu_entry_clear(part, i);
+				lsu->entries_currently--;
+				return false;
+			}
 		}
-		else
-		{
-			//we need to keep pulling entries till we find one that can be delivered or we run out of options
-		}
+
 
 	}
 	else

@@ -32,6 +32,8 @@ bool device_mailbox_get(dev_mailbox_t *mailbox, dev_msg_t **msg_ref)
 	}
 	*msg_ref = mailbox->msg_ring[mailbox->read];
 	(*msg_ref)->ref_count--;
+	mailbox->msg_ring[mailbox->read] = NULL;
+
 	mailbox->read = (mailbox->read + 1) % DEVICE_MAILBOX_SIZE;
 	return true;
 
