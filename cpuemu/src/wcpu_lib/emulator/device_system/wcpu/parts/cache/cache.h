@@ -2,23 +2,18 @@
 #define __WCPU_PART_CACHE_HEADER__
 
 #include "wcpu_part.h"
+#include "cache_line.h"
 #include <stdint.h>
 #include <stdbool.h>
 
 #define CACHCE_CACHELINES_COUNT 128
 
-typedef struct cache_line
-{
-	char tag;
-	int64_t data[4];
-	char flags;
 
-}cacheline_t;
 
 typedef struct wcpu_part_cache
 {
 	int width;
-	cacheline_t lines[CACHCE_CACHELINES_COUNT];
+	cache_line_t lines[CACHCE_CACHELINES_COUNT];
 }cache_t;
 
 

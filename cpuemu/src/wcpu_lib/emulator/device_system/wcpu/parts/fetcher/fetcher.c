@@ -5,6 +5,7 @@
 #include "wcpu_part_signal_lsu_entry.h"
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <assert.h>
 
 uint32_t get_inst_at_pc_address(uint64_t address)

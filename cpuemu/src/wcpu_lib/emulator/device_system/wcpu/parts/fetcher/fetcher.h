@@ -1,21 +1,18 @@
-#ifndef __FETCHER_HEADER__
-#define __FETCHER_HEADER__
+#ifndef __WCPU_PART_FETCHER_HEADER__
+#define __WCPU_PART_FETCHER_HEADER__
 
 #include "wcpu_part_ptr.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include "wcpu_part_signal.h"
 
-#define FETCHER_INSTRUCTION_BUFFER 16
-#define FETCHER_IMMEDIATE_BUFFER 4
-#define FETCHER_REQUEST_BUFFER 4
 
 
-typedef struct fetch_request
-{
-	int64_t address;
+#include "fetcher_controller.h"
+#include "fetcher_buffer.h"
 
-}fetch_request_t;
+#define FETCHER_BUFFER_LIMIT 10
+
 
 typedef struct wcpu_part_fetcher
 {
@@ -29,6 +26,13 @@ typedef struct wcpu_part_fetcher
 	int code_descriptor_count;
 	int64_t code_descriptor_chunk[6];
 
+
+
+	//newer ow
+
+
+	fetcher_controller_t controller;
+	fetcher_buffer_t buffers[FETCHER_BUFFER_LIMIT];
 }fetcher_t;
 
 
