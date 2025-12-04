@@ -18,8 +18,11 @@ typedef struct wcpu_fetcher_controller
 	fetcher_request_t requests[WCPU_FETCHER_REQUESTS_MAX];
 
 	fetcher_code_descriptor_t current_descriptor;
-	
+
 }fetcher_controller_t;
+
+
+
 
 
 #endif

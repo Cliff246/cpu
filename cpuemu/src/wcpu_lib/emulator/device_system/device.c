@@ -11,12 +11,14 @@
 device_class_t device_vtable[DEVICES_LIST_TYPE_COUNT] =
 {
 	[DEVICE_INVAL] = {.init = NULL, .update = NULL,.read = NULL, .send = NULL, .print = NULL},
+
 	[DEVICE_FAKEIO] = {
 		.init = device_fakeio_generate,
 		.update = device_fakeio_update,
 		.read = device_fakeio_read,
 		.send= device_fakeio_send,
-		.print = NULL
+		.print = NULL,
+		.cmd = device_fakeio_cmd,
 	},
 
 	[DEVICE_WCPU] = {
@@ -24,7 +26,9 @@ device_class_t device_vtable[DEVICES_LIST_TYPE_COUNT] =
 		.update = device_wcpu_update,
 		.read = device_wcpu_read,
 		.send = device_wcpu_send,
-		.print = device_wcpu_print
+		.print = device_wcpu_print,
+		.cmd = device_wcpu_cmd,
+
 	},
 
 	[DEVICE_RAM] = {
@@ -32,10 +36,18 @@ device_class_t device_vtable[DEVICES_LIST_TYPE_COUNT] =
 		.update = device_ram_update,
 		.read = device_ram_read,
 		.send = device_ram_send,
-		.print = device_ram_print
+		.print = device_ram_print,
+		.cmd = device_ram_cmd,
+
 	},
 };
 
+
+char *device_type_str[] =
+{
+	"INVAL",
+	DEVICE_LIST(DEVICE_TYPE_ENUM_AS_STRING)
+};
 
 size_t get_device_address_start(device_t *device)
 {
@@ -67,8 +79,17 @@ device_t *device_generate(emuconfig_dev_settings_t *settings )
 {
 	device_t *device = calloc(1, sizeof(device_t));
 
+	for(int i = 0; i < DEVICE_FLAG_COUNT; ++i)
+	{
+		device->flags[i] = false;
+	}
+
 
 	assert(settings->command != NULL && "settings command cannot be null");
+
+
+
+
 
 	device_type_t type = settings->command->type;
 	device->type = type;
@@ -78,7 +99,12 @@ device_t *device_generate(emuconfig_dev_settings_t *settings )
 
 	assert(device->device.ptr != NULL && "device ptr cannot be null");
 
+	device->flags[DEVICE_FLAG_TYPE_ACTIVATED] = true;
+
 	device->mailbox = device_mailbox_init();
+	//set_device_changed(device);
+
+
 
 	return device;
 }
@@ -96,6 +122,8 @@ void device_update(device_t *device)
 
 	assert(device_vtable[device->type].update != NULL && "cannot update a device with no vtable fn");
 
+	assert(get_device_changed(device) == false && "device changed on update is not valid, must handle before");
+
 	//this is boring but yay
 	device_vtable[device->type].update(device);
 
@@ -108,6 +136,7 @@ void device_read(device_t *device, dev_msg_t *msg)
 
 
 	assert(device_vtable[device->type].read != NULL && "device doesnt have a read function");
+	assert(get_device_changed(device) == false && "device changed on read is not valid, must handle before");
 
 
 	device_vtable[device->type].read(device, msg);
@@ -125,6 +154,7 @@ dev_msg_t *device_send(device_t *device)
 
 
 	assert(device_vtable[device->type].send != NULL && "device doesnt have a read function");
+	assert(get_device_changed(device) == false && "device changed on send is not valid, must handle before");
 
 	dev_msg_t *new_msg = device_vtable[device->type].send(device);
 	if(new_msg == NULL)
@@ -135,11 +165,6 @@ dev_msg_t *device_send(device_t *device)
 }
 
 
-char *device_type_str[] =
-{
-	"INVAL",
-	DEVICE_LIST(DEVICE_TYPE_ENUM_AS_STRING)
-};
 
 
 void device_print(device_t *device)
@@ -166,4 +191,18 @@ void device_cmd(device_t *device, device_command_t *cmd)
 	assert(device_vtable[device->type].cmd != NULL && "device doesnt have a read function");
 
 	device_vtable[device->type].cmd(device, cmd);
+}
+
+bool get_device_changed(device_t *device)
+{
+	assert(device != NULL && "cannot update null device");
+	return device->flags[DEVICE_FLAG_TYPE_INTERNAL_CHANGED];
+}
+
+//only sets to high, device manager should clear
+void set_device_changed(device_t *device)
+{
+	assert(device != NULL && "cannot update null device");
+	device->flags[DEVICE_FLAG_TYPE_INTERNAL_CHANGED] = true;
+
 }

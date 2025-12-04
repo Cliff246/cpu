@@ -1,6 +1,7 @@
 #ifndef __DEVICE_HEADER__
 #define __DEVICE_HEADER__
 
+#include "device_flags.h"
 #include "device_list.h"
 #include "device_message.h"
 #include "device_mailbox.h"
@@ -11,8 +12,6 @@
 #include <stdlib.h>
 
 typedef struct device_class device_class_t;
-
-
 
 
 typedef struct device
@@ -36,6 +35,8 @@ typedef struct device
 	device_type_ptr_t device;
 
 	bool has_address;
+
+	bool flags[DEVICE_FLAG_COUNT];
 
 }device_t;
 
@@ -87,5 +88,8 @@ dev_msg_t *device_send(device_t *device);
 void device_print(device_t *device);
 void device_cmd(device_t *device, device_command_t *cmd);
 
+bool get_device_changed(device_t *device);
+
+void set_device_changed(device_t *device);
 
 #endif

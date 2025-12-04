@@ -311,21 +311,9 @@ void init(int argc, char **argv)
 	emuconfig_t *cf = create_emuconfig_internal(EMUCONFIG_INTERNAL_BASIC_CONSOLE);
 	printf("emulator \n");
 	emulator_t *emu = emulator_generate(cf);
-
-
-
-
-
-
 	for(int i = 0; i < 18; ++i)
 	{
-
-
-
-
-
 		emulator_update(emu);
-
 	}
 }
 /*

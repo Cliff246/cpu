@@ -44,6 +44,11 @@ emulator_t *emulator_generate(emuconfig_t *config)
 	{
 		device_t *dev = device_generate(emu->config->settings[i]);
 		dev->device_id = i;
+		if(get_device_changed(dev))
+		{
+			dev->flags[DEVICE_FLAG_TYPE_INTERNAL_CHANGED] = false;
+		}
+		
 		emu_dev_slot_t slot =
 		{
 			.device_index = i,
@@ -51,6 +56,9 @@ emulator_t *emulator_generate(emuconfig_t *config)
 			.address_start = dev->address_range_start,
 			.address_length = dev->address_range_length
 		};
+
+
+
 		if(get_device_has_address(dev))
 		{
 			emu->device_slots[emu->stable_slots++] = slot;
@@ -268,7 +276,6 @@ void emulator_update(emulator_t *emu)
 		if(set_msg != NULL)
 		{
 
-
 			bool has_dst = get_device_message_has_dst(set_msg);
 
 
@@ -317,24 +324,10 @@ void emulator_update(emulator_t *emu)
 			dev_mailbox_t *dst_mb = get_device_mailbox(dst_device);
 			bool could_put = device_mailbox_put(dst_mb, set_msg);
 			assert(could_put != false && "could put must never be false");
-
-
-
 		}
 		device_print(dev);
 
 	}
-
-
-
-
-
-
-
-
-
-
-
 
 }
 

@@ -2,6 +2,8 @@
 #include "wcpu_part.h"
 #include <stdlib.h>
 #include <assert.h>
+#include <stdio.h>
+
 
 #define PART_SIGNAL_STRS(X) [PART_SIGNAL_ENUM_NAME(X)] = #X,
 

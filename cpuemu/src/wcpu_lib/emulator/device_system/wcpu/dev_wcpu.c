@@ -198,3 +198,9 @@ void device_wcpu_print(device_t *dev)
 	}
 
 }
+
+
+void device_wcpu_cmd(device_t *dev, device_command_t *cmd)
+{
+
+}

@@ -27,3 +27,13 @@ dev_msg_t *device_fakeio_send(device_t *dev)
 {
 	return NULL;
 }
+
+void device_fakeio_print(device_t *dev)
+{
+
+}
+
+void device_fakeio_cmd(device_t *dev, device_command_t *cmd)
+{
+
+}

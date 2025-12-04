@@ -111,6 +111,10 @@
 #define REPEAT(FN, N) REPEAT_##N(FN)
 
 
+#define COUNTER1D(X) + 1
+#define COUNTER2D(X, Y) + 1
+#define COUNTER3D(X, Y, Z) + 1
+
 #define STR(X) #X
 #define TOSTR(X) STR(X)
 #define SETBIT(n, k) (1 | (n << k))

@@ -7,7 +7,7 @@
 #include "wcpu_part_signal.h"
 
 
-
+#include "fetcher_code_descriptor.h"
 #include "fetcher_controller.h"
 #include "fetcher_buffer.h"
 
@@ -30,7 +30,7 @@ typedef struct wcpu_part_fetcher
 
 	//newer ow
 
-
+	fetcher_code_descriptor_t code_desc;
 	fetcher_controller_t controller;
 	fetcher_buffer_t buffers[FETCHER_BUFFER_LIMIT];
 }fetcher_t;

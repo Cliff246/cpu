@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "wcpu_part_ptr.h"
 #include "wcpu_part_signal_lsu_entry.h"

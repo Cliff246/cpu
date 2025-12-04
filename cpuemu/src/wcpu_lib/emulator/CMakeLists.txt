@@ -12,6 +12,7 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/device_message.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/device_mailbox.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/device_command.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/device_flags.c
 
 
 

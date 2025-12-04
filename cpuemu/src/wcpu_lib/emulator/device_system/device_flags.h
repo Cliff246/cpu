@@ -1,0 +1,23 @@
+#ifndef __DEVICE_FLAGS_HEADER__
+#define __DEVICE_FLAGS_HEADER__
+
+#define DEVICE_FLAG_LIST(X)	\
+	X(INITALIZED)			\
+	X(INTERNAL_CHANGED)		\
+	X(ACTIVATED)			\
+
+
+#define DEVICE_FLAG_NAME(X) DEVICE_FLAG_TYPE_ ## X
+#define DEVICE_FLAG_ENUM(X) DEVICE_FLAG_NAME(X),
+
+#define DEVICE_FLAG_COUNTER(X) + 1
+#define DEVICE_FLAG_COUNT (0 DEVICE_FLAG_LIST(DEVICE_FLAG_COUNTER))
+
+typedef enum device_flag_type
+{
+	DEVICE_FLAG_LIST(DEVICE_FLAG_ENUM)
+}dev_flag_t;
+
+
+
+#endif

@@ -41,6 +41,6 @@ void print_part_channel(part_channel_t *channel)
 {
 	for(int i = 0; i < channel->index; ++i)
 	{
-		part_signal_print(&channel->signals[i]);
+		part_signal_print(channel->signals[i]);
 	}
 }

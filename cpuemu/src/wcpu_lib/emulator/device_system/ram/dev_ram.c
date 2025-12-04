@@ -9,6 +9,9 @@
 #include <errno.h>
 #include <assert.h>
 
+const static size_t ram_base_size = 1000;
+const static size_t ram_base_start = 0;
+
 static void fill_binary(dev_ram_t *ram, uint64_t *bin, size_t length)
 {
 
@@ -32,8 +35,8 @@ static size_t file_len(FILE *fp)
 	return address;
 }
 
-
-static dev_ram_t *load_file(const char *file_name)
+//returns true on change to size and false on no updated size
+static bool load_file(dev_ram_t *ram, const char *file_name)
 {
 	FILE *fp = fopen(file_name, "rb");
 	if(fp == NULL)
@@ -45,7 +48,15 @@ static dev_ram_t *load_file(const char *file_name)
 	size_t len = file_len(fp);
 	char *bytes = (char *)calloc(len, sizeof(char));
 	fread(bytes, 8, len / 8, fp);
-	dev_ram_t *ram = create_memory(len/8);
+
+	assert(ram != NULL && "cannot load file into unknown ram");
+	bool changed = false;
+	if(ram->length < len)
+	{
+		//sketchy
+		update_ram(ram, len);
+		changed = true;
+	}
 
 	uint64_t *bin = (uint64_t *)bytes;
 
@@ -61,46 +72,19 @@ static dev_ram_t *load_file(const char *file_name)
 //this is not correct but it works for now, it doesnt work at offsets so if i try to load at 10000 and it starts at 9000 it wont load at 1000 it will load at 10000
 device_type_ptr_t device_ram_generate(device_t *device, emuconfig_dev_settings_t *settings)
 {
+	assert(device != NULL && "device must not be null");
+	assert(device->type == DEVICE_RAM && "device must be of type ram");
 
+	assert(settings->command->type == DEVICE_RAM && "device command must be of type ram");
 
 	dev_ram_config_setting_t *config = settings->command->setting.ram;
-	dev_ram_t *ram;
-	if(config->use_filename == true)
-	{
-		ram = load_file(config->filename);
-		device->address_range_length =ram->length;
 
-	}
-	else
-	{
-		printf("%d\n", config->size);
-		if(config->use_size == true)
-		{
-			device->address_range_length = config->size;
+	dev_ram_t *ram = create_ram(ram_base_size);
 
-		}
-		else
-		{
-			device->address_range_length = 1000;
+	assert(config->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_RESET] && "generate must force a reset");
+	cmd_ram(ram, settings->command);
+	align_ram(device, ram);
 
-		}
-
-
-
-
-	 	ram = create_memory(device->address_range_length);
-
-
-
-		for(int i = 0; i < ram->length; ++i)
-		{
-			ram->content[i] = 0;
-		}
-
-
-	}
-	device->address_range_start = 0;
-	device->has_address = true;
 
 	device_type_ptr_t ptr;
 	ptr.ram = ram;
@@ -109,28 +93,120 @@ device_type_ptr_t device_ram_generate(device_t *device, emuconfig_dev_settings_t
 
 
 
-dev_ram_t *create_memory(int64_t length)
+static dev_ram_t *create_ram(int64_t length)
 {
-	dev_ram_t *ptr = (dev_ram_t *)malloc(sizeof(dev_ram_t));
-	if(!ptr)
+	dev_ram_t *ptr = (dev_ram_t *)calloc(1, sizeof(dev_ram_t));
+	assert(ptr != NULL);
+
+	int64_t *buffer = (int64_t *)calloc(length, sizeof(int64_t));
+	assert(buffer != NULL);
+	ptr->length = length;
+	ptr->content = buffer;
+	ptr->current_msg = NULL;
+	return ptr;
+}
+
+//TODO make this make sense
+static void update_ram(dev_ram_t *ram, uint64_t length)
+{
+	assert(ram != NULL && "ram cannot be null");
+	//get rid of the old
+	free(ram->content);
+	int64_t *buffer = (int64_t *)calloc(length, sizeof(int64_t));
+	assert(buffer != NULL);
+	ram->length = length;
+	ram->content = buffer;
+
+
+
+	return true;
+}
+
+static void cmd_ram(dev_ram_t *ram,  device_command_t *cmd)
+{
+
+	dev_ram_config_setting_t *config = cmd->setting.ram;
+
+	assert(config->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_RESET]);
+	//big flag, no need to have a data type, your either reseting or not
+	if(config->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_RESET])
 	{
-		errno = ENOMEM;
-		return NULL;
-	}
-	else
-	{
-		int64_t *buffer = (int64_t *)calloc(length, sizeof(int64_t));
-		if(!buffer)
+
+		//set size
+		if(config->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_FILENAME])
 		{
-			errno = ENOMEM;
-			free(ptr);
-			return NULL;
+			assert(config->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_SIZE] == false && "ram size cannot be a set size and load file");
+
+			load_file(ram, config->filename);
+			ram->local_address_size = ram->length;
+
 		}
-		ptr->length = length;
-		ptr->content = buffer;
-		ptr->current_msg = NULL;
-		return ptr;
+		else
+		{
+			//force reset to zero always... should be done via calloc but better safe then sorry
+			if(config->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_SIZE])
+			{
+
+				update_ram(ram, config->size);
+				ram->local_address_size = ram->length;
+
+			}
+			else
+			{
+				//rest to base
+				update_ram(ram, ram_base_size);
+
+				ram->local_address_size = ram->length;
+			}
+
+			for(int i = 0; i < ram->length; ++i)
+			{
+				ram->content[i] = 0;
+			}
+		}
+
+
+
+		//set start
+		if(config->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_START])
+		{
+			ram->local_address_start = config->start;
+
+		}
+		else
+		{
+			ram->local_address_start = ram_base_start;
+
+		}
+
+		//has to set changed
+		ram->changed = true;
 	}
+
+	//set if we print content
+	if(config->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_PRINT_CONTENT])
+	{
+		//use the print content data
+		ram->print_content_flag = config->print_content;
+	}
+
+}
+
+static void align_ram(device_t *device, dev_ram_t *ram)
+{
+	assert(device != NULL && "device must not be null");
+	assert(device->type == DEVICE_RAM && "device must be of type ram");
+
+	if(ram->changed)
+	{
+
+		device->address_range_length = ram->local_address_size;
+		device->address_range_start = ram->local_address_start;
+		ram->changed = false;
+		device->has_address = true;
+		set_device_changed(device);
+	}
+
 }
 
 
@@ -216,13 +292,14 @@ dev_msg_t *device_ram_send(device_t *dev)
 
 }
 
-int64_t read_ram(dev_ram_t *ram, int64_t address)
+static int64_t read_ram(dev_ram_t *ram, uint64_t address)
 {
 	assert(ram->length > address && address >= 0 && "read out of range");
 
 	return ram->content[address];
 }
-void write_ram(dev_ram_t *ram, int64_t address, int64_t data)
+
+static void write_ram(dev_ram_t *ram, uint64_t address, int64_t data)
 {
 	assert(ram->length > address && address >= 0 && "write out of range");
 	ram->content[address] = data;
@@ -239,9 +316,27 @@ void device_ram_print(device_t *dev)
 		print_device_message(ram->current_msg);
 		printf("\n");
 	}
-
-	for(int i = 0; i < ram->length; ++i)
+	if(ram->print_content_flag)
 	{
-		printf("[%d] = [%lld]\n", i, read_ram(ram, i));
+		for(int i = 0; i < ram->length; ++i)
+		{
+			printf("[%d] = [%lld]\n", i, read_ram(ram, i));
+		}
 	}
+
+}
+
+
+
+//todo make this way safer
+//no more device->thing pokes
+//but i am lazy
+void device_ram_cmd(device_t *device, device_command_t *cmd)
+{
+	assert(device && cmd);
+	assert(device->type == DEVICE_RAM);
+	assert(cmd->type == DEVICE_RAM);
+	dev_ram_t *ram = device->device.ram;
+	cmd_ram(ram, cmd);
+	align_ram(device, ram);
 }

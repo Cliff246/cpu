@@ -259,8 +259,20 @@ toklex_t *lex_string(const char *string)
 			}
 			else
 			{
+				do
+				{
+					char scroll = peek(tl);
+					if(!isalnum(scroll) && scroll != '_')
+					{
+						break;
+					}
+				}
+				while(advance(tl));
 				size_t end = position(tl);
-				emit(tl, TOK_OP, split(tl, begin, end));
+
+
+				char *spl = split(tl, begin, end);
+				emit(tl, TOK_WORD, spl);
 
 			}
 

@@ -35,17 +35,43 @@ static bool argparser_ram(emuconfig_dev_settings_t *settings)
 		else if(tok->type == TOK_STRING)
 		{
 			//fix this as well... also really dangerous
-			ram->use_filename = true;
+			ram->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_FILENAME] = true;
 			ram->filename = strdup(tok->token);
+			ram->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_RESET] = true;
+
 			//printf("using filename %s\n",ram->filename);
 		}
-		else if(tok->type == TOK_INT)
+
+		//AHHHHH
+		else if(tok->type == TOK_WORD)
 		{
-			ram->use_size = true;
-			//TODO fix this
-			//this is very dangerous
-			ram->size = atoi(tok->token);
+
+			tok_t *next_tok = peek_toklex(tl);
+			uint64_t number = atoi(next_tok->token);
+			if(!strcmp(tok->token, "-start"))
+			{
+				printf("start\n");
+
+				ram->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_START] = true;
+				ram->start = number;
+				ram->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_RESET] = true;
+
+			}
+			else if(!strcmp(tok->token, "-size"))
+			{
+				printf("size\n");
+				ram->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_SIZE] = true;
+				ram->size = number;
+				ram->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_RESET] = true;
+
+			}
+			else
+			{
+				assert(0 && "not a valid combination");
+			}
 		}
+
+
 		else
 		{
 			success = false;
