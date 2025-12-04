@@ -63,7 +63,7 @@ static bool load_file(dev_ram_t *ram, const char *file_name)
 	fill_binary(ram, bin, len / sizeof(uint64_t));
 	free(bytes);
 	fclose(fp);
-	return ram;
+	return changed;
 }
 
 
@@ -265,7 +265,7 @@ dev_msg_t *device_ram_send(device_t *dev)
 	assert(dev->type == DEVICE_RAM && "device must be of type ram");
 
 	dev_ram_t *ram = dev->device.ram;
-	if(ram->has_msg == false)
+	if(ram->has_msg == false )
 	{
 		return NULL;
 	}

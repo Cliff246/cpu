@@ -1,0 +1,9 @@
+#ifndef __WCPU_PART_FETCHER_PORT_PTR_HEADER__
+#define __WCPU_PART_FETCHER_PORT_PTR_HEADER__
+
+
+
+
+
+
+#endif

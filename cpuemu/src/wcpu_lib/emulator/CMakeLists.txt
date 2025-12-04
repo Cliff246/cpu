@@ -64,10 +64,14 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/mattress_unit.c
 #fetcher
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/fetcher.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/fetcher_code_descriptor.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/fetcher_request.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/fetcher_controller.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/fetcher_buffer.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/fetcher_code_descriptor_port.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/fetcher_immediate_port.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/fetcher_instruction_port.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/fetcher_code_table_port.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/fetcher_port.c
 
 #fabric details
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/fabric.c
@@ -129,6 +133,8 @@ include_directories(wcpu_lib_emulator PUBLIC
 
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/ledger
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/
+
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/regfile
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mau
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress
@@ -165,6 +171,7 @@ target_include_directories(wcpu_lib_emulator PUBLIC
 #parts
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/lsu
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/cache
 
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/ledger

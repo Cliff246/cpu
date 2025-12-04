@@ -7,7 +7,7 @@
 #include "wcpu_part_signal.h"
 
 
-#include "fetcher_code_descriptor.h"
+#include "fetcher_code_descriptor_port.h"
 #include "fetcher_controller.h"
 #include "fetcher_buffer.h"
 
@@ -27,19 +27,16 @@ typedef struct wcpu_part_fetcher
 	int64_t code_descriptor_chunk[6];
 
 
+	bool load_instruction_stream;
+	bool load_immediate_stream;
 
-	//newer ow
-
-	fetcher_code_descriptor_t code_desc;
-	fetcher_controller_t controller;
-	fetcher_buffer_t buffers[FETCHER_BUFFER_LIMIT];
 }fetcher_t;
 
 
 part_ptr_t wcpu_fetcher_generate(void);
 
 void wcpu_fetcher_update(part_t *part);
-void wcpu_fetcher_import( part_t *part, part_signal_t *signal);
+bool wcpu_fetcher_import( part_t *part, part_signal_t *signal);
 bool wcpu_fetcher_export( part_t *part, part_signal_t **signal);
 
 uint32_t get_inst_at_pc_address(uint64_t address);

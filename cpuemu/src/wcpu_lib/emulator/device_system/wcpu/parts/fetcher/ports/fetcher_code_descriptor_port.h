@@ -1,13 +1,15 @@
-#ifndef __WCPU_PART_FETCHER_CODE_DESCRIPTOR_HEADER__
-#define __WCPU_PART_FETCHER_CODE_DESCRIPTOR_HEADER__
+#ifndef __WCPU_PART_FETCHER_CODE_DESCRIPTOR_PORT_HEADER__
+#define __WCPU_PART_FETCHER_CODE_DESCRIPTOR_PORT_HEADER__
 
 #include <stdint.h>
+
+#include "fetcher_port.h"
 
 typedef struct wcpu_fetcher_code_descriptor
 {
 	int64_t element[6];
 	uint64_t address;
-	
+
 }fetcher_code_descriptor_t;
 
 

@@ -86,11 +86,25 @@ void wcpu_core_update(core_t *core)
 		part_signal_t *signal;
 		//print_part_channel(&part->bus.import);
 		int count = 0;
+		part_signal_t *backlog[CHANNEL_MAX_SIGNALS];
 		while(pop_signal_off_channel(&part->bus.import, &signal))
 		{
 			part_signal_print(signal);
-			wcpu_part_import(part, signal);
+			bool result = wcpu_part_import(part, signal);
+			if(result == false)
+			{
+				//backlog, just shove back in
+				signal->backlog = true;
+				backlog[count++] = signal;
+			}
+			assert(count < CHANNEL_MAX_SIGNALS && "backlog overflow");
 		}
+
+		for(int backlog_iter = 0; backlog_iter < count; ++backlog_iter)
+		{
+			assert(push_signal_onto_channel(&part->bus.import, backlog[backlog_iter]) == true && "god damit channel is over flowing") ;
+		}
+
 
 	}
 
@@ -180,7 +194,8 @@ static core_signal_handle_t signal_handles[] =
 	[PART_SIGNAL_TYPE_LEDGER_TRANSFER] = {false, NULL},
 	//todo
 	[PART_SIGNAL_TYPE_AGGREGATOR_COMMAND] = {false, NULL},
-	[PART_SIGNAL_TYPE_FETCHER_COMMAND] = {.distrubutes = true, .fn = NULL}
+	[PART_SIGNAL_TYPE_FETCHER_COMMAND] = {.distrubutes = true, .fn = NULL},
+	//TODO
 };
 
 

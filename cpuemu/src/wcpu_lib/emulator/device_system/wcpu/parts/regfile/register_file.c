@@ -19,8 +19,12 @@ void wcpu_regfile_update(part_t *regfile)
 
 }
 
-void wcpu_regfile_import( part_t *part, part_signal_t *signal)
+bool wcpu_regfile_import( part_t *part, part_signal_t *signal)
 {
+
+	
+
+	return true;
 
 }
 bool wcpu_regfile_export( part_t *part, part_signal_t **signal)

@@ -65,13 +65,13 @@ typedef struct wcpu_part_regfile
 	code_desc_t desc;
 
 	bookmark_file_t bookmarks;
-
+	
 }regfile_t;
 
 
 part_ptr_t wcpu_regfile_generate(void);
 void wcpu_regfile_update(part_t *regfile);
-void wcpu_regfile_import( part_t *part, part_signal_t *signal);
+bool wcpu_regfile_import( part_t *part, part_signal_t *signal);
 bool wcpu_regfile_export( part_t *part, part_signal_t **signal);
 
 

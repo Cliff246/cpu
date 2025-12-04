@@ -111,11 +111,18 @@ void wcpu_lsu_update(part_t *part)
 }
 
 
-void wcpu_lsu_import( part_t *part, part_signal_t *signal)
+bool wcpu_lsu_import( part_t *part, part_signal_t *signal)
 {
 	assert(part != NULL && "part cannot be null");
 	assert(part->type == WCPU_PART_LSU && "part type for import must be of type WCPU_PART_LSU");
 	lsu_t *lsu = part->ptr.lsu;
+
+	if(lsu->backlog == true)
+	{
+		return false;
+
+	}
+
 
 	//this sets the part to find
 	if(signal->signal_type == PART_SIGNAL_TYPE_CORE_MEM_RESPONSE)
@@ -150,7 +157,17 @@ void wcpu_lsu_import( part_t *part, part_signal_t *signal)
 	{
 		assert(signal->signal_type == PART_SIGNAL_TYPE_LSU && "signal must be of type lsu");
 
-		assert(lsu->entries_currently < MAX_LSU_ENTRIES && "lsu entries currently cannot be greater than the max inflight lsu entries");
+
+		if(lsu->entries_currently >= MAX_LSU_ENTRIES)
+		{
+			lsu->backlog = true;
+			return false;
+		}
+		//assert(lsu->entries_currently < MAX_LSU_ENTRIES && "lsu entries currently cannot be greater than the max inflight lsu entries");
+
+
+
+
 		_part_signal_LSU_t *signal_content = signal->ptr.LSU;
 		lsu_entry_type_t type = (signal_content->loadstore == true)? LSU_ENTRY_READ : LSU_ENTRY_WIRTE;
 
@@ -159,6 +176,7 @@ void wcpu_lsu_import( part_t *part, part_signal_t *signal)
 		lsu->entries_currently++;
 	}
 
+	return true;
 }
 
 
@@ -233,6 +251,9 @@ bool wcpu_lsu_export( part_t *part, part_signal_t **signal)
 				*signal = psig;
 				wcpu_lsu_entry_clear(part, i);
 				lsu->entries_currently--;
+				//fuck
+				lsu->backlog = false;
+
 				return true;
 			}
 		}

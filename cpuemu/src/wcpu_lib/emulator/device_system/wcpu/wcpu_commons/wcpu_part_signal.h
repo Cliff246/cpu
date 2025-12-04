@@ -2,6 +2,8 @@
 #define __WCPU_PART_SIGNAL_HEADER__
 
 #include "wcpu_part_signal_ptr.h"
+#include <stdbool.h>
+
 
 typedef struct wcpu_part_signal
 {
@@ -9,6 +11,9 @@ typedef struct wcpu_part_signal
 	int src_id, dst_id;
 	part_signal_content_ptr_t ptr;
 	int ref_count;
+	bool success;
+	bool backlog;
+
 }part_signal_t;
 extern char *part_signal_strs[];
 

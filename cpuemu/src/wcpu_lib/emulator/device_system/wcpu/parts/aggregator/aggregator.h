@@ -44,7 +44,7 @@ part_ptr_t wcpu_aggregator_generate(void);
 
 void wcpu_aggregator_update(part_t *part);
 
-void wcpu_aggregator_import( part_t *part, part_signal_t *signal);
+bool wcpu_aggregator_import( part_t *part, part_signal_t *signal);
 bool wcpu_aggregator_export( part_t *part, part_signal_t **signal);
 
 #endif

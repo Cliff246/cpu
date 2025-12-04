@@ -26,7 +26,7 @@ void wcpu_aggregator_update(part_t *part)
 
 }
 
-void wcpu_aggregator_import( part_t *part, part_signal_t *signal)
+bool wcpu_aggregator_import( part_t *part, part_signal_t *signal)
 {
 	assert(part != NULL && "aggregator cannot be null");
 
@@ -34,6 +34,7 @@ void wcpu_aggregator_import( part_t *part, part_signal_t *signal)
 
 
 	aggregator_t *aggregator = part->ptr.aggregator;
+	return true;
 
 
 }

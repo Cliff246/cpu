@@ -54,7 +54,7 @@ typedef struct wcpu_part
 }part_t;
 
 typedef void (*part_step)( part_t *part);
-typedef void (*part_import)( part_t *part, part_signal_t *signal);
+typedef bool (*part_import)( part_t *part, part_signal_t *signal);
 typedef bool (*part_export)( part_t *part, part_signal_t **signal);
 typedef part_ptr_t (*part_init)(void);
 
@@ -73,7 +73,7 @@ part_t *wcpu_part_generate(part_type_t type);
 
 void wcpu_part_step(part_t *part);
 
-void wcpu_part_import(part_t *part, part_signal_t *signal);
+bool wcpu_part_import(part_t *part, part_signal_t *signal);
 bool wcpu_part_export(part_t *part, part_signal_t **signal);
 
 

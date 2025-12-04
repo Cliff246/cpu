@@ -3,6 +3,8 @@
 #include "wcpu_part_signal.h"
 
 #include "wcpu_part.h"
+#include "wcpu_part_ptr.h"
+
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -29,10 +31,13 @@ typedef struct lsu_entry
 }lsu_entry_t;
 
 
+
 typedef struct wcpu_part_lsu
 {
 	lsu_entry_t entries[MAX_LSU_ENTRIES];
 	int entries_currently;
+
+	bool backlog;
 
 	struct {
 		bool release;
@@ -51,7 +56,7 @@ typedef struct wcpu_part_lsu
 part_ptr_t wcpu_lsu_generate(void);
 void wcpu_lsu_update(part_t *part);
 
-void wcpu_lsu_import( part_t *part, part_signal_t *signal);
+bool wcpu_lsu_import( part_t *part, part_signal_t *signal);
 bool wcpu_lsu_export( part_t *part, part_signal_t **signal);
 
 

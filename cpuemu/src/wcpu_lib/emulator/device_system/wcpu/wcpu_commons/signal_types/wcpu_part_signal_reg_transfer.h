@@ -13,12 +13,9 @@
 struct wcpu_part_signal_REGISTER_TRANSFER
 {
 	//pull
-	bool pull_reg_a;
-	char regcode_a[WCPU_REGISTER_CODE_SIZE];
-	bool put_reg_b;
-	char regcode_b[WCPU_REGISTER_CODE_SIZE];
-
-	int64_t content;
+	bool loadstore;
+	int64_t address;
+	int64_t value;
 };
 
 #endif

@@ -61,15 +61,26 @@ void wcpu_fetcher_update(part_t *part)
 
 }
 
-void wcpu_fetcher_import( part_t *part, part_signal_t *signal)
+bool wcpu_fetcher_import( part_t *part, part_signal_t *signal)
 {
 	assert(part != NULL && "part cannot be null");
 	assert(part->type == WCPU_PART_FETCHER && "part type for import must be of type WCPU_PART_fetcher");
 	fetcher_t *fetcher = part->ptr.fetcher;
 
+
+
 	if(signal == NULL)
-		return;
+		return true;
+
+	//send back into queue
+	if(fetcher->backlog == true)
+		return false;
+
+
 	printf("import fetcher %d\n", signal->signal_type);
+
+
+
 
 	//TEAR THIS OUT
 	if(signal->signal_type == PART_SIGNAL_TYPE_FETCHER_COMMAND)
@@ -106,7 +117,7 @@ void wcpu_fetcher_import( part_t *part, part_signal_t *signal)
 	part_signal_consume(&signal);
 
 
-
+	return true;
 }
 
 bool wcpu_fetcher_export( part_t *part, part_signal_t **signal)

@@ -24,7 +24,6 @@ typedef struct device_ram
 	uint64_t local_address_start;
 	uint64_t local_address_size;
 	bool changed;
-	bool 
 
 }dev_ram_t;
 

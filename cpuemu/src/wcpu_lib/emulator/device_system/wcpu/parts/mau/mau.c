@@ -20,8 +20,9 @@ void wcpu_mau_update(part_t *mau)
 
 }
 
-void wcpu_mau_import( part_t *part, part_signal_t *signal)
+bool wcpu_mau_import( part_t *part, part_signal_t *signal)
 {
+	return true;
 
 }
 bool wcpu_mau_export( part_t *part, part_signal_t **signal)

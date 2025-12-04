@@ -75,7 +75,7 @@ part_t *wcpu_part_generate(part_type_t type)
 }
 
 
-void wcpu_part_import(part_t *part, part_signal_t *signal)
+bool wcpu_part_import(part_t *part, part_signal_t *signal)
 {
 	assert(part != NULL && "part cannot be null when stepping");
 	part_type_t type = part->type;
@@ -83,8 +83,8 @@ void wcpu_part_import(part_t *part, part_signal_t *signal)
 
 	wcpu_part_class_t funcs = part_vtable[type];
 	assert(funcs.import != NULL && "part must not have a defined import");
-	funcs.import(part, signal);
-	return;
+	bool result = funcs.import(part, signal);
+	return result;
 }
 
 bool wcpu_part_export(part_t *part, part_signal_t **signal)
@@ -95,9 +95,6 @@ bool wcpu_part_export(part_t *part, part_signal_t **signal)
 
 	wcpu_part_class_t funcs = part_vtable[type];
 	assert(funcs.export != NULL && "part must not have a defined export");
-
-
 	bool result = funcs.export(part, signal);
-
 	return result;
 }
