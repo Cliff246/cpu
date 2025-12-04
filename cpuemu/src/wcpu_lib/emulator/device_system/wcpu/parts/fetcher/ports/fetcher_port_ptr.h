@@ -3,7 +3,26 @@
 
 
 
+typedef struct wcpu_fetcher_port_code_descriptior _fetcher_port_code_descriptor_t;
+typedef struct wcpu_fetcher_port_instruction _fetcher_port_instruction_t;
+typedef struct wcpu_fetcher_port_immediate _fetcher_port_immediate_t;
+typedef struct wcpu_fetcher_port_code_table _fetcher_port_code_table_t;
 
+typedef enum wcpu_fetcher_port_type
+{
+	WCPU_FETCHER_PORT_CODE_DESCRIPTIOR,
+	WCPU_FETCHER_PORT_INSTRUCTION,
+	WCPU_FETCHER_PORT_IMMEDIATE,
+	WCPU_FETCHER_PORT_CODE_TABLE,
+}fetcher_port_type_t;
+
+typedef union wcpu_fetcher_port_ptr
+{
+	_fetcher_port_code_descriptor_t *code_descriptor;
+	_fetcher_port_instruction_t *instruction;
+	_fetcher_port_immediate_t *immediate;
+	_fetcher_port_code_table_t *code_table;
+}fetcher_port_ptr_t;
 
 
 #endif

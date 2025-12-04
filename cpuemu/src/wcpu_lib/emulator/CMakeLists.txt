@@ -66,7 +66,6 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/fetcher.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/fetcher_request.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/fetcher_controller.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/fetcher_buffer.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/fetcher_code_descriptor_port.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/fetcher_immediate_port.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/fetcher_instruction_port.c

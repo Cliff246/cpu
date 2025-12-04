@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 #include "fetcher_request.h"
-#include "fetcher_code_descriptor_port.h"
+#include "fetcher_port.h"
 
 
 //painnnn
@@ -17,7 +17,7 @@ typedef struct wcpu_fetcher_controller
 	int current;
 	fetcher_request_t requests[WCPU_FETCHER_REQUESTS_MAX];
 
-	fetcher_code_descriptor_t current_descriptor;
+	fetcher_port_t ports;
 
 }fetcher_controller_t;
 

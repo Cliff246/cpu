@@ -119,7 +119,7 @@ static void update_ram(dev_ram_t *ram, uint64_t length)
 
 
 
-	return true;
+	return;
 }
 
 static void cmd_ram(dev_ram_t *ram,  device_command_t *cmd)

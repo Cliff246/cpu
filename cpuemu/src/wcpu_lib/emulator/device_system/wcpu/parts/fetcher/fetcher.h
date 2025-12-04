@@ -9,7 +9,6 @@
 
 #include "fetcher_code_descriptor_port.h"
 #include "fetcher_controller.h"
-#include "fetcher_buffer.h"
 
 #define FETCHER_BUFFER_LIMIT 10
 
@@ -26,7 +25,7 @@ typedef struct wcpu_part_fetcher
 	int code_descriptor_count;
 	int64_t code_descriptor_chunk[6];
 
-
+	bool backlog;
 	bool load_instruction_stream;
 	bool load_immediate_stream;
 
