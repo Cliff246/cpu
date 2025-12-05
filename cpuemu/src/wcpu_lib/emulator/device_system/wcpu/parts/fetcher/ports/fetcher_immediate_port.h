@@ -3,12 +3,20 @@
 
 #include "fetcher_port_ptr.h"
 
-#include "fetcher_port.h"
-
+#include <stdint.h>
 
 struct wcpu_fetcher_port_immediate
 {
-	
+	uint64_t buffer[8];
+	uint64_t ipc_start;
+	uint64_t ipc_length;
+	uint64_t ipc;
+	uint32_t index;
+
 };
+
+fetcher_port_ptr_t fetcher_port_immediate_create(void);
+
+
 
 #endif

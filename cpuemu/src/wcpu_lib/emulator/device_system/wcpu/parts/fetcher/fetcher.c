@@ -3,6 +3,9 @@
 #include "wcpu_part_ptr.h"
 #include "wcpu_part_signal_fetcher_command.h"
 #include "wcpu_part_signal_lsu_entry.h"
+#include "fetcher_controller.h"
+#include "fetcher_interface.h"
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -29,6 +32,9 @@ part_ptr_t wcpu_fetcher_generate(void)
 {
 	fetcher_t *fetcher = calloc(1, sizeof(fetcher_t));
 
+	fetcher->controller = wcpu_fetcher_controller_create();
+	fetcher->interface = wcpu_fetcher_interface_create();
+
 	part_ptr_t pptr;
 	pptr.fetcher = fetcher;
 
@@ -41,23 +47,12 @@ void wcpu_fetcher_update(part_t *part)
 	assert(part->type == WCPU_PART_FETCHER && "part type for import must be of type WCPU_PART_fetcher");
 	fetcher_t *fetcher = part->ptr.fetcher;
 
+	//update all the ports with update
+	wcpu_fetcher_controller_update(fetcher->controller, fetcher->interface);
+	//clean all the set addresses this frame, should have been sent to ports
+	wcpu_fetcher_interface_clean_ready(fetcher->interface);
 
-	if(fetcher->load_code_descriptor == true)
-	{
-		if(fetcher->code_descriptor_count < 6)
-		{
-			fetcher->doload = true;
-			fetcher->toload = fetcher->code_descriptor_address + fetcher->code_descriptor_count;
-			fetcher->code_descriptor_count++;
-		}
-		else
-		{
-			fetcher->code_descriptor_count = 0;
-			fetcher->finished_code_descriptor = true;
-			fetcher->load_code_descriptor = false;
-			fetcher->doload = false;
-		}
-	}
+
 
 }
 
@@ -82,36 +77,24 @@ bool wcpu_fetcher_import( part_t *part, part_signal_t *signal)
 
 
 
+
+
 	//TEAR THIS OUT
 	if(signal->signal_type == PART_SIGNAL_TYPE_FETCHER_COMMAND)
 	{
 
 		_part_signal_FETCHER_COMMAND_t *fetch_command = signal->ptr.FETCHER_COMMAND;
-
-		if(fetch_command->code_desc_swap == true)
+		if(fetch_command->code_desc_swap)
 		{
-			fetcher->load_code_descriptor = true;
-			fetcher->finished_code_descriptor = false;
-
-			fetcher->code_descriptor_address = fetch_command->address;
-			fetcher->code_descriptor_count = 0;
-			for(int i = 0; i < 6; ++i)
-			{
-				fetcher->code_descriptor_chunk[i] = 0;
-
-			}
-
+			fetcher->controller->state = FETCHER_CONTROLLER_STATE_LOADDESC;
+			
 		}
 	}
 	//strong assumption here
 	if(signal->signal_type == PART_SIGNAL_TYPE_LSU)
 	{
 		_part_signal_LSU_t *lsu = signal->ptr.LSU;
-		if(fetcher->load_code_descriptor == true)
-		{
-			//this is fucked
-			fetcher->code_descriptor_chunk[lsu->address] = lsu->value;
-		}
+		wcpu_fetcher_interface_mark_import(fetcher->interface, lsu->address, lsu->value);
 	}
 
 	part_signal_consume(&signal);
@@ -124,6 +107,16 @@ bool wcpu_fetcher_export( part_t *part, part_signal_t **signal)
 {
 	assert(part->type == WCPU_PART_FETCHER && "part type for import must be of type WCPU_PART_fetcher");
 	fetcher_t *fetcher = part->ptr.fetcher;
+	part_signal_t *export_signal;
+
+
+	bool has_export = wcpu_fetcher_interface_pop_export(fetcher->interface, &signal);
+	if(has_export)
+	{
+		*signal = export_signal;
+
+	}
+	return has_export;
 
 
 	if(fetcher->doload == true)

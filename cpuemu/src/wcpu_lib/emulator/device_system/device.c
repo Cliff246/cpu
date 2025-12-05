@@ -129,7 +129,7 @@ void device_update(device_t *device)
 
 }
 
-void device_read(device_t *device, dev_msg_t *msg)
+bool device_read(device_t *device, dev_msg_t *msg)
 {
 	assert(device != NULL && "cannot update null device");
 	assert(device->type != DEVICE_INVAL && "cannot update device_inval");
@@ -137,7 +137,6 @@ void device_read(device_t *device, dev_msg_t *msg)
 
 	assert(device_vtable[device->type].read != NULL && "device doesnt have a read function");
 	assert(get_device_changed(device) == false && "device changed on read is not valid, must handle before");
-
 
 	device_vtable[device->type].read(device, msg);
 
@@ -159,7 +158,6 @@ dev_msg_t *device_send(device_t *device)
 	dev_msg_t *new_msg = device_vtable[device->type].send(device);
 	if(new_msg == NULL)
 		return NULL;
-	device_message_consume(&new_msg);
 
 	return new_msg;
 }

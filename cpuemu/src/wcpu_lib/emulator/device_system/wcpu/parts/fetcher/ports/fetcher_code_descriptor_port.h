@@ -5,12 +5,19 @@
 
 #include "fetcher_port_ptr.h"
 
-typedef struct wcpu_fetcher_code_descriptor
+#define WCPU_CODE_DESCRIPTOR_SIZE 6
+
+typedef struct wcpu_fetcher_port_code_descriptor
 {
-	int64_t buffer[6];
+	int64_t buffer[WCPU_CODE_DESCRIPTOR_SIZE];
+	uint32_t index;
 
 
 }fetcher_code_descriptor_t;
+
+
+fetcher_port_ptr_t fetcher_port_code_description_create(void);
+
 
 
 #endif

@@ -220,7 +220,7 @@ void device_ram_update(device_t *device)
 
 
 //read ram and get a message set it as active
-void device_ram_read(device_t *dev, dev_msg_t *msg)
+bool device_ram_read(device_t *dev, dev_msg_t *msg)
 {
 	assert(dev != NULL && "device must not be null");
 	assert(dev->type == DEVICE_RAM && "device must be of type ram");
@@ -241,21 +241,20 @@ void device_ram_read(device_t *dev, dev_msg_t *msg)
 		if(type == DEVMSG_WRITE)
 		{
 			write_ram(ram, msg->address, msg->value);
-			device_message_release(&ram->current_msg);
 			ram->has_msg = false;
-
 		}
 		else if(type == DEVMSG_READ_SEND)
 		{
 			device_message_consume(&ram->current_msg );
 			ram->has_msg = true;
+			return true;
 		}
 		else
 		{
 			assert(0 && "invalid message type");
 		}
 	}
-	return;
+	return false;
 }
 
 dev_msg_t *device_ram_send(device_t *dev)
@@ -283,8 +282,6 @@ dev_msg_t *device_ram_send(device_t *dev)
 
 		//the response a bit brittle
 		device_message_respond(current, respond);
-		device_message_release(&current);
-
 		ram->has_msg = false;
 		ram->current_msg = NULL;
 		return current;

@@ -35,7 +35,7 @@ static void align_ram(device_t *device, dev_ram_t *ram);
 
 device_type_ptr_t device_ram_generate(device_t *device,emuconfig_dev_settings_t *settings);
 void device_ram_update(device_t *device);
-void device_ram_read(device_t *dev, dev_msg_t *msg);
+bool device_ram_read(device_t *dev, dev_msg_t *msg);
 dev_msg_t *device_ram_send(device_t *dev);
 void device_ram_print(device_t *dev);
 void device_ram_cmd(device_t *device, device_command_t *cmd);

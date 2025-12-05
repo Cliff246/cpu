@@ -114,7 +114,7 @@ void device_wcpu_update(device_t *dev)
 
 }
 
-void device_wcpu_read(device_t *dev, dev_msg_t *msg)
+bool device_wcpu_read(device_t *dev, dev_msg_t *msg)
 {
 	assert(dev != NULL && "device cannot be null");
 
@@ -128,13 +128,13 @@ void device_wcpu_read(device_t *dev, dev_msg_t *msg)
 		//so i guess skip it
 		wcpu->has_in = false;
 		wcpu->current_msg_in = NULL;
-		return;
+		return false;
 	}
 	wcpu->current_msg_in = msg;
-	//device_message_consume(&wcpu->current_msg_in);
+	device_message_consume(&wcpu->current_msg_in);
 
 	wcpu->has_in = true;
-
+	return true;
 
 
 

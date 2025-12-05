@@ -46,7 +46,7 @@ typedef device_type_ptr_t (*device_init_fn)(device_t *device, emuconfig_dev_sett
 //complete execution
 typedef void (*device_step_fn)(device_t *device);
 //read from
-typedef void (*device_read_fn)(device_t *dev, dev_msg_t *msg);
+typedef bool (*device_read_fn)(device_t *dev, dev_msg_t *msg);
 typedef dev_msg_t *(*device_send_fn)(device_t *dev);
 typedef void (*device_print_fn)(device_t *dev);
 typedef void (*device_cmd_fn)(device_t *dev, device_command_t *cmd);
@@ -82,7 +82,7 @@ device_t *device_generate(emuconfig_dev_settings_t *settings );
 void device_update(device_t *device);
 
 
-void device_read(device_t *device, dev_msg_t *msg);
+bool device_read(device_t *device, dev_msg_t *msg);
 dev_msg_t *device_send(device_t *device);
 
 void device_print(device_t *device);

@@ -17,7 +17,7 @@ void device_fakeio_update(device_t *device)
 }
 
 //TODO
-void device_fakeio_read(device_t *dev, dev_msg_t *)
+bool device_fakeio_read(device_t *dev, dev_msg_t *)
 {
 
 }

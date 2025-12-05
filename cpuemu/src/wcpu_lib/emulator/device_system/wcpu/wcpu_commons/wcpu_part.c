@@ -25,7 +25,7 @@ wcpu_part_class_t part_vtable[UNIQUE_PARTS] =
 
 #define PART_TYPE_STRING(X) [WCPU_PART_ ## X] = #X ,
 
-extern char *part_type_strs[UNIQUE_PARTS] = {
+char *part_type_strs[UNIQUE_PARTS] = {
 	WCPU_PART_LIST(PART_TYPE_STRING)
 };
 

@@ -4,9 +4,20 @@
 
 #include "fetcher_port_ptr.h"
 
+#include <stdint.h>
+
+
 struct wcpu_fetcher_port_code_table
 {
+	uint64_t buffer[64];
+	uint64_t ct_start;
+	uint64_t ct_length;
+	uint32_t index;
 
 };
+
+fetcher_port_ptr_t fetcher_port_code_table_create(void);
+
+
 
 #endif

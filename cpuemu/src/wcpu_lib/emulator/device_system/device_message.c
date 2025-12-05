@@ -121,5 +121,6 @@ bool device_message_release(dev_msg_t **msg)
 		*msg = NULL;
 		return false;
 	}
+	*msg = NULL;
 	return true;
 }
