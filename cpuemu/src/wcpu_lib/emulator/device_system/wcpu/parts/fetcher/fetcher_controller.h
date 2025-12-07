@@ -9,15 +9,6 @@
 #include "fetcher_port.h"
 #include "fetcher_interface.h"
 
-typedef enum wcpu_fetcher_controller_state
-{
-	FETCHER_CONTROLLER_STATE_INVAL,
-	FETCHER_CONTROLLER_STATE_LOAD_CODE,
-	FETCHER_CONTROLLER_STATE_LOAD_TABLE,
-	FETCHER_CONTROLLER_STATE_LOAD_DESC,
-	FETCHER_CONTROLLER_STATE_FLUSH,
-	FETCHER_CONTROLLER_STATE_CONTINUE,
-}fetcher_controller_state_t;
 
 
 
@@ -26,8 +17,7 @@ typedef struct wcpu_fetcher_controller
 
 
 
-	fetcher_controller_state_t state;
-
+	fetcher_port_order_ptr_t orders[WCPU_FETCHER_PORTS_COUNT];
 	fetcher_port_t *ports[WCPU_FETCHER_PORTS_COUNT];
 	uint32_t cap_mask;
 }fetcher_controller_t;

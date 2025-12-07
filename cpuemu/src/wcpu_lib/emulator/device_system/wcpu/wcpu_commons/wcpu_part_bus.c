@@ -15,7 +15,7 @@ bool push_signal_onto_channel(part_channel_t *channel, part_signal_t *signal)
 		return false;
 	}
 	channel->signals[channel->index++] = signal;
-	part_signal_consume(&signal);
+	//part_signal_consume(&signal);
 
 	return true;
 }
@@ -32,7 +32,7 @@ bool pop_signal_off_channel(part_channel_t *channel, part_signal_t **signal)
 	}
 
 	*signal = channel->signals[--channel->index];
-	part_signal_release(signal);
+	//part_signal_release(signal);
 
 	return true;
 }

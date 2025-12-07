@@ -48,7 +48,7 @@ emulator_t *emulator_generate(emuconfig_t *config)
 		{
 			dev->flags[DEVICE_FLAG_TYPE_INTERNAL_CHANGED] = false;
 		}
-		
+
 		emu_dev_slot_t slot =
 		{
 			.device_index = i,
@@ -224,7 +224,7 @@ void emulator_update(emulator_t *emu)
 {
 
 
-	printf("\nREAD STAGE\n\n");
+	//printf("\nREAD STAGE\n\n");
 	for(int ia= 0; ia < emu->device_count; ++ia)
 	{
 
@@ -232,7 +232,7 @@ void emulator_update(emulator_t *emu)
 		assert(dev != NULL && "device update found null device");
 
 		dev_mailbox_t *mb = get_device_mailbox(dev);
-		device_mailbox_print(mb);
+		//device_mailbox_print(mb);
 		dev_msg_t *get_msg;
 		bool mailbox_has = device_mailbox_get(mb, &get_msg);
 
@@ -242,13 +242,13 @@ void emulator_update(emulator_t *emu)
 			device_read(dev, get_msg);
 
 		}
-		printf("\n");
+		//printf("\n");
 
 		//device_print(dev);
 
 	}
 
-	printf("\nUPDATE STAGE\n\n");
+	//printf("\nUPDATE STAGE\n\n");
 
 	for(int ib = 0; ib < emu->device_count; ++ib)
 	{
@@ -262,7 +262,7 @@ void emulator_update(emulator_t *emu)
 		// update step
 		//send out step
 	}
-	printf("\nWRITE STAGE\n\n");
+	//printf("\nWRITE STAGE\n\n");
 
 	for(int ic = 0; ic < emu->device_count; ++ic)
 	{
@@ -325,7 +325,7 @@ void emulator_update(emulator_t *emu)
 			bool could_put = device_mailbox_put(dst_mb, set_msg);
 			assert(could_put != false && "could put must never be false");
 		}
-		device_print(dev);
+		//device_print(dev);
 
 	}
 

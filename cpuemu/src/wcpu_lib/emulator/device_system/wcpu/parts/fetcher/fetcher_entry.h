@@ -14,10 +14,8 @@ typedef struct wcpu_part_fetcher_entry
 	int64_t data;
 	int time;
 	bool ready;
-
 }fetcher_entry_t;
 
-
-
+void wcpu_part_fetcher_print_entry(fetcher_entry_t entry);
 
 #endif

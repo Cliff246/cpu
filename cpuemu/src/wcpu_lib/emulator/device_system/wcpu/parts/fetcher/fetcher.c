@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <assert.h>
 
 uint32_t get_inst_at_pc_address(uint64_t address)
@@ -50,7 +51,7 @@ void wcpu_fetcher_update(part_t *part)
 	//update all the ports with update
 	wcpu_fetcher_controller_update(fetcher->controller, fetcher->interface);
 	//clean all the set addresses this frame, should have been sent to ports
-	wcpu_fetcher_interface_clean_ready(fetcher->interface);
+	//wcpu_fetcher_interface_clean_ready(fetcher->interface);
 
 
 
@@ -72,7 +73,7 @@ bool wcpu_fetcher_import( part_t *part, part_signal_t *signal)
 		return false;
 
 
-	printf("import fetcher %d\n", signal->signal_type);
+	//printf("import fetcher %d\n", signal->signal_type);
 
 
 
@@ -86,7 +87,12 @@ bool wcpu_fetcher_import( part_t *part, part_signal_t *signal)
 		_part_signal_FETCHER_COMMAND_t *fetch_command = signal->ptr.FETCHER_COMMAND;
 		if(fetch_command->code_desc_swap)
 		{
-			fetcher->controller->state = FETCHER_CONTROLLER_STATE_LOAD_DESC;
+			//will free on the fetcher_controller... dangerous but it should be fine
+
+
+			fetcher_port_order_ptr_t order = fetcher_port_code_description_order_create(true, fetch_command->address);
+
+			fetcher->controller->orders[WCPU_FETCHER_PORT_CODE_DESCRIPTOR] = order;
 
 		}
 	}
@@ -94,6 +100,8 @@ bool wcpu_fetcher_import( part_t *part, part_signal_t *signal)
 	if(signal->signal_type == PART_SIGNAL_TYPE_LSU)
 	{
 		_part_signal_LSU_t *lsu = signal->ptr.LSU;
+		printf("mark import %d %d\n", lsu->address, lsu->value);
+
 		wcpu_fetcher_interface_mark_import(fetcher->interface, lsu->address, lsu->value);
 	}
 
@@ -110,23 +118,28 @@ bool wcpu_fetcher_export( part_t *part, part_signal_t **signal)
 	part_signal_t *export_signal;
 
 
-	bool has_export = wcpu_fetcher_interface_pop_export(fetcher->interface, &signal);
+	bool has_export = wcpu_fetcher_interface_pop_export(fetcher->interface, &export_signal);
+	//printf("had export %d\n", has_export);
 	if(has_export)
 	{
 		*signal = export_signal;
 
 	}
-	return has_export;
 
+	wcpu_fetcher_interface_clear_iterators(fetcher->interface);
 
-	if(fetcher->doload == true)
+	bool import_to_queue = false;
+	fetcher_entry_t entry = {0};
+	import_to_queue = wcpu_fetcher_interface_use_import(fetcher->interface, &entry);
+
+	if(import_to_queue)
 	{
-
 		_part_signal_LSU_t *pull = calloc(1, sizeof(_part_signal_LSU_t));
 		assert(pull != NULL);
 
 		pull->loadstore = true;
-		pull->address = fetcher->toload;
+		pull->address = entry.address;
+		//printf("import to queue used %d %d\n", import_to_queue, entry.address);
 
 		part_signal_content_ptr_t pscp;
 		pscp.LSU = pull;
@@ -136,7 +149,6 @@ bool wcpu_fetcher_export( part_t *part, part_signal_t **signal)
 
 		part_signal_t *sig = part_signal_create(PART_SIGNAL_TYPE_LSU, part->id, WCPU_PART_LSU, pscp);
 
-		fetcher->doload = false;
 		*signal = sig;
 
 		return true;

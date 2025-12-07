@@ -14,10 +14,12 @@
 typedef struct wcpu_fetcher_interface
 {
 	int exports_count;
-
 	part_signal_t *exports[WCPU_PART_FETCHER_INTERFACE_EXPORT_SIZE];
 
+
+	bool imports_used[WCPU_PART_FETCHER_INTERFACE_IMPORT_SIZE];
 	fetcher_entry_t imports[WCPU_PART_FETCHER_INTERFACE_IMPORT_SIZE];
+
 	int ready_count;
 	fetcher_entry_t ready[WCPU_PART_FETCHER_INTERFACE_IMPORT_SIZE];
 
@@ -31,7 +33,8 @@ fetcher_interface_t *wcpu_fetcher_interface_create(void);
 void wcpu_fetcher_interface_add_import(fetcher_interface_t *interface, uint64_t address);
 //marks any import with the address
 void wcpu_fetcher_interface_mark_import(fetcher_interface_t *interface, uint64_t address, int64_t data);
-
+//keeps reading and gives false on no more imports
+bool wcpu_fetcher_interface_use_import(fetcher_interface_t *interface, fetcher_entry_t *entry);
 
 //reads the entry from the ready interface
 bool wcpu_fetcher_interface_read_ready(fetcher_interface_t *interface, fetcher_entry_t **entry);

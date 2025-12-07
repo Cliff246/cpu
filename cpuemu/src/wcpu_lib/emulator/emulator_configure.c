@@ -78,7 +78,7 @@ static bool config_setting(emuconfig_t *ec)
 
 
 	bool valid_first_tok = false;
-	print_toklex(setting->toklex);
+	//print_toklex(setting->toklex);
 
 	tok_t *first = get_toklex(setting->toklex, 0);
 	if(first == NULL)

@@ -35,20 +35,19 @@ typedef struct lsu_entry
 typedef struct wcpu_part_lsu
 {
 	lsu_entry_t entries[MAX_LSU_ENTRIES];
-	int entries_currently;
 
 	bool backlog;
 
 	struct {
 		bool release;
 		int64_t value;
-		int64_t addr;
+		uint64_t addr;
 
 	}output_signal;
 
 	struct {
 		bool release;
-		int64_t addr;
+		uint64_t addr;
 	}input_signal;
 
 }lsu_t;

@@ -55,7 +55,7 @@ void wcpu_core_update(core_t *core)
 {
 
 
-	//printf("update core\n");
+	printf("\nupdate core\n\n");
 	//deploy core messages
 	wcpu_core_handle_messages(core);
 
@@ -196,6 +196,7 @@ static core_signal_handle_t signal_handles[] =
 	[PART_SIGNAL_TYPE_AGGREGATOR_COMMAND] = {false, NULL},
 	[PART_SIGNAL_TYPE_FETCHER_COMMAND] = {.distrubutes = true, .fn = NULL},
 	//TODO
+	[PART_SIGNAL_TYPE_CD_TRANSFER] = {.distrubutes = true, .fn = NULL},
 };
 
 
@@ -220,7 +221,7 @@ void wcpu_core_handle_messages(core_t *core)
 			//do a unique signal operation in the core
 			if(signal_handles[signal->signal_type].fn != NULL)
 			{
-				printf("do handle\n");
+				//printf("do handle\n");
 				signal_handles[signal->signal_type].fn(core, signal);
 			}
 			if(signal_handles[signal->signal_type].distrubutes)

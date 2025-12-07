@@ -26,6 +26,13 @@ void wcpu_fetcher_controller_update(fetcher_controller_t *controller, fetcher_in
 	uint32_t masks;
 	for(int i = 0; i < WCPU_FETCHER_PORTS_COUNT; ++i)
 	{
+
+		if(controller->orders[i].raw != NULL)
+		{
+			fetcher_port_order_ptr_t order = controller->orders[i];
+			wcpu_fetcher_port_consume_order(controller->ports[i], order);
+			controller->orders[i].raw = NULL;
+		}
 		//clear the iterators for this interface set
 		wcpu_fetcher_interface_clear_iterators(interface);
 		masks |= wcpu_fetcher_port_advance(controller->ports[i], controller->cap_mask, interface);
@@ -33,7 +40,7 @@ void wcpu_fetcher_controller_update(fetcher_controller_t *controller, fetcher_in
 	}
 	controller->cap_mask = masks;
 
-
+	wcpu_fetcher_interface_clean_ready(interface);
 	wcpu_fetcher_interface_clear_iterators(interface);
 
 

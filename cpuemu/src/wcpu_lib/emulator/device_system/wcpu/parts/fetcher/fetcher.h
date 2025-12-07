@@ -6,9 +6,9 @@
 #include <stdbool.h>
 #include "wcpu_part_signal.h"
 
-
 #include "fetcher_controller.h"
 #include "fetcher_interface.h"
+
 
 #define FETCHER_BUFFER_LIMIT 10
 

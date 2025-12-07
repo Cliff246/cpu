@@ -9,6 +9,45 @@
 #include "wcpu_part_signal_core_io.h"
 
 
+static int wcpu_lsu_find_entry_spot(part_t *part)
+{
+	assert(part != NULL && "part cannot be null");
+	assert(part->type == WCPU_PART_LSU && "part type for import must be of type WCPU_PART_LSU");
+
+	lsu_t *lsu = part->ptr.lsu;
+
+
+	for(int i = 0; i < MAX_LSU_ENTRIES; ++i)
+	{
+		if(lsu->entries[i].awaiting == false)
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+static int wcpu_lsu_find_entries_length(part_t *part)
+{
+	assert(part != NULL && "part cannot be null");
+	assert(part->type == WCPU_PART_LSU && "part type for import must be of type WCPU_PART_LSU");
+
+	lsu_t *lsu = part->ptr.lsu;
+
+
+	int length = 0;
+
+	for(int i = 0; i < MAX_LSU_ENTRIES; ++i)
+	{
+		if(lsu->entries[i].awaiting == true)
+		{
+			length++;
+		}
+	}
+	return length;
+}
+
 void wcpu_lsu_entry_clear(part_t *part, int index)
 {
 	assert(part != NULL && "part cannot be null");
@@ -99,12 +138,12 @@ void wcpu_lsu_update(part_t *part)
 			{
 				lsu->input_signal.addr = entry.address;
 				lsu->input_signal.release = true;
-			break;
+				break;
 			}
 		}
 	}
 
-	wcpu_lsu_print_entries(part);
+	//wcpu_lsu_print_entries(part);
 
 
 
@@ -148,6 +187,7 @@ bool wcpu_lsu_import( part_t *part, part_signal_t *signal)
 		if(success == false)
 		{
 			printf("response address %d\n", mem_response.address);
+			wcpu_lsu_print_entries(part);
 			assert(success == true && "must find entry in that matches load");
 
 		}
@@ -158,22 +198,20 @@ bool wcpu_lsu_import( part_t *part, part_signal_t *signal)
 		assert(signal->signal_type == PART_SIGNAL_TYPE_LSU && "signal must be of type lsu");
 
 
-		if(lsu->entries_currently >= MAX_LSU_ENTRIES)
+		//assert(lsu->entries_currently < MAX_LSU_ENTRIES && "lsu entries currently cannot be greater than the max inflight lsu entries");
+
+		int first_free = wcpu_lsu_find_entry_spot(part);
+		if(first_free == -1)
 		{
 			lsu->backlog = true;
 			return false;
 		}
-		//assert(lsu->entries_currently < MAX_LSU_ENTRIES && "lsu entries currently cannot be greater than the max inflight lsu entries");
-
-
-
 
 		_part_signal_LSU_t *signal_content = signal->ptr.LSU;
 		lsu_entry_type_t type = (signal_content->loadstore == true)? LSU_ENTRY_READ : LSU_ENTRY_WIRTE;
-
-		wcpu_lsu_entry_set(part, lsu->entries_currently, signal_content->address, signal_content->value, type, signal->src_id);
+		//find new entry location
+		wcpu_lsu_entry_set(part, first_free, signal_content->address, signal_content->value, type, signal->src_id);
 		part_signal_consume(&signal);
-		lsu->entries_currently++;
 	}
 
 	return true;
@@ -228,43 +266,33 @@ bool wcpu_lsu_export( part_t *part, part_signal_t **signal)
 		return true;
 	}
 
-	if(lsu->entries_currently > 0)
+	//stupid ignorant loop
+	for(int i = 0; i < MAX_LSU_ENTRIES; ++i)
 	{
-		for(int i = 0; i < MAX_LSU_ENTRIES; ++i)
+		lsu_entry_t entry =  wcpu_lsu_get(part, i);
+		if(entry.awaiting == true && entry.finished == true)
 		{
-			lsu_entry_t entry =  wcpu_lsu_get(part, i);
-			if(entry.awaiting == true && entry.finished == true)
-			{
 
-				_part_signal_LSU_t *lsuout = calloc(1, sizeof(_part_signal_LSU_t));
-				assert(lsuout != NULL && "cannot fail calloc");
+			_part_signal_LSU_t *lsuout = calloc(1, sizeof(_part_signal_LSU_t));
+			assert(lsuout != NULL && "cannot fail calloc");
 
 
-				lsuout->value = entry.value;
-				lsuout->address = entry.address;
-				lsuout->loadstore = true;
+			lsuout->value = entry.value;
+			lsuout->address = entry.address;
+			lsuout->loadstore = true;
 
-				part_signal_content_ptr_t pscp;
-				pscp.LSU = lsuout;
+			part_signal_content_ptr_t pscp;
+			pscp.LSU = lsuout;
 
-				part_signal_t *psig = part_signal_create(PART_SIGNAL_TYPE_LSU, part->id, entry.writeback_dst, pscp);
-				*signal = psig;
-				wcpu_lsu_entry_clear(part, i);
-				lsu->entries_currently--;
+			part_signal_t *psig = part_signal_create(PART_SIGNAL_TYPE_LSU, part->id, entry.writeback_dst, pscp);
+			*signal = psig;
+			wcpu_lsu_entry_clear(part, i);
 				//fuck
-				lsu->backlog = false;
+			//lsu->backlog = false;
 
-				return true;
-			}
+			return true;
 		}
-
-
 	}
-	else
-	{
-		return false;
-	}
-
 
 	return false;
 }
