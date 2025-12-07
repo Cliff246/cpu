@@ -5,6 +5,7 @@
 #include "fetcher_code_table_port.h"
 #include "fetcher_immediate_port.h"
 #include "fetcher_instruction_port.h"
+#include "fetcher_controller.h"
 
 #include <stdlib.h>
 
@@ -43,19 +44,24 @@ fetcher_port_t *wcpu_fetcher_port_create(fetcher_port_type_t type)
 	fetcher_port_t *port = calloc(1, sizeof(fetcher_port_t));
 	assert(port);
 
-	port->type = type;
 
 	assert(fetcher_port_vtable[type].create != NULL);
-
-	port->port = fetcher_port_vtable[type].create(type);
+	port->type = type;
+	fetcher_port_vtable[type].create(port);
 	assert(port->port.raw != NULL);
 
 	return port;
 
 }
-void wcpu_fetcher_port_advance(fetcher_port_t *port, fetcher_interface_t *interface)
+uint32_t wcpu_fetcher_port_advance(fetcher_port_t *port, uint32_t cap_mask, fetcher_interface_t *interface)
 {
 	//todo
+	bool deps_satisfied = ((cap_mask & port->requires_mask)
+                       == port->requires_mask);
+
+
+	if(deps_satisfied && port->ready)
+    	port->state = FETCHER_PORT_ISSUE;
 
 	switch(port->state)
 	{
@@ -119,6 +125,7 @@ void wcpu_fetcher_port_advance(fetcher_port_t *port, fetcher_interface_t *interf
 
 				port->state = FETCHER_PORT_FLUSH;
 				port->ready = false;
+				return cap_mask = port->produces_mask;
 			}
 			break;
 

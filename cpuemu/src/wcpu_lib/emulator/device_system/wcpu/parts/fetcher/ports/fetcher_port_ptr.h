@@ -25,5 +25,14 @@ typedef union
 	void *raw;
 }fetcher_port_ptr_t;
 
+typedef enum wcpu_fetcher_port_capacity_flag
+{
+	FETCHER_PORT_CAPACITY_CODE_DESCRIPTOR = 1 << 0,
+	FETCHER_PORT_CAPACITY_CODE_TABLE      = 1 << 1,
+	FETCHER_PORT_CAPACITY_IMMEDIATE       = 1 << 2,
+	FETCHER_PORT_CAPACITY_INSTRUCTION     = 1 << 3,
+}fetcher_port_capactity_flag_t;
+
+
 
 #endif

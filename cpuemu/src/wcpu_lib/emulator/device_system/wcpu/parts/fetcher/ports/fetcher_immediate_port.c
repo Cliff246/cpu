@@ -1,12 +1,16 @@
 #include "fetcher_immediate_port.h"
+#include "fetcher_port.h"
 #include <stdlib.h>
 #include <assert.h>
 
-fetcher_port_ptr_t fetcher_port_immediate_create(void)
+
+void fetcher_port_immediate_create(fetcher_port_t *port)
 {
 	fetcher_port_immediate_t *imm = calloc(1, sizeof(fetcher_port_immediate_t));
 	assert(imm != NULL);
-	fetcher_port_ptr_t port;
-	port.imm = imm;
-	return port;
+
+	port->port.imm = imm;
+	port->requires_mask = FETCHER_PORT_CAPACITY_CODE_TABLE;
+	port->produces_mask = FETCHER_PORT_CAPACITY_IMMEDIATE;
+
 }

@@ -2,6 +2,7 @@
 #define __WCPU_PART_FETCHER_INSTRUCTION_PORT_HEADER__
 
 #include "fetcher_port_ptr.h"
+#include "fetcher_port.h"
 
 #include <stdint.h>
 
@@ -15,6 +16,6 @@ struct wcpu_fetcher_port_instruction
 	uint32_t index;
 };
 
-fetcher_port_ptr_t fetcher_port_instruction_create(void);
+void fetcher_port_instruction_create(fetcher_port_t *port);
 
 #endif

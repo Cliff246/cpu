@@ -2,10 +2,7 @@
 #define __WCPU_PART_FETCHER_PORT_HEADER__
 
 #include "fetcher_port_ptr.h"
-#include "fetcher_code_descriptor_port.h"
-#include "fetcher_code_table_port.h"
-#include "fetcher_immediate_port.h"
-#include "fetcher_instruction_port.h"
+
 #include "fetcher_entry.h"
 #include "fetcher_interface.h"
 #include <stdint.h>
@@ -20,7 +17,12 @@ typedef enum wcpu_fetcher_port_state_type
 	FETCHER_PORT_ISSUE,
 	FETCHER_PORT_WAITING,
 	FETCHER_PORT_DONE,
+	FETCHER_PORT_HOLD,
 }fetcher_port_state_type_t;
+
+
+
+
 
 typedef struct wcpu_fetcher_port
 {
@@ -30,13 +32,15 @@ typedef struct wcpu_fetcher_port
 	int64_t value;
 
 	//ready for next stage
-	bool ready;
 	fetcher_port_ptr_t port;
+	uint32_t requires_mask;
+	uint32_t produces_mask;
+	bool ready;
 
 }fetcher_port_t;
 
 
-typedef fetcher_port_ptr_t (*wcpu_fetcher_port_create_fn)(fetcher_port_type_t type);
+typedef void (*wcpu_fetcher_port_create_fn)(fetcher_port_t *port);
 //issues the next fetchers state
 typedef uint64_t (*wcpu_fetcher_port_issue_fn)(fetcher_port_t *port);
 //polls the fetcher returns true on poll recongnized, returns false on non
@@ -62,7 +66,8 @@ extern fetcher_port_class_t fetcher_port_vtable[WCPU_FETCHER_PORTS_COUNT];
 
 
 fetcher_port_t *wcpu_fetcher_port_create(fetcher_port_type_t type);
-void wcpu_fetcher_port_advance(fetcher_port_t *port, fetcher_interface_t *interface);
+uint32_t wcpu_fetcher_port_advance(fetcher_port_t *port, uint32_t cap_mask, fetcher_interface_t *interface);
+
 void wcpu_fetcher_port_set_state(fetcher_port_t *port, fetcher_port_state_type_t state);
 
 #endif

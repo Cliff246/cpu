@@ -3,7 +3,7 @@
 
 
 #include "fetcher_port_ptr.h"
-
+#include "fetcher_port.h"
 #include <stdint.h>
 
 
@@ -16,7 +16,7 @@ struct wcpu_fetcher_port_code_table
 
 };
 
-fetcher_port_ptr_t fetcher_port_code_table_create(void);
+void fetcher_port_code_table_create(fetcher_port_t *port);
 
 
 

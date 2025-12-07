@@ -86,8 +86,8 @@ bool wcpu_fetcher_import( part_t *part, part_signal_t *signal)
 		_part_signal_FETCHER_COMMAND_t *fetch_command = signal->ptr.FETCHER_COMMAND;
 		if(fetch_command->code_desc_swap)
 		{
-			fetcher->controller->state = FETCHER_CONTROLLER_STATE_LOADDESC;
-			
+			fetcher->controller->state = FETCHER_CONTROLLER_STATE_LOAD_DESC;
+
 		}
 	}
 	//strong assumption here

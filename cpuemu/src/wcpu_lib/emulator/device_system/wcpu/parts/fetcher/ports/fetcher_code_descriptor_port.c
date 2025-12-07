@@ -3,11 +3,11 @@
 #include <stdlib.h>
 #include <assert.h>
 
-fetcher_port_ptr_t fetcher_port_code_description_create(void)
+void fetcher_port_code_description_create(fetcher_port_t *port)
 {
 	fetcher_port_code_descriptor_t *cd = calloc(1, sizeof(fetcher_port_code_descriptor_t));
 	assert(cd != NULL && "cd is not null");
-	fetcher_port_ptr_t port;
-	port.cd = cd;
-	return port;
+	port->port.cd = cd;
+	port->produces_mask = FETCHER_PORT_CAPACITY_CODE_DESCRIPTOR;
+	port->requires_mask = 0;
 }

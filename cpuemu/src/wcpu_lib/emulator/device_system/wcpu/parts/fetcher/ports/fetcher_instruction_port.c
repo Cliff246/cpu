@@ -2,13 +2,16 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <assert.h>
+#include "fetcher_instruction_port.h"
+#include "fetcher_port.h"
 
-fetcher_port_ptr_t fetcher_port_instruction_create(void)
+void fetcher_port_instruction_create(fetcher_port_t *port)
 {
 	fetcher_port_instruction_t *ins = calloc(1, sizeof(fetcher_port_instruction_t));
 	assert(ins != NULL);
-	fetcher_port_ptr_t port;
-	port.ins = ins;
 
-	return port;
+	port->port.ins = ins;
+	port->requires_mask = FETCHER_PORT_CAPACITY_CODE_TABLE;
+	port->produces_mask = FETCHER_PORT_CAPACITY_INSTRUCTION;
+
 }

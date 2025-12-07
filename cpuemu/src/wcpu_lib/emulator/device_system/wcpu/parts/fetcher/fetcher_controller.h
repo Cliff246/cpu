@@ -16,17 +16,20 @@ typedef enum wcpu_fetcher_controller_state
 	FETCHER_CONTROLLER_STATE_LOAD_TABLE,
 	FETCHER_CONTROLLER_STATE_LOAD_DESC,
 	FETCHER_CONTROLLER_STATE_FLUSH,
+	FETCHER_CONTROLLER_STATE_CONTINUE,
 }fetcher_controller_state_t;
-
-
 
 
 
 typedef struct wcpu_fetcher_controller
 {
-	fetcher_controller_state_t state;
-	fetcher_port_t *ports[WCPU_FETCHER_PORTS_COUNT];
 
+
+
+	fetcher_controller_state_t state;
+
+	fetcher_port_t *ports[WCPU_FETCHER_PORTS_COUNT];
+	uint32_t cap_mask;
 }fetcher_controller_t;
 
 fetcher_controller_t *wcpu_fetcher_controller_create(void);

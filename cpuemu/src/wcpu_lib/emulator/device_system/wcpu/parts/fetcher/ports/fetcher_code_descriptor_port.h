@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "fetcher_port_ptr.h"
+#include "fetcher_port.h"
 
 #define WCPU_CODE_DESCRIPTOR_SIZE 6
 
@@ -16,7 +17,7 @@ typedef struct wcpu_fetcher_port_code_descriptor
 }fetcher_code_descriptor_t;
 
 
-fetcher_port_ptr_t fetcher_port_code_description_create(void);
+void fetcher_port_code_description_create(fetcher_port_t *port);
 
 
 
