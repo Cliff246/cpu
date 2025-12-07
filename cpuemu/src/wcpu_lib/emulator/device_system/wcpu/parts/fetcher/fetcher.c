@@ -123,7 +123,7 @@ bool wcpu_fetcher_export( part_t *part, part_signal_t **signal)
 	if(has_export)
 	{
 		*signal = export_signal;
-
+		return true;
 	}
 
 	wcpu_fetcher_interface_clear_iterators(fetcher->interface);

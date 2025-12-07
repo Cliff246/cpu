@@ -2,7 +2,7 @@
 #include "wcpu_part_ptr.h"
 #include <stdint.h>
 #include <stdlib.h>
-
+#include <stdio.h>
 //converts to (reg_file_t)
 part_ptr_t wcpu_regfile_generate(void)
 {
@@ -22,8 +22,11 @@ void wcpu_regfile_update(part_t *regfile)
 bool wcpu_regfile_import( part_t *part, part_signal_t *signal)
 {
 
-	
 
+	if(signal != NULL)
+	{
+		printf("recieved signal\n");
+	}
 	return true;
 
 }

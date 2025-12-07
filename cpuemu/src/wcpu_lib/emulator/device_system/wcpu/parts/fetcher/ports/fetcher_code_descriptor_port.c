@@ -2,6 +2,9 @@
 #include "fetcher_port_order.h"
 
 #include "fetcher_code_descriptor_port.h"
+#include "wcpu_part_signal_cd_transfer.h"
+#include "wcpu_part.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -40,7 +43,7 @@ bool fetcher_port_code_description_poll(fetcher_port_t *port, uint64_t address)
 	assert(port->type == WCPU_FETCHER_PORT_CODE_DESCRIPTOR);
 	assert(port->port.raw != NULL);
 	fetcher_port_code_descriptor_t *cd = port->port.cd;
-	printf("%d %d\n", address, cd->index);
+	//printf("%d %d\n", address, cd->index);
 	if(address == cd->address + cd->index)
 	{
 		return true;
@@ -58,7 +61,7 @@ void fetcher_port_code_description_import(fetcher_port_t *port, uint64_t address
 	assert(port->port.raw != NULL);
 	fetcher_port_code_descriptor_t *cd = port->port.cd;
 
-	printf("cd->addr - addr %d %d %d\n", cd->index, address, data);
+	//printf("cd->addr - addr %d %d %d\n", cd->index, address, data);
 	cd->buffer[cd->index] = data;
 	cd->index++;
 
@@ -71,13 +74,24 @@ part_signal_t *fetcher_port_code_description_export(fetcher_port_t *port)
 	assert(port->type == WCPU_FETCHER_PORT_CODE_DESCRIPTOR);
 	assert(port->port.raw != NULL);
 	fetcher_port_code_descriptor_t *cd = port->port.cd;
+	_part_signal_CD_TRANSFER_t *signal = calloc(1, sizeof(_part_signal_CD_TRANSFER_t));
 
-	for(int i = 0; i < 6; ++i)
-	{
-		printf("%d\n", cd->buffer[i]);
-	}
+	signal->address = cd->address;
+	signal->ct_base = cd->buffer[0];
+	signal->ct_len = cd->buffer[1];
+	signal->ins_base = cd->buffer[2];
+	signal->ins_len = cd->buffer[3];
+	signal->imm_base = cd->buffer[4];
+	signal->imm_len = cd->buffer[5];
 
-	return NULL;
+	part_signal_content_ptr_t ptr;
+	ptr.CD_TRANSFER = signal;
+
+	part_signal_t *transfer = part_signal_create(PART_SIGNAL_TYPE_CD_TRANSFER, WCPU_PART_FETCHER, WCPU_PART_REGFILE, ptr);
+	assert(transfer);
+
+
+	return transfer;
 }
 
 
@@ -87,7 +101,7 @@ void fetcher_port_code_description_flush(fetcher_port_t *port)
 	assert(port->type == WCPU_FETCHER_PORT_CODE_DESCRIPTOR);
 	assert(port->port.raw != NULL);
 	fetcher_port_code_descriptor_t *cd = port->port.cd;
-
+	printf("flushing\n");
 	memset(cd->buffer, 0, sizeof(int64_t));
 	cd->index = 0;
 	cd->address = 0;

@@ -2,6 +2,7 @@
 #define __WCPU_PART_SIGNAL_CD_TRANSFER_HEADER__
 
 #include <stdint.h>
+#include "wcpu_part_signal_ptr.h"
 
 struct wcpu_part_signal_CD_TRANSFER
 {

@@ -108,7 +108,7 @@ bool wcpu_fetcher_interface_use_import(fetcher_interface_t *interface, fetcher_e
 
 bool wcpu_fetcher_interface_read_ready(fetcher_interface_t *interface, fetcher_entry_t **entry)
 {
-	wcpu_fetcher_interface_print_ready(interface);
+	//wcpu_fetcher_interface_print_ready(interface);
 
 	assert(interface);
 	int index = 0;
@@ -150,6 +150,7 @@ bool wcpu_fetcher_interface_read_export(fetcher_interface_t *interface, part_sig
 	{
 		if(interface->exports[i] != NULL)
 		{
+			printf("signal != null\n");
 			if(index >= interface->exports_count)
 			{
 				found = true;
