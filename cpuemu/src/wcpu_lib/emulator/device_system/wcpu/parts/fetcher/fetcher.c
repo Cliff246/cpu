@@ -32,10 +32,11 @@ uint32_t get_inst_at_pc_address(uint64_t address)
 part_ptr_t wcpu_fetcher_generate(void)
 {
 	fetcher_t *fetcher = calloc(1, sizeof(fetcher_t));
-
+	assert(fetcher);
 	fetcher->controller = wcpu_fetcher_controller_create();
 	fetcher->interface = wcpu_fetcher_interface_create();
-
+	assert(fetcher->controller);
+	assert(fetcher->interface);
 	part_ptr_t pptr;
 	pptr.fetcher = fetcher;
 
@@ -85,22 +86,25 @@ bool wcpu_fetcher_import( part_t *part, part_signal_t *signal)
 	{
 
 		_part_signal_FETCHER_COMMAND_t *fetch_command = signal->ptr.FETCHER_COMMAND;
-		if(fetch_command->code_desc_swap)
+		if(fetch_command->type == FETCHER_COMMAND_CD_SWAP)
 		{
 			//will free on the fetcher_controller... dangerous but it should be fine
-
-
-			fetcher_port_order_ptr_t order = fetcher_port_code_description_order_create(true, fetch_command->address);
+			_fetcher_command_cd_swap_t cd_swap = fetch_command->cmd.cd_swap;
+			//should
+			fetcher_port_order_t *order = fetcher_port_code_description_order_create(cd_swap.address);
 
 			fetcher->controller->orders[WCPU_FETCHER_PORT_CODE_DESCRIPTOR] = order;
-
+		}
+		else
+		{
+			assert(0 && "fetch command not implemented");
 		}
 	}
 	//strong assumption here
 	if(signal->signal_type == PART_SIGNAL_TYPE_LSU)
 	{
 		_part_signal_LSU_t *lsu = signal->ptr.LSU;
-		printf("mark import %d %d\n", lsu->address, lsu->value);
+		//printf("mark import %d %d\n", lsu->address, lsu->value);
 
 		wcpu_fetcher_interface_mark_import(fetcher->interface, lsu->address, lsu->value);
 	}
@@ -113,6 +117,7 @@ bool wcpu_fetcher_import( part_t *part, part_signal_t *signal)
 
 bool wcpu_fetcher_export( part_t *part, part_signal_t **signal)
 {
+	assert(part);
 	assert(part->type == WCPU_PART_FETCHER && "part type for import must be of type WCPU_PART_fetcher");
 	fetcher_t *fetcher = part->ptr.fetcher;
 	part_signal_t *export_signal;
@@ -148,7 +153,7 @@ bool wcpu_fetcher_export( part_t *part, part_signal_t **signal)
 
 
 		part_signal_t *sig = part_signal_create(PART_SIGNAL_TYPE_LSU, part->id, WCPU_PART_LSU, pscp);
-
+		assert(sig);
 		*signal = sig;
 
 		return true;

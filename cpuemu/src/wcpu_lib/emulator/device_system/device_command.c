@@ -32,10 +32,11 @@ device_config_setting_vtable_t device_config_setting_vtable_array[] =
 
 device_command_t *device_command_generate(device_type_t type)
 {
+	assert(type != DEVICE_INVAL && "device is not invalid");
 	device_command_t *command = calloc(1, sizeof(device_command_t));
 
 	assert(command != NULL);
-	
+
 	command->type = type;
 	command->setting = device_init_config_setting(type);
 
@@ -69,7 +70,9 @@ device_config_setting_ptr_t device_init_config_setting(device_type_t type)
 
 void device_free_config_setting(device_config_setting_ptr_t ptr, device_type_t type)
 {
-	assert(type != DEVICE_INVAL);
+	assert(type != DEVICE_INVAL && "device is not invalid");
+
+	assert(ptr.ptr);
 
 	assert(device_config_setting_vtable_array[type].free != NULL);
 

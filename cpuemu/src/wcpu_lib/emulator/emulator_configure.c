@@ -105,6 +105,7 @@ static bool config_setting(emuconfig_t *ec)
 			{
 				//TODO the argument is not valid and we must stop it
 				perror("argument parse failed for a line");
+				assert(0);
 				return false;
 
 			}
@@ -155,16 +156,18 @@ static bool parse_emuconfig_setting(emuconfig_t *ec)
 emuconfig_t *create_emuconfig_external(char *path)
 {
 	emuconfig_t *config = create_config_ptr();
+	assert(config);
 	config->config_type = EMUCONFIG_TYPE_EXTERNAL_SOURCE;
 
 
 	sourcefile_t *sf = create_sourcefile(path);
+	assert(sf);
 	config->sourcefile = sf;
 
 
 	config->settings_size = 255;
 	config->settings = calloc(config->settings_size, sizeof(emuconfig_dev_settings_t*));
-
+	assert(config->settings);
 
 	if(get_canopen_sourcefile(sf) == false)
 	{
@@ -184,10 +187,12 @@ emuconfig_t *create_emuconfig_internal(emu_internal_src_t src)
 		exit(EXIT_FAILURE);
 	}
 	emuconfig_t *config = create_config_ptr();
-
+	assert(config);
 
 	config->config_type = EMUCONFIG_TYPE_INTERNAL_SOURCE;
 	sourcefile_t *sf = create_sourcefile(internal_source_paths[src]);
+	assert(sf);
+
 	config->sourcefile = sf;
 	if(get_canopen_sourcefile(sf) == false)
 	{
@@ -199,9 +204,9 @@ emuconfig_t *create_emuconfig_internal(emu_internal_src_t src)
 
 	config->settings_size = 255;
 	config->settings = calloc(config->settings_size, sizeof(emuconfig_dev_settings_t*));
+	assert(config->settings);
 
-
-	parse_emuconfig_setting(config);
+	assert(parse_emuconfig_setting(config));
 
 
 	return config;

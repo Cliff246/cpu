@@ -28,8 +28,7 @@ part_signal_t *fetcher_port_immediate_export(fetcher_port_t *port);
 void fetcher_port_immediate_flush(fetcher_port_t *port);
 bool fetcher_port_immediate_cycle(fetcher_port_t *port);
 
-void fetcher_port_immediate_order(fetcher_port_t *port, fetcher_port_order_ptr_t order);
-void fetcher_port_immediate_order_free(fetcher_port_order_ptr_t order);
+void fetcher_port_immediate_order(fetcher_port_t *port, fetcher_port_order_t *order);
 
 
 #endif

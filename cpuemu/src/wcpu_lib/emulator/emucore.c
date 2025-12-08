@@ -8,9 +8,9 @@
 
 emulator_t *emulator_generate(emuconfig_t *config)
 {
-
+	assert(config);
 	emulator_t *emu = calloc(1, sizeof(emulator_t));
-
+	assert(emu);
 	if(emu == NULL)
 	{
 		perror("emulator was not created");
@@ -20,7 +20,7 @@ emulator_t *emulator_generate(emuconfig_t *config)
 	emu->config = config;
 
 	emu->device_list = calloc(config->settings_index, sizeof(device_t *));
-
+	assert(emu->device_list);
 	if(emu->device_list == NULL)
 	{
 		perror("could not create device list");
@@ -32,17 +32,15 @@ emulator_t *emulator_generate(emuconfig_t *config)
 	//printf("used %d\n", emu->device_count);
 
 	emu->device_slots = calloc(emu->device_count, sizeof(emu_dev_slot_t));
+	assert(emu->device_slots);
 	//add stable slots
 	emu->stable_slots = 0;
-	if(emu->device_slots == NULL)
-	{
-		perror("could not create device slots");
-		exit(EXIT_FAILURE);
-	}
+
 
 	for(int i = 0; i < emu->device_count; ++i)
 	{
 		device_t *dev = device_generate(emu->config->settings[i]);
+		assert(dev);
 		dev->device_id = i;
 		if(get_device_changed(dev))
 		{
@@ -81,11 +79,7 @@ static bool cmp_overlap(size_t addr1, size_t addr2, size_t addr1_size, size_t ad
 
 static void swap_slots(emulator_t *emu, size_t i, size_t j)
 {
-	if(i == j)
-	{
-		perror("cannot swap the same address");
-		exit(EXIT_FAILURE);
-	}
+
 	emu_dev_slot_t temp = emu->device_slots[i];
 	emu->device_slots[i] = emu->device_slots[j];
 	emu->device_slots[j] = temp;
@@ -93,6 +87,7 @@ static void swap_slots(emulator_t *emu, size_t i, size_t j)
 
 static size_t partition(emulator_t *emu, size_t lo, size_t hi)
 {
+	assert(emu);
 	size_t pivot = emu->device_slots[hi].address_start;
 
 	size_t i = lo;
@@ -210,6 +205,7 @@ bool emulator_get_device_from_address(emulator_t *emulator, device_t **dev, size
 
 device_t *emulator_get_device_from_id(emulator_t *emu, dev_id_t devid)
 {
+	assert(emu);
 	assert(devid >= 0 && "device_id can never when searching == -1");
 	assert(devid < emu->device_count && "device id can never be over device count");
 	int index = (int)devid;
@@ -223,7 +219,7 @@ device_t *emulator_get_device_from_id(emulator_t *emu, dev_id_t devid)
 void emulator_update(emulator_t *emu)
 {
 
-
+	assert(emu);
 	//printf("\nREAD STAGE\n\n");
 	for(int ia= 0; ia < emu->device_count; ++ia)
 	{
@@ -338,6 +334,7 @@ static void print_slot(emu_dev_slot_t *slot, int index)
 
 void emulator_print_slots(emulator_t *emu)
 {
+	assert(emu);
 	for(int i = 0; i < emu->stable_slots; ++i)
 	{
 		print_slot(&emu->device_slots[i], i);

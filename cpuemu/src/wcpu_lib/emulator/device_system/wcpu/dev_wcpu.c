@@ -44,8 +44,9 @@ static bool wcpu_send_to_core(core_t *core, dev_msg_t *msg)
 	return false;
 }
 
-device_type_ptr_t device_wcpu_generate(device_t *device,emuconfig_dev_settings_t *settings)
+device_type_ptr_t device_wcpu_generate(device_t *device, emuconfig_dev_settings_t *settings)
 {
+	assert(settings);
 	dev_wcpu_t *cpu = calloc(1, sizeof(dev_wcpu_t));
 	assert(cpu != NULL && "malloc cannot fail");
 	cpu->core = wcpu_core_generate();
@@ -106,6 +107,7 @@ void device_wcpu_update(device_t *dev)
 		dev_msg_type_t msg_type = (core->core_io.type == CORE_IO_READ)? DEVMSG_READ_SEND : DEVMSG_WRITE;
 
 		dev_msg_t *msg_out = device_message_create(this_type, dev->device_id, -1, msg_type, core->core_io.address, core->core_io.value);
+		assert(msg_out);
 		wcpu->current_msg_out = msg_out;
 		wcpu->has_out = true;
 	}

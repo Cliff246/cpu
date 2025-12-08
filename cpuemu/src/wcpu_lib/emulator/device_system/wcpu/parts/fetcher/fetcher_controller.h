@@ -17,7 +17,7 @@ typedef struct wcpu_fetcher_controller
 
 
 
-	fetcher_port_order_ptr_t orders[WCPU_FETCHER_PORTS_COUNT];
+	fetcher_port_order_t *orders[WCPU_FETCHER_PORTS_COUNT];
 	fetcher_port_t *ports[WCPU_FETCHER_PORTS_COUNT];
 	uint32_t cap_mask;
 }fetcher_controller_t;

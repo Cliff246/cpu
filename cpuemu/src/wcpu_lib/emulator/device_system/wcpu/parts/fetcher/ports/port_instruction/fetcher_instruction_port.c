@@ -12,6 +12,7 @@
 
 void fetcher_port_instruction_create(fetcher_port_t *port)
 {
+	assert(port);
 	fetcher_port_instruction_t *ins = calloc(1, sizeof(fetcher_port_instruction_t));
 	assert(ins != NULL);
 
@@ -88,7 +89,7 @@ void fetcher_port_instruction_flush(fetcher_port_t *port)
 	//TODO make that a define
 	memset(ins->buffer, 0, sizeof(int64_t) * 8);
 	ins->index = 0;
-	
+
 }
 
 bool fetcher_port_instruction_cycle(fetcher_port_t *port)
@@ -97,17 +98,16 @@ bool fetcher_port_instruction_cycle(fetcher_port_t *port)
 	assert(port->type == WCPU_FETCHER_PORT_INSTRUCTION);
 	assert(port->port.raw != NULL);
 	fetcher_port_instruction_t *ins = port->port.ins;
+	return false;
 }
 
-void fetcher_port_instruction_order(fetcher_port_t *port, fetcher_port_order_ptr_t order)
+void fetcher_port_instruction_order(fetcher_port_t *port, fetcher_port_order_t *order)
 {
 	assert(port);
 	assert(port->type == WCPU_FETCHER_PORT_INSTRUCTION);
 	assert(port->port.raw != NULL);
+	assert(order);
+	assert(order->type == FETCHER_PORT_ORDER_TYPE_INSTRUCTION);
 	fetcher_port_instruction_t *ins = port->port.ins;
 }
 
-void fetcher_port_instruction_order_free(fetcher_port_order_ptr_t order)
-{
-	free(order.ins);
-}

@@ -1,10 +1,11 @@
 #include "dev_fakeio.h"
 #include <stdlib.h>
+#include <assert.h>
 
 device_type_ptr_t device_fakeio_generate(device_t *device, emuconfig_dev_settings_t *settings)
 {
 	dev_fakeio_t *fakeio = calloc(1, sizeof(dev_fakeio_t));
-
+	assert(fakeio);
 	device_type_ptr_t ptr;
 	ptr.fakeio = fakeio;
 	return ptr;

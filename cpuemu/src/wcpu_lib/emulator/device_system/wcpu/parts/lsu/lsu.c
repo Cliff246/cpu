@@ -1,12 +1,14 @@
 #include "lsu.h"
+#include "wcpu_part_ptr.h"
+#include "wcpu_part_signal_lsu_entry.h"
+#include "wcpu_part_signal_core_io.h"
+
+
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
 
-#include "wcpu_part_ptr.h"
-#include "wcpu_part_signal_lsu_entry.h"
-#include "wcpu_part_signal_core_io.h"
 
 
 static int wcpu_lsu_find_entry_spot(part_t *part)
@@ -117,6 +119,7 @@ lsu_entry_t wcpu_lsu_get(part_t *part, int index)
 part_ptr_t wcpu_lsu_generate(void)
 {
 	lsu_t *lsu = calloc(1, sizeof(lsu_t));
+	assert(lsu);
 	part_ptr_t pptr;
 	pptr.lsu = lsu;
 	return pptr;
@@ -167,7 +170,7 @@ bool wcpu_lsu_import( part_t *part, part_signal_t *signal)
 	if(signal->signal_type == PART_SIGNAL_TYPE_CORE_MEM_RESPONSE)
 	{
 
-		printf("recieved mem response\n");
+		//printf("recieved mem response\n");
 
 		//linear search for entry with the signals
 
@@ -239,6 +242,8 @@ bool wcpu_lsu_export( part_t *part, part_signal_t **signal)
 		pscp.CORE_INPUT = corein;
 
 		part_signal_t *psig = part_signal_create(PART_SIGNAL_TYPE_CORE_INPUT, part->id, -1, pscp);
+		assert(psig);
+
 		*signal = psig;
 
 
@@ -246,7 +251,7 @@ bool wcpu_lsu_export( part_t *part, part_signal_t **signal)
 		return true;
 	}
 	//write
-	if(lsu->output_signal.release == true)
+	else if(lsu->output_signal.release == true)
 	{
 
 		_part_signal_CORE_OUTPUT_t *coreout = calloc(1, sizeof(_part_signal_CORE_OUTPUT_t));
@@ -260,12 +265,12 @@ bool wcpu_lsu_export( part_t *part, part_signal_t **signal)
 		pscp.CORE_OUTPUT = coreout;
 
 		part_signal_t *psig =  part_signal_create(PART_SIGNAL_TYPE_CORE_OUTPUT, part->id, -1, pscp);
+		assert(psig);
 		*signal = psig;
 		lsu->output_signal.release = false;
 
 		return true;
 	}
-
 	//stupid ignorant loop
 	for(int i = 0; i < MAX_LSU_ENTRIES; ++i)
 	{
@@ -285,6 +290,7 @@ bool wcpu_lsu_export( part_t *part, part_signal_t **signal)
 			pscp.LSU = lsuout;
 
 			part_signal_t *psig = part_signal_create(PART_SIGNAL_TYPE_LSU, part->id, entry.writeback_dst, pscp);
+			assert(psig);
 			*signal = psig;
 			wcpu_lsu_entry_clear(part, i);
 				//fuck

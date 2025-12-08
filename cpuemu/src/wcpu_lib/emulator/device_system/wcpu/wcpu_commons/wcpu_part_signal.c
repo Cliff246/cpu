@@ -27,8 +27,8 @@ void part_signal_release(part_signal_t **ptr)
 	{
 		//printf("free ptr\n");
 		//TODO this will fuck me in the future
-		free((*ptr)->ptr.raw);
-		free(ptr);
+		assert(0);
+		part_signal_free(*ptr);
 		*ptr = NULL;
 	}
 	return;
@@ -54,4 +54,11 @@ void part_signal_print(part_signal_t *ptr)
 	if(ptr == NULL)
 		return;
 	printf("signal: dst:%d src:%d signal_type:%s\n", ptr->dst_id, ptr->src_id, part_signal_strs[ptr->signal_type]);
+}
+
+void part_signal_free(part_signal_t *ptr)
+{
+	assert(ptr);
+	free(ptr->ptr.raw);
+	free(ptr);
 }

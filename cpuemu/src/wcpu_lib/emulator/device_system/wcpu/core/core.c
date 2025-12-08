@@ -65,13 +65,14 @@ void wcpu_core_update(core_t *core)
 		assert(fetch_cmd != NULL);
 
 
-		fetch_cmd->address = 0;
-		fetch_cmd->code_desc_swap = true;
+		fetch_cmd->type == FETCHER_COMMAND_CD_SWAP;
+		fetch_cmd->cmd.cd_swap.address = 0;
 
 		part_signal_content_ptr_t pscp;
 		pscp.FETCHER_COMMAND = fetch_cmd;
 
 		part_signal_t *signal = part_signal_create(PART_SIGNAL_TYPE_FETCHER_COMMAND, -1, WCPU_PART_FETCHER, pscp);
+		assert(signal);
 		bool push = push_signal_onto_channel(&core->parts[WCPU_PART_FETCHER]->bus.import, signal);
 		assert(push == true);
 		core->startup = false;
@@ -146,7 +147,6 @@ typedef struct core_signal_handle
 //just some stubs of the input and core
 void wcpu_core_input(core_t *core, part_signal_t *signal)
 {
-	printf("core input\n");
 	assert(signal->signal_type == PART_SIGNAL_TYPE_CORE_INPUT && "signal type must be core input");
 	if(core->core_io.issued == false)
 	{
@@ -165,8 +165,6 @@ void wcpu_core_output(core_t *core, part_signal_t *signal)
 	assert(signal->signal_type == PART_SIGNAL_TYPE_CORE_OUTPUT && "signal type must be core output");
 	if(core->core_io.issued == false)
 	{
-		printf("core output\n");
-
 		_part_signal_CORE_OUTPUT_t coreout = *signal->ptr.CORE_OUTPUT;
 		core->core_io.issued = true;
 		core->core_io.type = CORE_IO_WRITE;
@@ -243,6 +241,7 @@ void wcpu_core_handle_messages(core_t *core)
 	{
 
 		_part_signal_CORE_MEM_RESPONSE_t *pscmr = calloc(1, sizeof(_part_signal_CORE_MEM_RESPONSE_t));
+		assert(pscmr);
 		//sets the values
 		pscmr->address = core->core_io.address;
 		pscmr->load_value = core->core_io.value;

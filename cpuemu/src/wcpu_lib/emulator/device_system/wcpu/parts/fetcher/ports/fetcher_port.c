@@ -27,7 +27,6 @@ fetcher_port_class_t fetcher_port_vtable[WCPU_FETCHER_PORTS_COUNT] =
 		.poll = fetcher_port_code_description_poll,
 		.cycle = fetcher_port_code_description_cycle,
 		.order = fetcher_port_code_description_order,
-		.free_order = fetcher_port_code_description_order_free,
 	},
 
 	[WCPU_FETCHER_PORT_CODE_TABLE] =
@@ -40,7 +39,6 @@ fetcher_port_class_t fetcher_port_vtable[WCPU_FETCHER_PORTS_COUNT] =
 		.poll = fetcher_port_code_table_poll,
 		.cycle = fetcher_port_code_table_cycle,
 		.order = fetcher_port_code_table_order,
-		.free_order = fetcher_port_code_table_order_free,
 	},
 
 	[WCPU_FETCHER_PORT_IMMEDIATE] =
@@ -53,7 +51,6 @@ fetcher_port_class_t fetcher_port_vtable[WCPU_FETCHER_PORTS_COUNT] =
 		.poll = fetcher_port_immediate_poll,
 		.cycle = fetcher_port_immediate_cycle,
 		.order = fetcher_port_immediate_order,
-		.free_order = fetcher_port_immediate_order_free,
 	},
 
 	[WCPU_FETCHER_PORT_INSTRUCTION] =
@@ -66,7 +63,6 @@ fetcher_port_class_t fetcher_port_vtable[WCPU_FETCHER_PORTS_COUNT] =
 		.poll = fetcher_port_instruction_poll,
 		.cycle = fetcher_port_instruction_cycle,
 		.order = fetcher_port_instruction_order,
-		.free_order = fetcher_port_instruction_order_free,
 	},
 };
 
@@ -93,6 +89,7 @@ fetcher_port_t *wcpu_fetcher_port_create(fetcher_port_type_t type)
 
 uint32_t wcpu_fetcher_port_advance(fetcher_port_t *port, uint32_t cap_mask, fetcher_interface_t *interface)
 {
+	assert(port && interface);
 	static int count = 0;
 	//todo
 	bool deps_satisfied = ((cap_mask & port->requires_mask) == port->requires_mask);
@@ -101,9 +98,9 @@ uint32_t wcpu_fetcher_port_advance(fetcher_port_t *port, uint32_t cap_mask, fetc
 	if(deps_satisfied)
 	{
 		//wcpu_fetcher_port_set_state(port, FETCHER_PORT_ISSUE);
-		//printf("satisfied %d %d\n", port->state, port->type);
+		printf("satisfied %d %d\n", port->state, port->type);
 
-		port->ready = true;
+		//port->ready = true;
 
 	}
 	switch(port->state)
@@ -114,7 +111,6 @@ uint32_t wcpu_fetcher_port_advance(fetcher_port_t *port, uint32_t cap_mask, fetc
 			if(port->ready)
 			{
 				 wcpu_fetcher_port_set_state(port, FETCHER_PORT_ISSUE);
-				port->ready = false;
 			}
 
 
@@ -124,11 +120,11 @@ uint32_t wcpu_fetcher_port_advance(fetcher_port_t *port, uint32_t cap_mask, fetc
 
 			if(port->ready)
 			{
+				assert( fetcher_port_vtable[port->type].issue);
 				uint64_t issue = fetcher_port_vtable[port->type].issue(port);
-				printf("%d %llu\n",port->type, issue);
+				//printf("%d %llu\n",port->type, issue);
 				wcpu_fetcher_interface_add_import(interface, issue);
 				wcpu_fetcher_port_set_state(port, FETCHER_PORT_WAITING);
-				port->ready = false;
 			}
 
 
@@ -138,28 +134,27 @@ uint32_t wcpu_fetcher_port_advance(fetcher_port_t *port, uint32_t cap_mask, fetc
 			if(port->ready)
 			{
 				//ptr to, this is dangerous.
-				fetcher_entry_t *entry = NULL;
+				fetcher_entry_t entry = {0};
 				bool got_entry = false;
+
+				assert(fetcher_port_vtable[port->type].poll);
+				assert(fetcher_port_vtable[port->type].import);
+
 				//read ready
 				while(wcpu_fetcher_interface_read_ready(interface, &entry))
 				{
-					uint64_t address_recieved = entry->address;
+					uint64_t address_recieved = entry.address;
+
 					if(fetcher_port_vtable[port->type].poll(port, address_recieved))
 					{
 						//set state of the port
 						wcpu_fetcher_port_set_state(port, FETCHER_PORT_DONE);
 						//imports the content of the port into it
-						assert(	fetcher_port_vtable[port->type].import);
-						fetcher_port_vtable[port->type].import(port, address_recieved, entry->data);
+						fetcher_port_vtable[port->type].import(port, address_recieved, entry.data);
 						got_entry = true;
 
 						break;
 					}
-
-				}
-				if(entry != NULL)
-				{
-					//entry->ready = false;
 
 				}
 
@@ -175,10 +170,8 @@ uint32_t wcpu_fetcher_port_advance(fetcher_port_t *port, uint32_t cap_mask, fetc
 					else
 					{
 						wcpu_fetcher_port_set_state(port, FETCHER_PORT_DONE);
-
 					}
 				}
-				port->ready = false;
 
 			}
 			break;
@@ -188,12 +181,13 @@ uint32_t wcpu_fetcher_port_advance(fetcher_port_t *port, uint32_t cap_mask, fetc
 
 			if(port->ready)
 			{
+				assert(fetcher_port_vtable[port->type].export);
+
 				part_signal_t *signal = fetcher_port_vtable[port->type].export(port);
 				assert(signal);
 
-				wcpu_fetcher_interface_add_export(interface, signal);
+				assert(wcpu_fetcher_interface_add_export(interface, signal));
 				wcpu_fetcher_port_set_state(port, FETCHER_PORT_FLUSH);
-				port->ready = false;
 				//printf("produced mask\n");
 				mask = port->produces_mask;
 			}
@@ -202,9 +196,9 @@ uint32_t wcpu_fetcher_port_advance(fetcher_port_t *port, uint32_t cap_mask, fetc
 		case FETCHER_PORT_FLUSH:
 			if(port->ready)
 			{
+				assert(fetcher_port_vtable[port->type].flush);
 				fetcher_port_vtable[port->type].flush(port);
 				wcpu_fetcher_port_set_state(port, FETCHER_PORT_IDLE);
-				port->ready = false;
 			}
 
 			break;
@@ -230,11 +224,20 @@ void wcpu_fetcher_port_set_state(fetcher_port_t *port, fetcher_port_state_type_t
 	port->state = state;
 }
 
-void wcpu_fetcher_port_consume_order(fetcher_port_t *port, fetcher_port_order_ptr_t order)
+void wcpu_fetcher_port_consume_order(fetcher_port_t *port, fetcher_port_order_t *order)
 {
 	assert(port);
-	assert(order.raw);
-
+	assert(order);
+	assert(fetcher_port_vtable[port->type].order);
 	fetcher_port_vtable[port->type].order(port, order);
-	fetcher_port_vtable[port->type].free_order(order);
+
+	switch(order->type)
+	{
+
+		default:
+
+			free(order);
+			break;
+	}
+
 }

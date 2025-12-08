@@ -6,6 +6,8 @@
 #include "register_file.h"
 #include "fetcher.h"
 #include "mau.h"
+
+
 #include <assert.h>
 #include <stdio.h>
 
@@ -13,19 +15,75 @@
 
 wcpu_part_class_t part_vtable[UNIQUE_PARTS] =
 {
-	[WCPU_PART_LSU] = {.init = wcpu_lsu_generate, .step = wcpu_lsu_update, .export = wcpu_lsu_export, .import = wcpu_lsu_import},
-	[WCPU_PART_MATTRESS] = {.init = wcpu_mattress_generate, .step = wcpu_mattress_update, .export = wcpu_mattress_export, .import = wcpu_mattress_import },
-	[WCPU_PART_CACHE] = {.init = wcpu_cache_generate, .step = wcpu_cache_update, .export = wcpu_cache_export, .import = wcpu_cache_import},
-	[WCPU_PART_AGGREGATOR] = {.init = wcpu_aggregator_generate, .step = wcpu_aggregator_update, .import = wcpu_aggregator_import, .export = wcpu_aggregator_export},
-	[WCPU_PART_FETCHER] = {.init = wcpu_fetcher_generate, .step = wcpu_fetcher_update, .export = wcpu_fetcher_export, .import = wcpu_fetcher_import},
-	[WCPU_PART_REGFILE] = {.init = wcpu_regfile_generate, .step = wcpu_regfile_update, .export = wcpu_regfile_export, .import = wcpu_regfile_import},
-	[WCPU_PART_LEDGER] = {.init = wcpu_ledger_generate, .step = wcpu_ledger_update, .export = wcpu_ledger_export, .import = wcpu_ledger_import},
-	[WCPU_PART_MAU] = {.init = wcpu_mau_generate, .step = wcpu_mau_update, .export = wcpu_mau_export, .import = wcpu_mau_import},
+	[WCPU_PART_LSU] =
+	{
+		.init = wcpu_lsu_generate,
+		.step = wcpu_lsu_update,
+		.export = wcpu_lsu_export,
+		.import = wcpu_lsu_import
+	},
+
+	[WCPU_PART_MATTRESS] =
+	{
+		.init = wcpu_mattress_generate,
+		.step = wcpu_mattress_update,
+		.export = wcpu_mattress_export,
+		.import = wcpu_mattress_import
+	},
+
+	[WCPU_PART_CACHE] =
+	{
+		.init = wcpu_cache_generate,
+		.step = wcpu_cache_update,
+		.export = wcpu_cache_export,
+		.import = wcpu_cache_import
+	},
+
+	[WCPU_PART_AGGREGATOR] =
+	{
+		.init = wcpu_aggregator_generate,
+		.step = wcpu_aggregator_update,
+		.export = wcpu_aggregator_export,
+		.import = wcpu_aggregator_import,
+	},
+
+	[WCPU_PART_FETCHER] =
+	{
+		.init = wcpu_fetcher_generate,
+		.step = wcpu_fetcher_update,
+		.export = wcpu_fetcher_export,
+		.import = wcpu_fetcher_import
+	},
+
+	[WCPU_PART_REGFILE] =
+	{
+		.init = wcpu_regfile_generate,
+		.step = wcpu_regfile_update,
+		.export = wcpu_regfile_export,
+		.import = wcpu_regfile_import
+	},
+
+	[WCPU_PART_LEDGER] =
+	{
+		.init = wcpu_ledger_generate,
+		.step = wcpu_ledger_update,
+		.export = wcpu_ledger_export,
+		.import = wcpu_ledger_import
+	},
+
+	[WCPU_PART_MAU] =
+	{
+		.init = wcpu_mau_generate,
+		.step = wcpu_mau_update,
+		.export = wcpu_mau_export,
+		.import = wcpu_mau_import
+	},
 };
 
 #define PART_TYPE_STRING(X) [WCPU_PART_ ## X] = #X ,
 
-char *part_type_strs[UNIQUE_PARTS] = {
+char *part_type_strs[UNIQUE_PARTS] =
+{
 	WCPU_PART_LIST(PART_TYPE_STRING)
 };
 

@@ -7,6 +7,7 @@
 
 static void wcpu_fetcher_interface_print_imports(fetcher_interface_t *interface)
 {
+	assert(interface);
 	for(int x = 0; x < WCPU_PART_FETCHER_INTERFACE_IMPORT_SIZE; ++x)
 	{
 		wcpu_part_fetcher_print_entry(interface->imports[x]);
@@ -16,10 +17,10 @@ static void wcpu_fetcher_interface_print_imports(fetcher_interface_t *interface)
 
 static void wcpu_fetcher_interface_print_ready(fetcher_interface_t *interface)
 {
+	assert(interface);
 	for(int x = 0; x < WCPU_PART_FETCHER_INTERFACE_IMPORT_SIZE; ++x)
 	{
 		wcpu_part_fetcher_print_entry(interface->ready[x]);
-
 	}
 }
 
@@ -52,7 +53,7 @@ void wcpu_fetcher_interface_add_import(fetcher_interface_t *interface, uint64_t 
 	assert(index >= 0 && index < WCPU_PART_FETCHER_INTERFACE_IMPORT_SIZE);
 	//printf("adding index:%d %lld\n", index, address);
 
-	fetcher_entry_t entry = {.address = address, .data = 0, .ready =true, .time = 0};
+	fetcher_entry_t entry = {.address = address, .data = 0, .ready = true, .time = 0};
 	interface->imports[index] = entry;
 }
 
@@ -66,9 +67,8 @@ void wcpu_fetcher_interface_mark_import(fetcher_interface_t *interface, uint64_t
 		{
 			index = x;
 			interface->imports_used[x] = false;
+			break;
 		}
-
-
 	}
 	assert(index >= 0 && index < WCPU_PART_FETCHER_INTERFACE_IMPORT_SIZE);
 	fetcher_entry_t entry = {.address = address, .data = data, .time = interface->imports[index].time, .ready = true};
@@ -88,10 +88,9 @@ void wcpu_fetcher_interface_mark_import(fetcher_interface_t *interface, uint64_t
 
 bool wcpu_fetcher_interface_use_import(fetcher_interface_t *interface, fetcher_entry_t *entry)
 {
-
+	assert(entry && interface);
 	//wcpu_fetcher_interface_print_imports(interface);
 	int count = 0;
-	bool found = false;
 	for(int x = 0; x < WCPU_PART_FETCHER_INTERFACE_IMPORT_SIZE; ++x)
 	{
 		if(interface->imports[x].ready == true && interface->imports_used[x] == false)
@@ -99,24 +98,23 @@ bool wcpu_fetcher_interface_use_import(fetcher_interface_t *interface, fetcher_e
 			//printf("used import %d\n", x);
 			interface->imports_used[x] = true;
 			*entry = interface->imports[x];
-			found = true;
 			return true;
 		}
 	}
-	return found;
+	return false;
 }
 
-bool wcpu_fetcher_interface_read_ready(fetcher_interface_t *interface, fetcher_entry_t **entry)
+bool wcpu_fetcher_interface_read_ready(fetcher_interface_t *interface, fetcher_entry_t *entry)
 {
 	//wcpu_fetcher_interface_print_ready(interface);
-
+	assert(entry);
 	assert(interface);
 	int index = 0;
 	for(int i = 0; i < WCPU_PART_FETCHER_INTERFACE_IMPORT_SIZE; ++i)
 	{
 		if(interface->ready[i].ready == true && i >= interface->ready_count)
 		{
-			*entry = &interface->ready[i];
+			*entry = interface->ready[i];
 			interface->ready_count++;
 			return true;
 		}
@@ -143,14 +141,14 @@ void wcpu_fetcher_interface_clean_ready(fetcher_interface_t *interface)
 bool wcpu_fetcher_interface_read_export(fetcher_interface_t *interface, part_signal_t **signal)
 {
 	assert(interface );
-
+	assert(signal);
 	bool found = false;
 	int index = 0;
 	for(int i = 0; i < WCPU_PART_FETCHER_INTERFACE_EXPORT_SIZE; ++i)
 	{
 		if(interface->exports[i] != NULL)
 		{
-			printf("signal != null\n");
+			//printf("signal != null\n");
 			if(index >= interface->exports_count)
 			{
 				found = true;
@@ -197,7 +195,7 @@ bool wcpu_fetcher_interface_add_export(fetcher_interface_t *interface, part_sign
 bool wcpu_fetcher_interface_pop_export(fetcher_interface_t *interface, part_signal_t **signal)
 {
 	assert(interface );
-
+	assert(signal);
 	bool found = false;
 	int index = -1;
 	for(int i = 0; i < WCPU_PART_FETCHER_INTERFACE_EXPORT_SIZE; ++i)
@@ -236,11 +234,13 @@ void wcpu_fetcher_interface_update(fetcher_interface_t *interface)
 void wcpu_fetcher_interface_flush(fetcher_interface_t *interface)
 {
 	assert(interface);
-
+	memset(interface, 0, sizeof(fetcher_interface_t));
 }
 
 void wcpu_fetcher_interface_clear_iterators(fetcher_interface_t *interface)
 {
+	assert(interface);
+
 	interface->exports_count = 0;
 	interface->ready_count = 0;
 

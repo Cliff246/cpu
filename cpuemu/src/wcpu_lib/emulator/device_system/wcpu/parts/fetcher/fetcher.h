@@ -18,8 +18,7 @@
 
 typedef struct wcpu_part_fetcher
 {
-	bool doload;
-	int64_t toload;
+
 
 
 	bool backlog;

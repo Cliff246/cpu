@@ -59,8 +59,7 @@ typedef void (*wcpu_fetcher_port_flush_fn)(fetcher_port_t *port);
 typedef bool (*wcpu_fetcher_port_cycle_fn)(fetcher_port_t *port);
 
 //order in the fetcher
-typedef void (*wcpu_fetcher_port_order_fn)(fetcher_port_t *port, fetcher_port_order_ptr_t order);
-typedef void (*wcpu_fetcher_port_order_free_fn)(fetcher_port_order_ptr_t order);
+typedef void (*wcpu_fetcher_port_order_fn)(fetcher_port_t *port, fetcher_port_order_t *order);
 
 
 typedef struct wcpu_fetcher_port_class
@@ -75,7 +74,6 @@ typedef struct wcpu_fetcher_port_class
 
 
 	wcpu_fetcher_port_order_fn order;
-	wcpu_fetcher_port_order_free_fn free_order;
 }fetcher_port_class_t;
 
 extern fetcher_port_class_t fetcher_port_vtable[WCPU_FETCHER_PORTS_COUNT];
@@ -84,7 +82,7 @@ extern fetcher_port_class_t fetcher_port_vtable[WCPU_FETCHER_PORTS_COUNT];
 fetcher_port_t *wcpu_fetcher_port_create(fetcher_port_type_t type);
 uint32_t wcpu_fetcher_port_advance(fetcher_port_t *port, uint32_t cap_mask, fetcher_interface_t *interface);
 //free's the order after, DONT USE AFTER
-void wcpu_fetcher_port_consume_order(fetcher_port_t *port, fetcher_port_order_ptr_t order);
+void wcpu_fetcher_port_consume_order(fetcher_port_t *port, fetcher_port_order_t *order);
 
 void wcpu_fetcher_port_set_state(fetcher_port_t *port, fetcher_port_state_type_t state);
 

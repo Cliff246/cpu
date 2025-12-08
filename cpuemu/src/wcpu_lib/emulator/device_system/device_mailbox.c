@@ -8,6 +8,7 @@
 //returns false on cannot and returns true on success
 bool device_mailbox_put(dev_mailbox_t *mailbox, dev_msg_t *msg)
 {
+	assert(mailbox && msg);
 
 	if(((mailbox->write + 1) % DEVICE_MAILBOX_SIZE) == mailbox->read)
 	{
@@ -25,6 +26,7 @@ bool device_mailbox_put(dev_mailbox_t *mailbox, dev_msg_t *msg)
 //mail box returns false on nothing to read and true on something read
 bool device_mailbox_get(dev_mailbox_t *mailbox, dev_msg_t **msg_ref)
 {
+	assert(mailbox && msg_ref);
 	if(mailbox->read == mailbox->write)
 	{
 		*msg_ref = NULL;
@@ -51,6 +53,7 @@ dev_mailbox_t *device_mailbox_init(void)
 
 void device_mailbox_print(dev_mailbox_t *mailbox)
 {
+	assert(mailbox);
 	for(int i = 0; i < DEVICE_MAILBOX_SIZE; ++i)
 	{
 		dev_msg_t *msg = mailbox->msg_ring[i];

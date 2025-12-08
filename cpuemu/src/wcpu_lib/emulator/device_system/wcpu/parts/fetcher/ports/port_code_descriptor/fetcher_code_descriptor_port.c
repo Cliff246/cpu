@@ -14,10 +14,11 @@
 
 void fetcher_port_code_description_create(fetcher_port_t *port)
 {
+	assert(port);
 	fetcher_port_code_descriptor_t *cd = calloc(1, sizeof(fetcher_port_code_descriptor_t));
 	assert(cd != NULL && "cd is not null");
 	port->port.cd = cd;
-	port->produces_mask = FETCHER_PORT_CAPACITY_CODE_TABLE;
+	port->produces_mask = FETCHER_PORT_CAPACITY_CODE_DESCRIPTOR;
 	port->requires_mask = 0;
 }
 
@@ -28,8 +29,8 @@ uint64_t fetcher_port_code_description_issue(fetcher_port_t *port)
 	assert(port->type == WCPU_FETCHER_PORT_CODE_DESCRIPTOR);
 	assert(port->port.raw != NULL);
 	fetcher_port_code_descriptor_t *cd = port->port.cd;
-
 	uint64_t address = cd->active_context.address + cd->active_context.index;
+	assert(address < cd->active_context.address + 6);
 
 
 
@@ -75,7 +76,7 @@ part_signal_t *fetcher_port_code_description_export(fetcher_port_t *port)
 	assert(port->port.raw != NULL);
 	fetcher_port_code_descriptor_t *cd = port->port.cd;
 	_part_signal_CD_TRANSFER_t *signal = calloc(1, sizeof(_part_signal_CD_TRANSFER_t));
-
+	assert(signal);
 	signal->address = cd->active_context.address;
 	signal->ct_base = cd->active_context.buffer[0];
 	signal->ct_len = cd->active_context.buffer[1];
@@ -89,8 +90,7 @@ part_signal_t *fetcher_port_code_description_export(fetcher_port_t *port)
 
 	part_signal_t *transfer = part_signal_create(PART_SIGNAL_TYPE_CD_TRANSFER, WCPU_PART_FETCHER, WCPU_PART_REGFILE, ptr);
 	assert(transfer);
-
-
+	port->ready = false;
 	return transfer;
 }
 
@@ -101,7 +101,7 @@ void fetcher_port_code_description_flush(fetcher_port_t *port)
 	assert(port->type == WCPU_FETCHER_PORT_CODE_DESCRIPTOR);
 	assert(port->port.raw != NULL);
 	fetcher_port_code_descriptor_t *cd = port->port.cd;
-	memset(cd->active_context.buffer, 0, sizeof(int64_t));
+	memset(cd->active_context.buffer, 0, sizeof(int64_t) * 6);
 	cd->active_context.index = 0;
 	cd->active_context.address = 0;
 
@@ -122,18 +122,17 @@ bool fetcher_port_code_description_cycle(fetcher_port_t *port)
 
 }
 
-void fetcher_port_code_description_order(fetcher_port_t *port, fetcher_port_order_ptr_t order)
+void fetcher_port_code_description_order(fetcher_port_t *port, fetcher_port_order_t *order)
 {
 	assert(port != NULL);
 	assert(port->type == WCPU_FETCHER_PORT_CODE_DESCRIPTOR);
 	assert(port->port.raw != NULL);
-
-
+	assert(order);
+	assert(order->type == FETCHER_PORT_ORDER_TYPE_CD_SWAP);
+	fetcher_port_code_descriptor_t *cd = port->port.cd;
+	cd->active_context.address = order->order.CD_SWAP.load_address;
 	port->state = FETCHER_PORT_ISSUE;
+	port->ready = true;
 }
 //
-void fetcher_port_code_description_order_free(fetcher_port_order_ptr_t order)
-{
-	free(order.cd);
-}
 

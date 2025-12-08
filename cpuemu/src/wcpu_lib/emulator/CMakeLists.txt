@@ -75,6 +75,7 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 #code_descriptor
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/port_code_descriptor/fetcher_code_descriptor_port.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/port_code_descriptor/fetcher_code_descriptor_port_context.c
+	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/port_code_descriptor/fetcher_code_descriptor_port_order.c
 #immediate
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/port_immediate/fetcher_immediate_port.c
 #instruction

@@ -37,7 +37,7 @@ void wcpu_fetcher_interface_mark_import(fetcher_interface_t *interface, uint64_t
 bool wcpu_fetcher_interface_use_import(fetcher_interface_t *interface, fetcher_entry_t *entry);
 
 //reads the entry from the ready interface
-bool wcpu_fetcher_interface_read_ready(fetcher_interface_t *interface, fetcher_entry_t **entry);
+bool wcpu_fetcher_interface_read_ready(fetcher_interface_t *interface, fetcher_entry_t *entry);
 void wcpu_fetcher_interface_clean_ready(fetcher_interface_t *interface);
 
 //exports the signals wanted

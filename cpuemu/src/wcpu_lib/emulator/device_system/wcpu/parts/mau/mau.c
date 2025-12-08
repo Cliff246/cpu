@@ -1,32 +1,39 @@
 #include "flags.h"
 #include "mau.h"
+#include "wcpu_part.h"
 #include <stdint.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
-
+#include <assert.h>
 
 part_ptr_t wcpu_mau_generate(void)
 {
 	mau_t *mau = calloc(1, sizeof(mau_t));
-
+	assert(mau);
 	part_ptr_t pptr;
 	pptr.mau = mau;
+	return pptr;
 }
 
-void wcpu_mau_update(part_t *mau)
+void wcpu_mau_update(part_t *part)
 {
-
+	assert(part);
+	assert(part->type == WCPU_PART_MAU);
 }
 
 bool wcpu_mau_import( part_t *part, part_signal_t *signal)
 {
+	assert(part);
+	assert(part->type == WCPU_PART_MAU);
 	return true;
 
 }
 bool wcpu_mau_export( part_t *part, part_signal_t **signal)
 {
+	assert(part);
+	assert(part->type == WCPU_PART_MAU);
 	return false;
 }
 

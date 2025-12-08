@@ -12,7 +12,8 @@ device_class_t device_vtable[DEVICES_LIST_TYPE_COUNT] =
 {
 	[DEVICE_INVAL] = {.init = NULL, .update = NULL,.read = NULL, .send = NULL, .print = NULL},
 
-	[DEVICE_FAKEIO] = {
+	[DEVICE_FAKEIO] =
+	{
 		.init = device_fakeio_generate,
 		.update = device_fakeio_update,
 		.read = device_fakeio_read,
@@ -21,7 +22,8 @@ device_class_t device_vtable[DEVICES_LIST_TYPE_COUNT] =
 		.cmd = device_fakeio_cmd,
 	},
 
-	[DEVICE_WCPU] = {
+	[DEVICE_WCPU] =
+	{
 		.init = device_wcpu_generate,
 		.update = device_wcpu_update,
 		.read = device_wcpu_read,
@@ -31,7 +33,8 @@ device_class_t device_vtable[DEVICES_LIST_TYPE_COUNT] =
 
 	},
 
-	[DEVICE_RAM] = {
+	[DEVICE_RAM] =
+	{
 		.init = device_ram_generate,
 		.update = device_ram_update,
 		.read = device_ram_read,
@@ -78,7 +81,7 @@ dev_mailbox_t *get_device_mailbox(device_t *dev)
 device_t *device_generate(emuconfig_dev_settings_t *settings )
 {
 	device_t *device = calloc(1, sizeof(device_t));
-
+	assert(device);
 	for(int i = 0; i < DEVICE_FLAG_COUNT; ++i)
 	{
 		device->flags[i] = false;
@@ -86,10 +89,6 @@ device_t *device_generate(emuconfig_dev_settings_t *settings )
 
 
 	assert(settings->command != NULL && "settings command cannot be null");
-
-
-
-
 
 	device_type_t type = settings->command->type;
 	device->type = type;
@@ -102,6 +101,7 @@ device_t *device_generate(emuconfig_dev_settings_t *settings )
 	device->flags[DEVICE_FLAG_TYPE_ACTIVATED] = true;
 
 	device->mailbox = device_mailbox_init();
+	assert(device->mailbox);
 	//set_device_changed(device);
 
 

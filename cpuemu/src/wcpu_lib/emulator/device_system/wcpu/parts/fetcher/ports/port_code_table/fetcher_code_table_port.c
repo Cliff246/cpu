@@ -10,6 +10,8 @@
 
 void fetcher_port_code_table_create(fetcher_port_t *port)
 {
+	assert(port);
+
 	fetcher_port_code_table_t *ct = calloc(1, sizeof(fetcher_port_code_table_t));
 	assert(ct != NULL);
 	port->port.ct = ct;
@@ -98,22 +100,17 @@ bool fetcher_port_code_table_cycle(fetcher_port_t *port)
 	return true;
 }
 
-void fetcher_port_code_table_order(fetcher_port_t *port, fetcher_port_order_ptr_t order)
+void fetcher_port_code_table_order(fetcher_port_t *port, fetcher_port_order_t *order)
 {
 	assert(port);
 	assert(port->type == WCPU_FETCHER_PORT_CODE_TABLE);
 	assert(port->port.raw != NULL);
 	fetcher_port_code_table_t *ct = port->port.ct;
 
-	fetcher_port_code_table_order_t *ct_order = order.ct;
+	fetcher_port_order_CODE_TABLE_t ct_order = order->order.CODE_TABLE;
 	//this will fuck me i can virtually gurantee it.
 
 	assert(ct->ct_length < 64);
-	ct->ct_start = ct_order->ct_base;
-	ct->ct_length = ct_order->ct_len;
-}
-
-void fetcher_port_code_table_order_free(fetcher_port_order_ptr_t order)
-{
-	free(order.ct);
+	ct->ct_start = ct_order.ct_base;
+	ct->ct_length = ct_order.ct_len;
 }

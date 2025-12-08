@@ -4,45 +4,82 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-//orders
-typedef struct wcpu_fetcher_port_code_descriptor_order fetcher_port_code_descriptor_order_t;
-typedef struct wcpu_fetcher_port_instruction_order fetcher_port_instruction_order_t;
-typedef struct wcpu_fetcher_port_immediate_order fetcher_port_immediate_order_t;
-typedef struct wcpu_fetcher_port_code_table_order fetcher_port_code_table_order_t;
 
 
-struct wcpu_fetcher_port_instruction_order
+#define FETCHER_PORT_ORDER_LIST(X)\
+	X(CD_SWAP)					  \
+	X(IMMEDIATE)				  \
+	X(INSTRUCTION)				  \
+	X(CODE_TABLE)				  \
+	X(CODE_TABLE_LOAD)			  \
+
+
+
+
+#define FETCHER_PORT_ORDER_NAME(X) FETCHER_PORT_ORDER_TYPE_ ## X
+#define FETCHER_PORT_ORDER_ENUM(X) FETCHER_PORT_ORDER_NAME(X),
+typedef enum wcpu_fetcher_port_order_type
 {
+	FETCHER_PORT_ORDER_LIST(FETCHER_PORT_ORDER_ENUM)
+}fetcher_port_order_type_t;
 
+#define FETCHER_PORT_ORDER_STRUCT_NAME(X) wcpu_fetcher_port_order_ ## X
+
+#define FETCHER_PORT_ORDER_STRUCT_TYPEDEF_NAME(X) fetcher_port_order_ ## X ## _t
+
+
+#define FETCHER_PORT_ORDER_STRUCT(X) typedef struct FETCHER_PORT_ORDER_STRUCT_NAME(X) FETCHER_PORT_ORDER_STRUCT_TYPEDEF_NAME(X);
+FETCHER_PORT_ORDER_LIST(FETCHER_PORT_ORDER_STRUCT)
+
+typedef struct wcpu_fetcher_port_order fetcher_port_order_t;
+
+
+#include "fetcher_code_descriptor_port_order.h"
+
+
+struct wcpu_fetcher_port_order_IMMEDIATE
+{
+	uint64_t imm_base;
+	uint64_t imm_len;
 };
 
-struct wcpu_fetcher_port_immediate_order
+struct wcpu_fetcher_port_order_INSTRUCTION
 {
-
+	uint64_t ins_base;
+	uint64_t ins_len;
 };
 
-struct wcpu_fetcher_port_code_table_order
+struct wcpu_fetcher_port_order_CODE_TABLE
 {
+
 	uint64_t ct_base;
 	uint64_t ct_len;
+
 };
 
-struct wcpu_fetcher_port_code_descriptor_order
+struct wcpu_fetcher_port_order_CODE_TABLE_LOAD
 {
-	bool set_load_address;
-	uint64_t load_address;
+	uint64_t base;
+	uint64_t len;
 };
 
-typedef union
-{
-	fetcher_port_code_descriptor_order_t *cd;
-	fetcher_port_code_table_order_t *ct;
-	fetcher_port_immediate_order_t *imm;
-	fetcher_port_instruction_order_t *ins;
-	void *raw;
-}fetcher_port_order_ptr_t;
+#define FETCHER_PORT_ORDER_UNION_ELEMENT(X) X
+#define FETCHER_PORT_ORDER_UNION(X) FETCHER_PORT_ORDER_STRUCT_TYPEDEF_NAME(X)  FETCHER_PORT_ORDER_UNION_ELEMENT(X);
 
-fetcher_port_order_ptr_t fetcher_port_code_description_order_create(bool set_load_address, uint64_t load_address);
+
+typedef union wcpu_fetcher_port_order_union
+{
+	FETCHER_PORT_ORDER_LIST(FETCHER_PORT_ORDER_UNION)
+
+}fetcher_port_order_union_t;
+
+typedef struct wcpu_fetcher_port_order
+{
+	fetcher_port_order_type_t type;
+	fetcher_port_order_union_t order;
+}fetcher_port_order_t;
+
+
 
 
 #endif

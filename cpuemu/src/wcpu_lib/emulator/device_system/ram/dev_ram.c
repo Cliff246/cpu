@@ -14,7 +14,7 @@ const static size_t ram_base_start = 0;
 
 static void fill_binary(dev_ram_t *ram, uint64_t *bin, size_t length)
 {
-
+	assert(ram && bin);
 	for(size_t i = 0; i < length; ++i)
 	{
 		write_ram(ram, i, bin[i]);
@@ -23,8 +23,7 @@ static void fill_binary(dev_ram_t *ram, uint64_t *bin, size_t length)
 
 static size_t file_len(FILE *fp)
 {
-	if(!fp)
-		return 0;
+	assert(fp);
 
 	size_t current = ftell(fp);
 
@@ -47,6 +46,7 @@ static bool load_file(dev_ram_t *ram, const char *file_name)
 	}
 	size_t len = file_len(fp);
 	char *bytes = (char *)calloc(len, sizeof(char));
+	assert(bytes);
 	fread(bytes, 8, len / 8, fp);
 
 	assert(ram != NULL && "cannot load file into unknown ram");
@@ -124,7 +124,7 @@ static void update_ram(dev_ram_t *ram, uint64_t length)
 
 static void cmd_ram(dev_ram_t *ram,  device_command_t *cmd)
 {
-
+	assert(ram && cmd);
 	dev_ram_config_setting_t *config = cmd->setting.ram;
 
 	assert(config->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_RESET]);
@@ -165,8 +165,6 @@ static void cmd_ram(dev_ram_t *ram,  device_command_t *cmd)
 			}
 		}
 
-
-
 		//set start
 		if(config->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_START])
 		{
@@ -196,7 +194,7 @@ static void align_ram(device_t *device, dev_ram_t *ram)
 {
 	assert(device != NULL && "device must not be null");
 	assert(device->type == DEVICE_RAM && "device must be of type ram");
-
+	assert(ram);
 	if(ram->changed)
 	{
 
@@ -291,6 +289,7 @@ dev_msg_t *device_ram_send(device_t *dev)
 
 static int64_t read_ram(dev_ram_t *ram, uint64_t address)
 {
+	assert(ram);
 	assert(ram->length > address && address >= 0 && "read out of range");
 
 	return ram->content[address];
@@ -298,6 +297,7 @@ static int64_t read_ram(dev_ram_t *ram, uint64_t address)
 
 static void write_ram(dev_ram_t *ram, uint64_t address, int64_t data)
 {
+	assert(ram);
 	assert(ram->length > address && address >= 0 && "write out of range");
 	ram->content[address] = data;
 }

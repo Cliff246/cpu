@@ -21,8 +21,8 @@ typedef struct wcpu_part_mau
 
 part_ptr_t wcpu_mau_generate(void);
 
-void wcpu_mau_update(part_t *ptr);
-bool wcpu_mau_import( part_t *part, part_signal_t *signal);
-bool wcpu_mau_export( part_t *part, part_signal_t **signal);
+void wcpu_mau_update(part_t *part);
+bool wcpu_mau_import(part_t *part, part_signal_t *signal);
+bool wcpu_mau_export(part_t *part, part_signal_t **signal);
 
 #endif

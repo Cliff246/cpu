@@ -12,17 +12,19 @@
 
 static bool argparser_wcpu(emuconfig_dev_settings_t *settings)
 {
+	assert(settings);
 	return true;
 }
 
 //TODO this is cringe fix this
 static bool argparser_ram(emuconfig_dev_settings_t *settings)
 {
-
+	assert(settings);
 
 	dev_ram_config_setting_t *ram = settings->command->setting.ram;
+	assert(ram);
 	toklex_t *tl = settings->toklex;
-
+	assert(tl);
 	bool success = true;
 
 	while(true)
@@ -37,6 +39,7 @@ static bool argparser_ram(emuconfig_dev_settings_t *settings)
 			//fix this as well... also really dangerous
 			ram->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_FILENAME] = true;
 			ram->filename = strdup(tok->token);
+			assert(ram->filename);
 			ram->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_RESET] = true;
 
 			//printf("using filename %s\n",ram->filename);
@@ -50,7 +53,7 @@ static bool argparser_ram(emuconfig_dev_settings_t *settings)
 			uint64_t number = atoi(next_tok->token);
 			if(!strcmp(tok->token, "-start"))
 			{
-				printf("start\n");
+				//printf("start\n");
 
 				ram->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_START] = true;
 				ram->start = number;
@@ -59,7 +62,7 @@ static bool argparser_ram(emuconfig_dev_settings_t *settings)
 			}
 			else if(!strcmp(tok->token, "-size"))
 			{
-				printf("size\n");
+				//printf("size\n");
 				ram->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_SIZE] = true;
 				ram->size = number;
 				ram->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_RESET] = true;
