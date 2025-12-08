@@ -23,7 +23,8 @@ struct wcpu_fetcher_port_immediate_order
 
 struct wcpu_fetcher_port_code_table_order
 {
-
+	uint64_t ct_base;
+	uint64_t ct_len;
 };
 
 struct wcpu_fetcher_port_code_descriptor_order
@@ -37,7 +38,7 @@ typedef union
 	fetcher_port_code_descriptor_order_t *cd;
 	fetcher_port_code_table_order_t *ct;
 	fetcher_port_immediate_order_t *imm;
-	fetcher_port_instruction_order_t *inst;
+	fetcher_port_instruction_order_t *ins;
 	void *raw;
 }fetcher_port_order_ptr_t;
 

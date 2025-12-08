@@ -58,21 +58,21 @@ typedef struct wcpu_part_regfile
 {
 
 	int64_t iregs[64];
-	double fregs[64];
+	//double fregs[64];
 
 	stack_reg_t stack;
 	inter_reg_t inter;
 	code_desc_t desc;
 
 	bookmark_file_t bookmarks;
-	
+
 }regfile_t;
 
 
 part_ptr_t wcpu_regfile_generate(void);
-void wcpu_regfile_update(part_t *regfile);
-bool wcpu_regfile_import( part_t *part, part_signal_t *signal);
-bool wcpu_regfile_export( part_t *part, part_signal_t **signal);
+void wcpu_regfile_update(part_t *part);
+bool wcpu_regfile_import(part_t *part, part_signal_t *signal);
+bool wcpu_regfile_export(part_t *part, part_signal_t **signal);
 
 
 void print_regs(void);

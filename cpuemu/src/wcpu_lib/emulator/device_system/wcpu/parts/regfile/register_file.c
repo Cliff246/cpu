@@ -1,12 +1,15 @@
 #include "register_file.h"
 #include "wcpu_part_ptr.h"
+#include "wcpu_part.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 //converts to (reg_file_t)
 part_ptr_t wcpu_regfile_generate(void)
 {
 	regfile_t *regfile = calloc(1, sizeof(regfile_t));
+	assert(regfile);
 	part_ptr_t pptr;
 	pptr.regfile = regfile;
 	return pptr;
@@ -14,13 +17,18 @@ part_ptr_t wcpu_regfile_generate(void)
 
 
 //converts to (reg_file_t)
-void wcpu_regfile_update(part_t *regfile)
+void wcpu_regfile_update(part_t *part)
 {
+	assert(part);
+	assert(part->type == WCPU_PART_REGFILE && "part type for import must be of type WCPU_PART_regfile");
 
 }
 
 bool wcpu_regfile_import( part_t *part, part_signal_t *signal)
 {
+	assert(part);
+
+	assert(part->type == WCPU_PART_REGFILE && "part type for import must be of type WCPU_PART_regfile");
 
 
 	if(signal != NULL)
@@ -32,6 +40,9 @@ bool wcpu_regfile_import( part_t *part, part_signal_t *signal)
 }
 bool wcpu_regfile_export( part_t *part, part_signal_t **signal)
 {
+	assert(part);
+	assert(part->type == WCPU_PART_REGFILE && "part type for import must be of type WCPU_PART_regfile");
+
 	return false;
 }
 

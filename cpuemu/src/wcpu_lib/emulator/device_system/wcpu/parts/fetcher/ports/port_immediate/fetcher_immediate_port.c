@@ -19,7 +19,11 @@ void fetcher_port_immediate_create(fetcher_port_t *port)
 
 uint64_t fetcher_port_immediate_issue(fetcher_port_t *port)
 {
+	assert(port);
+	assert(port->type == WCPU_FETCHER_PORT_IMMEDIATE);
+	assert(port->port.raw != NULL);
 
+	fetcher_port_immediate_t *imm = port->port.imm;
 }
 
 bool fetcher_port_immediate_poll(fetcher_port_t *port, uint64_t address)

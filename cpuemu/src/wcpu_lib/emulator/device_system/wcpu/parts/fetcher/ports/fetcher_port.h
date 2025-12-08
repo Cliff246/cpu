@@ -32,8 +32,6 @@ typedef struct wcpu_fetcher_port
 {
 	fetcher_port_type_t type;
 	fetcher_port_state_type_t state;
-	uint64_t address;
-	int64_t value;
 
 	//ready for next stage
 	fetcher_port_ptr_t port;

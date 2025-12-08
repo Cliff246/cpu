@@ -4,19 +4,19 @@
 
 #include "fetcher_port_ptr.h"
 #include "fetcher_port.h"
+#include "fetcher_code_descriptor_port_context.h"
 #include "wcpu_part_signal.h"
-
+#include "wcpu_isa.h"
 #include <stdint.h>
 #include <stdbool.h>
 
-#define WCPU_CODE_DESCRIPTOR_SIZE 6
 
 struct wcpu_fetcher_port_code_descriptor
 {
-	int64_t buffer[WCPU_CODE_DESCRIPTOR_SIZE];
-	uint32_t index;
-	uint64_t address;
 
+	fetcher_port_cd_ctx_t active_context;
+
+	wcpu_isa_code_description_t current_cd;
 };
 
 //create port
