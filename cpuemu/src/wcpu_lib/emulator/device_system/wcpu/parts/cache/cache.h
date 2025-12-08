@@ -20,7 +20,7 @@ typedef struct wcpu_part_cache
 part_ptr_t wcpu_cache_generate(void);
 void wcpu_cache_update(part_t *part);
 
-bool wcpu_cache_import( part_t *part, part_signal_t *signal);
-bool wcpu_cache_export( part_t *part, part_signal_t **signal);
+bool wcpu_cache_import(part_t *part, part_signal_t *signal);
+bool wcpu_cache_export(part_t *part, part_signal_t **signal);
 
 #endif

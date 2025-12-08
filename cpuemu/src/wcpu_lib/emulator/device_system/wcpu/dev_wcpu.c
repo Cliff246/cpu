@@ -47,10 +47,12 @@ static bool wcpu_send_to_core(core_t *core, dev_msg_t *msg)
 device_type_ptr_t device_wcpu_generate(device_t *device, emuconfig_dev_settings_t *settings)
 {
 	assert(settings);
+	assert(device);
+	assert(device->type == DEVICE_WCPU);
 	dev_wcpu_t *cpu = calloc(1, sizeof(dev_wcpu_t));
 	assert(cpu != NULL && "malloc cannot fail");
 	cpu->core = wcpu_core_generate();
-
+	assert(cpu->core);
 	device_type_ptr_t ptr;
 	ptr.wcpu = cpu;
 	return ptr;
@@ -64,7 +66,7 @@ device_type_ptr_t device_wcpu_generate(device_t *device, emuconfig_dev_settings_
 //very basic send to core. will change on multicore implementation
 void device_wcpu_update(device_t *dev)
 {
-
+	assert(dev->type == DEVICE_WCPU);
 	assert(dev != NULL && "device cannot be null");
 	dev_wcpu_t *wcpu = dev->device.wcpu;
 
@@ -75,8 +77,6 @@ void device_wcpu_update(device_t *dev)
 	if(wcpu->has_in == true)
 	{
 		dev_msg_t *in_msg = wcpu->current_msg_in;
-
-
 		//shit idk, error out
 		if(wcpu_send_to_core(core, in_msg) == false)
 		{
@@ -118,6 +118,7 @@ void device_wcpu_update(device_t *dev)
 
 bool device_wcpu_read(device_t *dev, dev_msg_t *msg)
 {
+	assert(dev->type == DEVICE_WCPU);
 	assert(dev != NULL && "device cannot be null");
 
 	dev_wcpu_t *wcpu = dev->device.wcpu;
@@ -145,11 +146,8 @@ bool device_wcpu_read(device_t *dev, dev_msg_t *msg)
 
 dev_msg_t *device_wcpu_send(device_t *dev)
 {
+	assert(dev->type == DEVICE_WCPU);
 	assert(dev != NULL && "device cannot be null");
-
-
-
-
 
 	dev_wcpu_t *wcpu = dev->device.wcpu;
 	if(wcpu->has_out == true && wcpu->sent == false)
@@ -204,5 +202,5 @@ void device_wcpu_print(device_t *dev)
 
 void device_wcpu_cmd(device_t *dev, device_command_t *cmd)
 {
-
+	assert(0);
 }

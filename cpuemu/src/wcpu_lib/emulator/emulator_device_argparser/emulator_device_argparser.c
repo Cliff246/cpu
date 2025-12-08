@@ -50,6 +50,7 @@ static bool argparser_ram(emuconfig_dev_settings_t *settings)
 		{
 
 			tok_t *next_tok = peek_toklex(tl);
+			assert(next_tok);
 			uint64_t number = atoi(next_tok->token);
 			if(!strcmp(tok->token, "-start"))
 			{
@@ -98,29 +99,33 @@ static bool argparser_fakeio(emuconfig_dev_settings_t *settings)
 //this is used in emulator_config
 emuconfig_dev_type_t emuconfig_dev_type_table[DEVICES_LIST_TYPE_COUNT] =
 {
-	[DEVICE_INVAL] = {
+	[DEVICE_INVAL] =
+	{
 		.argparser_fn = NULL,
 		.keyword = "INVAL",
 		.type = DEVICE_INVAL,
-		},
+	},
 
-	[DEVICE_RAM] = {
+	[DEVICE_RAM] =
+	{
 		.argparser_fn = argparser_ram,
 		.keyword = "RAM",
 		.type = DEVICE_RAM,
-		},
+	},
 
-	[DEVICE_FAKEIO] = {
+	[DEVICE_FAKEIO] =
+	{
 		.argparser_fn = argparser_fakeio,
 		.keyword = "FAKEIO",
 		.type = DEVICE_FAKEIO,
-		},
+	},
 
-	[DEVICE_WCPU] = {
-			.argparser_fn = argparser_wcpu,
-		 	.keyword = "WCPU",
-			.type = DEVICE_WCPU,
-		},
+	[DEVICE_WCPU] =
+	{
+		.argparser_fn = argparser_wcpu,
+		.keyword = "WCPU",
+		.type = DEVICE_WCPU,
+	},
 };
 
 bool emulator_device_argparser_head(emuconfig_dev_settings_t *settings, emuconfig_dev_type_t *type)

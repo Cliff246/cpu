@@ -62,7 +62,7 @@ void fetcher_port_instruction_import(fetcher_port_t *port, uint64_t address, int
 	fetcher_port_instruction_t *ins = port->port.ins;
 
 	assert(address == (ins->pc_start + ins->base + ins->index));
-
+	assert(ins->index < 8);
 	ins->buffer[ins->index] = data;
 
 }

@@ -7,6 +7,9 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#define WCPU_SIGNALS_ALLOC 1000
+
+
 void wcpu_core_clear_io(core_t *core)
 {
 	assert(core != NULL && "core cannot be null");
@@ -19,7 +22,6 @@ void wcpu_core_clear_io(core_t *core)
 }
 
 
-#define WCPU_SIGNALS_ALLOC 1000
 
 static core_t *wcpu_create_core(void)
 {
@@ -33,6 +35,7 @@ static core_t *wcpu_create_core(void)
 	{
 
 		part_t *part = wcpu_part_generate(i);
+		assert(part);
 		//order it
 		assert(i == part->id);
 		core->parts[current++] = part;
@@ -55,7 +58,7 @@ void wcpu_core_update(core_t *core)
 {
 
 
-	printf("\nupdate core\n\n");
+	//printf("\nupdate core\n\n");
 	//deploy core messages
 	wcpu_core_handle_messages(core);
 
@@ -83,14 +86,14 @@ void wcpu_core_update(core_t *core)
 	for(int ia = 0; ia < UNIQUE_PARTS; ++ia)
 	{
 		part_t *part = core->parts[ia];
-
 		part_signal_t *signal;
 		//print_part_channel(&part->bus.import);
 		int count = 0;
 		part_signal_t *backlog[CHANNEL_MAX_SIGNALS];
 		while(pop_signal_off_channel(&part->bus.import, &signal))
 		{
-			part_signal_print(signal);
+			assert(signal);
+			//part_signal_print(signal);
 			bool result = wcpu_part_import(part, signal);
 			if(result == false)
 			{
@@ -109,7 +112,7 @@ void wcpu_core_update(core_t *core)
 
 	}
 
-	for(int ib =0; ib < UNIQUE_PARTS; ++ib)
+	for(int ib = 0; ib < UNIQUE_PARTS; ++ib)
 	{
 		part_t *part = core->parts[ib];
 
@@ -117,7 +120,7 @@ void wcpu_core_update(core_t *core)
 
 	}
 
-	for(int ic =0; ic < UNIQUE_PARTS; ++ic)
+	for(int ic = 0; ic < UNIQUE_PARTS; ++ic)
 	{
 		part_t *part = core->parts[ic];
 		part_signal_t *signal;
@@ -212,6 +215,7 @@ void wcpu_core_handle_messages(core_t *core)
 		//god dammit
 		while(pop_signal_off_channel(&part->bus.export, &signal))
  		{
+			assert(signal);
 			assert(signal->signal_type >= 0 && "signal cannot have a type less than 0");
 			assert(signal->signal_type < PART_SIGNAL_ENUM_COUNT && "signal type out of range");
 
@@ -256,6 +260,7 @@ void wcpu_core_handle_messages(core_t *core)
 
 		//this psig might be lost lol
 		part_signal_t *psig = part_signal_create(PART_SIGNAL_TYPE_CORE_MEM_RESPONSE, -1, WCPU_PART_LSU, content);
+		assert(psig);
 		bool push_result = push_signal_onto_channel(&core->parts[psig->dst_id]->bus.import, psig);
 		assert(push_result == true && "push must always be true");
 		//wcpu_core_clear_io(core);
@@ -263,7 +268,7 @@ void wcpu_core_handle_messages(core_t *core)
 		core->core_io.responded = false;
 		core->core_io.issued = false;
 
-		part_signal_release(&psig);
+		//part_signal_release(&psig);
 
 	}
 
