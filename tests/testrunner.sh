@@ -5,20 +5,17 @@
 
 ASM=./asm
 EMU=./wcpu
-
-
 fail=0
-
-
-
 testdir="testcases"
 
 testcase() {
 
-	asmfile=$1/*.asm
+	asmfile=$(echo "$1"/*.asm)
 	outfile=$1/test.bin
 	asmbin=$1/assembly.bin
-	$ASM $asmfile "-o" "$outfile" > /dev/null
+
+
+	$ASM $asmfile "-o" "$outfile" > /dev/null 
 
 	if cmp $outfile "${asmbin}" > /dev/null 2>&1; then
 		emuout=$1/emu.qa
@@ -45,7 +42,7 @@ testcase() {
 for i in "${testdir}"/*
 do
 	echo "test:" "$i"
-	testcase $i
+	testcase "$i"
 
 
 
