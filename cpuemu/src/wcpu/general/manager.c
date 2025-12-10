@@ -9,8 +9,9 @@
 #include "code_decoder.h"
 #include "hydra.h"
 #include "export.h"
-#include "emucore.h"
-
+#include "emulator.h"
+#include "core.h"
+#include "emulator_configure.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -261,6 +262,11 @@ void parse_args(void)
 
 void init(int argc, char **argv)
 {
+
+	emuconfig_t *config = create_emuconfig_internal(EMUCONFIG_INTERNAL_BASIC_CONSOLE);
+
+
+	emulator_t *emu = 	emulator_generate(config);
 
 
 	logger_set = false;

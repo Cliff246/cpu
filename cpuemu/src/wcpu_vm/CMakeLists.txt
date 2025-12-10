@@ -1,4 +1,5 @@
 set(WCPU_CPU_VM_FILES ${WCPU_CPU_VM_FILES}
+	${CMAKE_CURRENT_SOURCE_DIR}/vmhook.c
 
 	${CMAKE_CURRENT_SOURCE_DIR}/src/core.c
 	${CMAKE_CURRENT_SOURCE_DIR}/src/cpumemory.c
@@ -18,6 +19,10 @@ include_directories(wcpu_vm PUBLIC
 	${CMAKE_SOURCE_DIR}/flags/
 
 	${CMAKE_CURRENT_SOURCE_DIR}/inc
+	wcpu_commons
+
+	wcpu_interface
+
 )
 
 target_include_directories(wcpu_vm PUBLIC
@@ -25,10 +30,12 @@ target_include_directories(wcpu_vm PUBLIC
 
 	${CMAKE_CURRENT_SOURCE_DIR}/inc
 	wcpu_commons
+	wcpu_interface
 
 )
 
 target_link_libraries(wcpu_vm PUBLIC
 	wcpu_commons
+	wcpu_interface
 
 )

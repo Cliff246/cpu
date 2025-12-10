@@ -19,12 +19,15 @@ add_executable(wcpu ${WCPU_EXE})
 
 target_link_libraries(wcpu
 	wcpu_commons
+	wcpu_interface
+	wcpu_emu_inputs
 	wcpu_emu
 	wcpu_vm
 )
 
 target_include_directories(wcpu PUBLIC
 	wcpu_commons
+	wcpu_interface
 
 	wcpu_emu
 	wcpu_emu_inputs

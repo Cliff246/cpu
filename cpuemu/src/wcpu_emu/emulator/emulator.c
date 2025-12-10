@@ -1,4 +1,4 @@
-#include "emucore.h"
+#include "emulator.h"
 #include "device_mailbox.h"
 #include "device_message.h"
 #include <stdlib.h>
