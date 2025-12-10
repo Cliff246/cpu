@@ -161,12 +161,16 @@ void execute_cpu(void)
 
 
 	int64_t rs1_n = inst.rs1, rs2_n = inst.rs2, rs3_n = inst.rs3;
-	uint64_t imm = (inst.immflag)? CCPU(op).imm.imm : 0;
+	int64_t imm = (inst.immflag)? CCPU(op).imm.imm : 0;
 
 	if(inst.immflag == 0 && inst.reallocflag == 1)
 	{
 
 		imm = get_reg(REG_ACC);
+	}
+	if(inst.immflag == 1 && inst.reallocflag == 1)
+	{
+		imm = load((uint64_t)imm);
 	}
 
 	//print_inst(&inst);

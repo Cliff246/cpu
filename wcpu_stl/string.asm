@@ -1,6 +1,7 @@
 
 
-%pub
+%pub strlen
+%pub strcpy
 
 .text tag std
 
@@ -10,14 +11,57 @@
 ;returns length
 strlen:
 ;TODO
-	
+
+	;ptr
+	alu.add t0, a0, zero
+	;total counter
+	alu.add t2, zero, zero
+
+
+strlen_loop:
+	mem.ld t3, t0, zero
+
+
+
+	alu.add t1, zero, #8
+strlen_char_loop:
+
+	alu.and t4, t3, null, 0xff
+
+	jmp.beq null, t4, zero, @strlen_end
+	alu.srl t3, t3, #8
+
+
+	alu.sub t1, t1, #1
+	alu.add t2, t2, #1
+
+	jmp.bne null, t1, zero, @strlen_char_loop
+
+	alu.add t0, t0, #1
+	jmp.jmp null, null, null, @strlen_loop
+
+
+strlen_end:
+	alu.add a0, t2, zero
+	jmp.ret null, null, null
 
 ;a0 = src1
 ;a1 = src2
 
 strcpy:
 ;TODO
+	alu.add t0, a0, zero
+	alu.add t1, a1, zero
 
+
+strcpy_loop:
+
+
+
+strcpy_end:
+
+
+	jmp.ret null, null, null
 
 ;a0 = src1
 ;a1 = src2
