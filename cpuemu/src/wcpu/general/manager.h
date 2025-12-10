@@ -55,7 +55,6 @@ typedef struct globalstate
 {
 
 	global_arguments_t args;
-	cli_context_t ctx;
 
 
 	int runfor;
@@ -74,20 +73,17 @@ bool get_flag(gsflag_t flag);
 void set_flag(gsflag_t flag);
 void clr_flag(gsflag_t flag);
 
-void fill_binary(uint64_t *bin, size_t length);
-size_t file_len(FILE *fp);
-void load_file(const char *file_name);
-
-void basic_export(void);
+//void basic_export(void);
 
 extern globalstate_t globalstate;
 
-void step_handler(void);
+//void step_handler(void);
+void parse_args(void);
 
 void init(int argc, char **argv);
 
-void update(void);
-void testing(void);
+//void update(void);
+//void testing(void);
 
 
 #endif

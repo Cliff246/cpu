@@ -1,6 +1,7 @@
 #ifndef __EXPORT_HEADER__
 #define __EXPORT_HEADER__
 
+/*
 #include <stdint.h>
 #include "loader.h"
 
@@ -81,6 +82,6 @@ void add_packet_to_bundle(export_bundle_t *bnd, export_packet_t pck);
 void export_dump(export_bundle_t *bnd);
 
 
-
+*/
 
 #endif

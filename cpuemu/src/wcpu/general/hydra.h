@@ -1,6 +1,7 @@
 #ifndef __SHELL_HEADER__
 #define __SHELL_HEADER__
 
+/*
 #include "cli.h"
 
 typedef struct hydra_entry
@@ -24,5 +25,5 @@ bool exit_head(cmd_t *cmd);
 
 bool hydra(cmd_t *cmd);
 
-
+*/
 #endif

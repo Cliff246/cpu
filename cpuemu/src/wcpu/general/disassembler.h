@@ -4,7 +4,7 @@
 
 //#include "core.h"
 //#include "code_decoder.h"
-
+/*
 #include "wcpu_isa.h"
 
 typedef struct code_block
@@ -18,5 +18,5 @@ typedef struct code_block
 
 
 //code_block_t *create_code_block();
-
+*/
 #endif

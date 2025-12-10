@@ -1,3 +1,4 @@
+/*
 #include "hydra.h"
 //#include "core.h"
 #include "manager.h"
@@ -89,7 +90,7 @@ bool load_head(cmd_t *cmd)
 	tok_t *tok1 = next_tok_cmd(cmd);
 	if(tok1->type == TOK_STRING)
 	{
-		load_file(tok1->token);
+		//load_file(tok1->token);
 
 	}
 	return false;
@@ -184,7 +185,7 @@ bool print_head(cmd_t *cmd)
 		}
 		free(block->ops);
 		free(block);
-*/
+
 	}
 	else
 	{
@@ -220,3 +221,5 @@ bool run_head(cmd_t *cmd)
 	}
 	return true;
 }
+
+*/

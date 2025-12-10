@@ -21,52 +21,6 @@
 //{
 	//return components.cpu;
 //}
-/*
-
-void fill_binary(uint64_t *bin, size_t length)
-{
-
-	for(size_t i = 0; i < length; ++i)
-	{
-
-		//memory_write(components.mem, i, bin[i] );
-	}
-}
-
-size_t file_len(FILE *fp)
-{
-	if(!fp)
-		return 0;
-
-	size_t current = ftell(fp);
-
-	fseek(fp, 0, SEEK_END);
-	size_t address = ftell(fp);
-
-	fseek(fp, current, SEEK_SET);
-	return address;
-}
-
-
-void load_file(const char *file_name)
-{
-	FILE *fp = fopen(file_name, "rb");
-	if(fp == NULL)
-	{
-		printf("file: %s not openable\n", file_name);
-		exit(1);
-
-	}
-	size_t len = file_len(fp);
-
-	char *bytes = (char *)calloc(len, sizeof(char));
-
-	fread(bytes, 8, len / 8, fp);
-	uint64_t *bin = (uint64_t *)bytes;
-
-	fill_binary(bin, len / sizeof(uint64_t));
-
-}
 
 
 
@@ -74,7 +28,6 @@ void load_file(const char *file_name)
 globalstate_t globalstate =
 {
 	.args = {.argc = 0, .argv = 0},
-	.ctx = {0},
 	.breakpoints = {-1},
 	.runfor = 0
 
@@ -305,62 +258,53 @@ void parse_args(void)
 	}
 
 }
-*/
+
 void init(int argc, char **argv)
 {
-	emuconfig_t *cf = create_emuconfig_internal(EMUCONFIG_INTERNAL_BASIC_CONSOLE);
-	printf("emulator \n");
-	emulator_t *emu = emulator_generate(cf);
-	for(int i = 0; i < 40; ++i)
-	{
-		emulator_update(emu);
-	}
-}
-/*
+
+
 	logger_set = false;
 	globalstate.args.argc = argc;
 	globalstate.args.argv = argv;
 	//after seting args
 	parse_args();
-	create_cli_context(&globalstate.ctx);
+	//create_cli_context(&globalstate.ctx);
 
 
 
 
 
 
-	init_components();
-	create_cpu();
 
 
 	if(get_flag(FLAG_HAS_SOURCE))
 	{
-		load_file(GLBST.source_path);
+		//load_file(GLBST.source_path);
 	}
-	startup_cpu();
 
 	if(get_flag(FLAG_TESTING))
 	{
-		testing();
-		basic_export();
+		//testing();
+		//basic_export();
 
 	}
 	else
 	{
-		update();
+		//update();
 
 	}
 
 }
 
-cmd_t *input(void)
-{
-	return pull_line(&globalstate.ctx);
-}
+//cmd_t *input(void)
+//{
+//	return pull_line(&globalstate.ctx);
+//}
 
+/*
 int on_breakpoint(void)
 {
-	int pc = get_pc();
+	//int pc = get_pc();
 	for(int i = 0; i < MAX_BREAKPOINTS; ++i)
 	{
 		int temp = globalstate.breakpoints[i];
@@ -397,7 +341,7 @@ void step_handler(void)
 	}
 	for(int i = 0; i < 5; ++i)
 	{
-		step_cpu();
+		//step_cpu();
 
 	}
 	//cpu_t *cpu = global_cpu();

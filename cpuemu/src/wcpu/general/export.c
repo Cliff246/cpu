@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <string.h>
 
+/*
+
 export_bundle_t *create_export_bundle(char *export)
 {
 
@@ -115,3 +117,4 @@ void export_dump(export_bundle_t *bnd)
 
 	close_sourcefile(sf);
 }
+*/

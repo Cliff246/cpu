@@ -4,8 +4,11 @@
 //#include "coreutils.h"
 #include <stdint.h>
 #include <stdlib.h>
+
 #include <stdio.h>
+
 /*
+
 int create_operation_range(operation_t **ops, int inst_start, int inst_len, int imm_start, int imm_len)
 {
 
@@ -44,3 +47,4 @@ code_block_t *create_block_from_current_description(cpu_t *cpu, int range_start,
 	return block;
 }
 */
+
