@@ -1,18 +1,22 @@
-#include "core.h"
 #include "flags.h"
 
-#include "common.h"
 #include "stdio.h"
 #include <stdlib.h>
-#include "cli.h"
-#include "token.h"
 #include "manager.h"
 
 
+/*
+
+TODO merge into one head emu and vm
 
 
 
-int main(int argc, char *argv[])
+
+
+
+*/
+
+int main(int argc, char **argv)
 {
 	init(argc, argv);
 

@@ -1,5 +1,5 @@
 
-set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
+set(WCPU_CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 	${CMAKE_CURRENT_SOURCE_DIR}/emucore.c
 	${CMAKE_CURRENT_SOURCE_DIR}/emulator_configure.c
 #emulator device argparser
@@ -123,9 +123,9 @@ set(CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 
 
 set(CMAKE_BUILD_TYPE Debug)
-add_library(wcpu_lib_emulator ${CPU_CORE_EMULATOR} )
+add_library(wcpu_emu_core ${WCPU_CPU_CORE_EMULATOR} )
 
-include_directories(wcpu_lib_emulator PUBLIC
+include_directories(wcpu_emu_core PUBLIC
 	${CMAKE_SOURCE_DIR}/flags/
 
 	${CMAKE_CURRENT_SOURCE_DIR}/
@@ -171,7 +171,7 @@ include_directories(wcpu_lib_emulator PUBLIC
 
 )
 
-target_include_directories(wcpu_lib_emulator PUBLIC
+target_include_directories(wcpu_emu_core PUBLIC
 	${CMAKE_SOURCE_DIR}/flags/
 
 	${CMAKE_CURRENT_SOURCE_DIR}/
@@ -212,13 +212,13 @@ target_include_directories(wcpu_lib_emulator PUBLIC
 
 	${CMAKE_CURRENT_SOURCE_DIR}/device_system/ram
 	${CMAKE_CURRENT_SOURCE_DIR}/helpers
-	wcpu_lib_commons
-	wcpu_lib_inputs
+	wcpu_commons
+	wcpu_emu_inputs
 
 )
 
-target_link_libraries(wcpu_lib_emulator PUBLIC
-	wcpu_lib_inputs
+target_link_libraries(wcpu_emu_core PUBLIC
+	wcpu_emu_inputs
 
-	wcpu_lib_commons
+	wcpu_commons
 )

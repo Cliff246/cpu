@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.15)
-project(weirdo_cpu C)
+project(weirdo_cpu)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Add subdirectories
 add_subdirectory(src)
+
 
 add_custom_target(copy_emu_config ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory

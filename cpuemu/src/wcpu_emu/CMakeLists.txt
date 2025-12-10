@@ -1,9 +1,8 @@
 
-add_subdirectory(commons)
 add_subdirectory(inputs)
 add_subdirectory(emulator)
 
-set(CPU_C_FILES ${CPU_C_FILES}
+set(EMU_CPU_C_FILES ${EMU_CPU_C_FILES}
 
 	${CMAKE_CURRENT_SOURCE_DIR}/manager.c
 	${CMAKE_CURRENT_SOURCE_DIR}/hydra.c
@@ -12,26 +11,26 @@ set(CPU_C_FILES ${CPU_C_FILES}
 )
 
 
-add_library(wcpu_lib ${CPU_C_FILES})
+add_library(wcpu_emu ${EMU_CPU_C_FILES})
 
 
-target_link_libraries(wcpu_lib PUBLIC
-	wcpu_lib_inputs
-	wcpu_lib_commons
-	wcpu_lib_emulator
+target_link_libraries(wcpu_emu PUBLIC
+	wcpu_emu_inputs
+	wcpu_commons
+	wcpu_emu_core
 )
 
-include_directories(wcpu_lib
+include_directories(wcpu_emu
 	${CMAKE_SOURCE_DIR}/flags/
 	${CMAKE_CURRENT_SOURCE_DIR}/inc
 
 )
 
-target_include_directories(wcpu_lib PUBLIC
+target_include_directories(wcpu_emu PUBLIC
 	${CMAKE_SOURCE_DIR}/flags/
 	${CMAKE_CURRENT_SOURCE_DIR}/inc
 
-	wcpu_lib_commons
-	wcpu_lib_inputs
-	wcpu_lib_emulator
+	wcpu_commons
+	wcpu_emu_inputs
+	wcpu_emu_core
 )

@@ -10,7 +10,7 @@
 ;returns length
 strlen:
 ;TODO
-
+	
 
 ;a0 = src1
 ;a1 = src2

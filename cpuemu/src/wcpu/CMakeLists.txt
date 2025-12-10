@@ -9,11 +9,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 add_executable(wcpu ${WCPU_EXE})
 
 target_link_libraries(wcpu
-
-	wcpu_lib
-
+	wcpu_emu
 )
 
 target_include_directories(wcpu PUBLIC
-	wcpu_lib
+	wcpu_emu
 )
