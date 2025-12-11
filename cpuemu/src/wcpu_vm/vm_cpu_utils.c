@@ -1,12 +1,12 @@
 
 
-#include "coreutils.h"
+#include "vm.h"
+#include "vm_cpu.h"
 #include "flags.h"
 #include <string.h>
 #include <stdio.h>
-#define CCPU(part) components.cpu->part
-#define MEMLD(address) load(address)
 
+/*
 
 inst_t get_inst_from_op(operation_t *op)
 {
@@ -371,3 +371,4 @@ uint32_t get_inst_at_pc_address(uint64_t address)
 	}
 }
 
+*/

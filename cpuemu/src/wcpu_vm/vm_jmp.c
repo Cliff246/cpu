@@ -1,13 +1,12 @@
 
-#include "pjmp.h"
-#include "core.h"
 #include "flags.h"
-#include "coreutils.h"
+#include "vm.h"
+#include "vm_cpu.h"
+#include "vm_jmp.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <coreutils.h>
 
-
+/*
 uint64_t bookmark_index(uint64_t address, uint64_t cd_ptr)
 {
 	uint64_t idx = (address ^ cd_ptr) & (BOOKMARKS_MAX - 1);
@@ -51,7 +50,7 @@ uint64_t closest_rel(cpu_t *cpu, uint64_t ct_addr, uint64_t ct_len, uint64_t rel
 			high = closest - 1;
 	}
 	return closest;
-	*/
+
 	int64_t closest = 0;
 	if(rel_address  != 0)
 	{
@@ -267,4 +266,26 @@ void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t lane1, int64_t lane2, int
 			break;
 
 	}
+}
+*/
+
+
+void vm_cpu_path_jmp_init(vima_t *vm)
+{
+
+}
+
+void vm_cpu_path_jmp_pull(vima_t *vm)
+{
+
+}
+
+void vm_cpu_path_jmp_push(vima_t *vm)
+{
+
+}
+
+void vm_cpu_path_jmp_exec(vima_t *vm)
+{
+
 }

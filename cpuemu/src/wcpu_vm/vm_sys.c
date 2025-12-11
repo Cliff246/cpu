@@ -1,18 +1,16 @@
 
-#include "psys.h"
-#include "cpumemory.h"
-#include "core.h"
-#include "coreutils.h"
+#include "vm_sys.h"
+#include "vm.h"
 #include <stdio.h>
-#include <coreutils.h>
 
+/*
 
 #define INST(S, M, A)  SYS_ ## S ## _ ## M ## _ ## A
 #define CPU(item) cpu->item
 
-void system_submit(cpu_t *cpu)
+void system_submit(vima_t *cpu)
 {
-	inst_t inst = get_inst_from_op(&cpu->op);
+	vm_inst_t inst = g
 	switch(inst.subpath)
 	{
 		case SYS_SET_CD_PTR:
@@ -28,7 +26,7 @@ void system_submit(cpu_t *cpu)
 }
 
 
-void sys_set_cd_ptr(cpu_t *cpu, uint64_t rd)
+void sys_set_cd_ptr(vima_t *cpu, uint64_t rd)
 {
 
 	reg_file_t file = get_current_file(cpu);
@@ -37,7 +35,7 @@ void sys_set_cd_ptr(cpu_t *cpu, uint64_t rd)
 	set_current_file(cpu, file);
 }
 
-void sys_call_cd_ptr(cpu_t *cpu, uint64_t rd)
+void sys_call_cd_ptr(vima_t *cpu, uint64_t rd)
 {
 
 	reg_file_t file =  get_current_file(cpu);
@@ -51,3 +49,24 @@ void sys_call_cd_ptr(cpu_t *cpu, uint64_t rd)
 
 #undef CPU
 #undef INST
+*/
+
+void vm_cpu_path_sys_init(vima_t *vm)
+{
+
+}
+
+void vm_cpu_path_sys_pull(vima_t *vm)
+{
+
+}
+
+void vm_cpu_path_sys_push(vima_t *vm)
+{
+
+}
+
+void vm_cpu_path_sys_exec(vima_t *vm)
+{
+
+}

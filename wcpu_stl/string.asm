@@ -47,13 +47,12 @@ strlen_end:
 
 ;a0 = src1
 ;a1 = src2
-
 strcpy:
 ;TODO
 	alu.add t0, a0, zero
 	alu.add t1, a1, zero
 
-
+	
 strcpy_loop:
 
 
@@ -63,12 +62,27 @@ strcpy_end:
 
 	jmp.ret null, null, null
 
-;a0 = src1
+;a0 = dst1
 ;a1 = src2
 strcmp:
 ;TODO
+	alu.add t0, a0, zero
+	alu.add t1, a1, zero
 
 
+	;counter
+	alu.add t2, zero, zero
+strcpy_loop:
+
+	mem.ld t3, t1, zero
+
+strcpy_check:
+
+
+
+
+strcmp_end:
+	jmp.ret null, null, null
 
 ;a0 = src1
 ;a1 = src2

@@ -6,9 +6,30 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+
+
+typedef enum interface_type
+{
+	INTERFACE_INVALID,
+	INTERFACE_VM,
+	INTERFACE_EMU,
+}interface_type_t;
+
 typedef struct interface
 {
-	message_t *message;
+	interface_type_t type;
+
+	void *machine;
+
+
+
+
+
 }interface_t;
+
+
+
+
+
 
 #endif

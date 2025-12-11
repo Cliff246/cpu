@@ -20,8 +20,13 @@
 #define PATH_ATM 5
 
 
+//acc_mode
+//lane1 = lhs
+//lane2 = rhs
+//lane3 = other
 
 
+//
 
 //instruction convention is always
 //3			7		6		6		  6	     1 	       1	      1              1

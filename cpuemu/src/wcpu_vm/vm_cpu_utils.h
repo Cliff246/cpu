@@ -1,8 +1,17 @@
-#ifndef __COREUTILS__
-#define __COREUTILS__
+#ifndef __VM_CPU_UTILS_HEADER__
+#define __VM_CPU_UTILS_HEADER__
 
-#include "core.h"
+#include "vm_cpu.h"
+#include "vm.h"
+#include <stdint.h>
 
+
+int64_t vm_cpu_get_lane1(vima_t *vm);
+int64_t vm_cpu_get_lane2(vima_t *vm);
+int64_t vm_cpu_get_lane3(vima_t *vm);
+
+
+/*
 inst_t get_inst_from_op(operation_t *op);
 
 
@@ -64,5 +73,7 @@ void set_reg(int reg, int64_t content);
 
 code_desc_t get_desc(pmode_t mode);
 void set_desc(pmode_t mode, code_desc_t desc);
+
+*/
 
 #endif

@@ -1,11 +1,13 @@
 
-#include "pmem.h"
+#include "vm.h"
+#include "vm_cpu.h"
+#include "vm_mem.h"
 #include "flags.h"
-#include "cpumemory.h"
-#include "core.h"
-#include <coreutils.h>
+#include <stdint.h>
 #include <stdio.h>
 
+
+/*
 void memory_submit(cpu_t *cpu, char subpath, int64_t lane1, int64_t lane2, int64_t lane3, char immflag )
 
 {
@@ -75,4 +77,23 @@ void memory_submit(cpu_t *cpu, char subpath, int64_t lane1, int64_t lane2, int64
 			//printf("nothing done\n");
 			break;
 	}
+}
+*/
+
+void vm_cpu_path_mem_init(vima_t *vm)
+{
+
+}
+
+void vm_cpu_path_mem_pull(vima_t *vm)
+{
+
+}
+void vm_cpu_path_mem_push(vima_t *vm)
+{
+
+}
+void vm_cpu_path_mem_exec(vima_t *vm)
+{
+
 }
