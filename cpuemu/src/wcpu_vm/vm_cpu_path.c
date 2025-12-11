@@ -12,29 +12,21 @@ vm_cpu_path_vtable_t vm_cpu_path_fn[VM_CPU_PATH_COUNT] =
 	[path_alu] =
 	{
 		.init = vm_cpu_path_alu_init,
-		.pull = vm_cpu_path_alu_pull,
-		.push = vm_cpu_path_alu_push,
 		.exec = vm_cpu_path_alu_exec,
 	},
 	[path_mem] =
 	{
 		.init = vm_cpu_path_mem_init,
-		.pull = vm_cpu_path_mem_pull,
-		.push = vm_cpu_path_mem_push,
 		.exec = vm_cpu_path_mem_exec,
 	},
 	[path_jmp] =
 	{
 		.init = vm_cpu_path_jmp_init,
-		.pull = vm_cpu_path_jmp_pull,
-		.push = vm_cpu_path_jmp_push,
 		.exec = vm_cpu_path_jmp_exec,
 	},
 	[path_sys] =
 	{
 		.init = vm_cpu_path_sys_init,
-		.pull = vm_cpu_path_sys_pull,
-		.push = vm_cpu_path_sys_push,
 		.exec = vm_cpu_path_sys_exec,
 	},
 };

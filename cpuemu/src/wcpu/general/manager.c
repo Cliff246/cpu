@@ -10,8 +10,8 @@
 #include "hydra.h"
 #include "export.h"
 #include "emulator.h"
-#include "core.h"
 #include "emulator_configure.h"
+#include "vm.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -268,7 +268,7 @@ void init(int argc, char **argv)
 
 	emulator_t *emu = 	emulator_generate(config);
 
-
+	vima_t *vima = vm_init(1000);
 	logger_set = false;
 	globalstate.args.argc = argc;
 	globalstate.args.argv = argv;

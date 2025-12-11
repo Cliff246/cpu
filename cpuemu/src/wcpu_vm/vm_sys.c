@@ -2,7 +2,8 @@
 #include "vm_sys.h"
 #include "vm.h"
 #include <stdio.h>
-
+#include <stdint.h>
+#include <stdbool.h>
 /*
 
 #define INST(S, M, A)  SYS_ ## S ## _ ## M ## _ ## A
@@ -56,17 +57,7 @@ void vm_cpu_path_sys_init(vima_t *vm)
 
 }
 
-void vm_cpu_path_sys_pull(vima_t *vm)
+int64_t vm_cpu_path_sys_exec(vima_t *vm, char subflag, int64_t lane1, int64_t lane2, int64_t lane3, bool swap)
 {
-
-}
-
-void vm_cpu_path_sys_push(vima_t *vm)
-{
-
-}
-
-void vm_cpu_path_sys_exec(vima_t *vm)
-{
-
+	return 0;
 }

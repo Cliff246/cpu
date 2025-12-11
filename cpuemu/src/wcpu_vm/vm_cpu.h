@@ -1,6 +1,6 @@
 
-#ifndef __VM_CPU__
-#define __VM_CPU__
+#ifndef __VM_CPU_HEADER__
+#define __VM_CPU_HEADER__
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -42,11 +42,11 @@ typedef struct
 	//code description ptr
 	uint64_t cd_ptr;
 	//pc_ptr
-	uint64_t pc_ptr, pc_len;
+	uint64_t pc_base, pc_len;
 	//ipc
-	uint64_t ipc_ptr, ipc_len;
+	uint64_t ipc_base, ipc_len;
 	//code description table
-	uint64_t ct_ptr, ct_len;
+	uint64_t ct_base, ct_len;
 
 	//frame pc, frame ipc
 	uint64_t pc, ipc;
@@ -56,7 +56,7 @@ typedef struct
 {
 	//stack ptr,
 	//stack frame
-	uint64_t sp, sf;
+	uint64_t sp, sfp;
 	//stack code description
 	uint64_t scd;
 }vm_reg_stack_t;
@@ -131,7 +131,6 @@ typedef struct
 	char subpath;
 	bool sidechannel;
 	int64_t lane1, lane2, lane3;
-	int64_t lhs, rhs, other;
 	int64_t dest;
 }vm_cpu_pre_t;
 

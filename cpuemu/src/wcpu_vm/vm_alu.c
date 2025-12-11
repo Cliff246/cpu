@@ -216,19 +216,22 @@ void vm_cpu_path_alu_init(vima_t *vm)
 	set_alu_instructions();
 }
 
-
-void vm_cpu_path_alu_pull(vima_t *vm)
+int64_t vm_cpu_path_alu_exec(vima_t *vm, char subflag, int64_t lane1, int64_t lane2, int64_t lane3, bool swap)
 {
 
-}
+	int64_t lhs = lane1;
+	int64_t rhs, opp;
+	if(swap)
+	{
+		rhs = lane3;
+		opp = lane2;
+	}
+	else
+	{
+		rhs = lane2;
+		opp = lane3;
+	}
 
-
-void vm_cpu_path_alu_push(vima_t *vm)
-{
-
-}
-
-void vm_cpu_path_alu_exec(vima_t *vm)
-{
-
+	int64_t result = alu_fn[subflag](vm, lane1, lane2, lane3);
+	return result;
 }

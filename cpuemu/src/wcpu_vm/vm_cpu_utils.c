@@ -2,8 +2,10 @@
 
 #include "vm.h"
 #include "vm_cpu.h"
+#include "vm_cpu_utils.h"
 #include "flags.h"
 #include <string.h>
+#include <stdint.h>
 #include <stdio.h>
 
 /*
@@ -372,3 +374,136 @@ uint32_t get_inst_at_pc_address(uint64_t address)
 }
 
 */
+
+
+int64_t vm_cpu_get_lane1(vima_t *vm)
+{
+	return vm->cpu.pre.lane1;
+}
+
+int64_t vm_cpu_get_lane2(vima_t *vm)
+{
+	return vm->cpu.pre.lane2;
+
+}
+
+int64_t vm_cpu_get_lane3(vima_t *vm)
+{
+	return vm->cpu.pre.lane3;
+
+}
+
+
+uint64_t vm_get_ipc(vima_t *vm)
+{
+	return vm->cpu.user.code_desc.ipc;
+}
+
+uint64_t vm_get_pc(vima_t *vm)
+{
+	return vm->cpu.user.code_desc.pc;
+
+}
+
+void vm_set_ipc(vima_t *vm, uint64_t set)
+{
+	vm->cpu.user.code_desc.ipc = set;
+
+}
+
+void vm_set_pc(vima_t *vm, uint64_t set)
+{
+	vm->cpu.user.code_desc.pc = set;
+
+}
+
+void vm_inc_ipc(vima_t *vm, uint64_t inc)
+{
+	vm->cpu.user.code_desc.ipc+=inc;
+
+}
+
+void vm_inc_pc(vima_t *vm, uint64_t inc)
+{
+
+	vm->cpu.user.code_desc.pc+=inc;
+}
+
+
+uint64_t vm_get_pc_base(vima_t *vm)
+{
+	return vm->cpu.user.code_desc.pc_base;
+}
+uint64_t vm_get_ipc_base(vima_t *vm)
+{
+	return vm->cpu.user.code_desc.ipc_base;
+
+}
+
+uint64_t vm_get_pc_len(vima_t *vm)
+{
+	return vm->cpu.user.code_desc.pc_len;
+}
+
+uint64_t vm_get_ipc_len(vima_t *vm)
+{
+	return vm->cpu.user.code_desc.ipc_len;
+
+}
+
+
+void vm_set_sfp(vima_t *vm,uint64_t set)
+{
+	vm->cpu.user.stack.sfp = set;
+}
+uint64_t vm_get_sfp(vima_t *vm)
+{
+	return vm->cpu.user.stack.sfp;
+
+}
+void vm_set_sp(vima_t *vm,uint64_t set)
+{
+	vm->cpu.user.stack.sp = set;
+
+}
+
+uint64_t vm_get_sp(vima_t *vm)
+{
+	return vm->cpu.user.stack.sp;
+}
+
+
+uint64_t vm_dec_sp(vima_t *vm, uint64_t degree)
+{
+	vm->cpu.user.stack.sp -= degree;
+	return vm->cpu.user.stack.sp;
+}
+uint64_t vm_inc_sp(vima_t *vm, uint64_t degree)
+{
+	uint64_t sp = vm->cpu.user.stack.sp;
+	vm->cpu.user.stack.sp += degree;
+	return sp;
+}
+
+uint32_t vm_get_inst_at_pc_address(vima_t *vm,uint64_t address)
+{
+
+}
+
+//get the right address for memory
+uint64_t vm_address(vima_t *vm,uint64_t addr)
+{
+
+}
+
+int64_t vm_cpu_get_reg(vima_t *vm,int reg)
+{
+	return vm->cpu.user.regs[reg];
+}
+
+//register set
+void vm_cpu_set_reg(vima_t *vm, int reg, int64_t content)
+{
+	vm->cpu.user.regs[reg] = content;
+
+}

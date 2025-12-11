@@ -14,7 +14,7 @@
 
 typedef struct
 {
-	int64_t *content;
+	int64_t *mem;
 	uint64_t size;
 }vm_mem_t;
 
@@ -32,5 +32,7 @@ int64_t vm_load(vima_t *vm, uint64_t address);
 void vm_store(vima_t *vm, uint64_t address, int64_t data);
 
 vima_t *vm_init(uint64_t memory_size);
+void vm_step(vima_t *vm);
+
 
 #endif

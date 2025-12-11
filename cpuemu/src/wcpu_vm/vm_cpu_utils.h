@@ -33,43 +33,44 @@ void decode_operation(operation_t *op);
 void set_current_file(cpu_t *cpu, reg_file_t file);
 
 void set_mode_file(cpu_t *cpu, reg_file_t file, pmode_t mode);
+*/
+
+uint64_t vm_get_ipc(vima_t *vm);
+uint64_t vm_get_pc(vima_t *vm);
+
+void vm_set_ipc(vima_t *vm, uint64_t set);
+void vm_set_pc(vima_t *vm, uint64_t set);
+void vm_inc_ipc(vima_t *vm, uint64_t inc);
+void vm_inc_pc(vima_t *vm, uint64_t inc);
 
 
-uint64_t get_ipc(void);
-uint64_t get_pc(void);
-
-void set_ipc(uint64_t set);
-void set_pc(uint64_t set);
-
-void inc_ipc(uint64_t inc);
-void inc_pc(uint64_t inc);
+uint64_t vm_get_pc_base(vima_t *vm);
+uint64_t vm_get_ipc_base(vima_t *vm);
 
 
-uint64_t get_pc_offset(void);
-uint64_t get_ipc_offset(void);
+uint64_t vm_get_pc_len(vima_t *vm);
+uint64_t vm_get_ipc_len(vima_t *vm);
 
 
-uint64_t get_pc_len(void);
-uint64_t get_ipc_len(void);
+void vm_set_sfp(vima_t *vm,uint64_t set);
+uint64_t vm_get_sfp(vima_t *vm);
+void vm_set_sp(vima_t *vm,uint64_t set);
+uint64_t vm_get_sp(vima_t *vm);
+
+uint64_t vm_dec_sp(vima_t *vm, uint64_t degree);
+uint64_t vm_inc_sp(vima_t *vm, uint64_t degree);
 
 
-void set_sfp(uint64_t set);
-uint64_t get_sfp(void);
-void set_sp(uint64_t set);
-uint64_t get_sp(void);
-
-uint64_t dec_sp(uint64_t degree);
-uint64_t inc_sp(uint64_t degree);
-
-
-uint32_t get_inst_at_pc_address(uint64_t address);
+uint32_t vm_get_inst_at_pc_address(vima_t *vm,uint64_t address);
 
 //get the right address for memory
-uint64_t address(uint64_t addr);
+uint64_t vm_address(vima_t *vm,uint64_t addr);
 
-int64_t get_reg(int reg);
+int64_t vm_cpu_get_reg(vima_t *vm,int reg);
 //register set
-void set_reg(int reg, int64_t content);
+void vm_cpu_set_reg(vima_t *vm, int reg, int64_t content);
+
+/*
 
 code_desc_t get_desc(pmode_t mode);
 void set_desc(pmode_t mode, code_desc_t desc);
