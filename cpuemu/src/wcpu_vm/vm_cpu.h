@@ -142,7 +142,7 @@ typedef struct
 typedef struct vm_cpu
 {
 	//general regs
-	vm_regfile_t user, kernal;
+	vm_regfile_t user;
 	vm_cpu_mode_t mode;
 
 	bool has_jumped;
@@ -174,14 +174,10 @@ typedef struct vm_cpu
 
 
 //step the cpu forward
-void step_cpu(void);
+void vm_cpu_step(vima_t *vm);
+void vm_cpu_set_inital_cd(vima_t *vm);
 void startup_cpu(void);
-
-void fetch_cpu(void);
-void decode_cpu(void);
-void execute_cpu(void);
-void memory_cpu(void);
-void writeback_cpu(void);
+void vm_cpu_print_regs(vima_t *vm);
 
 
 

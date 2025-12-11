@@ -53,7 +53,7 @@ INST(SUBU)
 
 INST(AND)
 {
-	//printf("%lld %lld %lld\n", RS1, IMM, RS1 & IMM);
+	printf("and %lld %lld %lld %lld\n", lhs, rhs, lhs & rhs, opp);
 	ALU_OP(&);
 	//printf("%lld\n", DEST);
 }
@@ -69,16 +69,21 @@ INST(XOR)
 
 INST(SLL)
 {
+	printf("shift left logical:\n");
+
 	ALU_OP(<<);
 }
 INST(SRL)
 {
+	printf("shift right logical\n");
+
 	ALU_OP(>>);
 }
 INST(SRA)
 {
-	return arithmetic_shift_right(lhs, rhs & 0x3F) + opp;
-
+	int64_t shift =arithmetic_shift_right(lhs, rhs & 0x3F) + opp;
+	printf("shifted: %d\n", shift);
+	return shift;
 }
 INST(DIV)
 {
@@ -223,6 +228,8 @@ int64_t vm_cpu_path_alu_exec(vima_t *vm, char subflag, int64_t lane1, int64_t la
 	int64_t rhs, opp;
 	if(swap)
 	{
+		printf("swaped\n");
+
 		rhs = lane3;
 		opp = lane2;
 	}
@@ -231,7 +238,7 @@ int64_t vm_cpu_path_alu_exec(vima_t *vm, char subflag, int64_t lane1, int64_t la
 		rhs = lane2;
 		opp = lane3;
 	}
-
-	int64_t result = alu_fn[subflag](vm, lane1, lane2, lane3);
+	int64_t result = alu_fn[subflag](vm, lhs, rhs, opp);
+	printf("alu:%d (%lld %lld %lld) = %lld\n", subflag, lane1, lane2, lane3, result);
 	return result;
 }

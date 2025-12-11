@@ -3,8 +3,10 @@
 #include "vm.h"
 #include "vm_cpu.h"
 #include "vm_jmp.h"
+#include "vm_cpu_utils.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 /*
 uint64_t bookmark_index(uint64_t address, uint64_t cd_ptr)
@@ -270,6 +272,176 @@ void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t lane1, int64_t lane2, int
 */
 
 
+
+uint64_t bookmark_index(uint64_t address, uint64_t cd_ptr)
+{
+	uint64_t idx = (address ^ cd_ptr) & (BOOKMARKS_MAX - 1);
+	return idx;
+}
+
+uint64_t get_from_bookmark(vima_t *vm, uint64_t rel_address, uint64_t cd_ptr)
+{
+    // hash on both rel_address and cd_ptr
+    uint64_t idx = bookmark_index(rel_address, cd_ptr);
+
+    if (vm->cpu.bookmarks[idx].valid &&
+        vm->cpu.bookmarks[idx].inst_addr == rel_address &&
+        vm->cpu.bookmarks[idx].cd_addr   == cd_ptr)
+    {
+        return vm->cpu.bookmarks[idx].imm_addr; // cache hit
+    }
+    else
+    {
+        return 0; // miss
+    }
+}
+
+
+uint64_t closest_rel(vima_t *vm, uint64_t ct_addr, uint64_t ct_len, uint64_t rel_address)
+{
+	/*
+	int64_t closest = 0;
+	int64_t low = 0;
+	int64_t high = (ct_len / 2) - 1;
+
+	while(low <= high)
+	{
+
+		closest = low + (high - low) / 2;
+		if(vm_load(vm,ct_addr + closest * 2) == rel_address)
+			closest = closest;
+		if(vm_load(vm,ct_addr + closest * 2) < rel_address)
+			low = closest + 1;
+		else
+			high = closest - 1;
+	}
+	return closest;
+	*/
+	int64_t closest = 0;
+	if(rel_address  != 0)
+	{
+		closest = rel_address / CODE_DESC_STRIDE;
+
+	}
+
+	uint64_t relative = vm_load(vm,ct_addr + closest);
+	//printf("c:%ld r:%ld\n", closest, relative);
+	return relative;
+}
+
+//does binary search on table and adds to cache if missing
+
+uint64_t find_immediate_from_rel_table(vima_t *vm, uint64_t address)
+{
+	uint64_t ct_address = 0;
+	uint64_t ct_len = 0;
+	uint64_t cd_ptr = 0;
+	cd_ptr = vm->cpu.user.code_desc.cd_ptr;
+	ct_address = vm->cpu.user.code_desc.ct_base;
+	ct_len = vm->cpu.user.code_desc.ct_len;
+	//printf("cd s %d %d %d\n", cd_ptr, ct_address, ct_len);
+
+
+	//check in book marks
+	uint64_t idx = bookmark_index(address, cd_ptr);
+
+	if(vm->cpu.bookmarks[idx].valid && vm->cpu.bookmarks[idx].cd_addr == cd_ptr)
+	{
+		//printf("bookmarked\n");
+		return get_from_bookmark(vm, address, cd_ptr);
+	}
+
+	uint64_t closest = 0;
+	///
+
+
+	if(ct_len < 1)
+	{
+		closest = 0;
+
+	}
+	else
+	{
+		//does binary search on the table
+		closest =  closest_rel(vm, ct_address, ct_len, address);
+	}
+	uint64_t inst_addr = (address / CODE_DESC_STRIDE);
+	uint64_t imm_addr = vm_load(vm, closest + ct_address);
+	//printf("%d address\n", address);
+	for(int i = 0; i < CODE_DESC_STRIDE; ++i)
+	{
+		uint32_t instruction = vm_get_inst_at_pc_address(vm, inst_addr);
+
+		//printf("iaddr: %ld imm: %x addr: %d\n", inst_addr, instruction, address);
+		if(address == inst_addr)
+			break;
+		if ((instruction & 0x1) > 0)
+		{
+			imm_addr++;
+		}
+		inst_addr++;
+
+	}
+	//printf("\ninst address: %llu with imm address:%llu\n\n", inst_addr, imm_addr );
+	vm->cpu.bookmarks[idx].inst_addr = inst_addr ;
+	vm->cpu.bookmarks[idx].imm_addr  = imm_addr;
+	vm->cpu.bookmarks[idx].cd_addr = cd_ptr;
+	vm->cpu.bookmarks[idx].valid = 1;
+	//ADD TO BOOK MARKS
+	return imm_addr;
+}
+
+void jump_to(vima_t *vm, uint64_t address)
+{
+	uint64_t imm = find_immediate_from_rel_table(vm, address);
+	//print_regs();
+
+	//printf("\njumpto pc=%d ipc=%d\n\n", address, imm );
+	//jump to
+	vm_set_pc(vm, address);
+	vm_set_ipc(vm, imm);
+	vm->cpu.has_jumped = true;
+
+
+}
+
+void jump_call(vima_t *vm, uint64_t target, char immf)
+{
+	assert(0);
+	/*
+	store(inc_sp(1), get_pc() + 1);
+	store(inc_sp(1), get_ipc() + ((immf)? 1: 0)) ;
+	store(inc_sp(1), get_sfp());
+	//memory_print(components.mem, 1000, 1010);
+	//printf("\n\nipc %d\n\n", get_ipc());
+
+	//printf("sp = %d\n", get_sp());
+	set_sfp(get_sp());
+	//printf("CALL before sp=%lu sfp=%lu\n", get_sp(), get_sfp());
+
+	jump_to(cpu, target);
+*/
+}
+
+void jump_return(vima_t *vm)
+{
+	assert(0);
+	/*
+	set_sp(get_sfp());
+
+    uint64_t sfp = load(dec_sp(1));   // last pushed
+    uint64_t ipc = load(dec_sp(1));   // second pushed
+    uint64_t pc  = load(dec_sp(1));
+	//printf("RET after sp=%lu sfp=%lu\n", get_sp(), get_sfp());
+
+	set_sfp(sfp);
+	set_ipc(ipc);
+	set_pc(pc);
+	cpu->has_jumped = true;
+	//printf("RET pop pc=%lu ipc=%lu sfp=%lu\n", pc, ipc, sfp);
+	*/
+}
+
 void vm_cpu_path_jmp_init(vima_t *vm)
 {
 
@@ -277,6 +449,71 @@ void vm_cpu_path_jmp_init(vima_t *vm)
 
 int64_t vm_cpu_path_jmp_exec(vima_t *vm, char subflag, int64_t lane1, int64_t lane2, int64_t lane3, bool swap)
 {
-	return 0;
+	//printf("trying jump %d %d %d \n", lane1, lane2, lane3);
+	switch(subflag)
+	{
+		case JP_JMP:
+			//TODO revalute how this will be done
+			jump_to(vm, lane1 + lane2 + lane3);
+			break;
+		case JP_BEQ:
+			if(lane1 == lane2)
+			{
+				jump_to(vm, lane3);
+			}
+			break;
+		case JP_BNE:
+			if(lane1 != lane2)
+			{
+			 	jump_to(vm, lane3);
 
+			}
+			break;
+		case JP_BLT:
+			if((int64_t)lane1 < (int64_t)lane2)
+			{
+				jump_to(vm, lane3);
+				//printf("branch less equals %d %d\n", lane1, lane2);
+
+			}
+			break;
+		case JP_BLE:
+			if((int64_t)lane1 <= (int64_t)lane2)
+			{
+				jump_to(vm, lane3);
+				//printf("branch less than equals %d %d\n", lane1, lane2);
+			}
+			break;
+
+		case JP_CALL:
+			{
+
+				//TODO revaluate if lane1 + lane2 + lane3 should be done
+				jump_call(vm, lane1 + lane2 + lane3, swap);
+			}
+			break;
+		case JP_RET:
+			{
+				jump_return(vm);
+			}
+			break;
+		case JP_BLEU:
+			if((uint64_t)lane1 <= (uint64_t)lane2)
+			{
+				jump_to(vm, lane3);
+			}
+			break;
+
+		case JP_BLTU:
+			if((uint64_t)lane1 < (uint64_t)lane2)
+			{
+				jump_to(vm, lane3);
+			}
+			break;
+
+		default:
+			break;
+
+	}
+	return 0;
 }

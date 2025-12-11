@@ -3,6 +3,7 @@
 #include "module.h"
 #include "eerror.h"
 #include "errno.h"
+#include "flags.h"
 
 region_t *create_region(module_t *mod)
 {
@@ -165,7 +166,7 @@ output_t *combine_segouts(segout_t *segouts, int length)
 		if(so->type == MODULE_CODE)
 		{
 			segout_txt_t *txt = &so->output.txt;
-			const size_t table_len = (txt->inst_len / 128) + 1;
+			const size_t table_len = (txt->inst_len / CODE_DESC_STRIDE) + 1;
 
 			size_t added = txt->imm_len + txt->inst_len + table_len + 6;
 			if(added + bin_iter >= bin_alloc)
@@ -253,7 +254,7 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 	}
 
 	//printf("lands\n");
-	const size_t table_size = inst_len/ 128 + 1;
+	const size_t table_size = inst_len / CODE_DESC_STRIDE + 1;
 	uint64_t *table = CALLOC(table_size, uint64_t);
 	//oversized
 	int64_t *imm = CALLOC(inst_len, int64_t);
@@ -282,7 +283,7 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 		{
 			entry_t *entry = scope->entries.entries[si];
 
-			if(inst_iter % 128 == 0)
+			if(inst_iter % CODE_DESC_STRIDE == 0)
 			{
 				table[table_iter++] = imm_iter;
 			}
@@ -346,6 +347,7 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 					else if(instruction->imm.iref.ref_type == INST_REF_LOCAL)
 					{
 						ref_t *ref = sym->symbol.ref;
+						printf("locale offset %d\n", ref->locale_offset);
 						current_imm = ref->fragment_offset + ref->locale_offset;
 
 					}

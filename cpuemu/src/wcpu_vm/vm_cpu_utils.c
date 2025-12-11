@@ -485,9 +485,18 @@ uint64_t vm_inc_sp(vima_t *vm, uint64_t degree)
 	return sp;
 }
 
-uint32_t vm_get_inst_at_pc_address(vima_t *vm,uint64_t address)
+uint32_t vm_get_inst_at_pc_address(vima_t *vm, uint64_t address)
 {
+	uint64_t dest = (address / 2) + vm_get_pc_base(vm);
+	if(address % 2 == 0)
+	{
+		return (uint32_t)((uint64_t)(vm_load(vm, dest) >> 32) & 0xffffffff);
 
+	}
+	else
+	{
+		return (uint32_t)((vm_load(vm, dest) & 0xffffffff));
+	}
 }
 
 //get the right address for memory
@@ -498,12 +507,16 @@ uint64_t vm_address(vima_t *vm,uint64_t addr)
 
 int64_t vm_cpu_get_reg(vima_t *vm,int reg)
 {
+	if(reg == 0)
+		return 0;
 	return vm->cpu.user.regs[reg];
 }
 
 //register set
 void vm_cpu_set_reg(vima_t *vm, int reg, int64_t content)
 {
+	if(reg == 0)
+		return;
 	vm->cpu.user.regs[reg] = content;
 
 }

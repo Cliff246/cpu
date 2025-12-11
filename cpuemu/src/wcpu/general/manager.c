@@ -17,13 +17,51 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 //static cpu_t *global_cpu(void)
 //{
 	//return components.cpu;
 //}
 
+static size_t file_len(FILE *fp)
+{
+	assert(fp);
 
+	size_t current = ftell(fp);
+
+	fseek(fp, 0, SEEK_END);
+	size_t address = ftell(fp);
+
+	fseek(fp, current, SEEK_SET);
+	return address;
+}
+
+//returns true on change to size and false on no updated size
+static bool load_file(vima_t *vm, const char *file_name)
+{
+	FILE *fp = fopen(file_name, "rb");
+	if(fp == NULL)
+	{
+		printf("file: %s not openable\n", file_name);
+		exit(1);
+
+	}
+	size_t len = file_len(fp);
+	char *bytes = (char *)calloc(len, sizeof(char));
+	assert(bytes);
+	fread(bytes, 8, len / 8, fp);
+
+	bool changed = false;
+
+
+	uint64_t *bin = (uint64_t *)bytes;
+
+	vm_setmemory(vm,bin, len / sizeof(uint64_t));
+	free(bytes);
+	fclose(fp);
+	return changed;
+}
 
 
 globalstate_t globalstate =
@@ -269,6 +307,16 @@ void init(int argc, char **argv)
 	emulator_t *emu = 	emulator_generate(config);
 
 	vima_t *vima = vm_init(1000);
+
+	load_file(vima, "a.bin");
+	vm_cpu_set_inital_cd(vima);
+	for(int i = 0; i < 1001; ++i)
+	{
+		vm_step(vima);
+	}
+	vm_print_mem(vima, 0, 25);
+	vm_cpu_print_regs(vima);
+	exit(1);
 	logger_set = false;
 	globalstate.args.argc = argc;
 	globalstate.args.argv = argv;

@@ -19,6 +19,8 @@
 //path atomic
 #define PATH_ATM 5
 
+#define PATH_VEC 6
+
 
 //acc_mode
 //lane1 = lhs
@@ -539,6 +541,6 @@
 *
 */
 
-#define CODE_DESC_STRIDE 128
+#define CODE_DESC_STRIDE 16
 
 #endif
