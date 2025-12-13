@@ -2,6 +2,12 @@
 
 %pub strlen
 %pub strcpy
+%pub strcmp
+%pub memcpy
+%pub memset
+%pub strncpy
+%pub strindex
+
 
 .text tag std
 
@@ -52,7 +58,7 @@ strcpy:
 	alu.add t0, a0, zero
 	alu.add t1, a1, zero
 
-	
+
 strcpy_loop:
 
 
