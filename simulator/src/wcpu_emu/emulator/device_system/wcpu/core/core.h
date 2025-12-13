@@ -1,7 +1,7 @@
 #ifndef __CORE_HEADER__
 #define __CORE_HEADER__
 
-#include "common.h"
+#include "commons.h"
 
 #include "wcpu_part.h"
 #include "wcpu_part_signal_ptr.h"

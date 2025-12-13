@@ -2,7 +2,7 @@
 #define __DEVICE_MESSAGE_HEADER__
 
 #include "device_list.h"
-#include "common.h"
+#include "commons.h"
 #include <stdint.h>
 #include <stdbool.h>
 

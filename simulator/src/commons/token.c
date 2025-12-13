@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
-#include "common.h"
+#include "commons.h"
 
 tok_t empty_tok = {.token = "/", .type = TOK_NONE};
 //string should be it a valid ptr to take, this is a move
