@@ -18,23 +18,23 @@ typedef enum device_message_type
 {
 	DEVICE_MESSAGE_TYPE_LIST(DEVICE_MESSAGE_TYPE_ENUM)
 
-}dev_msg_type_t;
+}dev_msg_type_t, WS_dev_msg_type_t;
 #define DEVICE_MESSAGE_TYPE_NAME_STRING(X) TOSTR(DEVICE_MESSAGE_TYPE_NAME(X))
 #define DEVICE_MESSAGE_TYPE_STRING(X) [DEVICE_MESSAGE_TYPE_NAME(X)] = DEVICE_MESSAGE_TYPE_NAME_STRING(X),
 
 extern char *device_message_type_string[];
 
-typedef struct device_message
+typedef struct wcpu_simulator_device_message
 {
 	int ref_count;
 	//add an owner system
 
-	dev_id_t owner;
+	WS_dev_id_t owner;
 	//src device_type
-	device_type_t src_type;
+	WS_dev_desc_id srctype;
 	//src id
 	//dst id
-	dev_id_t src_id, dst_id;
+	WS_dev_id_t src_id, dst_id;
 
 	uint64_t address;
 	int64_t value;
@@ -46,7 +46,7 @@ typedef struct device_message
 
 
 
-}dev_msg_t;
+}dev_msg_t, WS_dev_msg_t;
 
 
 

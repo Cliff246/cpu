@@ -12,7 +12,7 @@ typedef struct device_mailbox
 	dev_msg_t *msg_ring[DEVICE_MAILBOX_SIZE];
 	int write, read;
 
-}dev_mailbox_t;
+}dev_mailbox_t, WS_dev_mailbox_t;
 
 
 

@@ -3,27 +3,22 @@
 
 
 #include "device_list.h"
+#include "device_description.h"
 #include <stdbool.h>
 
 
-typedef struct device_command
+typedef struct wcpu_simulator_device_command
 {
 	//used to expire this device ptr
 	bool used;
-	device_type_t type;
-	void *settings;
-}device_command_t;
+	WS_dev_desc_t *type;
+	void *ptr;
+}device_command_t, WS_dev_cmd_t;
 
 
 
-typedef void*(*device_config_setting_init_fn)(device_type_t type);
-typedef void(*device_config_setting_free_fn)(void *);
 
-typedef struct device_config_setting_vtable
-{
-	device_config_setting_init_fn init;
-	device_config_setting_free_fn free;
-}device_config_setting_vtable_t;
+
 
 
 

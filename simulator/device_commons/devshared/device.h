@@ -3,44 +3,27 @@
 
 #include "device_flags.h"
 #include "device_list.h"
+#include "device_command.h"
+
 #include "device_message.h"
 #include "device_mailbox.h"
-#include "device_command.h"
+
 //#include "emulator_configure.h"
 
 
 #include <stdint.h>
 #include <stdlib.h>
 
-typedef struct device_class device_class_t;
-typedef struct device device_t;
+typedef struct device_description WS_dev_desc_t;
 //set up device
-typedef void (*device_init_fn)(device_t *device, device_command_t *cmd);
-//complete execution
-typedef void (*device_step_fn)(device_t *device);
-//read from
-typedef bool (*device_read_fn)(device_t *dev, dev_msg_t *msg);
-typedef dev_msg_t *(*device_send_fn)(device_t *dev);
-typedef void (*device_print_fn)(device_t *dev);
-typedef void (*device_cmd_fn)(device_t *dev, device_command_t *cmd);
 
-typedef struct device_class
+
+
+typedef struct wcpu_simulator_device
 {
-	device_init_fn init;
-	device_step_fn update;
-	device_read_fn read;
-	device_send_fn send;
-	device_print_fn print;
-	device_cmd_fn cmd;
-}device_class_t;
-
-typedef struct device
-{
-	device_type_t type;
-	device_class_t *class;
-	dev_mailbox_t *mailbox;
-
-	dev_id_t device_id;
+	WS_dev_desc_t *desc;
+	WS_dev_mailbox_t *mailbox;
+	WS_dev_id_t id;
 
 
 	size_t address_range_start;
@@ -58,7 +41,7 @@ typedef struct device
 
 	bool flags[DEVICE_FLAG_COUNT];
 
-}device_t;
+}device_t, WS_dev_t;
 
 
 

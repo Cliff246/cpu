@@ -43,8 +43,6 @@ device_command_t *device_command_generate(device_type_t type);
 void device_command_free(device_command_t *command);
 
 
-extern device_config_setting_vtable_t device_config_setting_vtable_array[];
-
 
 void *device_init_config_setting(device_type_t type);
 void device_free_config_setting(void *ptr, device_type_t type);
@@ -56,7 +54,7 @@ dev_mailbox_t *device_mailbox_init(void);
 
 void device_mailbox_print(dev_mailbox_t *mailbox);
 
-dev_msg_t *device_message_create(device_type_t src_type, dev_id_t src_id, dev_id_t dest_id, dev_msg_type_t type, uint64_t address, int64_t value);
+dev_msg_t *device_message_create(WS_dev_desc_t *src_type, dev_id_t src_id, dev_id_t dest_id, dev_msg_type_t type, uint64_t address, int64_t value);
 
 
 void device_message_respond(dev_msg_t *msg, int64_t value);
@@ -68,8 +66,8 @@ dev_msg_type_t get_device_message_type(dev_msg_t *msg);
 bool get_device_message_has_dst(dev_msg_t *msg);
 
 
-dev_id_t get_device_message_src_id(dev_msg_t *msg);
-dev_id_t get_device_message_dst_id(dev_msg_t *msg);
+WS_dev_id_t get_device_message_src_id(dev_msg_t *msg);
+WS_dev_id_t get_device_message_dst_id(dev_msg_t *msg);
 
 void print_device_message(dev_msg_t *msg);
 

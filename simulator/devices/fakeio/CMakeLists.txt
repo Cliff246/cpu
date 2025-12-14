@@ -1,8 +1,8 @@
 
 
 set(DEVICE_FAKEIO_CFILES
-	${CMAKE_CURRENT_SOURCE_DIR}/dev_fakeio.c
-	${CMAKE_CURRENT_SOURCE_DIR}/dev_fakeio_device_config_setting.c
+	${CMAKE_CURRENT_SOURCE_DIR}/fakeio.c
+	${CMAKE_CURRENT_SOURCE_DIR}/fakeio_device_config_setting.c
 )
 
 
