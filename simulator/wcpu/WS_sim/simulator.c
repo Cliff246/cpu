@@ -1,4 +1,5 @@
-#include "emulator.h"
+#include "simulator.h"
+#include "device_commons.h"
 #include "device_mailbox.h"
 #include "device_message.h"
 #include <stdlib.h>
@@ -7,7 +8,7 @@
 #include <stdbool.h>
 #include "device_commons.h"
 
-emulator_t *emulator_generate(emuconfig_t *config)
+emulator_t *emulator_generate(WS_input_config_t *config)
 {
 	assert(config);
 	emulator_t *emu = calloc(1, sizeof(emulator_t));
@@ -40,9 +41,9 @@ emulator_t *emulator_generate(emuconfig_t *config)
 
 	for(int i = 0; i < emu->device_count; ++i)
 	{
-		device_t *dev = device_generate(emu->config->settings[i]);
+		device_t *dev = device_init(emu->config->settings[i]->command);
 		assert(dev);
-		dev->device_id = i;
+		dev->id = i;
 		if(get_device_changed(dev))
 		{
 			dev->flags[DEVICE_FLAG_TYPE_INTERNAL_CHANGED] = false;
@@ -51,7 +52,7 @@ emulator_t *emulator_generate(emuconfig_t *config)
 		emu_dev_slot_t slot =
 		{
 			.device_index = i,
-			.device_id = dev->device_id,
+			.device_id = dev->id,
 			.address_start = dev->address_range_start,
 			.address_length = dev->address_range_length
 		};
@@ -204,7 +205,7 @@ bool emulator_get_device_from_address(emulator_t *emulator, device_t **dev, size
 	return false;
 }
 
-device_t *emulator_get_device_from_id(emulator_t *emu, dev_id_t devid)
+device_t *emulator_get_device_from_id(emulator_t *emu, WS_dev_id_t devid)
 {
 	assert(emu);
 	assert(devid >= 0 && "device_id can never when searching == -1");
@@ -284,7 +285,7 @@ void emulator_update(emulator_t *emu)
 
 			device_t *dst_device;
 			//print_device_message(set_msg);
-			dev_id_t dst = -1;
+			WS_dev_id_t dst = -1;
 			//print_device_message(set_msg);
 			//printf("\n");
 			if(type == DEVMSG_READ_RESPOND)

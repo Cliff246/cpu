@@ -3,8 +3,8 @@ set(DEVICE_WCPU_EMU_CFILES
 
 
 
-	${CMAKE_CURRENT_SOURCE_DIR}/dev_wcpu.c
-	${CMAKE_CURRENT_SOURCE_DIR}/dev_wcpu_device_config_setting.c
+	${CMAKE_CURRENT_SOURCE_DIR}/wcpu.c
+	${CMAKE_CURRENT_SOURCE_DIR}/wcpu_device_config_setting.c
 	${CMAKE_CURRENT_SOURCE_DIR}/wcpu_commons/wcpu_part.c
 	${CMAKE_CURRENT_SOURCE_DIR}/wcpu_commons/wcpu_part_bus.c
 	${CMAKE_CURRENT_SOURCE_DIR}/wcpu_commons/wcpu_part_signal.c

@@ -3,12 +3,14 @@
 
 
 #include "cli.h"
-#include "emulator_configure.h"
+#include "input_configure.h"
 #include "simulator.h"
+#include "module.h"
 
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+
 
 #define MAX_BREAKPOINTS 100
 #define MAX_EMUARGUMENTS 100
@@ -54,6 +56,14 @@ typedef struct breakpoint
 }brkpnt_t;
 
 
+typedef struct loaded_modules
+{
+	WS_module_t **modules;
+
+	size_t count;
+}loaded_modules_t;
+
+static void load_module(const char *module);
 
 
 typedef struct globalstate
@@ -71,8 +81,7 @@ typedef struct globalstate
 
 	char *source_path;
 
-	simulator_t simulators[MAX_SIMULATORS];
-
+	loaded_modules_t loaded;
 
 }globalstate_t;
 

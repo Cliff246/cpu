@@ -1,10 +1,10 @@
-#include "dev_wcpu_device_config_setting.h"
+#include "wcpu_device_config_setting.h"
 #include "device.h"
 #include "device_list.h"
 #include <stdlib.h>
 #include <assert.h>
 
-void *device_init_config_setting_wcpu(device_type_t type)
+void *device_init_config_setting_wcpu(WS_dev_desc_t *desc)
 {
 
 	dev_wcpu_config_setting_t *config_setting = calloc(1, sizeof(dev_wcpu_config_setting_t));

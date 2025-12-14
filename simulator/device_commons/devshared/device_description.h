@@ -24,5 +24,5 @@ typedef struct device_description
 }WS_dev_desc_t;
 
 
-DEVICE_EXPORT const WS_dev_desc_t *get_device_description(void);
+DEVICE_EXPORT const WS_dev_desc_t *WS_get_dev_desc(void);
 #endif

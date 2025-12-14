@@ -65,8 +65,8 @@ globalstate_t globalstate =
 {
 	.args = {.argc = 0, .argv = 0},
 	.breakpoints = {-1},
-	.runfor = 0
-
+	.runfor = 0,
+	.loaded = {.modules = NULL, .count = 0,}
 
 };
 
@@ -295,6 +295,20 @@ void parse_args(void)
 
 }
 
+static void load_module(const char *module)
+{
+
+
+	WS_module_t **temp = (WS_module_t **)realloc(globalstate.loaded.modules, (globalstate.loaded.count + 1) * sizeof(WS_module_t *));
+	assert(temp);
+	globalstate.loaded.modules = temp;
+
+	globalstate.loaded.modules[globalstate.loaded.count++] = WS_module_create(module);
+
+
+
+}
+
 void init(int argc, char **argv)
 {
 	/*
@@ -322,7 +336,8 @@ void init(int argc, char **argv)
 	parse_args();
 	//create_cli_context(&globalstate.ctx);
 
-
+	load_module("./simulator/devices/ram/libsim_dev_ram.so");
+	load_module("./simulator/devices/wcpu_emu/libsim_dev_wcpu_emu.so");
 
 
 

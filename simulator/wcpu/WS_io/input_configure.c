@@ -1,14 +1,39 @@
 #include "loader.h"
-#include "emulator_configure.h"
+#include "input_configure.h"
 #include "device_list.h"
 
-#include "emulator_device_argparser.h"
+#include "input_parser.h"
 #include "device_commons.h"
 #include <stdlib.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
+
+static bool test_device_name(WS_dev_desc_t *desc, const char *tocmp)
+{
+
+}
+
+static WS_input_config_t *create_config_ptr(void)
+{
+
+}
+
+static bool config_setting(WS_input_config_t *ic)
+{
+
+}
+
+WS_input_config_t *WS_create_input_config_internal(const char *path)
+{
+
+}
+
+WS_input_config_t *WS_create_input_config_external(emu_internal_src_t src)
+{
+
+}
 
 /*
 

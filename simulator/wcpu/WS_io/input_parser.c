@@ -1,5 +1,5 @@
-#include "emulator_configure.h"
-#include "emulator_device_argparser.h"
+#include "input_configure.h"
+#include "input_parser.h"
 #include "device_command.h"
 #include "device_list.h"
 

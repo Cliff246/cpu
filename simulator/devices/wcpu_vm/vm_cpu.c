@@ -31,10 +31,9 @@ void vm_cpu_step(vima_t *vm)
 	int64_t dest = 0;
 	int64_t l1, l2, l3;
 	int64_t sidestream = 0;
-	bool swaps = true;
+	bool swaps = inst.immflag;
 	if(inst.immflag && inst.reallocflag)
 	{
-		printf("both high\n");
 		sidestream = vm_load(vm, imm);
 	}
 	else if(inst.immflag)
@@ -48,7 +47,6 @@ void vm_cpu_step(vima_t *vm)
 	else
 	{
 		sidestream = 0;
-		swaps = false;
 	}
 
 

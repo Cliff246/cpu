@@ -22,6 +22,7 @@ dev_mailbox_t *get_device_mailbox(WS_dev_t *dev);
 
 //generate devices
 //WS_dev_t *device_generate(emuconfig_dev_settings_t *settings );
+WS_dev_t *device_init(device_command_t *cmd);
 
 
 //update devices

@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "device_command.h"
 #include "device_list.h"
+#include "device_description.h"
 #include "token.h"
 
 
@@ -12,28 +13,22 @@
 //the argument parser for each device
 
 
-typedef struct emulator_config_device_settings
+typedef struct wcpu_simulator_input
 {
 	//the lexer
 	toklex_t *toklex;
 	//the command
 	device_command_t *command;
-}emuconfig_dev_settings_t;
+}WS_sim_input_t;
 //the device type
 
-typedef bool (*emuconfig_device_argparser_t)(emuconfig_dev_settings_t *settings);
+typedef bool (*WS_sim_input_parser_fn_t)(WS_sim_input_t *imp);
 
 
 
 //all the keywords that define the 'device'
 
 //should be the same size as the device_type_t
-typedef struct emuconfig_device_type
-{
-	emuconfig_device_argparser_t argparser_fn;
-	device_type_t type;
-	char *keyword;
-} emuconfig_dev_type_t;
 
 /*
 
@@ -45,7 +40,6 @@ extern emuconfig_dev_type_t emuconfig_dev_type_table[DEVICES_LIST_TYPE_COUNT];
 //solves the 'inital' configure lex'
 
 
-bool emulator_device_argparser_head(emuconfig_dev_settings_t *settings, emuconfig_dev_type_t *type);
 
 
 

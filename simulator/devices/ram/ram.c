@@ -3,12 +3,62 @@
 #include "ram.h"
 #include "ram_device_config_setting.h"
 #include "device_commons.h"
+#include "device_description.h"
+#include "device_vtable.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 
 #include <errno.h>
 #include <assert.h>
+
+
+static const WS_dev_vtable_t vtable =
+{
+	.cmd = device_ram_cmd,
+	.config_free = device_free_config_setting_ram,
+	.config_init = device_init_config_setting_ram,
+	.init = device_ram_init,
+	.print = device_ram_print,
+	.read = device_ram_read,
+	.send = device_ram_send,
+	.update = device_ram_update,
+};
+
+static WS_dev_desc_t ram_desc =
+{
+	.id = 0,
+	.version = 0,
+
+	.dev_name = "ram",
+	.dev_typeclass = "mmio",
+	.dl_name = "sim_dev_ram",
+	.vtable = &vtable,
+	.extra = NULL,
+};
+
+const WS_dev_desc_t *WS_get_dev_desc(void)
+{
+	return &ram_desc;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 const static size_t ram_base_size = 1000;
 const static size_t ram_base_start = 0;
@@ -69,15 +119,12 @@ static bool load_file(dev_ram_t *ram, const char *file_name)
 
 
 
-
-void device_ram_generate(device_t *device, device_command_t *cmd)
+void device_ram_init(device_t *device, device_command_t *cmd)
 {
 	assert(device != NULL && "device must not be null");
-	assert(device->type == DEVICE_RAM && "device must be of type ram");
 
-	assert(cmd->type == DEVICE_RAM && "device command must be of type ram");
 
-	dev_ram_config_setting_t *config = (dev_ram_config_setting_t *)cmd->settings;
+	dev_ram_config_setting_t *config = (dev_ram_config_setting_t *)cmd->setting;
 
 	dev_ram_t *ram = create_ram(ram_base_size);
 
@@ -123,7 +170,7 @@ static void update_ram(dev_ram_t *ram, uint64_t length)
 static void cmd_ram(dev_ram_t *ram,  device_command_t *cmd)
 {
 	assert(ram && cmd);
-	dev_ram_config_setting_t *config = (dev_ram_config_setting_t *)cmd->settings;
+	dev_ram_config_setting_t *config = (dev_ram_config_setting_t *)cmd->setting;
 
 	assert(config->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_RESET]);
 	//big flag, no need to have a data type, your either reseting or not
@@ -191,7 +238,6 @@ static void cmd_ram(dev_ram_t *ram,  device_command_t *cmd)
 static void align_ram(device_t *device, dev_ram_t *ram)
 {
 	assert(device != NULL && "device must not be null");
-	assert(device->type == DEVICE_RAM && "device must be of type ram");
 	assert(ram);
 	if(ram->changed)
 	{
@@ -209,7 +255,6 @@ static void align_ram(device_t *device, dev_ram_t *ram)
 void device_ram_update(device_t *device)
 {
 	assert(device != NULL && "device must not be null");
-	assert(device->type == DEVICE_RAM && "device must be of type ram");
 
 	//essentially skiped
 }
@@ -219,7 +264,6 @@ void device_ram_update(device_t *device)
 bool device_ram_read(device_t *dev, dev_msg_t *msg)
 {
 	assert(dev != NULL && "device must not be null");
-	assert(dev->type == DEVICE_RAM && "device must be of type ram");
 
 	dev_ram_t *ram = (dev_ram_t *)dev->ptr;
 
@@ -257,7 +301,6 @@ dev_msg_t *device_ram_send(device_t *dev)
 {
 
 	assert(dev != NULL && "device must not be null");
-	assert(dev->type == DEVICE_RAM && "device must be of type ram");
 
 	dev_ram_t *ram = (dev_ram_t *)dev->ptr;
 	if(ram->has_msg == false )
@@ -329,8 +372,6 @@ void device_ram_print(device_t *dev)
 void device_ram_cmd(device_t *device, device_command_t *cmd)
 {
 	assert(device && cmd);
-	assert(device->type == DEVICE_RAM);
-	assert(cmd->type == DEVICE_RAM);
 	dev_ram_t *ram = (dev_ram_t *)device->ptr;
 	cmd_ram(ram, cmd);
 	align_ram(device, ram);

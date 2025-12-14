@@ -32,7 +32,7 @@ static void cmd_ram(dev_ram_t *ram,  device_command_t *cmd);
 static void align_ram(device_t *device, dev_ram_t *ram);
 
 
-void device_ram_generate(device_t *device, device_command_t *cmd);
+void device_ram_init(device_t *device, device_command_t *cmd);
 void device_ram_update(device_t *device);
 bool device_ram_read(device_t *dev, dev_msg_t *msg);
 dev_msg_t *device_ram_send(device_t *dev);

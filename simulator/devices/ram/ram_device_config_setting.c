@@ -1,12 +1,12 @@
 #include "ram_device_config_setting.h"
 #include "device.h"
 #include "device_list.h"
+#include "device_description.h"
 #include <stdlib.h>
 #include <assert.h>
 
-void *device_init_config_setting_ram(device_type_t type)
+void *device_init_config_setting_ram(WS_dev_desc_t *desc)
 {
-	assert(type != DEVICE_INVAL && "device cannot be inval");
 	dev_ram_config_setting_t *config_setting = calloc(1, sizeof(dev_ram_config_setting_t));
 	assert(config_setting != NULL);
 

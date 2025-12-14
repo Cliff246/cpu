@@ -27,10 +27,12 @@ target_include_directories(sim_dev_wcpu_vm PUBLIC
 
 	${CMAKE_CURRENT_SOURCE_DIR}/
 	wcpu_commons
-
+	sim_dev_interface
+	sim_dev_impl
 )
 
 target_link_libraries(sim_dev_wcpu_vm PUBLIC
 	wcpu_commons
-
+	sim_dev_interface
+	sim_dev_impl
 )

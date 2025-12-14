@@ -1,42 +1,74 @@
 
 add_subdirectory(inputs)
-add_subdirectory(wcpu_emu)
 
-set(WCPU_EXE ${WCPU_EXE}
-	${CMAKE_CURRENT_SOURCE_DIR}/main.c
-	${CMAKE_CURRENT_SOURCE_DIR}/general/manager.c
-	${CMAKE_CURRENT_SOURCE_DIR}/general/hydra.c
-	${CMAKE_CURRENT_SOURCE_DIR}/general/disassembler.c
-	${CMAKE_CURRENT_SOURCE_DIR}/general/export.c
-	${CMAKE_CURRENT_SOURCE_DIR}/helpers/debug.c
-	${CMAKE_CURRENT_SOURCE_DIR}/helpers/code_decoder.c
+set(WS_CORE_CFILES
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_core/main.c
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_core/manager.c
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_core/module.c
+)
+set(WS_HELPERS_CFILES
+
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_helpers/disassembler.c
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_helpers/code_decoder.c
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_helpers/debug.c
+
+)
+set(WS_CONSOLE_CFILES
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_console/hydra.c
 )
 
+
+SET(WS_IO_CFILES
+
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_io/export.c
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_io/input_configure.c
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_io/input_parser.c
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_io/WSio.c
+
+)
+
+SET(WS_SIM_CFILES
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_sim/simulator.c
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_sim/simulator_bus_entry.c
+
+)
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-add_executable(wcpu ${WCPU_EXE})
+add_executable(wcpu
+	${WS_CORE_CFILES}
+	${WS_HELPERS_CFILES}
+	${WS_CONSOLE_CFILES}
+	${WS_IO_CFILES}
+	${WS_SIM_CFILES}
+)
+
+
+
 
 target_link_libraries(wcpu
 	wcpu_commons
 	wcpu_emu_inputs
-	wcpu_emu
+	sim_dev_interface
+	sim_dev_impl
 )
 
 target_include_directories(wcpu PUBLIC
 	wcpu_commons
-	wcpu_emu
 	wcpu_emu_inputs
+	sim_dev_interface
+	sim_dev_impl
 )
 
 include_directories(wcpu PUBLIC
 	${CMAKE_SOURCE_DIR}/flags/
 
-	${CMAKE_CURRENT_SOURCE_DIR}/inputs
-	${CMAKE_CURRENT_SOURCE_DIR}/general
-	${CMAKE_CURRENT_SOURCE_DIR}/flags
-	${CMAKE_CURRENT_SOURCE_DIR}/helpers
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_console
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_core
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_helpers
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_io
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_sim
 
 
 )

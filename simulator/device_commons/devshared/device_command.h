@@ -13,7 +13,7 @@ typedef struct wcpu_simulator_device_command
 	//used to expire this device ptr
 	bool used;
 	WS_dev_desc_t *type;
-	void *ptr;
+	void *setting;
 }device_command_t, WS_dev_cmd_t;
 
 

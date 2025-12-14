@@ -1,9 +1,46 @@
-#include "dev_wcpu.h"
+#include "wcpu.h"
+#include "device.h"
+#include "device_description.h"
+#include "device_vtable.h"
+#include "wcpu_device_config_setting.h"
 #include "core.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <stdint.h>
 #include <stdbool.h>
+
+
+static const WS_dev_vtable_t vtable =
+{
+	.cmd = device_wcpu_cmd,
+	.config_free = device_free_config_setting_wcpu,
+	.config_init = device_init_config_setting_wcpu,
+	.init = device_wcpu_init,
+	.print = device_wcpu_print,
+	.read = device_wcpu_read,
+	.send = device_wcpu_send,
+	.update = device_wcpu_update,
+};
+
+static WS_dev_desc_t wcpu_emu_desc =
+{
+	.id = 0,
+	.version = 0,
+
+	.dev_name = "wcpu_emu",
+	.dev_typeclass = "cpu",
+	.dl_name = "sim_dev_wcpu_emu",
+	.vtable = &vtable,
+	.extra = NULL,
+};
+
+const WS_dev_desc_t *WS_get_dev_desc(void)
+{
+	return &wcpu_emu_desc;
+}
+
+
+
 
 //this is temporary so we can send the read sendback request to the core
 static bool wcpu_send_to_core(core_t *core, dev_msg_t *msg)
@@ -44,11 +81,10 @@ static bool wcpu_send_to_core(core_t *core, dev_msg_t *msg)
 	return false;
 }
 
-void device_wcpu_generate(device_t *device, device_command_t *settings)
+void device_wcpu_init(device_t *device, device_command_t *settings)
 {
 	assert(settings);
 	assert(device);
-	assert(device->type == DEVICE_WCPU);
 	dev_wcpu_t *cpu = calloc(1, sizeof(dev_wcpu_t));
 	assert(cpu != NULL && "malloc cannot fail");
 	cpu->core = wcpu_core_generate();
@@ -63,7 +99,6 @@ void device_wcpu_generate(device_t *device, device_command_t *settings)
 //very basic send to core. will change on multicore implementation
 void device_wcpu_update(device_t *dev)
 {
-	assert(dev->type == DEVICE_WCPU);
 	assert(dev != NULL && "device cannot be null");
 	dev_wcpu_t *wcpu = (dev_wcpu_t *)dev->ptr;
 
@@ -100,10 +135,9 @@ void device_wcpu_update(device_t *dev)
 	if(core->core_io.issued == true && wcpu->has_out == false && wcpu->sent == false)
 	{
 
-		const device_type_t this_type = DEVICE_WCPU;
 		dev_msg_type_t msg_type = (core->core_io.type == CORE_IO_READ)? DEVMSG_READ_SEND : DEVMSG_WRITE;
 
-		dev_msg_t *msg_out = device_message_create(this_type, dev->device_id, -1, msg_type, core->core_io.address, core->core_io.value);
+		dev_msg_t *msg_out = device_message_create(&wcpu_emu_desc, dev->id, -1, msg_type, core->core_io.address, core->core_io.value);
 		assert(msg_out);
 		wcpu->current_msg_out = msg_out;
 		wcpu->has_out = true;
@@ -115,7 +149,6 @@ void device_wcpu_update(device_t *dev)
 
 bool device_wcpu_read(device_t *dev, dev_msg_t *msg)
 {
-	assert(dev->type == DEVICE_WCPU);
 	assert(dev != NULL && "device cannot be null");
 	dev_wcpu_t *wcpu = (dev_wcpu_t *)dev->ptr;
 
@@ -143,7 +176,6 @@ bool device_wcpu_read(device_t *dev, dev_msg_t *msg)
 
 dev_msg_t *device_wcpu_send(device_t *dev)
 {
-	assert(dev->type == DEVICE_WCPU);
 	assert(dev != NULL && "device cannot be null");
 	dev_wcpu_t *wcpu = (dev_wcpu_t *)dev->ptr;
 

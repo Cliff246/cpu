@@ -4,11 +4,12 @@
 #include <stdio.h>
 #include <assert.h>
 #include "device_commons.h"
-
+/*
 char *device_message_type_string[] =
 {
 	DEVICE_MESSAGE_TYPE_LIST(DEVICE_MESSAGE_TYPE_STRING)
 };
+*/
 
 WS_dev_msg_t *device_message_create(WS_dev_desc_t *src_type, WS_dev_id_t src_id, WS_dev_id_t dest_id, WS_dev_msg_type_t type, uint64_t address, int64_t value)
 {
@@ -95,7 +96,7 @@ void print_device_message(dev_msg_t *msg)
 {
 	if(msg == NULL)
 		return;
-	printf("ptr:%p src_id:%d, dst_id:%d, has_dst:%d, msg_type: %s address: %lld, value: %lld, refcount:%d",msg, msg->src_id, msg->dst_id,  msg->has_dst,device_message_type_string[msg->type] , msg->address, msg->value, msg->ref_count);
+	printf("ptr:%p src_id:%d, dst_id:%d, has_dst:%d, msg_type: %s address: %lld, value: %lld, refcount:%d",msg, msg->src_id, msg->dst_id,  msg->has_dst, "empty for now", msg->address, msg->value, msg->ref_count);
 }
 
 bool device_message_consume(dev_msg_t **msg)

@@ -3,6 +3,7 @@
 
 #include "device_list.h"
 #include "commons.h"
+#include "device_description.h"
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -38,7 +39,7 @@ typedef struct device_ram_config_setting
 	bool settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_COUNT];
 }dev_ram_config_setting_t;
 
-void *device_init_config_setting_ram(device_type_t type);
+void *device_init_config_setting_ram(WS_dev_desc_t *desc);
 void device_free_config_setting_ram(void *ptr);
 
 

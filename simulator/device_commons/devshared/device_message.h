@@ -22,7 +22,7 @@ typedef enum device_message_type
 #define DEVICE_MESSAGE_TYPE_NAME_STRING(X) TOSTR(DEVICE_MESSAGE_TYPE_NAME(X))
 #define DEVICE_MESSAGE_TYPE_STRING(X) [DEVICE_MESSAGE_TYPE_NAME(X)] = DEVICE_MESSAGE_TYPE_NAME_STRING(X),
 
-extern char *device_message_type_string[];
+//extern char *device_message_type_string[];
 
 typedef struct wcpu_simulator_device_message
 {

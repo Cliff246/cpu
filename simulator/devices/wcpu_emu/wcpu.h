@@ -25,7 +25,7 @@ typedef struct device_wcpu
 }dev_wcpu_t;
 
 
-void device_wcpu_generate(device_t *device, device_command_t *settings);
+void device_wcpu_init(device_t *device, device_command_t *settings);
 
 void device_wcpu_update(device_t *dev);
 
