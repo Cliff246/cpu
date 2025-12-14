@@ -4,7 +4,11 @@ project(weirdo_cpu)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Add subdirectories
-add_subdirectory(src)
+add_subdirectory(commons)
+add_subdirectory(device_commons)
+add_subdirectory(devices)
+add_subdirectory(wcpu)
+
 
 
 add_custom_target(copy_simulator_config_files ALL
