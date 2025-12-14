@@ -1,7 +1,7 @@
 
 SET(DEVICE_RAM_CFILES
-	${CMAKE_CURRENT_SOURCE_DIR}/dev_ram.c
-	${CMAKE_CURRENT_SOURCE_DIR}/dev_ram_device_config_setting.c
+	${CMAKE_CURRENT_SOURCE_DIR}/ram.c
+	${CMAKE_CURRENT_SOURCE_DIR}/ram_device_config_setting.c
 )
 
 add_library(sim_dev_ram SHARED ${DEVICE_RAM_CFILES})

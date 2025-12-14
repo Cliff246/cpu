@@ -1,10 +1,10 @@
-#include "dev_fakeio_device_config_setting.h"
+#include "fakeio_device_config_setting.h"
 #include "device.h"
 #include "device_list.h"
 #include <stdlib.h>
 #include <assert.h>
 
-void *device_init_config_setting_fakeio(device_type_t type)
+void *device_init_config_setting_fakeio(WS_dev_desc_t *desc)
 {
 
 	dev_fakeio_config_setting_t *config_setting = calloc(1, sizeof(dev_fakeio_config_setting_t));

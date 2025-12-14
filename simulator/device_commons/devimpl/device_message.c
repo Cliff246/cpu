@@ -10,7 +10,7 @@ char *device_message_type_string[] =
 	DEVICE_MESSAGE_TYPE_LIST(DEVICE_MESSAGE_TYPE_STRING)
 };
 
-dev_msg_t *device_message_create(device_type_t src_type, dev_id_t src_id, dev_id_t dest_id, dev_msg_type_t type, uint64_t address, int64_t value)
+WS_dev_msg_t *device_message_create(WS_dev_desc_t *src_type, WS_dev_id_t src_id, WS_dev_id_t dest_id, WS_dev_msg_type_t type, uint64_t address, int64_t value)
 {
 	dev_msg_t *msg = calloc(1, sizeof(dev_msg_t));
 	assert(msg != NULL && "failed calloc");
@@ -75,7 +75,7 @@ bool get_device_message_has_dst(dev_msg_t *msg)
 	return msg->has_dst;
 }
 
-dev_id_t get_device_message_src_id(dev_msg_t *msg)
+WS_dev_id_t get_device_message_src_id(dev_msg_t *msg)
 {
 	assert(msg != NULL && "cannot get src_id from null message");
 	assert(msg->src_id != -1 && "src id can never be -1");
@@ -83,7 +83,7 @@ dev_id_t get_device_message_src_id(dev_msg_t *msg)
 	return msg->src_id;
 }
 
-dev_id_t get_device_message_dst_id(dev_msg_t *msg)
+WS_dev_id_t get_device_message_dst_id(dev_msg_t *msg)
 {
 	assert(msg != NULL && "cannot get dst_id from null message");
 	return msg->dst_id;

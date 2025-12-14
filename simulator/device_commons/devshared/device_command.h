@@ -4,8 +4,9 @@
 
 #include "device_list.h"
 #include "device_description.h"
-#include <stdbool.h>
 
+#include <stdbool.h>
+typedef struct device_description WS_dev_desc_t;
 
 typedef struct wcpu_simulator_device_command
 {

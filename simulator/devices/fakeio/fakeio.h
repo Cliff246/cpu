@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "device.h"
 #include "device_list.h"
-#include "dev_fakeio_device_config_setting.h"
+#include "fakeio_device_config_setting.h"
 #include "device_command.h"
 
 typedef struct device_fakeio

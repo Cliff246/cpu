@@ -2,8 +2,6 @@
 #define __DEVICE_VTABLE_HEADER__
 
 #include "device.h"
-#include "device_message.h"
-#include "device_command.h"
 
 typedef struct wcpu_simulator_device WS_dev_t;
 typedef struct wcpu_simulator_device_command WS_dev_cmd_t;

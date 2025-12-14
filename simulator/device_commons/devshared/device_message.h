@@ -31,7 +31,7 @@ typedef struct wcpu_simulator_device_message
 
 	WS_dev_id_t owner;
 	//src device_type
-	WS_dev_desc_id srctype;
+	WS_dev_desc_id src_type;
 	//src id
 	//dst id
 	WS_dev_id_t src_id, dst_id;

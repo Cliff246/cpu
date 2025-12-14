@@ -1,7 +1,7 @@
 #include "device.h"
 #include "device_list.h"
-#include "dev_ram.h"
-#include "dev_ram_device_config_setting.h"
+#include "ram.h"
+#include "ram_device_config_setting.h"
 #include "device_commons.h"
 #include <stdint.h>
 #include <stdlib.h>
