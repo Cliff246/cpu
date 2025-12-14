@@ -5,6 +5,7 @@
 
 #define DEVICE_LIST(X)	\
 	X(WCPU, wcpu)		\
+	X(WCPU_VM, wcpu_vm) \
 	X(RAM, ram)			\
 	X(FAKEIO, fakeio)	\
 

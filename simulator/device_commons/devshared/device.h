@@ -37,7 +37,7 @@ typedef struct device_class
 typedef struct device
 {
 	device_type_t type;
-	device_class_t class;
+	device_class_t *class;
 	dev_mailbox_t *mailbox;
 
 	dev_id_t device_id;
