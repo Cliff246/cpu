@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "device.h"
-#include "impl_device.h"
+#include "device_commons.h"
 
 /*
 char *device_type_str[] =

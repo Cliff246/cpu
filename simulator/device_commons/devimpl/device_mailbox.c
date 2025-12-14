@@ -1,4 +1,5 @@
 #include "device_mailbox.h"
+#include "device_commons.h"
 
 #include <assert.h>
 #include <stdlib.h>

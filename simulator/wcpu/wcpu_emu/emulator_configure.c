@@ -3,7 +3,7 @@
 #include "device_list.h"
 
 #include "emulator_device_argparser.h"
-
+#include "device_commons.h"
 #include <stdlib.h>
 #include <errno.h>
 #include <stdbool.h>

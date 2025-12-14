@@ -1,9 +1,9 @@
 #include "device_message.h"
-#include "impl_device_message.h"
 #include <stdlib.h>
 #include <errno.h>
 #include <stdio.h>
 #include <assert.h>
+#include "device_commons.h"
 
 char *device_message_type_string[] =
 {

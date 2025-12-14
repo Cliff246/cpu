@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdbool.h>
+#include "device_commons.h"
 
 emulator_t *emulator_generate(emuconfig_t *config)
 {

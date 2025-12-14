@@ -9,15 +9,15 @@ set(SIMULATOR_DEV_IMPL
 )
 
 
-add_library(sim_dev_impl STATIC ${SIMULATOR_DEV_IMPL})
+add_library(sim_dev_impl SHARED ${SIMULATOR_DEV_IMPL})
 
-target_include_directories(sim_dev_impl PRIVATE
+target_include_directories(sim_dev_impl PUBLIC
    sim_dev_interface
    ${CMAKE_CURRENT_SOURCE_DIR}/
 )
 
 target_link_libraries(sim_dev_impl
 
-	private wcpu_commons
-   	private sim_dev_interface
+	wcpu_commons
+   	sim_dev_interface
 )

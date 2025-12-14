@@ -17,6 +17,7 @@ include_directories(wcpu_emu PUBLIC
 target_include_directories(wcpu_emu PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/emulator_device_argparser
+	sim_dev_impl
 
 	wcpu_commons
 )
@@ -24,6 +25,6 @@ target_include_directories(wcpu_emu PUBLIC
 target_link_libraries(wcpu_emu PUBLIC
 	wcpu_commons
 	sim_dev_interface
+	sim_dev_impl
 
-	wcpu_emu_core
 )

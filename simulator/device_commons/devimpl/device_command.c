@@ -1,5 +1,6 @@
 #include "device_command.h"
 #include "commons.h"
+#include "device_commons.h"
 
 
 #include <stdlib.h>

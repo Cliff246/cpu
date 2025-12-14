@@ -1,5 +1,5 @@
 
-set(WCPU_CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
+set(DEVICE_WCPU_EMU_CFILES
 
 
 
@@ -55,26 +55,28 @@ set(WCPU_CPU_CORE_EMULATOR ${CPU_CORE_EMULATOR_FILES}
 
 
 set(CMAKE_BUILD_TYPE Debug)
-add_library(wcpu_emu_core SHARED ${WCPU_CPU_CORE_EMULATOR} )
+add_library(sim_dev_wcpu_emu SHARED ${DEVICE_WCPU_EMU_CFILES} )
 
-include_directories(wcpu_emu_core PUBLIC
+
+
+target_include_directories(sim_dev_wcpu_emu PUBLIC
 	${CMAKE_SOURCE_DIR}/flags/
-	${CMAKE_CURRENT_SOURCE_DIR}/
 
+	${CMAKE_CURRENT_SOURCE_DIR}/
 	${CMAKE_CURRENT_SOURCE_DIR}/parts
 	${CMAKE_CURRENT_SOURCE_DIR}/core
 	${CMAKE_CURRENT_SOURCE_DIR}/wcpu_commons
 	${CMAKE_CURRENT_SOURCE_DIR}/wcpu_commons/signal_types
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/lsu
-	${CMAKE_CURRENT_SOURCE_DIR}/parts/cache
-	${CMAKE_CURRENT_SOURCE_DIR}/parts/deployer
-	${CMAKE_CURRENT_SOURCE_DIR}/parts/ledger
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/fetcher
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/fetcher/ports/
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/fetcher/ports/port_code_descriptor/
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/fetcher/ports/port_immediate/
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/fetcher/ports/port_instruction/
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/fetcher/ports/port_code_table/
+	${CMAKE_CURRENT_SOURCE_DIR}/parts/cache
+	${CMAKE_CURRENT_SOURCE_DIR}/parts/deployer
+	${CMAKE_CURRENT_SOURCE_DIR}/parts/ledger
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/regfile
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/mau
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/mattress
@@ -82,62 +84,14 @@ include_directories(wcpu_emu_core PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/mattress/fabric
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/mattress/fabric/fabric_parts
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/mattress/fabric/shared
-	${CMAKE_CURRENT_SOURCE_DIR}io
-	${CMAKE_CURRENT_SOURCE_DIR}
-
-)
-
-target_include_directories(wcpu_emu_core PUBLIC
-	${CMAKE_SOURCE_DIR}/flags/
-
-	${CMAKE_CURRENT_SOURCE_DIR}/
-	${CMAKE_CURRENT_SOURCE_DIR}/emulator_device_argparser
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu
-
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/core
-#commons
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_commons
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/wcpu_commons/signal_types
-#parts
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/lsu
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/port_code_descriptor/
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/port_immediate/
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/port_instruction/
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/fetcher/ports/port_code_table/
-
-#cache
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/cache
-
-#deployer
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/deployer
-
-
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/ledger
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/regfile
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mau
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/aggregator
-#fabric on mattress
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/fabric_parts
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/wcpu/parts/mattress/fabric/shared
-
-
-#device fakeio
-	${CMAKE_CURRENT_SOURCE_DIR}/device_system/fakeio
-#device ram
-
-	${CMAKE_CURRENT_SOURCE_DIR}/helpers
 	wcpu_commons
+	sim_dev_impl
 
 )
 
-target_link_libraries(wcpu_emu_core PUBLIC
+target_link_libraries(sim_dev_wcpu_emu  PUBLIC
 	sim_dev_interface
+	sim_dev_impl
 
 	wcpu_commons
 )
