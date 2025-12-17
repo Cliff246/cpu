@@ -339,17 +339,8 @@ void init(int argc, char **argv)
 
 	WS_config_file_t *file = WS_create_config_file("configfiles/basic_config.txt");
 
-	for(int i = 0; i <file->module_container_list_count; ++i)
-	{
-		WS_config_module_container_t *container = file->module_container_list[i];
-
-
-		for(int x = 0; x < container->entry_list_count; ++x)
-		{
-			WS_config_entry_t *entry = container->entry_list[x];
-			device_t *device = device_init(container->module->dev_desc, entry->cmd);
-		}
-	}
+	WS_simulator_t *sim = WS_simulator_init();
+	WS_simulator_load_config(sim, file);
 
 
 	parse_args();

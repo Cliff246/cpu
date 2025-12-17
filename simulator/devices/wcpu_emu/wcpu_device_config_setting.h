@@ -4,13 +4,6 @@
 #include "device_list.h"
 #include "device_description.h"
 
-typedef struct device_wcpu_config_setting
-{
-
-}dev_wcpu_config_setting_t;
-
-void *device_init_config_setting_wcpu(WS_dev_desc_t *desc);
-void device_free_config_setting_wcpu(void *ptr);
 
 
 #endif

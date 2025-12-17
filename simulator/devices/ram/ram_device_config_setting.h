@@ -38,21 +38,6 @@ extern WS_dev_cmd_flag_apply_fn device_ram_producer_functions[DEVICE_RAM_CMD_OPT
 extern char *device_ram_producer_names[DEVICE_RAM_CMD_OPTIONS_COUNT];
 extern WS_dev_cmd_flag_type_t device_ram_producer_types[DEVICE_RAM_CMD_OPTIONS_COUNT];
 
-typedef struct device_ram_config_setting
-{
-	//file name flag
-	char *filename;
-	//size flag
-	uint64_t size;
-	uint64_t start;
-	//size print content flag
-	bool print_content;
-	bool settings[DEVICE_RAM_CMD_OPTIONS_COUNT];
-}dev_ram_config_setting_t;
-
-void *device_init_config_setting_ram(WS_dev_desc_t *desc);
-void device_free_config_setting_ram(void *ptr);
-
 
 
 #endif

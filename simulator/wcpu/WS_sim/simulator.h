@@ -3,6 +3,7 @@
 
 #include "device.h"
 #include "simulator_bus_slot.h"
+#include "ws_sim_configure.h"
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -31,7 +32,7 @@ void WS_simulator_add_device(WS_simulator_t *sim, WS_dev_t *dev);
 
 
 //loads a group of devices from a config
-//bool WS_simulator_load_config(WS_simulator_t *sim, WS_input_config_t *config);
+bool WS_simulator_load_config(WS_simulator_t *sim, WS_config_file_t *config);
 
 
 

@@ -49,14 +49,3 @@ bool device_cmd_option_producer_RESET(WS_dev_t *device, WS_dev_cmd_flag_t *flag)
 {
 
 }
-
-void *device_init_config_setting_ram(WS_dev_desc_t *desc)
-{
-
-}
-
-
-void device_free_config_setting_ram(void *ptr)
-{
-
-}

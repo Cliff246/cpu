@@ -4,18 +4,3 @@
 #include <stdlib.h>
 #include <assert.h>
 
-void *device_init_config_setting_wcpu(WS_dev_desc_t *desc)
-{
-
-	dev_wcpu_config_setting_t *config_setting = calloc(1, sizeof(dev_wcpu_config_setting_t));
-	assert(config_setting != NULL);
-
-	return config_setting;
-
-}
-
-void device_free_config_setting_wcpu(void *ptr)
-{
-	free(ptr);
-
-}

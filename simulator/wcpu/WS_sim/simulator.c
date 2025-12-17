@@ -3,6 +3,7 @@
 #include "device_mailbox.h"
 #include "device_message.h"
 #include "simulator_bus_slot.h"
+#include "ws_sim_configure.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -181,14 +182,23 @@ void WS_simulator_add_device(WS_simulator_t *sim, WS_dev_t *dev)
 
 }
 
-/*
-//loads a group of devices from a config
-bool WS_simulator_load_config(WS_simulator_t *sim, WS_input_config_t *config)
+bool WS_simulator_load_config(WS_simulator_t *sim, WS_config_file_t *config)
 {
 
+	for(int i = 0; i <config->module_container_list_count; ++i)
+	{
+		WS_config_module_container_t *container = config->module_container_list[i];
+
+
+		for(int x = 0; x < container->entry_list_count; ++x)
+		{
+			WS_config_entry_t *entry = container->entry_list[x];
+			device_t *device = WS_device_init(container->module->dev_desc, entry->cmd);
+			WS_simulator_add_device(sim,device);
+		}
+	}
 }
 
-*/
 
 void WS_simulator_update(WS_simulator_t *sim)
 {
