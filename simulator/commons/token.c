@@ -186,7 +186,7 @@ toklex_t *lex_string(const char *string)
 					emit(tl, TOK_BIN, split(tl, begin, end - 1));
 
 				}
-				else if(peek(tl) > '8')
+				else if(next < '8' && next >= '0')
 				{
 					do 					{
 						char scroll = peek(tl);

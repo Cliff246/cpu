@@ -8,7 +8,7 @@ typedef struct wcpu_simulator_device WS_dev_t;
 typedef struct wcpu_simulator_device_command WS_dev_cmd_t;
 typedef struct wcpu_simulator_device_message WS_dev_msg_t;
 
-typedef void (*WS_device_init_fn)(WS_dev_t *dev, WS_dev_cmd_t *cmd);
+typedef void *(*WS_device_init_fn)(WS_dev_t *dev);
 //complete execution
 typedef void (*WS_device_update_fn)(WS_dev_t *dev);
 //read from
@@ -16,7 +16,7 @@ typedef bool (*WS_device_read_fn)(WS_dev_t *dev, WS_dev_msg_t *msg);
 typedef WS_dev_msg_t *(*WS_device_send_fn)(WS_dev_t *dev);
 typedef void (*WS_device_print_fn)(WS_dev_t *dev);
 //should generate void *setting for config
-typedef WS_dev_cmd_t *(*WS_device_cmd_stringfy_fn)(WS_dev_t *dev, char *string);
+typedef WS_dev_cmd_t *(*WS_device_cmd_stringfy_fn)(toklex_t *tl);
 
 typedef struct device_class
 {

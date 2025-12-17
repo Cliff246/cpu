@@ -1,2 +1,4 @@
-simulator/devices/ram/libsim_dev_ram.so
-simulator/devices/wcpu_emu/libsim_dev_wcpu_emu.so
+"simulator/devices/ram/libsim_dev_ram.so"
+START 0 SIZE 1000 FILENAME "asmtests/strlen.asm"
+"simulator/devices/wcpu_emu/libsim_dev_wcpu_emu.so"
+-name device_wcpu_emu

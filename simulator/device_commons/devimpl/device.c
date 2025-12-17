@@ -4,6 +4,7 @@
 #include <assert.h>
 #include "device.h"
 #include "device_commons.h"
+#include "device_command_impl.h"
 
 
 char *device_type_str[] =
@@ -29,10 +30,15 @@ dev_mailbox_t *get_device_mailbox(device_t *dev)
 }
 
 
-
-WS_dev_t *device_init(device_command_t *cmd)
+WS_dev_t *device_init(WS_dev_desc_t *desc, device_command_t *cmd)
 {
+	WS_dev_t *device = calloc(1, sizeof(WS_dev_t));
 
+	device->desc = desc;
+	device->ptr = desc->vtable->init(device);
+	WS_device_cmd(device, cmd);
+
+	return device;
 }
 
 

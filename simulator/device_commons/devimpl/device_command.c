@@ -25,10 +25,14 @@ bool WS_device_cmd(WS_dev_t *device, WS_dev_cmd_t *cmd)
 
 	for(int i = 0; i < cmd->collection->flags_count; ++i)
 	{
-		WS_dev_cmd_flag_t *flag = &cmd->collection->flags[i];
+		WS_dev_cmd_flag_t *flag = cmd->collection->flags[i];
 		char *flag_string = flag->flag;
 		assert(flag_string && "all flags must have strings");
+		printf("<flag string: %s> %d\n", flag_string);
+		print_hash_table(desc->flag_table);
 		WS_dev_cmd_flag_producer_t *producer = (WS_dev_cmd_flag_producer_t *)getdata_from_hash_table(desc->flag_table, flag_string);
+		WS_cmd_producer_print(producer);
+		printf("device name %s\n", device->desc->dev_name);
 		assert(producer != NULL && "cannot use flag not in description flag table");
 
 		assert(producer->expect == flag->type && "producer must be the same type as flag type");
@@ -52,7 +56,10 @@ bool WS_device_cmd(WS_dev_t *device, WS_dev_cmd_t *cmd)
 
 }
 
-
+void WS_cmd_producer_print(WS_dev_cmd_flag_producer_t *producer)
+{
+	printf("producer:%s fn:%p expects:%d\n", producer->id, producer->fn, producer->expect);
+}
 
 void WS_device_cmd_free(WS_dev_cmd_t *cmd)
 {
@@ -93,6 +100,67 @@ WS_dev_cmd_flag_producer_t *WS_cmd_flag_producer_create(char *string, WS_dev_cmd
 
 	return producer;
 
+}
+
+static void WS_cmd_collection_append(WS_dev_cmd_collection_t *col, WS_dev_cmd_flag_t *flag)
+{
+	col->flags = realloc_safe(col->flags, col->flags_count + 1, sizeof(WS_dev_cmd_flag_t*));
+	col->flags[col->flags_count++] = flag;
+	return;
+}
+
+WS_dev_cmd_flag_t *WS_cmd_flag_create(tok_t *key, tok_t *value)
+{
+
+	WS_dev_cmd_flag_t *flag = calloc(1, sizeof(WS_dev_cmd_flag_t));
+	assert(flag);
+
+	flag->flag = strdup(key->token);
+	WS_dev_cmd_flag_value_t *flag_value = calloc(1, sizeof(WS_dev_cmd_flag_value_t));
+
+	printf("produce token %s %d\n", value->token, value->type);
+	switch(value->type)
+	{
+		case TOK_INT:
+			(*flag_value).INT = atoi(value->token);
+			flag->type = WS_DEV_CMD_FLAG_TYPE_INT;
+			break;
+
+		case TOK_STRING:
+			(*flag_value).STRING = strdup(value->token);
+			flag->type = WS_DEV_CMD_FLAG_TYPE_STRING;
+
+			break;
+
+		default:
+
+			break;
+
+
+	}
+	flag->value = flag_value;
+
+
+	return flag;
+}
+
+WS_dev_cmd_collection_t *WS_cmd_collection_create(toklex_t *tl)
+{
+	WS_dev_cmd_collection_t *col = calloc(1, sizeof(WS_dev_cmd_collection_t));
+
+	assert(col);
+	print_toklex(tl);
+	for(int i = 0; i < tl->tcount - 1; i += 2)
+	{
+		tok_t *t1 = &tl->tokens[i];
+		tok_t *t2 = &tl->tokens[i + 1];
+		//printf("%d %d\n", i, tl->tcount);
+		WS_dev_cmd_flag_t *flag = WS_cmd_flag_create(t1, t2);
+		WS_cmd_collection_append(col, flag);
+	}
+
+
+	return col;
 }
 
 /*

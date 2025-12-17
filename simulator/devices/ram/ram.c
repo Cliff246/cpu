@@ -72,11 +72,25 @@ const WS_dev_desc_t *WS_get_dev_desc(void)
 }
 
 
-
-
-WS_dev_cmd_t * device_ram_stringfy(WS_dev_t *dev, char *string)
+WS_dev_cmd_collection_t *device_ram_collection_create(toklex_t *tl)
 {
-	return NULL;
+
+
+
+
+}
+
+WS_dev_cmd_t * device_ram_stringfy(toklex_t *tl)
+{
+
+	WS_dev_cmd_t *cmd =  calloc(1, sizeof(WS_dev_cmd_t));
+
+	cmd->type = &ram_desc;
+	cmd->used = false;
+	cmd->collection = WS_cmd_collection_create(tl);
+
+
+	return cmd;
 }
 
 
@@ -151,7 +165,7 @@ static bool load_file(dev_ram_t *ram, const char *file_name)
 
 
 
-void device_ram_init(device_t *device, device_command_t *cmd)
+void *device_ram_init(device_t *device)
 {
 	assert(device != NULL && "device must not be null");
 
@@ -165,7 +179,7 @@ void device_ram_init(device_t *device, device_command_t *cmd)
 	align_ram(device, ram);
 
 
-	device->ptr = ram;
+	return ram;
 }
 
 

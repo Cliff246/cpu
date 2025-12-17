@@ -9,11 +9,14 @@
 
 typedef struct wcpu_simulator_config_entry
 {
-	char *lines;
+
 
 	WS_dev_cmd_t *cmd;
-
+	
 }WS_config_entry_t;
+
+WS_config_entry_t *WS_create_config_entry(WS_module_t *module, toklex_t *token_lex);
+
 
 typedef struct wcpu_simulator_config_container
 {
@@ -28,6 +31,7 @@ typedef struct wcpu_simulator_config_container
 }WS_config_module_container_t;
 
 WS_config_module_container_t *WS_create_config_module_container(char *path);
+void WS_append_new_config_module_container_entry(WS_config_module_container_t *container, WS_config_entry_t *entry);
 
 
 typedef struct wcpu_simulator_configure_file

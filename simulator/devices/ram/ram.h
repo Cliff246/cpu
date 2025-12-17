@@ -33,14 +33,15 @@ static void update_ram(dev_ram_t *ram, uint64_t length);
 static void cmd_ram(dev_ram_t *ram,  WS_dev_cmd_t *cmd);
 static void align_ram(device_t *device, dev_ram_t *ram);
 
+WS_dev_cmd_collection_t *device_ram_collection_create(toklex_t *tl);
 
-void device_ram_init(device_t *device, device_command_t *cmd);
+void *device_ram_init(device_t *device);
 void device_ram_update(device_t *device);
 bool device_ram_read(device_t *dev, dev_msg_t *msg);
 dev_msg_t *device_ram_send(device_t *dev);
 void device_ram_print(device_t *dev);
 void device_ram_cmd(device_t *device, device_command_t *cmd);
-WS_dev_cmd_t *device_ram_stringfy(WS_dev_t *dev, char *string);
+WS_dev_cmd_t *device_ram_stringfy(toklex_t *tl);
 
 static void write_ram(dev_ram_t *ram, uint64_t address, int64_t data);
 static int64_t read_ram(dev_ram_t *ram, uint64_t address);

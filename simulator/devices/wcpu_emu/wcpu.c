@@ -19,6 +19,7 @@ static const WS_dev_vtable_t vtable =
 	.read = device_wcpu_read,
 	.send = device_wcpu_send,
 	.update = device_wcpu_update,
+	.stringfy = device_wcpu_stringfy,
 };
 
 static WS_dev_desc_t wcpu_emu_desc =
@@ -53,7 +54,10 @@ const WS_dev_desc_t *WS_get_dev_desc(void)
 
 
 
+WS_dev_cmd_t *device_wcpu_stringfy(toklex_t *tl)
+{
 
+}
 
 
 
@@ -96,15 +100,14 @@ static bool wcpu_send_to_core(core_t *core, dev_msg_t *msg)
 	return false;
 }
 
-void device_wcpu_init(device_t *device, device_command_t *settings)
+void *device_wcpu_init(device_t *device)
 {
-	assert(settings);
 	assert(device);
 	dev_wcpu_t *cpu = calloc(1, sizeof(dev_wcpu_t));
 	assert(cpu != NULL && "malloc cannot fail");
 	cpu->core = wcpu_core_generate();
 	assert(cpu->core);
-	device->ptr = cpu;
+	return cpu;
 }
 
 

@@ -66,7 +66,7 @@ typedef struct
 //collections of flags used to send to device
 typedef struct
 {
-	WS_dev_cmd_flag_t *flags;
+	WS_dev_cmd_flag_t **flags;
 	size_t flags_count;
 }WS_dev_cmd_collection_t;
 

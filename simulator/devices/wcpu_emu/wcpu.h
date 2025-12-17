@@ -26,7 +26,7 @@ typedef struct device_wcpu
 }dev_wcpu_t;
 
 
-void device_wcpu_init(device_t *device, device_command_t *settings);
+void *device_wcpu_init(device_t *device);
 
 void device_wcpu_update(device_t *dev);
 
@@ -34,6 +34,7 @@ bool device_wcpu_read(device_t *dev, dev_msg_t *send);
 
 dev_msg_t *device_wcpu_send(device_t *dev);
 void device_wcpu_print(device_t *dev);
+WS_dev_cmd_t *device_wcpu_stringfy(toklex_t *tl);
 
 
 #endif
