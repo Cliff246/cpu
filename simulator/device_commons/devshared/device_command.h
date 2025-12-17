@@ -4,7 +4,7 @@
 #include "device.h"
 #include "device_list.h"
 #include "device_description.h"
-
+#include "commons.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -22,6 +22,8 @@ typedef struct device_description WS_dev_desc_t;
 
 #define WS_DEV_CMD_FLAG_ENUM_NAME(X) WS_DEV_CMD_FLAG_TYPE_ ## X
 #define WS_DEV_CMD_FLAG_ENUM(X, Y) WS_DEV_CMD_FLAG_ENUM_NAME(X),
+
+#define WS_DEV_CMD_FLAG_COUNT (0 WS_DEV_CMD_FLAG_LIST(COUNTER2D))
 
 typedef enum
 {

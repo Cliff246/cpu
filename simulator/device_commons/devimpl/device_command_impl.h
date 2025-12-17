@@ -11,7 +11,9 @@
 
 bool WS_device_cmd(WS_dev_t *device, WS_dev_cmd_t *cmd);
 
-void WS_device_cmd_free(WS_dev_cmd_t *cmd);
+void WS_cmd_free(WS_dev_cmd_t *cmd);
+
+
 
 void WS_cmd_producer_free(void *producer);
 void WS_cmd_producer_print(WS_dev_cmd_flag_producer_t *producer);
@@ -21,4 +23,6 @@ static void WS_cmd_collection_append(WS_dev_cmd_collection_t *col, WS_dev_cmd_fl
 WS_dev_cmd_flag_t *WS_cmd_flag_create(tok_t *key, tok_t *value);
 WS_dev_cmd_collection_t *WS_cmd_collection_create(toklex_t *tl);
 
+extern void (*WS_cmd_flag_value_free_list[])(WS_dev_cmd_flag_value_t *value);
+extern char *WS_cmd_flag_type_strings[];
 #endif

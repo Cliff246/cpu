@@ -132,3 +132,31 @@ WS_config_file_t *WS_create_config_file(const char *path)
 
 	return config;
 }
+
+void WS_free_config_entry(WS_config_entry_t *entry)
+{
+	WS_cmd_free(entry->cmd);
+	free(entry);
+}
+//ignores the module
+void WS_free_config_module_container(WS_config_module_container_t *container)
+{
+	for(int i = 0; i < container->entry_list_count; ++i)
+	{
+		WS_free_config_entry(container->entry_list[i]);
+	}
+	free(container->entry_list);
+	free(container);
+}
+
+void WS_free_config_file(WS_config_file_t *config)
+{
+	assert(config);
+	for(int i = 0; i < config->module_container_list_count; ++i)
+	{
+		WS_free_config_module_container(config->module_container_list[i]);
+	}
+	free(config->module_container_list);
+	free(config->srcfile);
+	free(config);
+}

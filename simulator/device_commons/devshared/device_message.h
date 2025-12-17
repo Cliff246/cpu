@@ -5,6 +5,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+typedef struct device_description WS_dev_desc_t;
+
+
 #define DEVICE_MESSAGE_TYPE_LIST(X) \
 	X(INVAL)						\
 	X(READ_SEND)					\
@@ -31,7 +34,7 @@ typedef struct wcpu_simulator_device_message
 
 	WS_dev_id_t owner;
 	//src device_type
-	WS_dev_desc_id src_type;
+	WS_dev_desc_t *src_type;
 	//src id
 	//dst id
 	WS_dev_id_t src_id, dst_id;

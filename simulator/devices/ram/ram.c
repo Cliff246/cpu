@@ -24,6 +24,7 @@ static const WS_dev_vtable_t vtable =
 	.read = device_ram_read,
 	.send = device_ram_send,
 	.update = device_ram_update,
+	.cmd_commit = device_ram_commit,
 };
 
 static WS_dev_desc_t ram_desc =
@@ -62,7 +63,7 @@ const WS_dev_desc_t *WS_get_dev_desc(void)
 
 		}
 
-		print_hash_table(hashtable);
+		//print_hash_table(hashtable);
 		ram_desc.flag_table = hashtable;
 		initialized = true;
 	}
@@ -72,13 +73,6 @@ const WS_dev_desc_t *WS_get_dev_desc(void)
 }
 
 
-WS_dev_cmd_collection_t *device_ram_collection_create(toklex_t *tl)
-{
-
-
-
-
-}
 
 WS_dev_cmd_t * device_ram_stringfy(toklex_t *tl)
 {
@@ -109,59 +103,6 @@ WS_dev_cmd_t * device_ram_stringfy(toklex_t *tl)
 const static size_t ram_base_size = 1000;
 const static size_t ram_base_start = 0;
 
-static void fill_binary(dev_ram_t *ram, uint64_t *bin, size_t length)
-{
-	assert(ram && bin);
-	for(size_t i = 0; i < length; ++i)
-	{
-		write_ram(ram, i, bin[i]);
-	}
-}
-
-static size_t file_len(FILE *fp)
-{
-	assert(fp);
-
-	size_t current = ftell(fp);
-
-	fseek(fp, 0, SEEK_END);
-	size_t address = ftell(fp);
-
-	fseek(fp, current, SEEK_SET);
-	return address;
-}
-
-//returns true on change to size and false on no updated size
-static bool load_file(dev_ram_t *ram, const char *file_name)
-{
-	FILE *fp = fopen(file_name, "rb");
-	if(fp == NULL)
-	{
-		printf("file: %s not openable\n", file_name);
-		exit(1);
-
-	}
-	size_t len = file_len(fp);
-	char *bytes = (char *)calloc(len, sizeof(char));
-	assert(bytes);
-	fread(bytes, 8, len / 8, fp);
-
-	assert(ram != NULL && "cannot load file into unknown ram");
-	bool changed = false;
-	if(ram->length < len)
-	{
-		//sketchy
-		update_ram(ram, len);
-		changed = true;
-	}
-
-	uint64_t *bin = (uint64_t *)bytes;
-
-	fill_binary(ram, bin, len / sizeof(uint64_t));
-	free(bytes);
-	fclose(fp);
-	return changed;
-}
 
 
 
@@ -184,7 +125,7 @@ void *device_ram_init(device_t *device)
 
 
 
-static dev_ram_t *create_ram(int64_t length)
+dev_ram_t *create_ram(int64_t length)
 {
 	dev_ram_t *ptr = (dev_ram_t *)calloc(1, sizeof(dev_ram_t));
 	assert(ptr != NULL);
@@ -198,7 +139,7 @@ static dev_ram_t *create_ram(int64_t length)
 }
 
 //TODO make this make sense
-static void update_ram(dev_ram_t *ram, uint64_t length)
+void update_ram(dev_ram_t *ram, uint64_t length)
 {
 	assert(ram != NULL && "ram cannot be null");
 	//get rid of the old
@@ -213,10 +154,6 @@ static void update_ram(dev_ram_t *ram, uint64_t length)
 	return;
 }
 
-static void cmd_ram(dev_ram_t *ram,  WS_dev_cmd_t *cmd)
-{
-
-}
 
 /*
 static void cmd_ram(dev_ram_t *ram,  device_command_t *cmd)
@@ -288,7 +225,7 @@ static void cmd_ram(dev_ram_t *ram,  device_command_t *cmd)
 }
 */
 
-static void align_ram(device_t *device, dev_ram_t *ram)
+void align_ram(device_t *device, dev_ram_t *ram)
 {
 	assert(device != NULL && "device must not be null");
 	assert(ram);
@@ -381,7 +318,7 @@ dev_msg_t *device_ram_send(device_t *dev)
 
 }
 
-static int64_t read_ram(dev_ram_t *ram, uint64_t address)
+int64_t read_ram(dev_ram_t *ram, uint64_t address)
 {
 	assert(ram);
 	assert(ram->length > address && address >= 0 && "read out of range");
@@ -389,7 +326,7 @@ static int64_t read_ram(dev_ram_t *ram, uint64_t address)
 	return ram->content[address];
 }
 
-static void write_ram(dev_ram_t *ram, uint64_t address, int64_t data)
+void write_ram(dev_ram_t *ram, uint64_t address, int64_t data)
 {
 	assert(ram);
 	assert(ram->length > address && address >= 0 && "write out of range");
@@ -419,13 +356,9 @@ void device_ram_print(device_t *dev)
 
 
 
-//todo make this way safer
-//no more device->thing pokes
-//but i am lazy
-void device_ram_cmd(device_t *device, device_command_t *cmd)
+
+
+void device_ram_commit(WS_dev_t *dev)
 {
-	assert(device && cmd);
-	dev_ram_t *ram = (dev_ram_t *)device->ptr;
-	cmd_ram(ram, cmd);
-	align_ram(device, ram);
+
 }

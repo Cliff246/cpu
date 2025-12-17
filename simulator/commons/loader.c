@@ -344,3 +344,10 @@ bool get_isend_sourcefile(sourcefile_t *sf)
 {
 	return (bool)feof(get_sourcefile_fp(sf));
 }
+
+void free_sourcefile(sourcefile_t *sf)
+{
+	close_sourcefile(sf);
+	free(sf->path);
+	free(sf);
+}

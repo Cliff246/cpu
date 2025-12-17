@@ -341,7 +341,7 @@ void init(int argc, char **argv)
 
 	WS_simulator_t *sim = WS_simulator_init();
 	WS_simulator_load_config(sim, file);
-
+	WS_free_config_file(file);
 
 	parse_args();
 	//create_cli_context(&globalstate.ctx);

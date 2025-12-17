@@ -10,7 +10,48 @@
 #include <assert.h>
 #include <string.h>
 
+#define WS_FLAG_VALUE_FREE_FUNCTION(X) WS_cmd_flag_free_ ## X
+#define WS_DEV_CMD_FLAG_FREE(X, Y) void WS_FLAG_VALUE_FREE_FUNCTION(X)(WS_dev_cmd_flag_value_t *value);
+WS_DEV_CMD_FLAG_LIST(WS_DEV_CMD_FLAG_FREE)
+#define WS_DEV_CMD_FLAG_FREE_ARRAY(X, Y) [WS_DEV_CMD_FLAG_ENUM_NAME(X)] = WS_FLAG_VALUE_FREE_FUNCTION(X),
+#define WS_DEV_CMD_FLAG_TYPE_ARRAY(X, Y) [WS_DEV_CMD_FLAG_ENUM_NAME(X)] = #X,
+void (*WS_cmd_flag_value_free_list[])(WS_dev_cmd_flag_value_t *value) =
+{
+	WS_DEV_CMD_FLAG_LIST(WS_DEV_CMD_FLAG_FREE_ARRAY)
+};
 
+extern char *WS_cmd_flag_type_strings[] =
+{
+	WS_DEV_CMD_FLAG_LIST(WS_DEV_CMD_FLAG_TYPE_ARRAY)
+};
+
+
+#undef WS_DEV_CMD_FLAG_FREE_ARRAY
+#undef WS_DEV_CMD_FLAG_FREE
+#undef WS_FLAG_VALUE_FREE_FUNCTION
+
+void WS_cmd_flag_free_UNKNOWN(WS_dev_cmd_flag_value_t *value)
+{
+}
+
+void WS_cmd_flag_free_BOOL(WS_dev_cmd_flag_value_t *value)
+{
+}
+
+void WS_cmd_flag_free_UINT(WS_dev_cmd_flag_value_t *value)
+{
+
+}
+void WS_cmd_flag_free_INT(WS_dev_cmd_flag_value_t *value)
+{
+
+}
+void WS_cmd_flag_free_STRING(WS_dev_cmd_flag_value_t *value)
+{
+	free(value->STRING);
+}
+
+static_assert((sizeof(WS_cmd_flag_value_free_list)/sizeof(*WS_cmd_flag_value_free_list)) == WS_DEV_CMD_FLAG_COUNT);
 
 
 //assumes a fully valid
@@ -28,11 +69,11 @@ bool WS_device_cmd(WS_dev_t *device, WS_dev_cmd_t *cmd)
 		WS_dev_cmd_flag_t *flag = cmd->collection->flags[i];
 		char *flag_string = flag->flag;
 		assert(flag_string && "all flags must have strings");
-		printf("<flag string: %s> %d\n", flag_string);
-		print_hash_table(desc->flag_table);
+		//printf("<flag string: %s> %d\n", flag_string);
+		//print_hash_table(desc->flag_table);
 		WS_dev_cmd_flag_producer_t *producer = (WS_dev_cmd_flag_producer_t *)getdata_from_hash_table(desc->flag_table, flag_string);
-		WS_cmd_producer_print(producer);
-		printf("device name %s\n", device->desc->dev_name);
+		//WS_cmd_producer_print(producer);
+		//printf("device name %s\n", device->desc->dev_name);
 		assert(producer != NULL && "cannot use flag not in description flag table");
 
 		assert(producer->expect == flag->type && "producer must be the same type as flag type");
@@ -43,14 +84,15 @@ bool WS_device_cmd(WS_dev_t *device, WS_dev_cmd_t *cmd)
 			assert(0);
 		}
 		assert(producer->fn && "must have valid producer function applied");
-		bool allowed = producer->fn(device, &cmd->collection->flags[i]);
+		bool allowed = producer->fn(device, cmd->collection->flags[i]);
 
 		assert(allowed && "producer for a flag must always be allowed");
 
 
 
 	}
-
+	assert(device->desc->vtable->cmd_commit);
+	device->desc->vtable->cmd_commit(device);
 	//for now this will be changed later
 	return true;
 
@@ -61,18 +103,19 @@ void WS_cmd_producer_print(WS_dev_cmd_flag_producer_t *producer)
 	printf("producer:%s fn:%p expects:%d\n", producer->id, producer->fn, producer->expect);
 }
 
-void WS_device_cmd_free(WS_dev_cmd_t *cmd)
+void WS_cmd_free(WS_dev_cmd_t *cmd)
 {
 	assert(cmd);
 
 	for(int i = 0; i < cmd->collection->flags_count; ++i)
 	{
-		WS_dev_cmd_flag_t *flag = &cmd->collection->flags[i];
-
-
+		WS_dev_cmd_flag_t *flag = cmd->collection->flags[i];
+		WS_cmd_flag_value_free_list[flag->type](flag->value);
 		free(flag->flag);
 		free(flag->value);
 	}
+	free(cmd->collection->flags);
+	free(cmd->collection);
 	free(cmd);
 }
 

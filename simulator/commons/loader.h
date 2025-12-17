@@ -48,7 +48,7 @@ int get_sourcefile_length(sourcefile_t *sf);
 
 
 sourcefile_t *create_sourcefile(char *path);
-
+void free_sourcefile(sourcefile_t *sf);
 
 
 #endif

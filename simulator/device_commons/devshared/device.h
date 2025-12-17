@@ -36,7 +36,7 @@ typedef struct wcpu_simulator_device
 	void *ptr;
 
 	bool has_address;
-
+	bool commit;
 
 }device_t, WS_dev_t;
 

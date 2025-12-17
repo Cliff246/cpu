@@ -20,6 +20,7 @@ static const WS_dev_vtable_t vtable =
 	.send = device_wcpu_send,
 	.update = device_wcpu_update,
 	.stringfy = device_wcpu_stringfy,
+	.cmd_commit = device_wcpu_commit,
 };
 
 static WS_dev_desc_t wcpu_emu_desc =
@@ -59,7 +60,10 @@ WS_dev_cmd_t *device_wcpu_stringfy(toklex_t *tl)
 
 }
 
+void device_wcpu_commit(WS_dev_t *dev)
+{
 
+}
 
 //this is temporary so we can send the read sendback request to the core
 static bool wcpu_send_to_core(core_t *core, dev_msg_t *msg)

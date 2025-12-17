@@ -194,7 +194,7 @@ bool WS_simulator_load_config(WS_simulator_t *sim, WS_config_file_t *config)
 		{
 			WS_config_entry_t *entry = container->entry_list[x];
 			device_t *device = WS_device_init(container->module->dev_desc, entry->cmd);
-			WS_simulator_add_device(sim,device);
+			WS_simulator_add_device(sim, device);
 		}
 	}
 }
