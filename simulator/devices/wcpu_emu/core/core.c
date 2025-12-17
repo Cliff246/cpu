@@ -37,7 +37,6 @@ static core_t *wcpu_create_core(void)
 		part_t *part = wcpu_part_generate(i);
 		assert(part);
 		//order it
-		assert(i == part->id);
 		core->parts[current++] = part;
 
 
@@ -58,7 +57,6 @@ void wcpu_core_update(core_t *core)
 {
 
 
-	//printf("\nupdate core\n\n");
 	//deploy core messages
 	wcpu_core_handle_messages(core);
 

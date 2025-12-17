@@ -7,87 +7,80 @@
 #include "device_command_impl.h"
 
 
-char *device_type_str[] =
-{
 
-};
 
-size_t get_device_address_start(device_t *device)
+
+size_t WS_get_device_address_start(WS_dev_t *device)
 {
+	return device->address_range_start;
+}
+size_t WS_get_device_address_length(WS_dev_t *device)
+{
+	return device->address_range_length;
 
 }
 
-size_t get_device_address_length(device_t *device)
+bool WS_get_device_has_address(WS_dev_t *device)
 {
-
+	return device->has_address;
 }
 
-
-
-dev_mailbox_t *get_device_mailbox(device_t *dev)
-{
-
-}
 
 WS_dev_t *WS_device_init(WS_dev_desc_t *desc, device_command_t *cmd)
 {
+	static int devid = 0;
 	WS_dev_t *device = calloc(1, sizeof(WS_dev_t));
 
 	device->desc = desc;
+	device->mailbox = WS_device_mailbox_init();
 	device->ptr = desc->vtable->init(device);
+	device->id = devid++;
 	WS_device_cmd(device, cmd);
 
 	return device;
 }
 
 
-bool get_device_has_address(device_t *device)
+//update devices
+void WS_device_update(WS_dev_t *device)
 {
-}
-
-void device_update(device_t *device)
-{
-
-
-}
-
-bool device_read(device_t *device, dev_msg_t *msg)
-{
-
-
-
+	assert(device->desc->vtable->update);
+	device->desc->vtable->update(device);
 }
 
 
-dev_msg_t *device_send(device_t *device)
+bool WS_device_read(WS_dev_t *device, WS_dev_msg_t *msg)
 {
+	assert(device->desc->vtable->read);
+
+	return device->desc->vtable->read(device,msg);
+
+}
+bool WS_device_send(WS_dev_t *device, WS_dev_msg_t **msg)
+{
+	assert(device->desc->vtable->send);
+
+	return device->desc->vtable->send(device,msg);
 }
 
 
 
 
-void device_print(device_t *device)
-{
-
-}
 
 
-void device_cmd(device_t *device, device_command_t *cmd)
-{
 
-}
-
-
-bool get_device_changed(device_t *device)
+bool WS_get_device_changed(WS_dev_t *device)
 {
 	assert(device != NULL && "cannot update null device");
 	//return device->flags[DEVICE_FLAG_TYPE_INTERNAL_CHANGED];
 }
 
 //only sets to high, device manager should clear
-void set_device_changed(device_t *device)
+void WS_set_device_changed(WS_dev_t *device)
 {
 	assert(device != NULL && "cannot update null device");
 	//device->flags[DEVICE_FLAG_TYPE_INTERNAL_CHANGED] = true;
-
+	return device->error;
 }
+
+

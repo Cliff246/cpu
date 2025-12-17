@@ -9,13 +9,12 @@
 #include "device_description.h"
 
 
-size_t get_device_address_start(WS_dev_t *device);
-size_t get_device_address_length(WS_dev_t *device);
-bool get_device_has_address(WS_dev_t *device);
+size_t WS_get_device_address_start(WS_dev_t *device);
+size_t WS_get_device_address_length(WS_dev_t *device);
+bool WS_get_device_has_address(WS_dev_t *device);
 
 
 //avoid modifying the mailbox through direct gets and sets
-dev_mailbox_t *get_device_mailbox(WS_dev_t *dev);
 
 //the vtable for are the device implementations
 
@@ -26,56 +25,47 @@ WS_dev_t *WS_device_init(WS_dev_desc_t *desc, device_command_t *cmd);
 
 
 //update devices
-void device_update(WS_dev_t *device);
+void WS_device_update(WS_dev_t *device);
 
 
-bool device_read(WS_dev_t *device, WS_dev_msg_t *msg);
-WS_dev_msg_t *device_send(WS_dev_t *device);
-
-void device_print(WS_dev_t *device);
-void device_cmd(WS_dev_t *device, device_command_t *cmd);
-
-bool get_device_changed(WS_dev_t *device);
-
-void set_device_changed(WS_dev_t *device);
-
-extern char *WS_dev_type_str[];
+bool WS_device_read(WS_dev_t *device, WS_dev_msg_t *msg);
+bool WS_device_send(WS_dev_t *device, WS_dev_msg_t **msg);
 
 
-device_command_t *device_command_generate(WS_dev_desc_t *desc);
-void device_command_free(device_command_t *command);
+bool WS_get_device_changed(WS_dev_t *device);
+void WS_set_device_changed(WS_dev_t *device);
 
 
 
-void *device_init_config_setting(WS_dev_desc_t *type);
-void device_free_config_setting(void *ptr, WS_dev_desc_t *type);
-
-bool device_mailbox_put(dev_mailbox_t *mailbox, WS_dev_msg_t *msg);
-bool device_mailbox_get(dev_mailbox_t *mailbox, WS_dev_msg_t **msg_ref);
-
-dev_mailbox_t *device_mailbox_init(void);
-
-void device_mailbox_print(dev_mailbox_t *mailbox);
-
-WS_dev_msg_t *device_message_create(WS_dev_desc_t *src_type, WS_dev_id_t src_id, WS_dev_id_t dest_id, WS_dev_msg_type_t type, uint64_t address, int64_t value);
 
 
-void device_message_respond(WS_dev_msg_t *msg, int64_t value);
-
-uint64_t get_device_message_address(WS_dev_msg_t *msg);
 
 
-WS_dev_msg_type_t get_device_message_type(WS_dev_msg_t *msg);
-bool get_device_message_has_dst(WS_dev_msg_t *msg);
+bool WS_device_mailbox_put(WS_dev_t *dev, WS_dev_msg_t *msg);
+bool WS_device_mailbox_pop(WS_dev_t *dev, WS_dev_msg_t **msg);
+
+WS_dev_mailbox_t *WS_device_mailbox_init(void);
+
+void WS_device_mailbox_print(WS_dev_t *dev);
+
+WS_dev_msg_t *WS_device_message_create(WS_dev_desc_t *src_type, WS_dev_id_t src_id, WS_dev_id_t dest_id, WS_dev_msg_type_t type, uint64_t address, int64_t value);
 
 
-WS_dev_id_t get_device_message_src_id(WS_dev_msg_t *msg);
-WS_dev_id_t get_device_message_dst_id(WS_dev_msg_t *msg);
+void WS_device_message_respond(WS_dev_msg_t *msg, int64_t value);
 
-void print_device_message(WS_dev_msg_t *msg);
+uint64_t WS_get_device_message_address(WS_dev_msg_t *msg);
 
-bool device_message_consume(WS_dev_msg_t **msg);
-bool device_message_release(WS_dev_msg_t **msg);
+
+WS_dev_msg_type_t WS_get_device_message_type(WS_dev_msg_t *msg);
+bool WS_get_device_message_has_dst(WS_dev_msg_t *msg);
+
+
+WS_dev_id_t WS_get_device_message_src_id(WS_dev_msg_t *msg);
+WS_dev_id_t WS_get_device_message_dst_id(WS_dev_msg_t *msg);
+void WS_print_device_message(WS_dev_msg_t *msg);
+
+bool WS_device_message_consume(WS_dev_msg_t **msg);
+bool WS_device_message_release(WS_dev_msg_t **msg);
 
 
 #endif

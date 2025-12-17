@@ -23,7 +23,7 @@ WS_config_entry_t *WS_create_config_entry(WS_module_t *module, toklex_t *token_l
 
 void WS_append_new_config_module_container_entry(WS_config_module_container_t *container, WS_config_entry_t *entry)
 {
-	container->entry_list = realloc_safe(container->entry_list, container->entry_list_count + 1, sizeof(WS_config_entry_t**));
+	container->entry_list = realloc_safe(container->entry_list, container->entry_list_count + 1, sizeof(WS_config_entry_t*));
 	container->entry_list[container->entry_list_count++] = entry;
 	return;
 
@@ -52,20 +52,25 @@ static void load_module_containers_config_file(WS_config_file_t *file)
 		}
 		char *line = readline_sourcefile(file->srcfile);
 		toklex_t *toklex = lex_string(line);
+		reset_toklex(toklex);
 		tok_t *tok = peek_toklex(toklex);
 		if(tok->type == TOK_STRING)
 		{
 			if(has_container)
 			{
-				WS_append_config_file_module_container(file, container);
-			}
+				printf("has container\n");
 
+				WS_append_config_file_module_container(file, container);
+
+			}
+			//printf("%s tok create module container\n", tok->token);
 			container = WS_create_config_module_container(tok->token);
 			has_container = true;
 		}
 		else
 		{
 			WS_config_entry_t *entry =  WS_create_config_entry(container->module, toklex);
+			printf("entry %s\n", container->module->filepath);
 			WS_append_new_config_module_container_entry(container, entry);
 		}
 
@@ -77,6 +82,7 @@ static void load_module_containers_config_file(WS_config_file_t *file)
 		free_toklex(toklex);
 		free(line);
 	}
+	WS_append_config_file_module_container(file, container);
 
 
 	close_sourcefile(file->srcfile);

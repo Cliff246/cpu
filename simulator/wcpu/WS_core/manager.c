@@ -343,6 +343,12 @@ void init(int argc, char **argv)
 	WS_simulator_load_config(sim, file);
 	WS_free_config_file(file);
 
+
+	//for(int i = 0; i < 1000; ++i)
+	{
+		WS_simulator_update(sim);
+	}
+
 	parse_args();
 	//create_cli_context(&globalstate.ctx);
 

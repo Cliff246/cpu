@@ -58,6 +58,7 @@ static_assert((sizeof(WS_cmd_flag_value_free_list)/sizeof(*WS_cmd_flag_value_fre
 bool WS_device_cmd(WS_dev_t *device, WS_dev_cmd_t *cmd)
 {
 	assert(device && cmd);
+	//printf("%d %d\n", device->desc, cmd->type);
 	assert(device->desc == cmd->type);
 	assert(cmd->collection);
 	const WS_dev_desc_t *desc = device->desc;
@@ -161,7 +162,7 @@ WS_dev_cmd_flag_t *WS_cmd_flag_create(tok_t *key, tok_t *value)
 	flag->flag = strdup(key->token);
 	WS_dev_cmd_flag_value_t *flag_value = calloc(1, sizeof(WS_dev_cmd_flag_value_t));
 
-	printf("produce token %s %d\n", value->token, value->type);
+	//printf("produce token %s %d\n", value->token, value->type);
 	switch(value->type)
 	{
 		case TOK_INT:
@@ -176,7 +177,7 @@ WS_dev_cmd_flag_t *WS_cmd_flag_create(tok_t *key, tok_t *value)
 			break;
 
 		default:
-
+			flag->type = WS_DEV_CMD_FLAG_TYPE_UNKNOWN;
 			break;
 
 
@@ -192,7 +193,7 @@ WS_dev_cmd_collection_t *WS_cmd_collection_create(toklex_t *tl)
 	WS_dev_cmd_collection_t *col = calloc(1, sizeof(WS_dev_cmd_collection_t));
 
 	assert(col);
-	print_toklex(tl);
+//	print_toklex(tl);
 	for(int i = 0; i < tl->tcount - 1; i += 2)
 	{
 		tok_t *t1 = &tl->tokens[i];

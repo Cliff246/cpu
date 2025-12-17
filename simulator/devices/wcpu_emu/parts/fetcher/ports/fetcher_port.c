@@ -98,7 +98,7 @@ uint32_t wcpu_fetcher_port_advance(fetcher_port_t *port, uint32_t cap_mask, fetc
 	if(deps_satisfied)
 	{
 		//wcpu_fetcher_port_set_state(port, FETCHER_PORT_ISSUE);
-		printf("satisfied %d %d\n", port->state, port->type);
+		//printf("satisfied %d %d\n", port->state, port->type);
 
 		//port->ready = true;
 

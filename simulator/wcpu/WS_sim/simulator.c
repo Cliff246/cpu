@@ -28,6 +28,7 @@ static void simulator_swap_slots(WS_simulator_t *sim, size_t i, size_t j)
 
 static int simulator_device_address_search(WS_simulator_t *sim, size_t address)
 {
+	//WS_simulator_print_slots(sim);
 	size_t low = 0;
 	size_t high = sim->bus_slot_count - 1;
 	size_t mid = 0;
@@ -87,22 +88,29 @@ static void simulator_quicksort(WS_simulator_t *sim, size_t lo, size_t hi)
 
 WS_dev_t *WS_simulator_get_device_from_id(WS_simulator_t *sim, WS_dev_id_t devid)
 {
-	assert(devid >= 0 && "device_id can never when searching == -1");
-	assert(devid < sim->dev_count && "device id can never be over device count");
 	int index = (int)devid;
 
-	//TODO dont do this
-	WS_dev_t *dev = sim->dev_list[index];
-	return dev;
+	assert(devid >= 0 && "device_id can never when searching == -1");
+	assert(devid < sim->dev_count && "device id can never be over device count");
+
+
+	for(int i = 0; i < sim->dev_count; ++i)
+	{
+		if(sim->dev_list[i]->id == devid)
+			return sim->dev_list[i];
+	}
+	assert(0);
 }
 
 bool WS_simulator_get_device_from_address(WS_simulator_t *sim, WS_dev_t **dev, size_t address)
 {
 	assert(sim!= NULL && "emulator cannot be null");
 	assert(dev != NULL && "cannot give back nothing");
-	//emulator_print_slots(emulator);
 	//printf("address %d\n", address);
-
+	if(sim->bus_slot_count <= 0)
+	{
+		return false;
+	}
 	int index = simulator_device_address_search(sim, address);
 	if(index == -1)
 	{
@@ -135,6 +143,8 @@ static void WS_simulator_sort_slots(WS_simulator_t *sim)
         if (cmp_overlap(A->start, B->start,
                         A->len, B->len))
         {
+			WS_simulator_print_slots(sim);
+
             fprintf(stderr, "Address region overlap between device %zu and device %zu\n",
                     i, i+1);
             exit(1);
@@ -169,9 +179,8 @@ void WS_simulator_add_device(WS_simulator_t *sim, WS_dev_t *dev)
 		WS_simulator_bus_slot_t *slot =  WS_simulator_create_bus_slot(dev->address_range_start, dev->address_range_length,  sim->dev_count );
 
 		sim->bus_slot = realloc_safe(sim->bus_slot, sim->bus_slot_count + 1, sizeof(WS_simulator_bus_slot_t *) );
-
+		
 		sim->bus_slot[sim->bus_slot_count++] = slot;
-
 		WS_simulator_sort_slots(sim);
 	}
 
@@ -184,12 +193,12 @@ void WS_simulator_add_device(WS_simulator_t *sim, WS_dev_t *dev)
 
 bool WS_simulator_load_config(WS_simulator_t *sim, WS_config_file_t *config)
 {
-
+	//printf("%d\n",config->module_container_list_count);
 	for(int i = 0; i <config->module_container_list_count; ++i)
 	{
 		WS_config_module_container_t *container = config->module_container_list[i];
 
-
+		//printf("%s entry list count: %d\n", container->module->dev_desc->dl_name,container->entry_list_count);
 		for(int x = 0; x < container->entry_list_count; ++x)
 		{
 			WS_config_entry_t *entry = container->entry_list[x];
@@ -203,6 +212,111 @@ bool WS_simulator_load_config(WS_simulator_t *sim, WS_config_file_t *config)
 void WS_simulator_update(WS_simulator_t *sim)
 {
 
+	assert(sim);
+	//printf("\nREAD STAGE\n\n");
+	for(int ia= 0; ia < sim->dev_count; ++ia)
+	{
+
+		device_t *dev = sim->dev_list[ia];
+		assert(dev != NULL && "device update found null device");
+
+		//WS_device_mailbox_print(dev);
+		dev_msg_t *get_msg;
+		bool mailbox_has = WS_device_mailbox_pop(dev, &get_msg);
+
+		//fill the msg_arg
+		if(mailbox_has == true)
+		{
+			WS_device_read(dev, get_msg);
+
+		}
+		//printf("\n");
+		//printf("%s\n", dev->desc->dev_name);
+		//device_print(dev);
+
+	}
+
+	//printf("\nUPDATE STAGE\n\n");
+
+	for(int ib = 0; ib < sim->dev_count; ++ib)
+	{
+		device_t *dev = sim->dev_list[ib];
+		assert(sim != NULL && "device update found null device");
+		WS_device_update(dev);
+		//printf("\n");
+
+		//device_print(dev);
+
+		// update step
+		//send out step
+	}
+	//printf("\nWRITE STAGE\n\n");
+	//	WS_simulator_print_slots(sim);
+//	printf("AFTER\n");
+
+	for(int ic = 0; ic < sim->dev_count; ++ic)
+	{
+		device_t *dev = sim->dev_list[ic];
+		assert(dev != NULL && "device update found null device");
+		//printf("\n");
+		WS_dev_msg_t *set_msg = NULL;
+		bool has_msg = WS_device_send(dev, &set_msg);
+		//printf("%d %p\n", has_msg, set_msg);
+		//distrubute the message around
+		if(has_msg )
+		{
+			printf("message sent\n");
+			bool has_dst = WS_get_device_message_has_dst(set_msg);
+
+
+			//check if it's on sendback or on release
+			dev_msg_type_t type = WS_get_device_message_type(set_msg);
+
+			//check if it's a response
+
+			device_t *dst_device;
+			//print_device_message(set_msg);
+			WS_dev_id_t dst = -1;
+			//print_device_message(set_msg);
+			//printf("\n");
+			//printf("%d %d\n", type, has_dst);
+
+			if(type == DEVMSG_READ_RESPOND)
+			{
+				dst = WS_get_device_message_src_id(set_msg);
+				dst_device = WS_simulator_get_device_from_id(sim, dst);
+
+			}
+
+			else if(has_dst)
+			{
+				//printf("has dest %d %d\n", has_dst, set_msg->dst_id);
+				dst = WS_get_device_message_dst_id(set_msg);
+				dst_device = WS_simulator_get_device_from_id(sim, dst);
+			}
+			//get dest from address
+			else
+			{
+
+				size_t address = (size_t)WS_get_device_message_address(set_msg);
+				//printf("%d\n", address);
+				bool found_device =  WS_simulator_get_device_from_address(sim, &dst_device, address);
+				//checks if in that devices range
+				if(found_device == false)
+				{
+					assert(0 && "cannot address out of range");
+				}
+				//should be safe.
+
+			}
+
+			//assume this is true
+			bool could_put = WS_device_mailbox_put(dst_device, set_msg);
+			assert(could_put != false && "could put must never be false");
+		}
+		//device_print(dev);
+
+	}
 }
 
 void WS_simulator_print_slots(WS_simulator_t *sim)
@@ -293,111 +407,6 @@ device_t *emulator_get_device_from_id(emulator_t *emu, WS_dev_id_t devid)
 void emulator_update(emulator_t *emu)
 {
 
-	assert(emu);
-	//printf("\nREAD STAGE\n\n");
-	for(int ia= 0; ia < emu->device_count; ++ia)
-	{
-
-		device_t *dev = emu->device_list[ia];
-		assert(dev != NULL && "device update found null device");
-
-		dev_mailbox_t *mb = get_device_mailbox(dev);
-		//device_mailbox_print(mb);
-		dev_msg_t *get_msg;
-		bool mailbox_has = device_mailbox_get(mb, &get_msg);
-
-		//fill the msg_arg
-		if(mailbox_has == true)
-		{
-			device_read(dev, get_msg);
-
-		}
-		//printf("\n");
-
-		//device_print(dev);
-
-	}
-
-	//printf("\nUPDATE STAGE\n\n");
-
-	for(int ib = 0; ib < emu->device_count; ++ib)
-	{
-		device_t *dev = emu->device_list[ib];
-		assert(dev != NULL && "device update found null device");
-		device_update(dev);
-		//printf("\n");
-
-		//device_print(dev);
-
-		// update step
-		//send out step
-	}
-	//printf("\nWRITE STAGE\n\n");
-
-	for(int ic = 0; ic < emu->device_count; ++ic)
-	{
-		device_t *dev = emu->device_list[ic];
-		assert(dev != NULL && "device update found null device");
-		//printf("\n");
-		dev_msg_t *set_msg = device_send(dev);
-
-
-		//distrubute the message around
-		if(set_msg != NULL)
-		{
-
-			bool has_dst = get_device_message_has_dst(set_msg);
-
-
-			//check if it's on sendback or on release
-			dev_msg_type_t type = get_device_message_type(set_msg);
-
-			//check if it's a response
-
-
-			device_t *dst_device;
-			//print_device_message(set_msg);
-			WS_dev_id_t dst = -1;
-			//print_device_message(set_msg);
-			//printf("\n");
-			if(type == DEVMSG_READ_RESPOND)
-			{
-				dst = get_device_message_src_id(set_msg);
-				dst_device = emulator_get_device_from_id(emu, dst);
-
-			}
-
-			else if(has_dst)
-			{
-				//printf("has dest %d %d\n", has_dst, set_msg->dst_id);
-				dst = get_device_message_dst_id(set_msg);
-				dst_device = emulator_get_device_from_id(emu, dst);
-
-			}
-			//get dest from address
-			else
-			{
-
-				size_t address = (size_t)get_device_message_address(set_msg);
-
-				bool found_device =  emulator_get_device_from_address(emu, &dst_device, address);
-				//checks if in that devices range
-				if(found_device == false)
-				{
-					assert(0 && "cannot address out of range");
-				}
-				//should be safe.
-
-			}
-
-			//assume this is true
-			dev_mailbox_t *dst_mb = get_device_mailbox(dst_device);
-			bool could_put = device_mailbox_put(dst_mb, set_msg);
-			assert(could_put != false && "could put must never be false");
-		}
-		//device_print(dev);
-
-	}
 
 }
 

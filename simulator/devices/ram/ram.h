@@ -36,8 +36,8 @@ void align_ram(device_t *device, dev_ram_t *ram);
 
 void *device_ram_init(device_t *device);
 void device_ram_update(device_t *device);
-bool device_ram_read(device_t *dev, dev_msg_t *msg);
-dev_msg_t *device_ram_send(device_t *dev);
+bool device_ram_read(WS_dev_t *dev, WS_dev_msg_t *msg);
+bool device_ram_send(WS_dev_t *dev, WS_dev_msg_t **msg);
 void device_ram_print(device_t *dev);
 WS_dev_cmd_t *device_ram_stringfy(toklex_t *tl);
 void device_ram_commit(WS_dev_t *dev);

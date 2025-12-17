@@ -11,7 +11,7 @@ char *device_message_type_string[] =
 };
 */
 
-WS_dev_msg_t *device_message_create(WS_dev_desc_t *src_type, WS_dev_id_t src_id, WS_dev_id_t dest_id, WS_dev_msg_type_t type, uint64_t address, int64_t value)
+WS_dev_msg_t *WS_device_message_create(WS_dev_desc_t *src_type, WS_dev_id_t src_id, WS_dev_id_t dest_id, WS_dev_msg_type_t type, uint64_t address, int64_t value)
 {
 	dev_msg_t *msg = calloc(1, sizeof(dev_msg_t));
 	assert(msg != NULL && "failed calloc");
@@ -41,7 +41,7 @@ WS_dev_msg_t *device_message_create(WS_dev_desc_t *src_type, WS_dev_id_t src_id,
 }
 
 
-void device_message_respond(dev_msg_t *msg, int64_t value)
+void WS_device_message_respond(WS_dev_msg_t *msg, int64_t value)
 {
 	assert(msg != NULL && "cannot respond to null message");
 
@@ -55,7 +55,7 @@ void device_message_respond(dev_msg_t *msg, int64_t value)
 
 }
 
-uint64_t get_device_message_address(dev_msg_t *msg)
+uint64_t WS_get_device_message_address(WS_dev_msg_t *msg)
 {
 	assert(msg != NULL && "cannot respond to null message");
 
@@ -63,20 +63,20 @@ uint64_t get_device_message_address(dev_msg_t *msg)
 }
 
 
-dev_msg_type_t get_device_message_type(dev_msg_t *msg)
+WS_dev_msg_type_t WS_get_device_message_type(WS_dev_msg_t *msg)
 {
 	assert(msg != NULL && "cannot get is_response from null message");
 	return msg->type;
 }
 
 
-bool get_device_message_has_dst(dev_msg_t *msg)
+bool WS_get_device_message_has_dst(WS_dev_msg_t *msg)
 {
 	assert(msg != NULL && "cannot get is_response from null message");
 	return msg->has_dst;
 }
 
-WS_dev_id_t get_device_message_src_id(dev_msg_t *msg)
+WS_dev_id_t WS_get_device_message_src_id(WS_dev_msg_t *msg)
 {
 	assert(msg != NULL && "cannot get src_id from null message");
 	assert(msg->src_id != -1 && "src id can never be -1");
@@ -84,7 +84,7 @@ WS_dev_id_t get_device_message_src_id(dev_msg_t *msg)
 	return msg->src_id;
 }
 
-WS_dev_id_t get_device_message_dst_id(dev_msg_t *msg)
+WS_dev_id_t WS_get_device_message_dst_id(WS_dev_msg_t *msg)
 {
 	assert(msg != NULL && "cannot get dst_id from null message");
 	return msg->dst_id;
@@ -92,14 +92,14 @@ WS_dev_id_t get_device_message_dst_id(dev_msg_t *msg)
 }
 
 
-void print_device_message(dev_msg_t *msg)
+void WS_print_device_message(WS_dev_msg_t *msg)
 {
 	if(msg == NULL)
 		return;
 	printf("ptr:%p src_id:%d, dst_id:%d, has_dst:%d, msg_type: %s address: %lld, value: %lld, refcount:%d",msg, msg->src_id, msg->dst_id,  msg->has_dst, "empty for now", msg->address, msg->value, msg->ref_count);
 }
 
-bool device_message_consume(dev_msg_t **msg)
+bool WS_device_message_consume(WS_dev_msg_t **msg)
 {
 	assert(msg != NULL && "cannot get consumee from null message");
 	assert(*msg != NULL && "cannot get message from bad reference");
@@ -109,7 +109,7 @@ bool device_message_consume(dev_msg_t **msg)
 	return true;
 }
 
-bool device_message_release(dev_msg_t **msg)
+bool WS_device_message_release(WS_dev_msg_t **msg)
 {
 	assert(msg != NULL && "cannot get dst_id from null message");
 	assert(*msg != NULL && "cannot get message from bad reference");

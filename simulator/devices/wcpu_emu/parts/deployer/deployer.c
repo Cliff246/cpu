@@ -19,10 +19,12 @@ void wcpu_deployer_update(part_t *part)
 
 bool wcpu_deployer_import(part_t *part, part_signal_t *signal)
 {
+	return true;
 
 }
 
 bool wcpu_deployer_export(part_t *part, part_signal_t **signal)
 {
+	return false;
 
 }

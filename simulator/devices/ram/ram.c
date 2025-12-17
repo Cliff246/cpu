@@ -118,7 +118,7 @@ void *device_ram_init(device_t *device)
 	//assert(config->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_RESET] && "generate must force a reset");
 	//cmd_ram(ram, cmd);
 	align_ram(device, ram);
-
+	device->has_address = true;
 
 	return ram;
 }
@@ -141,6 +141,7 @@ dev_ram_t *create_ram(int64_t length)
 //TODO make this make sense
 void update_ram(dev_ram_t *ram, uint64_t length)
 {
+
 	assert(ram != NULL && "ram cannot be null");
 	//get rid of the old
 	free(ram->content);
@@ -229,15 +230,11 @@ void align_ram(device_t *device, dev_ram_t *ram)
 {
 	assert(device != NULL && "device must not be null");
 	assert(ram);
-	if(ram->changed)
-	{
-
-		device->address_range_length = ram->local_address_size;
-		device->address_range_start = ram->local_address_start;
-		ram->changed = false;
-		device->has_address = true;
-		set_device_changed(device);
-	}
+	device->address_range_length = ram->local_address_size;
+	device->address_range_start = ram->local_address_start;
+	ram->changed = false;
+	device->has_address = true;
+	WS_set_device_changed(device);
 
 }
 
@@ -249,9 +246,7 @@ void device_ram_update(device_t *device)
 	//essentially skiped
 }
 
-
-//read ram and get a message set it as active
-bool device_ram_read(device_t *dev, dev_msg_t *msg)
+bool device_ram_read(WS_dev_t *dev, WS_dev_msg_t *msg)
 {
 	assert(dev != NULL && "device must not be null");
 
@@ -267,7 +262,7 @@ bool device_ram_read(device_t *dev, dev_msg_t *msg)
 	{
 		assert(ram->has_msg == false && "ram cannot over write a inflight message");
 		ram->current_msg = msg;
-		dev_msg_type_t type = get_device_message_type(msg);
+		dev_msg_type_t type = WS_get_device_message_type(msg);
 		if(type == DEVMSG_WRITE)
 		{
 			write_ram(ram, msg->address, msg->value);
@@ -275,7 +270,7 @@ bool device_ram_read(device_t *dev, dev_msg_t *msg)
 		}
 		else if(type == DEVMSG_READ_SEND)
 		{
-			device_message_consume(&ram->current_msg );
+			WS_device_message_consume(&ram->current_msg );
 			ram->has_msg = true;
 			return true;
 		}
@@ -286,8 +281,7 @@ bool device_ram_read(device_t *dev, dev_msg_t *msg)
 	}
 	return false;
 }
-
-dev_msg_t *device_ram_send(device_t *dev)
+bool device_ram_send(WS_dev_t *dev, WS_dev_msg_t **msg)
 {
 
 	assert(dev != NULL && "device must not be null");
@@ -295,14 +289,15 @@ dev_msg_t *device_ram_send(device_t *dev)
 	dev_ram_t *ram = (dev_ram_t *)dev->ptr;
 	if(ram->has_msg == false )
 	{
-		return NULL;
+		*msg = NULL;
+		return false;
 	}
 	else
 	{
 		dev_msg_t *current = ram->current_msg;
 
 		//get the read address
-		uint64_t read_address = get_device_message_address(current);
+		uint64_t read_address = WS_get_device_message_address(current);
 		//this realigns the correct read with the start of addressing
 		uint64_t correct_read = read_address -  dev->address_range_start;
 		assert(correct_read < ram->length && "correct read must not be invalid");
@@ -310,10 +305,13 @@ dev_msg_t *device_ram_send(device_t *dev)
 		int64_t respond = read_ram(ram, correct_read);
 
 		//the response a bit brittle
-		device_message_respond(current, respond);
+		WS_device_message_respond(current, respond);
 		ram->has_msg = false;
 		ram->current_msg = NULL;
-		return current;
+
+
+		*msg = current;
+		return true;
 	}
 
 }
@@ -341,7 +339,7 @@ void device_ram_print(device_t *dev)
 	if(ram->has_msg)
 	{
 		printf("\tram msg: ");
-		print_device_message(ram->current_msg);
+		WS_print_device_message(ram->current_msg);
 		printf("\n");
 	}
 	if(ram->print_content_flag)
@@ -360,5 +358,7 @@ void device_ram_print(device_t *dev)
 
 void device_ram_commit(WS_dev_t *dev)
 {
+	dev_ram_t *ram = (dev_ram_t *)dev->ptr;
 
+	align_ram(dev, ram);
 }

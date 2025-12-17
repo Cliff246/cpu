@@ -4,6 +4,7 @@
 #include "device_vtable.h"
 #include "wcpu_device_config_setting.h"
 #include "device_command_impl.h"
+#include "device_commons.h"
 #include "core.h"
 #include <stdlib.h>
 #include <assert.h>
@@ -58,6 +59,14 @@ const WS_dev_desc_t *WS_get_dev_desc(void)
 WS_dev_cmd_t *device_wcpu_stringfy(toklex_t *tl)
 {
 
+	WS_dev_cmd_t *cmd =  calloc(1, sizeof(WS_dev_cmd_t));
+
+	cmd->type = &wcpu_emu_desc;
+	cmd->used = false;
+	cmd->collection = WS_cmd_collection_create(tl);
+
+
+	return cmd;
 }
 
 void device_wcpu_commit(WS_dev_t *dev)
@@ -73,7 +82,7 @@ static bool wcpu_send_to_core(core_t *core, dev_msg_t *msg)
 
 
 
-	dev_msg_type_t type = get_device_message_type(msg);
+	dev_msg_type_t type = WS_get_device_message_type(msg);
 	//read
 	if(type == DEVMSG_READ_RESPOND)
 	{
@@ -90,7 +99,7 @@ static bool wcpu_send_to_core(core_t *core, dev_msg_t *msg)
 		//if the core has not issued anything to readback from it's not implemented yet
 		else
 		{
-			print_device_message(msg);
+			WS_print_device_message(msg);
 			printf("\n");
 			assert(false && "core has nothing to read back from");
 		}
@@ -139,7 +148,7 @@ void device_wcpu_update(device_t *dev)
 
 
 		//rest state after, if held by someone else should not free
-		device_message_release(&in_msg);
+		WS_device_message_release(&in_msg);
 
 
 		//release in the wcpu
@@ -159,7 +168,7 @@ void device_wcpu_update(device_t *dev)
 
 		dev_msg_type_t msg_type = (core->core_io.type == CORE_IO_READ)? DEVMSG_READ_SEND : DEVMSG_WRITE;
 
-		dev_msg_t *msg_out = device_message_create(&wcpu_emu_desc, dev->id, -1, msg_type, core->core_io.address, core->core_io.value);
+		dev_msg_t *msg_out = WS_device_message_create(&wcpu_emu_desc, dev->id, -1, msg_type, core->core_io.address, core->core_io.value);
 		assert(msg_out);
 		wcpu->current_msg_out = msg_out;
 		wcpu->has_out = true;
@@ -168,8 +177,7 @@ void device_wcpu_update(device_t *dev)
 
 
 }
-
-bool device_wcpu_read(device_t *dev, dev_msg_t *msg)
+bool device_wcpu_read(WS_dev_t *dev, WS_dev_msg_t *msg)
 {
 	assert(dev != NULL && "device cannot be null");
 	dev_wcpu_t *wcpu = (dev_wcpu_t *)dev->ptr;
@@ -186,7 +194,7 @@ bool device_wcpu_read(device_t *dev, dev_msg_t *msg)
 		return false;
 	}
 	wcpu->current_msg_in = msg;
-	device_message_consume(&wcpu->current_msg_in);
+	WS_device_message_consume(&wcpu->current_msg_in);
 
 	wcpu->has_in = true;
 	return true;
@@ -195,29 +203,25 @@ bool device_wcpu_read(device_t *dev, dev_msg_t *msg)
 
 }
 
-
-dev_msg_t *device_wcpu_send(device_t *dev)
+bool device_wcpu_send(WS_dev_t *dev, WS_dev_msg_t **msg)
 {
 	assert(dev != NULL && "device cannot be null");
 	dev_wcpu_t *wcpu = (dev_wcpu_t *)dev->ptr;
-
+	//printf("doing something\n");
 	if(wcpu->has_out == true && wcpu->sent == false)
 	{
-		dev_msg_t *msg = wcpu->current_msg_out;
+		WS_dev_msg_t *out = wcpu->current_msg_out;
 
-		assert(msg != NULL && "msg cannot be null when outputting");
+		assert(out != NULL && "msg cannot be null when outputting");
 
 		wcpu->has_out = false;
 		wcpu->sent = true;
-		return msg;
+		*msg = out;
+		return true;
 
 	}
-	else
-	{
-		return NULL;
-	}
 
-
+	return false;
 
 
 
@@ -237,14 +241,14 @@ void device_wcpu_print(device_t *dev)
 	if(wcpu->has_in)
 	{
 		printf("\tin: ");
-		print_device_message(wcpu->current_msg_in);
+		WS_print_device_message(wcpu->current_msg_in);
 		printf("\n");
 	}
 
 	if(wcpu->has_out)
 	{
 		printf("\tout: ");
-		print_device_message(wcpu->current_msg_out);
+		WS_print_device_message(wcpu->current_msg_out);
 		printf("\n");
 	}
 

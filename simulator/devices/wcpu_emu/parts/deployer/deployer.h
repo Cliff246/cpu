@@ -8,7 +8,7 @@
 
 typedef struct wcpu_part_deployer
 {
-
+	int i;
 }deployer_t;
 
 

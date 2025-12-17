@@ -86,6 +86,9 @@ bool device_cmd_option_producer_FILENAME(WS_dev_t *device, WS_dev_cmd_flag_t *fl
 {
 	dev_ram_t *ram = device->ptr;
 	load_file(ram, flag->value->STRING);
+
+	ram->local_address_size = ram->length;
+	ram->changed = true;
 	return true;
 }
 
