@@ -1,9 +1,7 @@
 #ifndef __DEVICE_HEADER__
 #define __DEVICE_HEADER__
 
-#include "device_flags.h"
 #include "device_list.h"
-#include "device_command.h"
 
 #include "device_message.h"
 #include "device_mailbox.h"
@@ -39,7 +37,6 @@ typedef struct wcpu_simulator_device
 
 	bool has_address;
 
-	bool flags[DEVICE_FLAG_COUNT];
 
 }device_t, WS_dev_t;
 

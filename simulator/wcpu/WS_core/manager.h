@@ -3,7 +3,6 @@
 
 
 #include "cli.h"
-#include "input_configure.h"
 #include "simulator.h"
 #include "module.h"
 

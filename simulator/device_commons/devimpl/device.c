@@ -76,13 +76,13 @@ void device_cmd(device_t *device, device_command_t *cmd)
 bool get_device_changed(device_t *device)
 {
 	assert(device != NULL && "cannot update null device");
-	return device->flags[DEVICE_FLAG_TYPE_INTERNAL_CHANGED];
+	//return device->flags[DEVICE_FLAG_TYPE_INTERNAL_CHANGED];
 }
 
 //only sets to high, device manager should clear
 void set_device_changed(device_t *device)
 {
 	assert(device != NULL && "cannot update null device");
-	device->flags[DEVICE_FLAG_TYPE_INTERNAL_CHANGED] = true;
+	//device->flags[DEVICE_FLAG_TYPE_INTERNAL_CHANGED] = true;
 
 }

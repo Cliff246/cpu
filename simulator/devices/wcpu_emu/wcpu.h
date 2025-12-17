@@ -2,6 +2,7 @@
 #define __DEVICE_WCPU__
 
 #include "device_list.h"
+#include "device_command.h"
 #include "device.h"
 #include "core.h"
 #include "device_message.h"
@@ -33,7 +34,6 @@ bool device_wcpu_read(device_t *dev, dev_msg_t *send);
 
 dev_msg_t *device_wcpu_send(device_t *dev);
 void device_wcpu_print(device_t *dev);
-void device_wcpu_cmd(device_t *dev, device_command_t *cmd);
 
 
 #endif

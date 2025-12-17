@@ -2,24 +2,215 @@
 #include "device_commons.h"
 #include "device_mailbox.h"
 #include "device_message.h"
+#include "simulator_bus_slot.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 #include <stdbool.h>
-#include "device_commons.h"
+
+static bool cmp_overlap(size_t addr1, size_t addr2, size_t addr1_size, size_t addr2_size)
+{
+	size_t end1 = addr1 + addr1_size;
+	size_t end2 = addr2 + addr2_size;
+
+	return (bool)((end1 > addr2) && (end2 > addr1));
+}
+
+static void simulator_swap_slots(WS_simulator_t *sim, size_t i, size_t j)
+{
+
+	WS_simulator_bus_slot_t *temp = sim->bus_slot[i];
+	sim->bus_slot[i] = sim->bus_slot[j];
+	sim->bus_slot[j] = temp;
+}
+
+static int simulator_device_address_search(WS_simulator_t *sim, size_t address)
+{
+	size_t low = 0;
+	size_t high = sim->bus_slot_count - 1;
+	size_t mid = 0;
+	while(low <= high)
+	{
+		mid = low + (high - low) / 2;
+		WS_simulator_bus_slot_t *slot =  sim->bus_slot[mid];
+		size_t start = slot->start;
+		size_t end = slot->len + start;
+		//printf("%d %d\n", start, end);
+		if(address < start)
+		{
+			high = mid - 1;
+
+		}
+		else if(address >= end)
+		{
+			low = mid + 1;
+		}
+		else
+		{
+			return mid;
+
+		}
+	}
+	return -1;
+}
+
+static size_t simulator_partition(WS_simulator_t *sim, size_t lo, size_t hi)
+{
+	assert(sim);
+	size_t pivot = sim->bus_slot[hi]->start;
+
+	size_t i = lo;
+
+	for(size_t j = lo; j <= (hi - 1); ++j)
+	{
+		if(sim->bus_slot[j]->start < pivot)
+		{
+            simulator_swap_slots(sim, i, j);
+            i++;
+		}
+	}
+
+    simulator_swap_slots(sim, i, hi);
+    return i;
+}
+
+static void simulator_quicksort(WS_simulator_t *sim, size_t lo, size_t hi)
+{
+	if(lo >= hi) return;
+	size_t pivot = simulator_partition(sim, lo, hi);
+	if(pivot > 0)
+		simulator_quicksort(sim, lo, pivot - 1);
+	simulator_quicksort(sim, pivot + 1, hi);
+}
+
+WS_dev_t *WS_simulator_get_device_from_id(WS_simulator_t *sim, WS_dev_id_t devid)
+{
+	assert(devid >= 0 && "device_id can never when searching == -1");
+	assert(devid < sim->dev_count && "device id can never be over device count");
+	int index = (int)devid;
+
+	//TODO dont do this
+	WS_dev_t *dev = sim->dev_list[index];
+	return dev;
+}
+
+bool WS_simulator_get_device_from_address(WS_simulator_t *sim, WS_dev_t **dev, size_t address)
+{
+	assert(sim!= NULL && "emulator cannot be null");
+	assert(dev != NULL && "cannot give back nothing");
+	//emulator_print_slots(emulator);
+	//printf("address %d\n", address);
+
+	int index = simulator_device_address_search(sim, address);
+	if(index == -1)
+	{
+		printf("no slots found\n");
+		assert(0);
+	}
+	WS_simulator_bus_slot_t *slot = sim->bus_slot[index];
+	//printf("index %d %d %d %d \n", index, slot.address_start,slot.address_length,  address);
+
+	if(address >= slot->start && address < slot->start + slot->len)
+	{
+		*dev = sim->dev_list[slot->dev_index];
+		return true;
+	}
+
+	return false;
+}
+
+static void WS_simulator_sort_slots(WS_simulator_t *sim)
+{
+	if (sim->dev_count == 0)
+        return;
+
+    simulator_quicksort(sim, 0, sim->bus_slot_count - 1);
+ 	for (size_t i = 0; i + 1 < sim->bus_slot_count; i++)
+    {
+        WS_simulator_bus_slot_t *A = sim->bus_slot[i];
+        WS_simulator_bus_slot_t *B = sim->bus_slot[i+1];
+
+        if (cmp_overlap(A->start, B->start,
+                        A->len, B->len))
+        {
+            fprintf(stderr, "Address region overlap between device %zu and device %zu\n",
+                    i, i+1);
+            exit(1);
+        }
+		size_t start_a = A->start;
+	   	size_t start_b = B->start;
+
+		size_t length_a = A->len;
+		size_t length_b = B->len;
+
+		//printf("%lu %lu %lu %lu \n", start_a, start_b, length_a, length_b);
+    }
+}
+
+WS_simulator_t *WS_simulator_init()
+{
+	WS_simulator_t *sim = calloc(1, sizeof(WS_simulator_t));
+	assert(sim);
+
+	return sim;
+}
+
+//add device to simulator
+void WS_simulator_add_device(WS_simulator_t *sim, WS_dev_t *dev)
+{
+	assert(sim && "simulator must be found");
+	assert(dev && "device must be created");
+	sim->dev_list = realloc_safe(sim->dev_list, sim->dev_count + 1, sizeof(WS_dev_t *) );
+
+	if(dev->has_address)
+	{
+		WS_simulator_bus_slot_t *slot =  WS_simulator_create_bus_slot(dev->address_range_start, dev->address_range_length,  sim->dev_count );
+
+		sim->bus_slot = realloc_safe(sim->bus_slot, sim->bus_slot_count + 1, sizeof(WS_simulator_bus_slot_t *) );
+
+		sim->bus_slot[sim->bus_slot_count++] = slot;
+
+		WS_simulator_sort_slots(sim);
+	}
+
+
+	sim->dev_list[sim->dev_count++] = dev;
+
+
+
+}
+
+/*
+//loads a group of devices from a config
+bool WS_simulator_load_config(WS_simulator_t *sim, WS_input_config_t *config)
+{
+
+}
+
+*/
+
+void WS_simulator_update(WS_simulator_t *sim)
+{
+
+}
+
+void WS_simulator_print_slots(WS_simulator_t *sim)
+{
+	assert(sim);
+	for(int i = 0; i < sim->bus_slot_count; ++i)
+	{
+		WS_simulator_print_bus_slot(sim->bus_slot[i], i);
+	}
+}
+
+/*
 
 emulator_t *emulator_generate(WS_input_config_t *config)
 {
-	assert(config);
-	emulator_t *emu = calloc(1, sizeof(emulator_t));
-	assert(emu);
-	if(emu == NULL)
-	{
-		perror("emulator was not created");
-		exit(EXIT_FAILURE);
-	}
 
-	emu->config = config;
+
+
 
 	emu->device_list = calloc(config->settings_index, sizeof(device_t *));
 	assert(emu->device_list);
@@ -71,148 +262,19 @@ emulator_t *emulator_generate(WS_input_config_t *config)
 }
 
 //true is overlap and false is no overlap
-static bool cmp_overlap(size_t addr1, size_t addr2, size_t addr1_size, size_t addr2_size)
-{
-	size_t end1 = addr1 + addr1_size;
-	size_t end2 = addr2 + addr2_size;
 
-	return (bool)((end1 > addr2) && (end2 > addr1));
-}
 
-static void swap_slots(emulator_t *emu, size_t i, size_t j)
-{
-
-	emu_dev_slot_t temp = emu->device_slots[i];
-	emu->device_slots[i] = emu->device_slots[j];
-	emu->device_slots[j] = temp;
-}
-
-static size_t partition(emulator_t *emu, size_t lo, size_t hi)
-{
-	assert(emu);
-	size_t pivot = emu->device_slots[hi].address_start;
-
-	size_t i = lo;
-
-	for(size_t j = lo; j <= (hi - 1); ++j)
-	{
-		if(emu->device_slots[j].address_start < pivot)
-		{
-            swap_slots(emu, i, j);
-            i++;
-		}
-	}
-
-    swap_slots(emu, i, hi);
-    return i;
-}
-
-static void quicksort_emulator(emulator_t *emulator, size_t lo, size_t hi)
-{
-	if(lo >= hi) return;
-	size_t pivot = partition(emulator, lo, hi);
-	if(pivot > 0)
-		quicksort_emulator(emulator, lo, pivot - 1);
-	quicksort_emulator(emulator, pivot + 1, hi);
-}
-
-static void emulator_sort_slots(emulator_t *emu)
-{
-	if (emu->device_count == 0)
-        return;
-
-    quicksort_emulator(emu, 0, emu->stable_slots - 1);
- 	for (size_t i = 0; i + 1 < emu->stable_slots; i++)
-    {
-        emu_dev_slot_t *A = &emu->device_slots[i];
-        emu_dev_slot_t *B = &emu->device_slots[i+1];
-
-        if (cmp_overlap(A->address_start, B->address_start,
-                        A->address_length, B->address_length))
-        {
-            fprintf(stderr, "Address region overlap between device %zu and device %zu\n",
-                    i, i+1);
-            exit(1);
-        }
-		size_t start_a = A->address_start;
-	   	size_t start_b = B->address_start;
-
-		size_t length_a = A->address_length;
-		size_t length_b = A->address_length;
-
-		//printf("%lu %lu %lu %lu \n", start_a, start_b, length_a, length_b);
-    }
-}
+*/
 
 
 
 
-
-static int emulator_device_address_search(emulator_t *emulator, size_t address)
-{
-	size_t low = 0;
-	size_t high = emulator->stable_slots - 1;
-	size_t mid = 0;
-	while(low <= high)
-	{
-		mid = low + (high - low) / 2;
-		emu_dev_slot_t *slot =  &emulator->device_slots[mid];
-		size_t start = slot->address_start;
-		size_t end = slot->address_length + start;
-		//printf("%d %d\n", start, end);
-		if(address < start)
-		{
-			high = mid - 1;
-
-		}
-		else if(address >= end)
-		{
-			low = mid + 1;
-		}
-		else
-		{
-			return mid;
-
-		}
-	}
-	return -1;
-}
-
-
+/*
 //TODO
-bool emulator_get_device_from_address(emulator_t *emulator, device_t **dev, size_t address)
-{
-	assert(emulator != NULL && "emulator cannot be null");
-	assert(dev != NULL && "cannot give back nothing");
-	//emulator_print_slots(emulator);
-	//printf("address %d\n", address);
-
-	int index = emulator_device_address_search(emulator, address);
-	if(index == -1)
-	{
-		printf("no slots found\n");
-		assert(0);
-	}
-	emu_dev_slot_t slot = emulator->device_slots[index];
-	//printf("index %d %d %d %d \n", index, slot.address_start,slot.address_length,  address);
-
-	if(address >= slot.address_start && address < slot.address_start + slot.address_length)
-	{
-		*dev = emulator->device_list[slot.device_index];
-		return true;
-	}
-
-	return false;
-}
 
 device_t *emulator_get_device_from_id(emulator_t *emu, WS_dev_id_t devid)
 {
-	assert(emu);
-	assert(devid >= 0 && "device_id can never when searching == -1");
-	assert(devid < emu->device_count && "device id can never be over device count");
-	int index = (int)devid;
-	device_t *dev = emu->device_list[index];
-	return dev;
+
 }
 
 
@@ -329,16 +391,11 @@ void emulator_update(emulator_t *emu)
 
 }
 
-static void print_slot(emu_dev_slot_t *slot, int index)
-{
-	printf("slot:%d, start:%d, stop:%d, devid:%d, dev_index:%d\n", index, slot->address_start, slot->address_length, slot->device_id, slot->device_index);
-}
+
+
 
 void emulator_print_slots(emulator_t *emu)
 {
-	assert(emu);
-	for(int i = 0; i < emu->stable_slots; ++i)
-	{
-		print_slot(&emu->device_slots[i], i);
-	}
+
 }
+*/

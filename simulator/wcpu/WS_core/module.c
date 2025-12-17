@@ -50,7 +50,6 @@ WS_module_t *WS_module_create(const char *filepath)
 	//this is not a safe reference to the device_description, but all device_descriptions should be static
 	module->dev_desc = get_desc();
 
-	printf("%s\n", module->dev_desc->dev_name);
 	assert(module->dev_desc);
 	return module;
 }

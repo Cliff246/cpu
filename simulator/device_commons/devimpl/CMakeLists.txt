@@ -4,7 +4,6 @@ set(SIMULATOR_DEV_IMPL
 	${CMAKE_CURRENT_SOURCE_DIR}/device_message.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_mailbox.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device_command.c
-	${CMAKE_CURRENT_SOURCE_DIR}/device_flags.c
 	${CMAKE_CURRENT_SOURCE_DIR}/device.c
 )
 

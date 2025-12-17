@@ -3,6 +3,7 @@
 #include "device_description.h"
 #include "device_vtable.h"
 #include "wcpu_device_config_setting.h"
+#include "device_command_impl.h"
 #include "core.h"
 #include <stdlib.h>
 #include <assert.h>
@@ -12,9 +13,7 @@
 
 static const WS_dev_vtable_t vtable =
 {
-	.cmd = device_wcpu_cmd,
-	.config_free = device_free_config_setting_wcpu,
-	.config_init = device_init_config_setting_wcpu,
+
 	.init = device_wcpu_init,
 	.print = device_wcpu_print,
 	.read = device_wcpu_read,
@@ -36,8 +35,24 @@ static WS_dev_desc_t wcpu_emu_desc =
 
 const WS_dev_desc_t *WS_get_dev_desc(void)
 {
+	static bool initialized = false;
+
+	if(initialized == false)
+	{
+		p_hashtable_t hashtable = new_hash_table(0, WS_cmd_producer_free);
+
+
+		wcpu_emu_desc.flag_table = hashtable;
+		initialized = true;
+	}
+
+
 	return &wcpu_emu_desc;
 }
+
+
+
+
 
 
 

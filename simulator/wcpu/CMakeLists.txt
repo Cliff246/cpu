@@ -21,15 +21,14 @@ set(WS_CONSOLE_CFILES
 SET(WS_IO_CFILES
 
 	${CMAKE_CURRENT_SOURCE_DIR}/WS_io/export.c
-	${CMAKE_CURRENT_SOURCE_DIR}/WS_io/input_configure.c
-	${CMAKE_CURRENT_SOURCE_DIR}/WS_io/input_parser.c
 	${CMAKE_CURRENT_SOURCE_DIR}/WS_io/WSio.c
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_io/ws_sim_configure.c
 
 )
 
 SET(WS_SIM_CFILES
 	${CMAKE_CURRENT_SOURCE_DIR}/WS_sim/simulator.c
-	${CMAKE_CURRENT_SOURCE_DIR}/WS_sim/simulator_bus_entry.c
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_sim/simulator_bus_slot.c
 
 )
 

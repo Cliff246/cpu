@@ -5,6 +5,8 @@
 #include "device_commons.h"
 #include "device_description.h"
 #include "device_vtable.h"
+#include "hashmap.h"
+#include "device_command_impl.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -13,11 +15,10 @@
 #include <assert.h>
 
 
+
 static const WS_dev_vtable_t vtable =
 {
-	.cmd = device_ram_cmd,
-	.config_free = device_free_config_setting_ram,
-	.config_init = device_init_config_setting_ram,
+	.stringfy = device_ram_stringfy,
 	.init = device_ram_init,
 	.print = device_ram_print,
 	.read = device_ram_read,
@@ -35,17 +36,48 @@ static WS_dev_desc_t ram_desc =
 	.dl_name = "sim_dev_ram",
 	.vtable = &vtable,
 	.extra = NULL,
+
 };
+
+
+
+
+
+
 
 const WS_dev_desc_t *WS_get_dev_desc(void)
 {
+	static bool initialized = false;
+
+	if(initialized == false)
+	{
+		p_hashtable_t hashtable = new_hash_table(DEVICE_RAM_CMD_OPTIONS_COUNT, WS_cmd_producer_free);
+
+		for(int i = 0; i < DEVICE_RAM_CMD_OPTIONS_COUNT; ++i)
+		{
+
+			WS_dev_cmd_flag_producer_t *producer = WS_cmd_flag_producer_create(device_ram_producer_names[i], device_ram_producer_types[i], device_ram_producer_functions[i]);
+
+			addto_hash_table(hashtable, device_ram_producer_names[i], producer);
+
+		}
+
+		print_hash_table(hashtable);
+		ram_desc.flag_table = hashtable;
+		initialized = true;
+	}
+
+
 	return &ram_desc;
 }
 
 
 
 
-
+WS_dev_cmd_t * device_ram_stringfy(WS_dev_t *dev, char *string)
+{
+	return NULL;
+}
 
 
 
@@ -124,12 +156,12 @@ void device_ram_init(device_t *device, device_command_t *cmd)
 	assert(device != NULL && "device must not be null");
 
 
-	dev_ram_config_setting_t *config = (dev_ram_config_setting_t *)cmd->setting;
+	//dev_ram_config_setting_t *config = (dev_ram_config_setting_t *)cmd->setting;
 
 	dev_ram_t *ram = create_ram(ram_base_size);
 
-	assert(config->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_RESET] && "generate must force a reset");
-	cmd_ram(ram, cmd);
+	//assert(config->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_RESET] && "generate must force a reset");
+	//cmd_ram(ram, cmd);
 	align_ram(device, ram);
 
 
@@ -167,6 +199,12 @@ static void update_ram(dev_ram_t *ram, uint64_t length)
 	return;
 }
 
+static void cmd_ram(dev_ram_t *ram,  WS_dev_cmd_t *cmd)
+{
+
+}
+
+/*
 static void cmd_ram(dev_ram_t *ram,  device_command_t *cmd)
 {
 	assert(ram && cmd);
@@ -234,6 +272,7 @@ static void cmd_ram(dev_ram_t *ram,  device_command_t *cmd)
 	}
 
 }
+*/
 
 static void align_ram(device_t *device, dev_ram_t *ram)
 {

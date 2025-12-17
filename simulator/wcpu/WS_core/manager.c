@@ -9,6 +9,8 @@
 #include "code_decoder.h"
 #include "hydra.h"
 #include "export.h"
+#include "simulator.h"
+#include "ws_sim_configure.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -333,11 +335,16 @@ void init(int argc, char **argv)
 	globalstate.args.argc = argc;
 	globalstate.args.argv = argv;
 	//after seting args
+
+	WS_config_file_t *file = WS_create_config_file("configfiles/basic_config.txt");
+
 	parse_args();
 	//create_cli_context(&globalstate.ctx);
 
-	load_module("./simulator/devices/ram/libsim_dev_ram.so");
-	load_module("./simulator/devices/wcpu_emu/libsim_dev_wcpu_emu.so");
+
+
+
+
 
 
 

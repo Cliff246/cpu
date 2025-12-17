@@ -2,46 +2,41 @@
 #define __SIMULATOR_HEADER__
 
 #include "device.h"
-#include "input_configure.h"
+#include "simulator_bus_slot.h"
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef struct emulator_device_slot
+
+
+
+typedef struct wcpu_simulator
 {
-	//the start and length of devices
-	size_t address_start;
-	size_t address_length;
-	//the device index
-	size_t device_index;
-
-	//the device id
-	int device_id;
-}emu_dev_slot_t;
+	WS_dev_t **dev_list;
+	WS_simulator_bus_slot_t **bus_slot;
+	size_t dev_count;
+	size_t bus_slot_count;
+}WS_simulator_t;
 
 
-typedef struct emulator
-{
-	WS_input_config_t *config;
-	device_t **device_list;
-	emu_dev_slot_t *device_slots;
-	int device_count;
-	int stable_slots;
+WS_dev_t *WS_simulator_get_device_from_id(WS_simulator_t *sim, WS_dev_id_t devid);
+bool WS_simulator_get_device_from_address(WS_simulator_t *sim, WS_dev_t **dev, size_t address);
 
+static void WS_simulator_sort_slots(WS_simulator_t *sim);
 
-}emulator_t;
+WS_simulator_t *WS_simulator_init();
 
-
-device_t *emulator_get_device_from_id(emulator_t *emu, WS_dev_id_t devid);
-bool emulator_get_device_from_address(emulator_t *emulator, device_t **dev, size_t address);
-
-static void emulator_sort_slots(emulator_t *emu);
-emulator_t *emulator_generate(WS_input_config_t *config);
+//add device to simulator
+void WS_simulator_add_device(WS_simulator_t *sim, WS_dev_t *dev);
 
 
 
-void emulator_update(emulator_t *emu);
-void emulator_print_slots(emulator_t *emu);
-static void print_slot(emu_dev_slot_t *slot, int index);
+//loads a group of devices from a config
+//bool WS_simulator_load_config(WS_simulator_t *sim, WS_input_config_t *config);
+
+
+
+void WS_simulator_update(WS_simulator_t *sim);
+void WS_simulator_print_slots(WS_simulator_t *sim);
 
 //todo
 

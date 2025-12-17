@@ -1,3 +1,2 @@
-WCPU
-FAKEIO
-RAM -start 0 "a.bin"
+simulator/devices/ram/libsim_dev_ram.so
+simulator/devices/wcpu_emu/libsim_dev_wcpu_emu.so
