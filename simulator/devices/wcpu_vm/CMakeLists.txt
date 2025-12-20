@@ -19,7 +19,6 @@ set(SIMULATOR_DEVICE_WCPU_VM_EVAL
 	${CMAKE_CURRENT_SOURCE_DIR}/eval/vm_op.c
 	${CMAKE_CURRENT_SOURCE_DIR}/eval/vm_txn.c
 	${CMAKE_CURRENT_SOURCE_DIR}/eval/vm_eval.c
-	${CMAKE_CURRENT_SOURCE_DIR}/eval/vm_io_handle.c
 )
 
 
