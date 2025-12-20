@@ -1,3 +1,5 @@
+
+/*
 #include "vm_cpu_path.h"
 #include "vm_alu.h"
 #include "vm_mem.h"
@@ -30,3 +32,5 @@ vm_cpu_path_vtable_t vm_cpu_path_fn[VM_CPU_PATH_COUNT] =
 		.exec = vm_cpu_path_sys_exec,
 	},
 };
+
+*/

@@ -1,7 +1,9 @@
 
+
+/*
 #include "flags.h"
-#include "vm.h"
-#include "vm_cpu.h"
+#include "vima.h"
+#include "vm_wcpu.h"
 #include "vm_jmp.h"
 #include "vm_cpu_utils.h"
 #include <stdlib.h>
@@ -269,7 +271,6 @@ void jump_submit(cpu_t *cpu, uint64_t subpath, int64_t lane1, int64_t lane2, int
 
 	}
 }
-*/
 
 
 
@@ -316,7 +317,6 @@ uint64_t closest_rel(vima_t *vm, uint64_t ct_addr, uint64_t ct_len, uint64_t rel
 			high = closest - 1;
 	}
 	return closest;
-	*/
 	int64_t closest = 0;
 	if(rel_address  != 0)
 	{
@@ -439,7 +439,6 @@ void jump_return(vima_t *vm)
 	set_pc(pc);
 	cpu->has_jumped = true;
 	//printf("RET pop pc=%lu ipc=%lu sfp=%lu\n", pc, ipc, sfp);
-	*/
 }
 
 void vm_cpu_path_jmp_init(vima_t *vm)
@@ -517,3 +516,4 @@ int64_t vm_cpu_path_jmp_exec(vima_t *vm, char subflag, int64_t lane1, int64_t la
 	}
 	return 0;
 }
+*/

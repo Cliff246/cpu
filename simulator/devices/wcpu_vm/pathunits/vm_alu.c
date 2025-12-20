@@ -1,3 +1,5 @@
+/*
+
 #include "vm.h"
 #include "vm_alu.h"
 #include "flags.h"
@@ -248,3 +250,6 @@ int64_t vm_cpu_path_alu_exec(vima_t *vm, char subflag, int64_t lane1, int64_t la
 	printf("alu:%d (%lld %lld %lld) = %lld\n", subflag, lane1, lane2, lane3, result);
 	return result;
 }
+
+
+*/

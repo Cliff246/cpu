@@ -1,4 +1,5 @@
 
+/*
 #include "vm.h"
 #include "vm_cpu.h"
 #include "vm_mem.h"
@@ -87,3 +88,5 @@ int64_t vm_cpu_path_mem_exec(vima_t *vm, char subflag, int64_t lane1, int64_t la
 	}
 	return result;
 }
+
+*/

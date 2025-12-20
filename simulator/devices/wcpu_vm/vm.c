@@ -1,6 +1,6 @@
 #include "vm.h"
-#include "vm_cpu_path.h"
-#include "vm_cpu.h"
+#include "vm_path.h"
+#include "vm_regs.h"
 #include "device_command.h"
 #include "device_commons.h"
 #include "device_command_impl.h"
@@ -57,7 +57,8 @@ const WS_dev_desc_t *WS_get_dev_desc(void)
 
 void *device_vima_init(device_t *device)
 {
-	return vm_init(1000);
+	//return vm_init(1000);
+	return NULL;
 }
 
 void device_vima_update(device_t *dev)
@@ -105,11 +106,9 @@ vima_t *vm_init(uint64_t memory_size)
 
 	for(int i = 0; i < VM_CPU_PATH_COUNT; ++i)
 	{
-		vm_cpu_path_fn[i].init(vm);
+		//vm_cpu_path_fn[i].init(vm);
 	}
 
-	vm->mem.mem = calloc(memory_size, sizeof(int64_t));
-	vm->mem.size = memory_size;
 
 	return vm;
 }
@@ -118,24 +117,23 @@ vima_t *vm_init(uint64_t memory_size)
 int64_t vm_load(vima_t *vm, uint64_t address)
 {
 
-	assert(address < vm->mem.size);
-	return vm->mem.mem[address];
 }
 
 void vm_store(vima_t *vm, uint64_t address, int64_t data)
 {
-	assert(address < vm->mem.size);
-	vm->mem.mem[address] = data;
 }
 
 void vm_step(vima_t *vm)
 {
-	vm_cpu_step(vm);
+	//vm_cpu_step(vm);
 }
+
+
+/*
 
 void vm_setmemory(vima_t *vm, int64_t *memory, uint64_t size)
 {
-	printf("side: %d\n", size);
+	//printf("side: %lld\n", size);
 	vm->mem.mem = calloc(size, sizeof(int64_t));
 	vm->mem.size = size;
 
@@ -160,3 +158,4 @@ void vm_print_mem(vima_t *vm, uint64_t start, uint64_t stop)
 	}
 
 }
+*/

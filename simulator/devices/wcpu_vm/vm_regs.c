@@ -1,7 +1,8 @@
 
+/*
 #include "vm.h"
-#include "vm_cpu.h"
-#include "vm_cpu_utils.h"
+#include "vm_wcpu.h"
+#include "cpu_utils.h"
 #include "isa.h"
 
 #include <stdio.h>
@@ -12,7 +13,6 @@
 #include <stdbool.h>
 #include <assert.h>
 
-#include "vm_cpu_utils.h"
 
 
 
@@ -105,3 +105,4 @@ void vm_cpu_print_regs(vima_t *vm)
 		printf("reg:%d = %lld\n", i, vm->cpu.user.regs[i]);
 	}
 }
+*/

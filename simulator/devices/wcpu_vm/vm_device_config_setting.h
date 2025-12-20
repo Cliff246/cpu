@@ -1,0 +1,6 @@
+#ifndef __VIRTUAL_MACHINE_CONFIG_HEADER__
+#define __VIRTUAL_MACHINE_CONFIG_HEADER__
+
+
+
+#endif

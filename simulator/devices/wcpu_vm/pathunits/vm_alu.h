@@ -1,7 +1,7 @@
 #ifndef __VM_CPU_PATH_ALU_HEADERS__
 #define __VM_CPU_PATH_ALU_HEADERS__
 
-#include "vm.h"
+#include "vima.h"
 #include <stdint.h>
 #include <stdbool.h>
 

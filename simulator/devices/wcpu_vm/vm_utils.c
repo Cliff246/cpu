@@ -1,5 +1,6 @@
 
 
+/*
 #include "vm.h"
 #include "vm_cpu.h"
 #include "vm_cpu_utils.h"
@@ -8,7 +9,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-/*
 
 inst_t get_inst_from_op(operation_t *op)
 {
@@ -373,7 +373,6 @@ uint32_t get_inst_at_pc_address(uint64_t address)
 	}
 }
 
-*/
 
 
 void vm_push_scd(vima_t *vm, vm_reg_cd_t desc)
@@ -595,3 +594,4 @@ void vm_cpu_set_reg(vima_t *vm, int reg, int64_t content)
 	vm->cpu.user.regs[reg] = content;
 
 }
+*/

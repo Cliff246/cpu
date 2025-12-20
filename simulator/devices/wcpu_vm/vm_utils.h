@@ -1,7 +1,8 @@
 #ifndef __VM_CPU_UTILS_HEADER__
 #define __VM_CPU_UTILS_HEADER__
 
-#include "vm_cpu.h"
+
+
 #include "vm.h"
 #include <stdint.h>
 
@@ -11,26 +12,6 @@ int64_t vm_cpu_get_lane2(vima_t *vm);
 int64_t vm_cpu_get_lane3(vima_t *vm);
 
 
-/*
-inst_t get_inst_from_op(operation_t *op);
-
-
-
-
-
-reg_file_t get_current_file(cpu_t *cpu);
-reg_file_t get_mode_file(cpu_t *cpu, pmode_t mode);
-
-
-operation_t fill_operation(uint32_t inst, int64_t imm);
-
-void decode_operation(operation_t *op);
-
-
-void set_current_file(cpu_t *cpu, reg_file_t file);
-
-void set_mode_file(cpu_t *cpu, reg_file_t file, pmode_t mode);
-*/
 
 
 
@@ -76,9 +57,7 @@ int64_t vm_cpu_get_reg(vima_t *vm,int reg);
 //register set
 void vm_cpu_set_reg(vima_t *vm, int reg, int64_t content);
 
-/*
 
 
-*/
 
 #endif

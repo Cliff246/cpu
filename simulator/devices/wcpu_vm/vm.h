@@ -3,29 +3,28 @@
 
 #include <stdint.h>
 
+typedef struct virtual_machine vima_t;
 
-#include "vm_cpu.h"
+#include "vm_eval.h"
+#include "vm_bus.h"
+#include "vm_regs.h"
 
 #include "device.h"
 #include "token.h"
 #include "device_message.h"
 #include "device_command.h"
 
-
-
-typedef struct
-{
-	int64_t *mem;
-	uint64_t size;
-}vm_mem_t;
+#define STAGES_COUNT 5
 
 typedef struct virtual_machine
 {
+	vm_bus_t bus;
+	vm_eval_live_t *live;
 
+	vm_bookmark_t bookmarks[BOOKMARKS_MAX];
+	
+	vm_regfile_t regs;
 
-
-	vm_mem_t mem;
-	vm_cpu_t cpu;
 
 }vima_t;
 
@@ -46,8 +45,8 @@ void vm_store(vima_t *vm, uint64_t address, int64_t data);
 
 
 
-vima_t *vm_init(uint64_t memory_size);
-void vm_step(vima_t *vm);
+//vima_t *vm_init(uint64_t memory_size);
+//void vm_step(vima_t *vm);
 void vm_setmemory(vima_t *vm, int64_t *memory, uint64_t size);
 void vm_print_mem(vima_t *vm, uint64_t start, uint64_t stop);
 #endif
