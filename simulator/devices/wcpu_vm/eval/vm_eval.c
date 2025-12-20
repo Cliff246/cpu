@@ -1,3 +1,5 @@
+/*
+
 #include "vm_eval.h"
 #include "vm.h"
 #include "vm_bus.h"
@@ -364,3 +366,4 @@ void vm_eval(vima_t *vm)
 }
 
 
+*/

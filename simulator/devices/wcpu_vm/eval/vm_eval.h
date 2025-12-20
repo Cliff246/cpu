@@ -96,7 +96,7 @@ typedef struct
 	vm_eval_stage_finish_t finish;
 	
 	bool waiting;
-	vm_transfer_t buffer[VM_EVAL_BUFFER_SIZE];
+	//vm_transfer_t buffer[VM_EVAL_BUFFER_SIZE];
 
 
 

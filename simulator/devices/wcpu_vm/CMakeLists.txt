@@ -3,9 +3,8 @@ set(SIMULATOR_DEVICE_WCPU_VM
 	${CMAKE_CURRENT_SOURCE_DIR}/vm_path.c
 	${CMAKE_CURRENT_SOURCE_DIR}/vm_regs.c
 	${CMAKE_CURRENT_SOURCE_DIR}/vm_utils.c
-	${CMAKE_CURRENT_SOURCE_DIR}/vm_eval.c
 	${CMAKE_CURRENT_SOURCE_DIR}/vm_bus.c
-
+	
 	${CMAKE_CURRENT_SOURCE_DIR}/vm_device_config_setting.c
 )
 
@@ -16,10 +15,17 @@ SET(SIMULATOR_DEVICE_WCPU_VM_PATHUNITS
 	${CMAKE_CURRENT_SOURCE_DIR}/pathunits/vm_jmp.c
 )
 
+set(SIMULATOR_DEVICE_WCPU_VM_EVAL
+	${CMAKE_CURRENT_SOURCE_DIR}/eval/vm_op.c
+	${CMAKE_CURRENT_SOURCE_DIR}/eval/vm_txn.c
+	${CMAKE_CURRENT_SOURCE_DIR}/eval/vm_eval.c
+	${CMAKE_CURRENT_SOURCE_DIR}/eval/vm_io_handle.c
+)
 
 
 add_library(sim_dev_wcpu_vm SHARED 
 	${SIMULATOR_DEVICE_WCPU_VM}
+	${SIMULATOR_DEVICE_WCPU_VM_EVAL}
 )
 
 include_directories(sim_dev_wcpu_vm PUBLIC
@@ -27,6 +33,7 @@ include_directories(sim_dev_wcpu_vm PUBLIC
 
 	${CMAKE_CURRENT_SOURCE_DIR}/
 	${CMAKE_CURRENT_SOURCE_DIR}/pathunits
+	${CMAKE_CURRENT_SOURCE_DIR}/eval
 	wcpu_commons
 
 
@@ -35,6 +42,7 @@ include_directories(sim_dev_wcpu_vm PUBLIC
 target_include_directories(sim_dev_wcpu_vm PUBLIC
 	${CMAKE_SOURCE_DIR}/flags/
 
+	${CMAKE_CURRENT_SOURCE_DIR}/eval
 	${CMAKE_CURRENT_SOURCE_DIR}/
 	${CMAKE_CURRENT_SOURCE_DIR}/pathunits
 
