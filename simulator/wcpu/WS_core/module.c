@@ -19,7 +19,7 @@
 WS_module_t *WS_global_module_list[WS_GLOBAL_MODULE_LIST_MAX_SIZE] = {NULL};
 
 
-static int WS_get_executable_path(char *out)
+static int WS_get_executable_path(char out[PATH_MAX])
 {
 	errno = 0;
 	char path[PATH_MAX] = {0};
@@ -37,8 +37,10 @@ static int WS_get_executable_path(char *out)
 	}	
 #else 
 	size_t len = readlink("/proc/self/exe", path, size - 1);
+	printf("%s\n", path);
 	if(len < 0)
 		return -1;
+	assert(dirname((char *)path));
 	path[len] = '\0';
 
 #endif
@@ -50,14 +52,12 @@ static int WS_get_executable_path(char *out)
 static char *WS_module_resolve_path(const char *module_filename)
 {
 	
-	char *exe_dir = calloc(PATH_MAX + 1, sizeof(char));
-
+	char exe_dir[PATH_MAX] = {0};
 	
 	int result = WS_get_executable_path(exe_dir);
 
 	if(result < 0)
 	{
-		free(exe_dir);
 		assert(0);
 	}
 
@@ -68,15 +68,19 @@ static char *WS_module_resolve_path(const char *module_filename)
 
 #endif	
 	result = 0;
-	result = snprintf(exe_dir, PATH_MAX, "%s/%s%s", exe_dir, module_filename, suffix);  
-	
+
+	char *out_dir = calloc(PATH_MAX + 1, sizeof(char));
+	assert(out_dir);
+
+	result = snprintf(out_dir, PATH_MAX, "%s/%s%s", exe_dir, module_filename, suffix);  
+	printf("%s %s %s\n", out_dir, module_filename, suffix);	
 	if(result < 0)
 	{
-		free(exe_dir);
+		free(out_dir);
 		assert(0);
 	}
 	printf("%s\n", exe_dir);
-	return exe_dir;
+	return out_dir;
 }
 
 
@@ -94,6 +98,7 @@ static void WS_module_list_fix(void)
 
 	memcpy(WS_global_module_list, temp, sizeof(WS_module_t*) * WS_GLOBAL_MODULE_LIST_MAX_SIZE);
 }
+
 static bool WS_module_list_insert_free(WS_module_t *module)
 {
 	for(int i = 0; i < WS_GLOBAL_MODULE_LIST_MAX_SIZE; ++i)
