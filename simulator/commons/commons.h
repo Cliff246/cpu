@@ -110,6 +110,7 @@
 
 #define REPEAT(FN, N) REPEAT_##N(FN)
 
+#define COUNT(X) X
 
 #define COUNTER1D(X) + 1
 #define COUNTER2D(X, Y) + 1

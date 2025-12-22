@@ -7,6 +7,7 @@ SET(DEVICE_RAM_CFILES
 add_library(sim_dev_ram SHARED ${DEVICE_RAM_CFILES})
 
 
+set(CMAKE_BUILD_TYPE Debug)
 target_include_directories(sim_dev_ram
 	PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/

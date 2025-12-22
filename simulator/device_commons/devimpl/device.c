@@ -80,7 +80,7 @@ void WS_set_device_changed(WS_dev_t *device)
 {
 	assert(device != NULL && "cannot update null device");
 	//device->flags[DEVICE_FLAG_TYPE_INTERNAL_CHANGED] = true;
-	return device->error;
+	return;
 }
 
 

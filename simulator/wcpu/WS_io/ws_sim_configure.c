@@ -36,8 +36,6 @@ static void load_module_containers_config_file(WS_config_file_t *file)
 	open_sourcefile(file->srcfile);
 
 
-
-
 	WS_config_module_container_t *container = NULL;
 
 	bool has_container = false;

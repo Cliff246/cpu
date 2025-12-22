@@ -1,12 +1,83 @@
 #include "module.h"
-#include "dlfcn.h"
+#include <dlfcn.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <stdint.h>
 #include <stdbool.h>
 
+#include <errno.h>
+
+#include <limits.h>
+#include <unistd.h>
+#include <libgen.h>
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif
+
 WS_module_t *WS_global_module_list[WS_GLOBAL_MODULE_LIST_MAX_SIZE] = {NULL};
+
+
+static int WS_get_executable_path(char *out)
+{
+	errno = 0;
+	char path[PATH_MAX] = {0};
+
+	uint32_t size = sizeof(path);
+
+#ifdef __APPLE__
+	char *temp = getcwd(path, size);
+	if(errno != 0)
+	{
+		
+		perror("get working directory failed");
+		assert(0);	
+       
+	}	
+#else 
+	size_t len = readlink("/proc/self/exe", path, size - 1);
+	if(len < 0)
+		return -1;
+	path[len] = '\0';
+
+#endif
+	strncpy(out, path, size);
+	out[PATH_MAX - 1] = '\0';
+	return 0;	
+}
+
+static char *WS_module_resolve_path(const char *module_filename)
+{
+	
+	char *exe_dir = calloc(PATH_MAX + 1, sizeof(char));
+
+	
+	int result = WS_get_executable_path(exe_dir);
+
+	if(result < 0)
+	{
+		free(exe_dir);
+		assert(0);
+	}
+
+#ifdef __APPLE__
+	const char *suffix = ".dylib";
+#else
+	const char *suffix = ".so";
+
+#endif	
+	result = 0;
+	result = snprintf(exe_dir, PATH_MAX, "%s/%s%s", exe_dir, module_filename, suffix);  
+	
+	if(result < 0)
+	{
+		free(exe_dir);
+		assert(0);
+	}
+	printf("%s\n", exe_dir);
+	return exe_dir;
+}
 
 
 static void WS_module_list_fix(void)
@@ -55,11 +126,14 @@ void WS_module_free(WS_module_t *module)
 }
 
 
-WS_module_t *WS_module_create(const char *filepath)
+WS_module_t *WS_module_create(const char *filename)
 {
 
 
 	const int flags = RTLD_NOW;
+
+	char *filepath = WS_module_resolve_path(filename); 
+	assert(filepath);
 
 	void *handle = dlopen(filepath, flags);
 

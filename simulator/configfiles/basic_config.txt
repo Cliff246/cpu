@@ -1,6 +1,6 @@
-"simulator/devices/ram/libsim_dev_ram.so"
-START 0 SIZE 1000 FILENAME "asmtests/sort.asm"
+"libsim_dev_ram"
+START 0 SIZE 1000 FILENAME "./asmtests/sort.asm"
 START 2000 SIZE 10006 FILENAME "a.bin"
-"simulator/devices/wcpu_emu/libsim_dev_wcpu_emu.so"
+"libsim_dev_wcpu_emu"
 
-"simulator/devices/wcpu_vm/libsim_dev_wcpu_vm.so"
+"libsim_dev_wcpu_vm"

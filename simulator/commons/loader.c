@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <assert.h>
 
 static void force_close_sourcefile(sourcefile_t *sf)
 {
@@ -26,9 +27,11 @@ bool get_canopen_sourcefile(sourcefile_t *sf)
 	}
 
 	FILE* test = fopen(sf->path, "r");
-	if(test == NULL)
+	if(errno != 0)
+		assert(0);
+	if(test == NULL )
 	{
-
+		
 
 		return false;
 	}

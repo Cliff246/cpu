@@ -6,8 +6,11 @@
 #include "ram_device_config_setting.h"
 #include "device_command_impl.h"
 
+#include <errno.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <assert.h>
+#include <stdio.h>
 
 
 WS_dev_cmd_flag_apply_fn device_ram_producer_functions[DEVICE_RAM_CMD_OPTIONS_COUNT] =
@@ -51,10 +54,12 @@ static size_t file_len(FILE *fp)
 //returns true on change to size and false on no updated size
 static bool load_file(dev_ram_t *ram, const char *file_name)
 {
+	errno = 0;
 	FILE *fp = fopen(file_name, "rb");
-	if(fp == NULL)
+	if(fp == NULL || errno != 0)
 	{
 		printf("file: %s not openable\n", file_name);
+		assert(0);
 		exit(1);
 
 	}

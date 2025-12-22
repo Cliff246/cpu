@@ -46,6 +46,7 @@ add_executable(wcpu
 
 
 
+set(CMAKE_BUILD_TYPE Debug)
 target_link_libraries(wcpu
 	wcpu_commons
 	wcpu_emu_inputs

@@ -1,4 +1,6 @@
 #include "isa.h"
+#include <stdio.h>
+
 
 inst_t decode_inst(int32_t instr)
 {
