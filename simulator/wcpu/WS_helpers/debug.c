@@ -7,7 +7,7 @@
 		return STR(name);}		\
 
 #define ALU_CASE(post) CASE(ALU_ ## post)
-#define JMP_CASE(post) CASE(JP_ ## post)
+#define JMP_CASE(post) CASE(JMP_ ## post)
 #define MEM_CASE(post) CASE(MEM_ ## post)
 #define SYS_CASE(post) CASE(SYS_ ## post)
 

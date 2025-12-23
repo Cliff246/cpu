@@ -1,11 +1,10 @@
 
 
-/*
 #include "flags.h"
-#include "vima.h"
-#include "vm_wcpu.h"
+#include "vm.h"
+#include "vm_path.h"
 #include "vm_jmp.h"
-#include "vm_cpu_utils.h"
+#include "vm_utils.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -421,12 +420,11 @@ void jump_call(vima_t *vm, uint64_t target, char immf)
 
 	jump_to(cpu, target);
 */
-}
+/*
 
 void jump_return(vima_t *vm)
 {
 	assert(0);
-	/*
 	set_sp(get_sfp());
 
     uint64_t sfp = load(dec_sp(1));   // last pushed
@@ -517,3 +515,48 @@ int64_t vm_cpu_path_jmp_exec(vima_t *vm, char subflag, int64_t lane1, int64_t la
 	return 0;
 }
 */
+
+vm_op_status_t vm_JMP_JMP_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+
+vm_op_status_t vm_JMP_BEQ_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+
+vm_op_status_t vm_JMP_BNE_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+
+vm_op_status_t vm_JMP_BLE_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+
+vm_op_status_t vm_JMP_BLT_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+
+vm_op_status_t vm_JMP_CALL_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+
+vm_op_status_t vm_JMP_RET_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+
+vm_op_status_t vm_JMP_BLEU_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+
+vm_op_status_t vm_JMP_BLTU_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}

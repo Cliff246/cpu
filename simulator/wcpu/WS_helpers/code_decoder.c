@@ -7,7 +7,6 @@
 #include <stdio.h>
 
 
-
 char path_codes[16][PATH_STR_SIZE] =
 {
 	[PATH_ALU] = "alu",
@@ -76,15 +75,15 @@ char subpath_codes[16][0xff][PATH_STR_SIZE] =
 	},
 	[PATH_JMP] =
 	{
-		[JP_JMP] = "jmp",
-		[JP_BNE] = "bne",
-		[JP_BLT] = "blt",
-		[JP_BEQ] = "beq",
-		[JP_BLE] = "ble",
-		[JP_CALL]= "call",
-		[JP_RET] = "ret",
-		[JP_BLEU]= "bleu",
-		[JP_BLTU]= "bltu",
+		[JMP_JMP] = "jmp",
+		[JMP_BNE] = "bne",
+		[JMP_BLT] = "blt",
+		[JMP_BEQ] = "beq",
+		[JMP_BLE] = "ble",
+		[JMP_CALL]= "call",
+		[JMP_RET] = "ret",
+		[JMP_BLEU]= "bleu",
+		[JMP_BLTU]= "bltu",
 	},
 	[PATH_SYS] =
 	{

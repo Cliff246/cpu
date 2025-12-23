@@ -1,6 +1,4 @@
 "libsim_dev_ram"
 START 0 SIZE 1000 FILENAME "./asmtests/sort.asm"
 START 2000 SIZE 10006 FILENAME "a.bin"
-"libsim_dev_wcpu_emu"
-
 "libsim_dev_wcpu_vm"

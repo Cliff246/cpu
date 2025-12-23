@@ -22,7 +22,7 @@ typedef struct virtual_machine
 	vm_eval_live_t *live;
 
 	vm_bookmark_t bookmarks[BOOKMARKS_MAX];
-	
+
 	vm_regfile_t regs;
 
 

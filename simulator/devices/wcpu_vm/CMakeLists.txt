@@ -3,8 +3,9 @@ set(SIMULATOR_DEVICE_WCPU_VM
 	${CMAKE_CURRENT_SOURCE_DIR}/vm_path.c
 	${CMAKE_CURRENT_SOURCE_DIR}/vm_regs.c
 	${CMAKE_CURRENT_SOURCE_DIR}/vm_utils.c
+	${CMAKE_CURRENT_SOURCE_DIR}/vm_op.c
 	${CMAKE_CURRENT_SOURCE_DIR}/vm_bus.c
-	
+
 	${CMAKE_CURRENT_SOURCE_DIR}/vm_device_config_setting.c
 )
 
@@ -16,15 +17,15 @@ SET(SIMULATOR_DEVICE_WCPU_VM_PATHUNITS
 )
 
 set(SIMULATOR_DEVICE_WCPU_VM_EVAL
-	${CMAKE_CURRENT_SOURCE_DIR}/eval/vm_op.c
 	${CMAKE_CURRENT_SOURCE_DIR}/eval/vm_txn.c
 	${CMAKE_CURRENT_SOURCE_DIR}/eval/vm_eval.c
 )
 
 
-add_library(sim_dev_wcpu_vm SHARED 
+add_library(sim_dev_wcpu_vm SHARED
 	${SIMULATOR_DEVICE_WCPU_VM}
 	${SIMULATOR_DEVICE_WCPU_VM_EVAL}
+	${SIMULATOR_DEVICE_WCPU_VM_PATHUNITS}
 )
 
 include_directories(sim_dev_wcpu_vm PUBLIC

@@ -1,9 +1,13 @@
 //
+
 #include "vm_sys.h"
-#include "vima.h"
+#include "vm.h"
+#include "flags.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+
+
 /*
 
 #define INST(S, M, A)  SYS_ ## S ## _ ## M ## _ ## A
@@ -69,7 +73,7 @@ int64_t vm_cpu_path_sys_exec(vima_t *vm, char subflag, int64_t lane1, int64_t la
 			break;
 
 
-			
+
 		case SYS_BREAK:
 			break;
 	}

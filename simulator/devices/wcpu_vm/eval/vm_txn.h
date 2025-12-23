@@ -2,9 +2,9 @@
 #define __VM_TRANSACTION_HEADER__
 
 #include "vm.h"
-#include "vm_op.h"
 #include "vm_bus.h"
 #include "commons.h"
+#include "vm_op.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +16,7 @@
 #define VM_TXN_STATE_LIST(X)	\
 	X(INVAL)					\
 	X(FAULT)					\
+	X(INIT)						\
 	X(FETCH)					\
 	X(DECODE)					\
 	X(SOURCE)					\
@@ -28,7 +29,7 @@
 
 #define VM_TXN_STATE_NAME(X) VM_TXN_ ## X
 #define VM_TXN_STATE_ENUM(X) VM_TXN_STATE_NAME(X),
-typedef enum 
+typedef enum
 {
 	VM_TXN_STATE_LIST(VM_TXN_STATE_ENUM)
 }vm_txn_state_t;
@@ -52,81 +53,96 @@ extern char *vm_txn_state_str[VM_TXN_STATE_COUNT];
 #define VM_TXN_FLAG_MASK_NAME(X) VM_TXN_FLAG_##X ## _MASK
 #define VM_TXN_FLAG_MASK_ENUM(X, Y) VM_TXN_FLAG_MASK_NAME(Y)= 1 << X,
 #define VM_TXN_FLAG_TYPE_ENUM(X, Y) VM_TXN_FLAG_NAME(Y),
-typedef enum 
+typedef enum
 {
-	VM_TXN_FLAG_LIST(VM_TXN_FLAG_MASK_ENUM)	
+	VM_TXN_FLAG_LIST(VM_TXN_FLAG_MASK_ENUM)
 }vm_txn_flag_mask_t;
 
-typedef enum 
+typedef enum
 {
-	VM_TXN_FLAG_LIST(VM_TXN_FLAG_TYPE_ENUM)	
+	VM_TXN_FLAG_LIST(VM_TXN_FLAG_TYPE_ENUM)
 }vm_txn_flag_t;
 
-#define VM_TXN_FLAG_COUNT (0 VM_TXN_FLAG_LIST(COUNTER2D)) 
+#define VM_TXN_FLAG_COUNT (0 VM_TXN_FLAG_LIST(COUNTER2D))
 
 #define VM_TXN_FLAG_BITMASK_SIZE (VM_TXN_FLAG_COUNT / 8 + 1)
 
 extern char *vm_txn_flag_str[VM_TXN_FLAG_COUNT];
 extern vm_txn_flag_mask_t vm_txn_flag_mask_ary[VM_TXN_FLAG_COUNT];
 
-typedef struct vm_transaction 
+typedef struct vm_transaction
 {
 	//opcode
 	vm_txn_state_t state;
-	
-	
-	vm_op_t op;
-	
-	struct 
+
+
+	struct
+	{
+		inst_t op;
+		uint64_t pc;
+		uint64_t ipc;
+		int32_t inst;
+		int64_t imm;
+	}op;
+
+	struct
 	{
 
 		int64_t rs1, rs2, rs3, side;
 	}srcs;
-	
-	struct 
+
+	struct
 	{
 		int64_t lane1, lane2, lane3;
-	}lanes;
+		int dst;
+		bool swap;
+	}inp;
 
-	struct 
+	struct
 	{
+		int dst;
 		int64_t out;
 	}out;
 
-	struct 
+	struct
 	{
 		uint64_t x, y;
 		uint64_t lim;
 	}iter;
 
-	struct 
+	struct
 	{
-		vm_bus_hnd_t hnd;
-
+		vm_bus_port_id_t port;
 	}handle;
 
-	struct 
+	struct
+	{
+		vm_op_status_t status;
+		vm_op_t *op;
+	}inflight;
+
+	struct
 	{
 		//follows over
-		int s1, s2;
+		int64_t s1, s2, s3;
 		//temporary to a state
 		//will be reset after the stage transitons
-		int t1, t2;
+		int64_t t1, t2, t3, t4;
 	}local;
-	
+
 	char flags[VM_TXN_FLAG_BITMASK_SIZE];
-	struct 
+	struct
 	{
 		int type;
 		void *local;
-		
+
 	}extra;
 
-	struct 
+	struct
 	{
 		bool held;
-		vm_txn_state_t next;			
-	}next;	
+		vm_txn_state_t next;
+	}next;
 
 
 }vm_txn_t;
@@ -134,6 +150,7 @@ typedef struct vm_transaction
 
 void vm_txn_state_inval(vima_t *vm, vm_txn_t *txn);
 void vm_txn_state_fault(vima_t *vm, vm_txn_t *txn);
+void vm_txn_state_init(vima_t *vm, vm_txn_t *txn);
 void vm_txn_state_fetch(vima_t *vm, vm_txn_t *txn);
 void vm_txn_state_decode(vima_t *vm, vm_txn_t *txn);
 void vm_txn_state_source(vima_t *vm, vm_txn_t *txn);
@@ -150,6 +167,8 @@ static void (*txn_state_handle_ary[])(vima_t *vm, vm_txn_t *txn) =
 {
 	vm_txn_state_inval,
 	vm_txn_state_fault,
+	vm_txn_state_init,
+
 	vm_txn_state_fetch,
 	vm_txn_state_decode,
 	vm_txn_state_source,
@@ -159,7 +178,7 @@ static void (*txn_state_handle_ary[])(vima_t *vm, vm_txn_t *txn) =
 	vm_txn_state_output,
 	vm_txn_state_retire,
 	vm_txn_state_done,
-	
+
 };
 
 
@@ -174,7 +193,7 @@ char *vm_txn_to_str(vm_txn_t *txn);
 
 
 void vm_txn_switch_state(vima_t *vm, vm_txn_t *txn);
-void vm_txn_advance(vima_t *vm, vm_txn_t *txn); 
+void vm_txn_advance(vima_t *vm, vm_txn_t *txn);
 
 
 

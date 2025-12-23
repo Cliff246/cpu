@@ -1,23 +1,66 @@
 
-/*
+
 #include "vm.h"
-#include "vm_cpu.h"
+#include "vm_op.h"
+#include "vm_txn.h"
 #include "vm_mem.h"
-#include "vm_cpu_utils.h"
 #include "flags.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
 
 
+vm_op_status_t vm_MEM_LDI_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
 
+}
+vm_op_status_t vm_MEM_STI_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+vm_op_status_t vm_MEM_SP_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+vm_op_status_t vm_MEM_SFP_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+vm_op_status_t vm_MEM_LDS_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+vm_op_status_t vm_MEM_STS_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+
+vm_op_status_t vm_MEM_INCSP_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+
+vm_op_status_t vm_MEM_DECSP_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+
+vm_op_status_t vm_MEM_PUSH_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+
+vm_op_status_t vm_MEM_POP_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
 
 
 void vm_cpu_path_mem_init(vima_t *vm)
 {
 
 }
-
+/*
 int64_t vm_cpu_path_mem_exec(vima_t *vm, char subflag, int64_t lane1, int64_t lane2, int64_t lane3, bool swap)
 {
 	uint64_t address, sd, ld;

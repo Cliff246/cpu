@@ -5,6 +5,9 @@
 #include "device_commons.h"
 #include "device_command_impl.h"
 #include "device_description.h"
+#include "vm_op.h"
+#include "vm_txn.h"
+
 #include <stdlib.h>
 #include <stdint.h>
 #include <assert.h>
@@ -57,27 +60,93 @@ const WS_dev_desc_t *WS_get_dev_desc(void)
 
 void *device_vima_init(device_t *device)
 {
+	vima_t *vm = calloc(1, sizeof(vima_t));
+	vm_init_bus(vm);
+
+
+	vm_bus_port_id_t port_id = vm_bus_create_port(vm, VM_ADDR_KERNAL);
+
+	vm_bus_evnt_t bus_event =
+	{
+		.evnt.load = {.addr = 0},
+		.type = VM_IO_LOAD
+	};
+	vm_bus_hnd_t hnd =  vm_bus_put_evnt(vm, port_id, bus_event);
+
+	vm_print_bus(vm);
+
+	return vm;
 	//return vm_init(1000);
-	return NULL;
 }
 
 void device_vima_update(device_t *dev)
 {
+	vima_t *vm = (vima_t *)dev->ptr;
+
+
+
 	return;
 }
 
 bool device_vima_read(WS_dev_t *dev, WS_dev_msg_t *msg)
 {
+	vima_t *vm = (vima_t *)dev->ptr;
+	for(int i = 0; i < BUS_MAX_HANDLES; ++i)
+	{
+		vm_hnd_t *hnd = &vm->bus.handles[i];
+		if(hnd->used)
+		{
+			if(hnd->evnt.type == VM_IO_LOAD)
+			{
+				if(hnd->evnt.evnt.load.addr == msg->address)
+				{
+					hnd->internal.has_response = true;
+					hnd->internal.response.resp.load_response.value = msg->value;
+
+					return;
+				}
+			}
+		}
+	}
+
+
 	return false;
 }
 
 bool device_vima_send(WS_dev_t *dev, WS_dev_msg_t **msg)
 {
+	vima_t *vm = (vima_t *)dev->ptr;
+
+
+	for(int i = 0; i < BUS_MAX_HANDLES; ++i)
+	{
+		vm_hnd_t *hnd = &vm->bus.handles[i];
+		if(hnd->used)
+		{
+			if(hnd->internal.has_send == false)
+			{
+				if(hnd->evnt.type == VM_IO_LOAD)
+				{
+
+					*msg = WS_device_message_create(dev->desc, dev->id, -1,DEVMSG_READ_SEND, hnd->evnt.evnt.load.addr, 0);
+				}
+				else
+				{
+					*msg = WS_device_message_create(dev->desc, dev->id, -1,DEVMSG_WRITE, hnd->evnt.evnt.store.addr, hnd->evnt.evnt.store.val);
+				}
+				hnd->internal.has_send = true;
+				return true;
+			}
+		}
+	}
+
 	return false;
 }
 
 void device_vima_print(device_t *dev)
 {
+	vima_t *vm = (vima_t *)dev->ptr;
+
 	return;
 }
 
@@ -95,22 +164,14 @@ WS_dev_cmd_t *device_vima_stringfy(toklex_t *tl)
 
 void device_vima_commit(WS_dev_t *dev)
 {
+	vima_t *vm = (vima_t *)dev->ptr;
 
 
 }
 
 vima_t *vm_init(uint64_t memory_size)
 {
-	vima_t *vm = calloc(1, sizeof(vima_t));
-	assert(vm);
 
-	for(int i = 0; i < VM_CPU_PATH_COUNT; ++i)
-	{
-		//vm_cpu_path_fn[i].init(vm);
-	}
-
-
-	return vm;
 }
 
 

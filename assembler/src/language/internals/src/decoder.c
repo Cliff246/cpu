@@ -293,15 +293,15 @@ int get_jmp_subpath(char *keyword)
 	};
 
 	const int opvalue[] = {
-		JP_JMP,
-		JP_BNE,
-		JP_BLT,
-		JP_BEQ,
-		JP_BLE,
-		JP_CALL,
-		JP_RET,
-		JP_BLEU,
-		JP_BLTU,
+		JMP_JMP,
+		JMP_BNE,
+		JMP_BLT,
+		JMP_BEQ,
+		JMP_BLE,
+		JMP_CALL,
+		JMP_RET,
+		JMP_BLEU,
+		JMP_BLTU,
 	};
 
 	int code = determine_code(keyword, jmp_mnemonics, ARYSIZE(jmp_mnemonics));

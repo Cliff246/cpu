@@ -169,15 +169,15 @@
 
 
 //branch equal
-#define JP_BEQ 		0x01
+#define JMP_BEQ 		0x01
 //branch not equal
-#define JP_BNE		0x02
+#define JMP_BNE		0x02
 //jump jmp
-#define JP_JMP		0x03
+#define JMP_JMP		0x03
 //jmp branch less than
-#define JP_BLT		0x04
+#define JMP_BLT		0x04
 //jmp branch less than equal
-#define JP_BLE		0x05
+#define JMP_BLE		0x05
 
 
 
@@ -187,12 +187,12 @@
 
 //call function
 //
-#define JP_CALL		0x06
+#define JMP_CALL		0x06
 //return from function
-#define JP_RET		0x07
+#define JMP_RET		0x07
 
-#define JP_BLTU		0x08
-#define JP_BLEU		0x09
+#define JMP_BLTU		0x08
+#define JMP_BLEU		0x09
 
 
 //SYS
