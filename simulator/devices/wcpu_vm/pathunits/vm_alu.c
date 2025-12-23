@@ -23,7 +23,7 @@ static uint64_t arithmetic_shift_right(uint64_t value, uint64_t shift)
 }
 
 
-#define INST(x) static int64_t _vm_alu_ ## x(vima_t *vm, int64_t lhs, int64_t rhs)
+#define INST(x) static int64_t _vm_alu_ ## x(int64_t lhs, int64_t rhs)
 
 
 #define LANE1 vm->cpu.pre.lane1
@@ -186,7 +186,7 @@ INST(CNE)
 
 INST(NONE) {}
 
-int64_t (*alu_fn[255])(vima_t *vm, int64_t lhs, int64_t rhs) = {_vm_alu_NONE};
+int64_t (*alu_fn[255])(int64_t lhs, int64_t rhs) = {_vm_alu_NONE};
 
 #define SET(x) alu_fn[ALU_ ## x] = _vm_alu_ ## x
 
@@ -223,14 +223,20 @@ void vm_cpu_path_alu_init(vima_t *vm)
 	set_alu_instructions();
 }
 
-int64_t vm_cpu_path_alu_exec(vima_t *vm, char subflag, int64_t lane1, int64_t lane2, int64_t lane3, bool swap)
+int64_t vm_alu_exec( char subflag, int64_t lane1, int64_t lane2, int64_t lane3, bool swap)
 {
+	static bool init = false;
+	if(init == false)
+	{
+		set_alu_instructions();
+		init = true;
+	}
+
 
 	int64_t lhs = lane1;
 	int64_t rhs, opp;
 	if(swap)
 	{
-		printf("swaped\n");
 
 		rhs = lane3;
 		opp = lane2;
@@ -241,7 +247,7 @@ int64_t vm_cpu_path_alu_exec(vima_t *vm, char subflag, int64_t lane1, int64_t la
 		opp = lane3;
 	}
 	//before
-	int64_t result = alu_fn[subflag](vm, lhs, rhs);
+	int64_t result = alu_fn[subflag]( lhs, rhs);
 	//after
 	result = result + opp;
 
@@ -255,25 +261,45 @@ int64_t vm_cpu_path_alu_exec(vima_t *vm, char subflag, int64_t lane1, int64_t la
 vm_op_status_t vm_ALU_ADD_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
 
+
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
 }
 
 vm_op_status_t vm_ALU_SUB_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+
+	return VM_OP_STATUS_DONE;
 
 }
 
 vm_op_status_t vm_ALU_SUBU_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
 
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
+
 }
 
 vm_op_status_t vm_ALU_AND_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
 
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
+
 }
 
 vm_op_status_t vm_ALU_OR_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
 
 }
 
@@ -282,84 +308,152 @@ vm_op_status_t vm_ALU_OR_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 vm_op_status_t vm_ALU_XOR_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
 
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
+
 }
 
 vm_op_status_t vm_ALU_SLL_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
 
 }
 
 vm_op_status_t vm_ALU_SRL_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
 
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
+
 }
 
 vm_op_status_t vm_ALU_SRA_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
 
 }
 
 vm_op_status_t vm_ALU_DIV_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
 
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
+
 }
 
 vm_op_status_t vm_ALU_REM_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
 
 }
 
 vm_op_status_t vm_ALU_MUL_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
 
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
+
 }
 
 vm_op_status_t vm_ALU_DIVU_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
 
 }
 
 vm_op_status_t vm_ALU_MULHI_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
 
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
+
 }
 
 vm_op_status_t vm_ALU_MULU_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
 
 }
 
 vm_op_status_t vm_ALU_MULUS_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
 
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
+
 }
 
 vm_op_status_t vm_ALU_NOT_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
 
 }
 
 vm_op_status_t vm_ALU_CLT_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
 
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
+
 }
 
 vm_op_status_t vm_ALU_CLE_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
 
 }
 
 vm_op_status_t vm_ALU_CLTU_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
 
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
+
 }
 
 vm_op_status_t vm_ALU_CEQ_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
 
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+	return VM_OP_STATUS_DONE;
+
 }
 
 vm_op_status_t vm_ALU_CNE_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+	txn->out.out = vm_alu_exec(op->subpath, txn->inp.lane1, txn->inp.lane2, txn->inp.lane3, txn->inp.swap);
+
+
+	return VM_OP_STATUS_DONE;
 
 }

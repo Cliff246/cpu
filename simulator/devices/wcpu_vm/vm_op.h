@@ -2,7 +2,6 @@
 #define __VM_OP_HEADER__
 
 #include "isa.h"
-#include "vm.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -15,12 +14,13 @@
 
 typedef struct vm_operation vm_op_t;
 typedef struct vm_transaction vm_txn_t;
+typedef struct virtual_machine vima_t;
 
-typedef enum
+typedef enum vm_op_status
 {
 	VM_OP_STATUS_INVAL,
 	VM_OP_STATUS_LOADING,
-	VM_OP_STATUS_WRITING,
+	VM_OP_STATUS_WAITING,
 	VM_OP_STATUS_DONE,
 }vm_op_status_t;
 

@@ -17,7 +17,7 @@ typedef enum
 	VM_CPU_MODE_USER
 }vm_cpu_mode_t;
 
-	
+
 
 
 typedef struct
@@ -79,6 +79,7 @@ typedef struct
 
 
 
+void vm_cpu_print_regs(vima_t *vm);
 
 
 

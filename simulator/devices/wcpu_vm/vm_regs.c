@@ -1,8 +1,8 @@
 
-/*
+
 #include "vm.h"
-#include "vm_wcpu.h"
-#include "cpu_utils.h"
+#include "vm_regs.h"
+#include "vm_utils.h"
 #include "isa.h"
 
 #include <stdio.h>
@@ -13,7 +13,7 @@
 #include <stdbool.h>
 #include <assert.h>
 
-
+/*
 
 
 
@@ -97,12 +97,12 @@ void vm_cpu_set_inital_cd(vima_t *vm)
 	vm->cpu.user.code_desc.ipc_len = vm->mem.mem[5];
 
 }
-
+*/
 void vm_cpu_print_regs(vima_t *vm)
 {
 	for (int i = 0; i < 64; ++i)
 	{
-		printf("reg:%d = %lld\n", i, vm->cpu.user.regs[i]);
+		printf("reg:%d = %lld\n", i, vm->regs.regs[i]);
 	}
 }
-*/
+

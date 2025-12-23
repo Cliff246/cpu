@@ -51,6 +51,8 @@ typedef struct
 }vm_bus_evnt_t;
 
 
+void vm_print_bus_event(vm_bus_evnt_t *event);
+
 
 typedef struct
 {
@@ -115,8 +117,8 @@ typedef struct
 
 }vm_bus_t;
 
-static vm_port_t *vm_find_port(vima_t *vm, vm_bus_port_id_t id);
-static void vm_bus_free_handle(vima_t *vm, vm_bus_hnd_t hnd);
+vm_port_t *vm_find_port(vima_t *vm, vm_bus_port_id_t id);
+void vm_bus_free_handle(vima_t *vm, vm_bus_hnd_t hnd);
 vm_bus_port_id_t vm_bus_create_port(vima_t *vm, vm_addr_mode_t mode);
 //puts event and submits it to the device system
 vm_bus_hnd_t vm_bus_put_evnt(vima_t *vm, vm_bus_port_id_t port, vm_bus_evnt_t evnt);

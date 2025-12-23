@@ -8,7 +8,7 @@
 #include <assert.h>
 
 //o(n) haha... fuck
-static vm_port_t *vm_find_port(vima_t *vm, vm_bus_port_id_t id)
+vm_port_t *vm_find_port(vima_t *vm, vm_bus_port_id_t id)
 {
 	vm_bus_t *bus = &vm->bus;
 	assert(id >= 0 && id < BUS_MAX_PORTS);
@@ -16,7 +16,7 @@ static vm_port_t *vm_find_port(vima_t *vm, vm_bus_port_id_t id)
 
 }
 
-static void vm_bus_free_handle(vima_t *vm, vm_bus_hnd_t hnd)
+void vm_bus_free_handle(vima_t *vm, vm_bus_hnd_t hnd)
 {
 	memset(&vm->bus.handles[hnd], 0, sizeof(vm_hnd_t));
 	vm->bus.handles[hnd].hnd = hnd;
@@ -190,9 +190,34 @@ void vm_print_bus(vima_t *vm)
 void vm_print_hnd(vm_hnd_t *hnd)
 {
 	printf("\n hnd_id %d: hnd_port: %d\n hnd_used:%d\n", hnd->hnd, hnd->port, hnd->used);
+	vm_print_bus_event(&hnd->evnt);
 }
 
 void vm_print_port(vm_port_t *port)
 {
 	printf("\n port_id: %d\n port_handles: %d\n port_used: %d\n port mode: %d\n", port->id, port->handles, port->used, port->mode);
+}
+
+static void vm_print_bus_event_store(vm_bus_evnt_store_t *store)
+{
+	printf("store[%llu] = %lld\n", store->addr, store->val);
+}
+static void vm_print_bus_event_load(vm_bus_evnt_load_t *load)
+{
+	printf("load [%llu] \n", load->addr);
+}
+
+void vm_print_bus_event(vm_bus_evnt_t *event)
+{
+	switch(event->type)
+	{
+		case VM_IO_LOAD:
+			vm_print_bus_event_load(&event->evnt.load);
+			break;
+		case VM_IO_STORE:
+			vm_print_bus_event_store(&event->evnt.store);
+			break;
+		default:
+			break;
+	}
 }

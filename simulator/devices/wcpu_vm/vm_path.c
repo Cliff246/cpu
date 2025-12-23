@@ -12,7 +12,7 @@
 #define OP_RUN(path, subpath) vm_ ## path ## _ ## subpath ## _fn
 #define OP_FILL(path, sp) [OP_NAME(path, sp)] = \
 	{						\
-		.string = #path,	\
+		.string = #sp,	\
 		.subpath = OP_NAME(path, sp), \
 		.run = OP_RUN(path, sp),		\
 	}\

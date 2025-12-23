@@ -8,12 +8,18 @@ typedef struct virtual_machine vima_t;
 #include "vm_eval.h"
 #include "vm_bus.h"
 #include "vm_regs.h"
+#include "vm_op.h"
+#include "vm_txn.h"
 
 #include "device.h"
 #include "token.h"
 #include "device_message.h"
 #include "device_command.h"
 
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdio.h>
 #define STAGES_COUNT 5
 
 typedef struct virtual_machine
@@ -25,7 +31,13 @@ typedef struct virtual_machine
 
 	vm_regfile_t regs;
 
-
+	bool load_cd;
+	int cd_count;
+	int cd_base;
+	vm_bus_port_id_t port;
+	vm_bus_hnd_t hnd;
+	bool new_inst;
+	vm_txn_t *txn;
 }vima_t;
 
 

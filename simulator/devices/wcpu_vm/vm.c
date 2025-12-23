@@ -65,16 +65,15 @@ void *device_vima_init(device_t *device)
 
 
 	vm_bus_port_id_t port_id = vm_bus_create_port(vm, VM_ADDR_KERNAL);
+	vm->port = port_id;
 
 	vm_bus_evnt_t bus_event =
 	{
-		.evnt.load = {.addr = 0},
+		.evnt.load = {.addr = (vm->cd_count++)},
 		.type = VM_IO_LOAD
 	};
-	vm_bus_hnd_t hnd =  vm_bus_put_evnt(vm, port_id, bus_event);
-
-	vm_print_bus(vm);
-
+	vm->hnd = vm_bus_put_evnt(vm, port_id, bus_event);
+	vm->load_cd = true;
 	return vm;
 	//return vm_init(1000);
 }
@@ -83,6 +82,73 @@ void device_vima_update(device_t *dev)
 {
 	vima_t *vm = (vima_t *)dev->ptr;
 
+	if(vm->load_cd == true)
+	{
+		if(vm_bus_poll_evnt(vm, vm->port, vm->hnd))
+		{
+			vm_bus_response_t resp;
+			vm_bus_pull_evnt(vm, vm->port, vm->hnd, &resp);
+			printf("%d %d\n", resp.resp.load_response.value, vm->cd_count);
+			switch(vm->cd_count)
+			{
+				case 1:
+					vm->regs.code_desc.ct_base = resp.resp.load_response.value;
+					break;
+				case 2:
+					vm->regs.code_desc.ct_len = resp.resp.load_response.value;
+					break;
+				case 3:
+					vm->regs.code_desc.pc_base = resp.resp.load_response.value;
+					break;
+				case 4:
+					vm->regs.code_desc.pc_len = resp.resp.load_response.value;
+					break;
+				case 5:
+					vm->regs.code_desc.ipc_base = resp.resp.load_response.value;
+					break;
+				case 6:
+					vm->regs.code_desc.ipc_len = resp.resp.load_response.value;
+					break;
+			}
+
+			if(vm->cd_count >= 6)
+			{
+				vm->load_cd = false;
+				vm->new_inst = true;
+			}
+			else
+			{
+				vm_bus_evnt_t bus_event =
+				{
+					.evnt.load = {.addr = vm->cd_count++},
+					.type = VM_IO_LOAD
+				};
+				vm->hnd = vm_bus_put_evnt(vm, vm->port, bus_event);
+			}
+
+		}
+	}
+	else
+	{
+		if(vm->new_inst)
+		{
+			if(vm->txn != NULL)
+			{
+				free(vm->txn);
+				vm->txn = NULL;
+			}
+			vm->new_inst = false;
+
+			vm->txn = vm_txn_create(vm);
+
+		}
+		else
+		{
+			//vm_cpu_print_regs(vm);
+			vm_txn_print(vm->txn);
+			vm_txn_advance(vm, vm->txn);
+		}
+	}
 
 
 	return;
@@ -132,11 +198,14 @@ bool device_vima_send(WS_dev_t *dev, WS_dev_msg_t **msg)
 				}
 				else
 				{
+					printf("released\n");
 					*msg = WS_device_message_create(dev->desc, dev->id, -1,DEVMSG_WRITE, hnd->evnt.evnt.store.addr, hnd->evnt.evnt.store.val);
+					vm_bus_free_handle(vm, hnd->hnd);
 				}
 				hnd->internal.has_send = true;
 				return true;
 			}
+
 		}
 	}
 

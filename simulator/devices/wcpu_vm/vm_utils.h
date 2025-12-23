@@ -44,7 +44,7 @@ uint64_t vm_inc_sp(vima_t *vm, uint64_t degree);
 
 
 uint32_t vm_get_inst_at_pc_address(vima_t *vm,uint64_t address);
-int32_t vm_get_inst_aligned_pc(int64_t val, bool even);
+uint32_t vm_get_inst_aligned_pc(int64_t val, bool even);
 
 //get the right address for memory
 uint64_t vm_address(vima_t *vm,uint64_t addr);
