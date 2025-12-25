@@ -16,13 +16,23 @@ typedef struct vm_operation vm_op_t;
 typedef struct vm_transaction vm_txn_t;
 typedef struct virtual_machine vima_t;
 
+#define VM_OP_STATUS_LIST(X)\
+	X(INVAL)				\
+	X(START)				\
+	X(LOADING)				\
+	X(WAITING)				\
+	X(TRANSITION)			\
+	X(DONE)					\
+
+#define VM_OP_STATUS_NAME(X) VM_OP_STATUS_ ## X
+#define VM_OP_STATUS_ENUM(X) VM_OP_STATUS_NAME(X),
+
 typedef enum vm_op_status
 {
-	VM_OP_STATUS_INVAL,
-	VM_OP_STATUS_LOADING,
-	VM_OP_STATUS_WAITING,
-	VM_OP_STATUS_DONE,
+	VM_OP_STATUS_LIST(VM_OP_STATUS_ENUM)
 }vm_op_status_t;
+
+extern char *vm_op_status_str[];
 
 typedef vm_op_status_t(*vm_run_op_fn)(vima_t *vm, vm_op_t *op, vm_txn_t *txn);
 

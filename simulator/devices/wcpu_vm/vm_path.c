@@ -8,14 +8,13 @@
 #include "vm_path.h"
 #include "flags.h"
 
-#define OP_NAME(path, subpath) path ## _ ## subpath
 #define OP_RUN(path, subpath) vm_ ## path ## _ ## subpath ## _fn
-#define OP_FILL(path, sp) [OP_NAME(path, sp)] = \
+#define OP_FILL(PU, PL, SU, SL, N, KEY,V,OP,EQU, DESC, SIG ) [N] = \
 	{						\
-		.string = #sp,	\
-		.subpath = OP_NAME(path, sp), \
-		.run = OP_RUN(path, sp),		\
-	}\
+		.string = #KEY,	\
+		.subpath = N, \
+		.run = OP_RUN(PU, SU),		\
+	},\
 
 vm_path_t vm_wcpu_ops[] =
 {
@@ -25,28 +24,8 @@ vm_path_t vm_wcpu_ops[] =
 		.string = "alu",
 		.ops =
 		{
-			OP_FILL(ALU, ADD),
-			OP_FILL(ALU, SUB),
-			OP_FILL(ALU, SUBU),
-			OP_FILL(ALU, AND),
-			OP_FILL(ALU, OR),
-			OP_FILL(ALU, XOR),
-			OP_FILL(ALU, SRL),
-			OP_FILL(ALU, SRA),
-			OP_FILL(ALU, SLL),
-			OP_FILL(ALU, DIV),
-			OP_FILL(ALU, REM),
-			OP_FILL(ALU, MUL),
-			OP_FILL(ALU, DIVU),
-			OP_FILL(ALU, MULHI),
-			OP_FILL(ALU, MULU),
-			OP_FILL(ALU, MULUS),
-			OP_FILL(ALU, NOT),
-			OP_FILL(ALU, CLT),
-			OP_FILL(ALU, CEQ),
-			OP_FILL(ALU, CNE),
-			OP_FILL(ALU, CLTU),
-			OP_FILL(ALU, CLE),
+			WCPU_SUBPATH_ALU_LIST(OP_FILL)
+
 
 
 		}
@@ -57,16 +36,8 @@ vm_path_t vm_wcpu_ops[] =
 		.string = "mem",
 		.ops =
 		{
-			OP_FILL(MEM, STI),
-			OP_FILL(MEM, LDI),
-			OP_FILL(MEM, PUSH),
-			OP_FILL(MEM, POP),
-			OP_FILL(MEM, INCSP),
-			OP_FILL(MEM, DECSP),
-			OP_FILL(MEM, LDS),
-			OP_FILL(MEM, STS),
-			OP_FILL(MEM, SP),
-			OP_FILL(MEM, SFP),
+			WCPU_SUBPATH_MEM_LIST(OP_FILL)
+
 
 		}
 	},
@@ -76,15 +47,8 @@ vm_path_t vm_wcpu_ops[] =
 		.string = "jmp",
 		.ops =
 		{
-			OP_FILL(JMP, JMP),
-			OP_FILL(JMP, BNE),
-			OP_FILL(JMP, BEQ),
-			OP_FILL(JMP, CALL),
-			OP_FILL(JMP, RET),
-			OP_FILL(JMP, BLT),
-			OP_FILL(JMP, BLE),
-			OP_FILL(JMP, BLTU),
-			OP_FILL(JMP, BLEU),
+			WCPU_SUBPATH_JMP_LIST(OP_FILL)
+
 		}
 
 	},

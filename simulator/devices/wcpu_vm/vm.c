@@ -88,7 +88,7 @@ void device_vima_update(device_t *dev)
 		{
 			vm_bus_response_t resp;
 			vm_bus_pull_evnt(vm, vm->port, vm->hnd, &resp);
-			printf("%d %d\n", resp.resp.load_response.value, vm->cd_count);
+			//printf("%d %d\n", resp.resp.load_response.value, vm->cd_count);
 			switch(vm->cd_count)
 			{
 				case 1:
@@ -145,11 +145,13 @@ void device_vima_update(device_t *dev)
 		else
 		{
 			//vm_cpu_print_regs(vm);
-			vm_txn_print(vm->txn);
+
 			vm_txn_advance(vm, vm->txn);
+			//vm_txn_print_inflight(vm->txn);
+			//printf("\n");
 		}
 	}
-
+	//printf("%d\n", vm->regs.stack.sp);
 
 	return;
 }
@@ -193,12 +195,10 @@ bool device_vima_send(WS_dev_t *dev, WS_dev_msg_t **msg)
 			{
 				if(hnd->evnt.type == VM_IO_LOAD)
 				{
-
-					*msg = WS_device_message_create(dev->desc, dev->id, -1,DEVMSG_READ_SEND, hnd->evnt.evnt.load.addr, 0);
+					*msg = WS_device_message_create(dev->desc, dev->id, -1, DEVMSG_READ_SEND, hnd->evnt.evnt.load.addr, 0);
 				}
 				else
 				{
-					printf("released\n");
 					*msg = WS_device_message_create(dev->desc, dev->id, -1,DEVMSG_WRITE, hnd->evnt.evnt.store.addr, hnd->evnt.evnt.store.val);
 					vm_bus_free_handle(vm, hnd->hnd);
 				}
@@ -215,7 +215,8 @@ bool device_vima_send(WS_dev_t *dev, WS_dev_msg_t **msg)
 void device_vima_print(device_t *dev)
 {
 	vima_t *vm = (vima_t *)dev->ptr;
-
+	vm_cpu_print_regs(vm);
+	printf("\n");
 	return;
 }
 

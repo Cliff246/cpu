@@ -179,7 +179,7 @@ void WS_simulator_add_device(WS_simulator_t *sim, WS_dev_t *dev)
 		WS_simulator_bus_slot_t *slot =  WS_simulator_create_bus_slot(dev->address_range_start, dev->address_range_length,  sim->dev_count );
 
 		sim->bus_slot = realloc_safe(sim->bus_slot, sim->bus_slot_count + 1, sizeof(WS_simulator_bus_slot_t *) );
-		
+
 		sim->bus_slot[sim->bus_slot_count++] = slot;
 		WS_simulator_sort_slots(sim);
 	}
@@ -265,7 +265,7 @@ void WS_simulator_update(WS_simulator_t *sim)
 		//distrubute the message around
 		if(has_msg )
 		{
-			printf("message sent\n");
+			//printf("message sent\n");
 			bool has_dst = WS_get_device_message_has_dst(set_msg);
 
 
@@ -325,6 +325,16 @@ void WS_simulator_print_slots(WS_simulator_t *sim)
 	for(int i = 0; i < sim->bus_slot_count; ++i)
 	{
 		WS_simulator_print_bus_slot(sim->bus_slot[i], i);
+	}
+}
+
+
+void WS_simulator_print_all_devices(WS_simulator_t *sim)
+{
+	printf("print all\n");
+	for(int i = 0; i < sim->dev_count; ++i)
+	{
+		WS_device_print(sim->dev_list[i]);
 	}
 }
 

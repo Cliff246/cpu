@@ -175,6 +175,12 @@ INST(CLTU)
 {
 	ALU_OP_TYPED(<, uint64_t, uint64_t);
 }
+INST(CLEU)
+{
+	ALU_OP_TYPED(<=, uint64_t, uint64_t);
+
+}
+
 INST(CEQ)
 {
 	ALU_OP(==);
@@ -184,36 +190,60 @@ INST(CNE)
 	ALU_OP(!=);
 }
 
+INST(COR)
+{
+	ALU_OP(||);
+}
+INST(SIEX)
+{
+
+}
+INST(CAND)
+{
+
+}
+INST(CLTMV)
+{
+
+}
+INST(CLEMV)
+{
+
+}
+INST(CEQMV)
+{
+
+}
+INST(CNEMV)
+{
+
+}
+INST(MAX)
+{
+
+}
+INST(MIN)
+{
+
+}
+INST(POPCNT)
+{
+
+}
+INST(RAND)
+{
+
+}
+
 INST(NONE) {}
 
-int64_t (*alu_fn[255])(int64_t lhs, int64_t rhs) = {_vm_alu_NONE};
+#define ALU_ARRAY(PU, PL, SU, SL, N, KEY,V,OP,EQU, DESC, SIG ) [N] = _vm_ ## PL ## _ ## SU,
 
-#define SET(x) alu_fn[ALU_ ## x] = _vm_alu_ ## x
+int64_t (*alu_fn[255])(int64_t lhs, int64_t rhs) = {WCPU_SUBPATH_ALU_LIST(ALU_ARRAY)};
 
-void set_alu_instructions(void)
-{
-	SET(ADD);
-	SET(SUB);
-	SET(SUBU);
-	SET(AND);
-	SET(OR);
-	SET(XOR);
-	SET(SLL);
-	SET(SRL);
-	SET(SRA);
-	SET(DIV);
-	SET(MUL);
-	SET(REM);
-	SET(MULHI);
-	SET(MULU);
-	SET(MULUS);
-	SET(NOT);
-	SET(CLT);
-	SET(CLE);
-	SET(CLTU);
-	SET(CEQ);
-	SET(CNE);
-}
+
+
+
 
 #undef SET
 #undef INST
@@ -253,7 +283,7 @@ int64_t vm_alu_exec( char subflag, int64_t lane1, int64_t lane2, int64_t lane3, 
 
 
 
-	printf("alu:%d (%lld %lld %lld) = %lld\n", subflag, lane1, lane2, lane3, result);
+	//printf("alu:%d (%lld %lld %lld) = %lld\n", subflag, lane1, lane2, lane3, result);
 	return result;
 }
 
@@ -455,5 +485,55 @@ vm_op_status_t vm_ALU_CNE_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 
 
 	return VM_OP_STATUS_DONE;
+
+}
+
+vm_op_status_t vm_ALU_CLEU_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+
+vm_op_status_t vm_ALU_COR_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+vm_op_status_t vm_ALU_CAND_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+vm_op_status_t vm_ALU_CLTMV_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+vm_op_status_t vm_ALU_CLEMV_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+vm_op_status_t vm_ALU_CEQMV_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+vm_op_status_t vm_ALU_CNEMV_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+vm_op_status_t vm_ALU_MAX_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+vm_op_status_t vm_ALU_MIN_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+vm_op_status_t vm_ALU_SIEX_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+vm_op_status_t vm_ALU_RAND_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+vm_op_status_t vm_ALU_POPCNT_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
 
 }

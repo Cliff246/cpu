@@ -10,12 +10,64 @@
 #include "parser.h"
 #include <stdbool.h>
 
+#define SUBPATH_KEYCODE(PATH, S) PATH ## _ ## S
+#define PATH_KEYCODE(X) PATH_ ## X
+#define SUBPATH_MNEMONIC(PU, PL, SU, SL, N, KEY,V,OP,EQU, DESC, SIG ) [N] = \
+{							   \
+	.path =  PATH_KEYCODE(PU),\
+	.subpath = N, \
+	.str = #KEY,		\
+	.baseimpl = OP,		\
+	.equation = EQU,	\
+	.desc = DESC,	\
+},			\
 
 
-
-int get_register(char *keyword)
+ASM_mnemonic_t ASM_mnemonics_list[8] =
 {
-	const char *const reg_mnemonics[] = {
+	[PATH_ALU] =
+	{
+		.path = PATH_ALU,
+		.str = "alu",
+		.subpaths =
+		{
+			WCPU_SUBPATH_ALU_LIST(SUBPATH_MNEMONIC)
+		},
+	},
+	[PATH_MEM] =
+	{
+		.path = PATH_MEM,
+		.str = "mem",
+		.subpaths =
+		{
+			WCPU_SUBPATH_MEM_LIST(SUBPATH_MNEMONIC)
+
+		},
+	},
+	[PATH_JMP] =
+	{
+		.path = PATH_JMP,
+		.str = "jmp",
+		.subpaths =
+		{
+			WCPU_SUBPATH_JMP_LIST(SUBPATH_MNEMONIC)
+
+		},
+	},
+	[PATH_SYS] =
+	{
+		.path = PATH_SYS,
+		.str = "sys",
+		.subpaths =
+		{
+			WCPU_SUBPATH_SYS_LIST(SUBPATH_MNEMONIC)
+
+		},
+	}
+};
+
+const char *const reg_mnemonics[] =
+{
     	"zero", "x0", "null",
     	"x1", "a0",
     	"x2", "a1",
@@ -81,6 +133,10 @@ int get_register(char *keyword)
 		"x62", "t22",
 		"x63", "acc",
 	};
+
+int get_register(char *keyword)
+{
+
 
 	int regvalue[] = {
     	0, 0, 0,
@@ -163,185 +219,56 @@ int get_register(char *keyword)
 }
 
 
+int ASM_get_subpath(int path, char *keyword)
+{
+	for(int i = 0; i < 128; ++i)
+	{
+		if(!strcmp(keyword, ASM_mnemonics_list[path].subpaths[i].str))
+		{
+			return ASM_mnemonics_list[path].subpaths[i].subpath;
+		}
+	}
+	return -1;
+}
+
 
 int get_alu_subpath(char *keyword)
 {
 
 
-	const char *const alu_mnemonics[] = {
-		"add",
-		"sub",
-		"subu",
-		"and",
-		"or",
-		"xor",
-		"sll",
-		"srl",
-		"sra",
-		"div",
-		"mul",
-		"rem",
-		"mulhi",
-		"mulu",
-		"mulus",
-		"divu",
-		"not",
-		"cle",
-		"clt",
-		"cltu",
-		"cne",
-		"ceq",
-	};
 
-	const int opvalue[] = {
-		ALU_ADD,
-		ALU_SUB,
-		ALU_SUBU,
-		ALU_AND,
-		ALU_OR,
-		ALU_XOR,
-		ALU_SLL,
-		ALU_SRL,
-		ALU_SRA,
-		ALU_DIV,
-		ALU_MUL,
-		ALU_REM,
-		ALU_MULHI,
-		ALU_MULU,
-		ALU_MULUS,
-		ALU_DIVU,
-		ALU_NOT,
-		ALU_CLE,
-		ALU_CLT,
-		ALU_CLTU,
-		ALU_CNE,
-		ALU_CEQ,
-	};
-
-	int code = determine_code(keyword, alu_mnemonics, ARYSIZE(alu_mnemonics));
-	//printf("keyword %s %d\n", keyword, code);
-
-	if(code != -1)
-	{
-
-		return opvalue[code];
-	}
-	else
-	{
-		return -1;
-	}
+	return ASM_get_subpath(PATH_ALU, keyword);
 
 
 }
+
 int get_mem_subpath(char *keyword)
 {
-	const char *const mem_mnemonics[] = {
-		"ld",
-		"st",
-		"push",
-		"pop",
-		"sp",
-		"sfp",
-		"lds",
-		"sts",
-		"isp",		//increment stack ptr
-		"dsp",		//decrement stack ptr
-		"ldf",
-		"stf"
-	};
-
-	const int opvalue[] = {
-		MEM_LDI,
-		MEM_STI,
-		MEM_PUSH,
-		MEM_POP,
-		MEM_SP,
-		MEM_SFP,
-		MEM_LDS,
-		MEM_STS,
-		MEM_INCSP,
-		MEM_DECSP,
-		MEM_LDF,
-		MEM_STF,
-	};
 
 
-	int code = determine_code(keyword, mem_mnemonics, ARYSIZE(mem_mnemonics));
 
-	if(code != -1)
-	{
+	return ASM_get_subpath(PATH_MEM, keyword);
 
-		return opvalue[code];
-	}
-	else
-	{
-		return -1;
-	}
+
 }
+
 int get_jmp_subpath(char *keyword)
 {
-	const char *const jmp_mnemonics[] = {
-		"jmp",
-		"bne",
-		"blt",
-		"beq",
-		"ble",
-		"call",
-		"ret",
-		"bleu",
-		"bltu",
-	};
+	return ASM_get_subpath(PATH_JMP, keyword);
 
-	const int opvalue[] = {
-		JMP_JMP,
-		JMP_BNE,
-		JMP_BLT,
-		JMP_BEQ,
-		JMP_BLE,
-		JMP_CALL,
-		JMP_RET,
-		JMP_BLEU,
-		JMP_BLTU,
-	};
 
-	int code = determine_code(keyword, jmp_mnemonics, ARYSIZE(jmp_mnemonics));
-	if(code != -1)
-	{
 
-		return opvalue[code];
-	}
-	else
-	{
-		return -1;
-	}
+
 }
+
+
+
 
 int get_sys_subpath(char *keyword)
 {
+	return ASM_get_subpath(PATH_SYS, keyword);
 
-	const char *const sys_mnemonics[] = {
-		"call",
-		"dcall",
-		"dset",
-		"break",
-	};
 
-	const int opvalue[] = {
-		SYS_CALL,
-		SYS_CALL_CD_PTR,
-		SYS_SET_CD_PTR,
-		SYS_BREAK,
-	};
-	int code = determine_code(keyword, sys_mnemonics, ARYSIZE(sys_mnemonics));
-	if(code != -1)
-	{
-
-		return opvalue[code];
-	}
-	else
-	{
-		return -1;
-	}
 
 }
 
@@ -425,3 +352,7 @@ bool valid_instruction(char **str, int length)
 
 	return true;
 }
+
+
+
+

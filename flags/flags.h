@@ -2,6 +2,16 @@
 #define __FLAGS__
 
 
+
+#define WCPU_PATHS_LIST(X)\
+	X(ALU, alu, 0)		  \
+	X(MEM, mem, 1)		  \
+	X(JMP, jmp, 2)		  \
+	X(SYS, sys, 3)		  \
+	X(FPU, fpu, 4)	      \
+	X(ATM, atm, 5)		  \
+	X(VEC, vec, 6)		  \
+
 //clone of c_cpu flags since i am lazy
 
 //current paths
@@ -55,129 +65,78 @@
 //so rd = x0, rs1 != x0 = set
 //so rd != x0, rs1 != x0 = exchange
 
-
-//rd = rs1 + rs2 + imm
-#define ALU_ADD 	0x00
-//rd = rs1 - rs2 - imm
-//signed alu add
-#define ALU_SUB 	0x01
-//rd =
-#define ALU_SUBU 	0x02
-
-//rd = rs1 & (immflag)? rs2 : imm
-#define ALU_AND		0x03
-//rd = rs1 | (immflag)? rs2 : imm
-#define ALU_OR		0x04
-//rd = rs1 ^ (immflag)? rs2 : imm
-#define ALU_XOR 	0x05
-//shift left logical
-#define ALU_SLL 	0x06
-//shift right logical
-#define ALU_SRL		0x07
-//shift right arithmetic
-#define ALU_SRA 	0x08
-//divide signed
-#define ALU_DIV 	0x09
-//multiply signed low
-#define ALU_MUL 	0x0a
-//remainder
-#define ALU_REM 	0x0b
-//multiply unsigned
-#define ALU_MULHI	0x0c
-//multiply unsigned
-#define ALU_MULU	0x0d
-//multiply unsigned signed
-#define ALU_MULUS	0x0e
-#define ALU_DIVU 	0x0f
-//not
-#define ALU_NOT 	0x10
-//compare less than
-#define ALU_CLT		0x11
-//compare less than equals
-#define ALU_CLE		0x12
-//compare less than unsigned
-#define ALU_CLTU	0x13
-//compare equals
-#define ALU_CEQ		0x14
-//compare not equals
-#define ALU_CNE		0x15
-//compare cle
-#define ALU_CLEU 	0x16
-//set byte
-#define ALU_COR		0x17
-
-#define ALU_CAND	0x18
-//sets byte
+//PATH CAP, PATH LOWER, OPCODE CLASS UPPER, OPCODE CLASS LOWER, NUMBER, token, base impl, operator, equation, description, unsigned at end
+#define WCPU_SUBPATH_ALU_LIST(X)\
+	X(ALU,alu,ADD		, add		, 0x00, add			, T0	, "+"		,	"dst = lhs + rhs + oth"				, "arithmetic add"						, 0)				\
+	X(ALU,alu,SUB		, sub		, 0x01, sub			, T0	, "-"		,	"dst = lhs - rhs + oth"				, "arithmetic subtract"					, 0)				\
+	X(ALU,alu,SUBU		, subu		, 0x02, subu		, T0	, "-"		,	"dst = (uint)lhs - (uint)rhs + oth"	, "arithmetic subtrace unsigned"		, 1)				\
+	X(ALU,alu,AND		, and		, 0x03, and			, T0	, "&"		,	"dst = lhs & rhs + oth"				, "logical and"							, 0)				\
+	X(ALU,alu,OR		, or		, 0x04, or			, T0	, "|"		,	"dst = lhs | rhs + oth"				, "logical or"							, 0)				\
+	X(ALU,alu,XOR		, xor		, 0x05, xor			, T0	, "^"		,	"dst = lhs ^ rhs + oth"				, "logical xor"							, 0)				\
+	X(ALU,alu,SLL		, sll		, 0x06, sll			, T0	, "<<"		,	"dst = lhs << rhs + oth"			, "logical shift left"					, 0)				\
+	X(ALU,alu,SRL		, srl		, 0x07, srl			, T0	, ">>"		,	"dst = lhs >> rhs + oth"			, "logical shift right"					, 0)				\
+	X(ALU,alu,SRA		, sra		, 0x08, sra			, T0	, ">>>"		,	"dst = lhs >>> rhs + oth"			, "arithmetic shift right"				, 0)				\
+	X(ALU,alu,DIV		, div		, 0x09, div			, T0	, "/"		,	"dst = lhs / rhs + oth"				, "arithmetic divide"					, 0)				\
+	X(ALU,alu,MUL		, mul		, 0x0a, mul			, T0	, "*"		,	"dst = lhs * rhs + oth"				, "arithmetic multiply"					, 0)				\
+	X(ALU,alu,REM		, rem		, 0x0b, rem			, T0	, "%"		,	"dst = lhs & rhs + oth"				, "arithmetic remainder/modulo"			, 0)				\
+	X(ALU,alu,MULHI		, mulhi		, 0x0c, mulhi		, T0	, "*"		,	"dst = lhs * rhs + oth"				, "arithmetic multiply high"			, 0)				\
+	X(ALU,alu,MULUS		, mulus		, 0x0d, mulus		, T0	, "*"		,	"dst = lhs * rhs + oth"				, "arithmetic multiply unsigned signed"	, 1)				\
+	X(ALU,alu,DIVU		, divu		, 0x0e, divu		, T0	, "/"		,	"dst = lhs / rhs + oth"				, "arithemtic divide unsigned"			, 1)				\
+	X(ALU,alu,NOT		, not		, 0x0f, not			, T0	, "!"		,	"dst = lhs ! rhs + oth"				, "arithemtic not"						, 0)				\
+	X(ALU,alu,CLT		, clt		, 0x10, clt			, T0	, "<"		,	"dst = lhs < rhs + oth"				, "compare less than"					, 0)				\
+	X(ALU,alu,CLE		, cle		, 0x11, cle			, T0	, "<="		,	"dst = lhs <= rhs + oth"			, "compare less than equals"			, 0)				\
+	X(ALU,alu,CLTU		, cltu		, 0x12, cltu		, T0	, "<="		,	"dst = lhs <= rhs + oth"			, "compare less than unsigned"			, 1)				\
+	X(ALU,alu,CEQ		, ceq		, 0x13, ceq			, T0	, "=="		,	"dst = lhs == rhs + oth"			, "compare equals"						, 0)				\
+	X(ALU,alu,CNE		, cne		, 0x14, cne			, T0	, "!="		,	"dst = lhs != rhs + oth"			, "compare not equals"					, 0)				\
+	X(ALU,alu,CLEU		, cleu		, 0x15, cleu		, T0	, "<="		,	"dst = lhs <= rhs + oth"			, "compare less than equals unsigned"	, 1)				\
+	X(ALU,alu,COR		, cor		, 0x16, cor			, T0	, "|"		,	"dst = lhs || rhs + oth"			, "compare or"							, 0)				\
+	X(ALU,alu,CAND		, cand		, 0x17, cand		, T0	, "&"		,	"dst = lhs && rhs + oth"			, "compare and"							, 0)				\
+	X(ALU,alu,SIEX		, siex		, 0x18, siex		, T0	, "int"		,	"dst = lhs extend rhs + oth"		, "sign extend"							, 0)				\
+	X(ALU,alu,CLTMV		, cltmv		, 0x19, cltmv		, T0	, "<?"		,	"dst = lhs <? rhs + oth"			, "compare less than move"				, 0)				\
+	X(ALU,alu,CLEMV		, clemv		, 0x1a, clemv		, T0	, "<=?"		,	"dst = lhs <=? rhs + oth"			, "compare less than equals move"		, 0)				\
+	X(ALU,alu,CEQMV		, ceqmv		, 0x1b, ceqmv		, T0	, "==?"		,	"dst = lhs ==? rhs + oth"			, "compare compare equals move"			, 0)				\
+	X(ALU,alu,CNEMV		, cnemv		, 0x1c, cnemv		, T0	, "!=?"		,	"dst = lhs !=? rhs + oth"			, "compare not equals move"				, 0)				\
+	X(ALU,alu,MAX		, max		, 0x1e, max			, T0	, "max"		,	"dst = lhs max rhs + oth"			, "maximum"								, 0)				\
+	X(ALU,alu,MIN		, min		, 0x1f, min			, T0	, "min"		,	"dst = lhs min rhs + oth"			, "minimum"								, 0)				\
+	X(ALU,alu,POPCNT	, popcnt	, 0x20, popcount	, T0	, "pop"		,	"dst = lhs pop rhs + oth"			, "popcount"							, 0)				\
+	X(ALU,alu,RAND		, rand		, 0x21, rand		, T0	, "rand"	,	"dst = lhs rand rhs + oth"			, "random"								, 0)				\
 
 
 
-//sign exten
-#define ALU_SIEX	0x1f
-
-//get rd from rs2
-
-//less than move
-//dest = (lane2 < lane3)? lane1: 0
-#define ALU_LTMV	0x20
-//dest = (lane2 <= lane3)? lane1 : 0
-#define ALU_LEMV	0x21
-//dest = (lane2 == lane3)? lane1 : 0
-#define ALU_EQMV	0x22
-//dest = (lane2 != lane3)? lane1 : 0
-#define ALU_NEMV	0x23
-
-
-//useful
-//dest = max(lane1, (bin)? lane2: lane3)
-#define ALU_MAX		0x28
-//dest = min(lane1, (bin)? lane2: lane3)
-#define ALU_MIN		0x29
-
-#define ALU_POPCNT	0x2a
-
-#define ALU_RAND	0x2b
 
 
 
-//MEMORY
-//Memory load
-#define MEM_LDI 	0x00
-//Memory store
-#define MEM_STI		0x01
-//MEMORY get stack ptr, set stack ptr
-#define MEM_SP	0x02
-//Memory Push
-#define MEM_PUSH	0x04
-//Memory pop
-#define MEM_POP		0x05
-//
-#define MEM_INCSP 0x0a
-//
-#define MEM_DECSP 0x09
-//memory get stack frame ptr, get stack frame
-#define MEM_SFP	0x06
-//memory ld at stack offset
-#define MEM_LDS	0x07
-//memory store at stack offset
-#define MEM_STS 0x08
 
-//memory load float
-#define MEM_LDF	0x09
-//memory store float
-#define MEM_STF	0x0a
+#define WCPU_SUBPATH_MEM_LIST(X)\
+	X(MEM,mem,LDI		, ldi		, 0x00, ld			, T0	, "ld"		,	"dst = mem[l1 + l2 + l3]"				, "load"					, 0)				\
+	X(MEM,mem,STI		, sti		, 0x01, st			, T0	, "st"		,	"dst = 0, mem[l1] = l2 + l3"			, "store"					, 0)				\
+	X(MEM,mem,SP		, sp		, 0x02, sp			, T0	, "sp"		,	"dst = sp, sp = l1 + l2 + l3"			, "get/set sp"				, 0)				\
+	X(MEM,mem,PUSH		, push		, 0x03, push		, T0	, "push"	,	"dst = 0, mem[sp+1] = l1 + l2 + l3"		, "push "					, 0)				\
+	X(MEM,mem,POP		, pop		, 0x04, pop			, T0	, "pop"		,	"dst = mem[sp-]"						, "pop"						, 0)				\
+	X(MEM,mem,INCSP		, incsp		, 0x05, incsp		, T0	, "sp+"		,	"dst = 0, sp+=l1 + l2 + l3"				, "increment sp"			, 0)				\
+	X(MEM,mem,DECSP		, descp		, 0x06, decsp		, T0	, "sp-"		,	"dst = 0, sp-=l1 + l2 + l3"				, "decrement sp"			, 0)				\
+	X(MEM,mem,SFP		, sfp		, 0x07, sfp			, T0	, "sfp"		,	"dst = sfp, sfp = l1 + l2 + l3"			, "get/set sfp"				, 0)				\
+	X(MEM,mem,LDS		, lds		, 0x08, lds			, T0	, "ld[sp]"	,	"dst = mem[sp + l1]"					, "load stack"				, 0)				\
+	X(MEM,mem,STS		, sts		, 0x09, sts			, T0	, "st[sp]"	,	"dst = 0, mem[sp + l2 +] = l1"			, "store stack"				, 0)				\
+//	X(MEM,mem,LDI		, ldi		, 0x0a, ld			, T0	, "[]"		,	"dst = mem[l1 + l2 + l3]"				, "arithmetic add"						,"dst,lhs,rhs,oth,swap", 0)				\
+//	X(MEM,mem,LDI		, ldi		, 0x0b, ld			, T0	, "[]"		,	"dst = mem[l1 + l2 + l3]"				, "arithmetic add"						,"dst,lhs,rhs,oth,swap", 0)				\
+//	X(MEM,mem,LDI		, ldi		, 0x0c, ld			, T0	, "[]"		,	"dst = mem[l1 + l2 + l3]"				, "arithmetic add"						,"dst,lhs,rhs,oth,swap", 0)				\
+//	X(MEM,mem,LDI		, ldi		, 0x0d, ld			, T0	, "[]"		,	"dst = mem[l1 + l2 + l3]"				, "arithmetic add"						,"dst,lhs,rhs,oth,swap", 0)				\
+//	X(MEM,mem,LDI		, ldi		, 0x0e, ld			, T0	, "[]"		,	"dst = mem[l1 + l2 + l3]"				, "arithmetic add"						,"dst,lhs,rhs,oth,swap", 0)				\
+//	X(MEM,mem,LDI		, ldi		, 0x0f, ld			, T0	, "[]"		,	"dst = mem[l1 + l2 + l3]"				, "arithmetic add"						,"dst,lhs,rhs,oth,swap", 0)				\
 
 
 
-//branch equal
-#define JMP_BEQ 		0x01
-//branch not equal
-#define JMP_BNE		0x02
-//jump jmp
-#define JMP_JMP		0x03
-//jmp branch less than
-#define JMP_BLT		0x04
-//jmp branch less than equal
-#define JMP_BLE		0x05
+#define WCPU_SUBPATH_JMP_LIST(X)\
+	X(JMP,jmp,BEQ		, beq		, 0x00, beq			, T0	, "=="		,	"dst = 0, goto l3 iff l1 == l2"						, "branch equals"								, 0)				\
+	X(JMP,jmp,BNE		, bne		, 0x01, bne			, T0	, "!="		,	"dst = 0, goto l3 iff l1 == l2"						, "branch not equals"							, 0)				\
+	X(JMP,jmp,JMP		, jmp		, 0x02, jmp			, T0	, ""		,	"dst = 0, goto l3 + l2 + l1"						, "jump"										, 0)					\
+	X(JMP,jmp,BLT		, blt		, 0x03, blt			, T0	, "<"		,	"dst = 0, goto l3 iff l1 < l2"						, "branch less than"							, 0)				\
+	X(JMP,jmp,BLE		, ble		, 0x04, ble			, T0	, "<="		,	"dst = 0, goto l3 iff l1 <= l2"						, "branch less than equals"						, 0)				\
+	X(JMP,jmp,CALL		, call		, 0x05, call		, T0	, "call"	,	"dst = 0, call l1 + l2 + l3 "						, "call"										, 0)				\
+	X(JMP,jmp,RET		, ret		, 0x06, ret			, T0	, "ret"		,	"dst = 0, return"									, "return"										, 0)				\
+	X(JMP,jmp,BLTU		, bltu		, 0x07, bltu		, T0	, "<"		,	"dst = 0, goto l3 iff (unsigned)l1 < (unsigned)l2)"	, "branch less than unsigned"					, 0)				\
+	X(JMP,jmp,BLEU		, bleu		, 0x08, bleu		, T0	, "<="		,	"dst = 0, goto l3 iff (unsigned)l1 <= (unsigned)l2)", "branch less than equals unsigned"			, 0)				\
 
 
 
@@ -185,15 +144,12 @@
 //CALLS
 //
 
-//call function
-//
-#define JMP_CALL		0x06
-//return from function
-#define JMP_RET		0x07
 
-#define JMP_BLTU		0x08
-#define JMP_BLEU		0x09
 
+#define WCPU_SUBPATH_SYS_LIST(X)\
+	X(SYS,sys,BREAK			,break		, 0x0f, break		, T0	, "break"	,	"dst = 0, break"										, "break"										, 0)				\
+	X(SYS,sys,SET_CD_PTR	,set_cd_ptr	, 0x16, setcd		, T0	, "set_cd"	,	"dst = 0, set cd = l1 + l2 + l3 "						, "set code description"						, 0)				\
+	X(SYS,sys,CALL_CD_PTR	,call_cd_ptr, 0x17, callcd		, T0	, "call_cd"	,	"dst = 0, call cd = l1 + l2 + l3 "						, "call code description"						, 0)				\
 
 //SYS
 

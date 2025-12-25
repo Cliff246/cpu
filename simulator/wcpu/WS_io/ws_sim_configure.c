@@ -56,7 +56,7 @@ static void load_module_containers_config_file(WS_config_file_t *file)
 		{
 			if(has_container)
 			{
-				printf("has container\n");
+				//printf("has container\n");
 
 				WS_append_config_file_module_container(file, container);
 
@@ -68,7 +68,7 @@ static void load_module_containers_config_file(WS_config_file_t *file)
 		else
 		{
 			WS_config_entry_t *entry =  WS_create_config_entry(container->module, toklex);
-			printf("entry %s\n", container->module->filepath);
+			//printf("entry %s\n", container->module->filepath);
 			WS_append_new_config_module_container_entry(container, entry);
 		}
 

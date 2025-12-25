@@ -17,6 +17,7 @@ set(ASM_LANG_SRC ${ASM_LANG_SRC}
 	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/directive.c
 	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/module.c
 	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/psudeoop.c
+	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/keywords.c
 
 )
 

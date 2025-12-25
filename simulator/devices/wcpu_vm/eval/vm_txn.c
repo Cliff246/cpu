@@ -180,7 +180,7 @@ void vm_txn_state_fetch(vima_t *vm, vm_txn_t *txn)
 		txn->op.ipc = vm_get_ipc(vm);
 		txn->private.ut1 = vm_get_pc_base(vm);
 		txn->private.ut2 = vm_get_ipc_base(vm);
-		printf("\n\nbefore pc:%lld\n\n", txn->private.ut1);
+		//printf("\n\nbefore pc:%lld\n\n", txn->private.ut1);
 		vm_bus_evnt_t evnt =
 		{
 			.evnt.load = {.addr = ((txn->op.pc / 2)+ txn->private.ut1)},
@@ -320,8 +320,8 @@ void vm_txn_state_exec(vima_t *vm, vm_txn_t *txn)
 void vm_txn_state_output(vima_t *vm, vm_txn_t *txn)
 {
 	vm_cpu_set_reg(vm, txn->inp.dst, txn->out.out);
-	printf("register: %d %d\n",txn->inp.dst,txn->out.out);
-	vm_cpu_print_regs(vm);
+	//printf("register: %d %d\n",txn->inp.dst,txn->out.out);
+	//vm_cpu_print_regs(vm);
 	txn->next.next = VM_TXN_RETIRE;
 	vm_txn_set_next_state(txn, VM_TXN_RETIRE);
 
@@ -330,12 +330,18 @@ void vm_txn_state_output(vima_t *vm, vm_txn_t *txn)
 
 void vm_txn_state_retire(vima_t *vm, vm_txn_t *txn)
 {
-	printf("finish instruction %s \n", txn->inflight.op->string);
-	if(txn->op.op.immflag)
+	printf("op:%s pc:%d ipc:%d\n", txn->inflight.op->string, txn->op.pc, txn->op.ipc);
+
+
+	if(!txn->out.jumped)
 	{
-		vm_inc_ipc(vm, 1);
+		if(txn->op.op.immflag)
+		{
+			vm_inc_ipc(vm, 1);
+		}
+		vm_inc_pc(vm, 1);
 	}
-	vm_inc_pc(vm, 1);
+
 
 	txn->next.next = VM_TXN_DONE;
 	vm_txn_set_next_state(txn, VM_TXN_DONE);
@@ -422,7 +428,7 @@ void vm_txn_print_inflight(vm_txn_t *txn)
 	if(txn->inflight.op)
 	{
 		printf("op:%s \n", txn->inflight.op->string);
-		printf("state:%d\n", txn->inflight.status);
+		printf("state:%s\n", vm_op_status_str[txn->inflight.status]);
 	}
 }
 
@@ -445,6 +451,17 @@ void vm_txn_print_status(vm_txn_t *txn)
 {
 	printf("state: %s\n", vm_txn_state_str[txn->state]);
 
+}
+
+void vm_txn_print_local(vm_txn_t *txn)
+{
+	printf("tua: %llu tub:%llu tuc: %llu tud: %llu tue: %llu tuf: %llu tug: %llu\n", txn->local.tua, txn->local.tub, txn->local.tuc, txn->local.tud, txn->local.tue, txn->local.tuf, txn->local.tug);
+	printf("tia: %lld tib:%lld tic: %lld tid: %lld\n", txn->local.tia, txn->local.tib, txn->local.tic, txn->local.tid);
+	printf("x: %llu y: %llu lim: %llu\n", txn->local.iter.x,  txn->local.iter.y, txn->local.iter.lim);
+	for(int i = 0; i < VM_TXN_MAX_WORKING_SPACE; ++i)
+	{
+		printf("working[%d] = %lld\n", i, txn->local.working[i]);
+	}
 }
 
 void vm_txn_print(vm_txn_t *txn)

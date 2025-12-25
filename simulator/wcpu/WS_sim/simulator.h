@@ -38,7 +38,7 @@ bool WS_simulator_load_config(WS_simulator_t *sim, WS_config_file_t *config);
 
 void WS_simulator_update(WS_simulator_t *sim);
 void WS_simulator_print_slots(WS_simulator_t *sim);
-
+void WS_simulator_print_all_devices(WS_simulator_t *sim);
 //todo
 
 

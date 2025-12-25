@@ -110,15 +110,17 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 	//tuc = imm destination
 
 	//tud = jmp state minor load
-	//tue
+	//tue = load response value
+
+	//iter.x = current instruction offset
 
 	//tia = hnd
+	//tib = stop searching (1 = true, 0 = false)
 	uint64_t cd_ptr =  vm->regs.code_desc.cd_ptr;
 	uint64_t ct_base = vm->regs.code_desc.ct_base;
 	uint64_t ct_len = vm->regs.code_desc.ct_len;
 
 	//check in book marks
-
 
 
 	if(txn->local.tub == JMP_STATE_START)
@@ -128,13 +130,13 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 		if(vm->bookmarks[idx].valid && vm->bookmarks[idx].cd_addr == cd_ptr)
 		{
 			//printf("bookmarked\n");
-			txn->local.tuc = get_from_bookmark(vm, txn->local.tua, cd_ptr);
-			txn->local.tub = JMP_STATE_DONE;
-			return VM_OP_STATUS_WAITING;
+			//txn->local.tuc = get_from_bookmark(vm, txn->local.tua, cd_ptr);
+			//txn->local.tub = JMP_STATE_DONE;
+			//return VM_OP_STATUS_WAITING;
 
 
 		}
-		else
+
 		{
 			txn->local.tub = JMP_STATE_LOAD_CT_CLOSEST;
 			txn->local.tud = JMP_STATE_LOAD_START;
@@ -151,17 +153,16 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 
 			uint64_t closest = txn->local.tua / CODE_DESC_STRIDE;
 			uint64_t address = closest + ct_base;
-
+			//printf("ct closet %d\n", address);
 			vm_bus_evnt_t evnt =
 			{
 				.evnt.load = {.addr = address },
 				.type = VM_IO_LOAD,
 			};
 
-
 			txn->local.tia = vm_bus_put_evnt(vm, txn->handle.port, evnt);
 			txn->local.tud = JMP_STATE_LOAD_WAIT;
-			return VM_OP_STATUS_LOADING;
+			return VM_OP_STATUS_TRANSITION;
 
 		}
 		else if(txn->local.tud == JMP_STATE_LOAD_WAIT)
@@ -182,9 +183,10 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 		}
 		else if(txn->local.tud == JMP_STATE_LOAD_DONE)
 		{
+			txn->local.tug = txn->local.tue;
 			txn->local.tud = JMP_STATE_LOAD_START;
 			txn->local.tub = JMP_STATE_LOAD_INST;
-			return VM_OP_STATUS_WAITING;
+			return VM_OP_STATUS_TRANSITION;
 		}
 		else
 		{
@@ -192,28 +194,48 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 		}
 
 
-
-
-
-
 	}
 	else if(txn->local.tub == JMP_STATE_LOAD_INST)
 	{
+
 		if(txn->local.tud == JMP_STATE_LOAD_START)
 		{
-
-			uint64_t address = (txn->local.tua / CODE_DESC_STRIDE) + vm_get_pc_base(vm) + txn->local.iter.x;
-			vm_bus_evnt_t evnt =
+			//printf("loading tib == %d\n",txn->local.tib);
+			if(txn->local.tib == 1)
 			{
-				.evnt.load = {.addr = address },
-				.type = VM_IO_LOAD,
-			};
+
+				uint64_t idx = bookmark_index(txn->local.tua, cd_ptr);
+				vm->bookmarks[idx].inst_addr = txn->local.iter.x ;
+				vm->bookmarks[idx].imm_addr  = txn->local.tuc;
+				vm->bookmarks[idx].cd_addr = cd_ptr;
+				vm->bookmarks[idx].valid = 1;
+				txn->local.tub = JMP_STATE_DONE;
+				return VM_OP_STATUS_TRANSITION;
+
+			}
+			else
+			{
 
 
-			txn->local.tia = vm_bus_put_evnt(vm, txn->handle.port, evnt);
-			txn->local.tud = JMP_STATE_LOAD_WAIT;
+				uint64_t address = (txn->local.tua / 2)  + vm_get_pc_base(vm) + (txn->local.iter.x / 2);
+				//printf("addr %d %d\n", address, txn->local.iter.x);
+				//printf("tua/2 %d, x:%d base %d \n", txn->local.tua / 2, txn->local.iter.x, vm_get_pc_base(vm));
+				//printf("jmp to %d chunK: %d\n", txn->local.tua, address);
+				//printf("address: %d\n", address);
+				//printf("%d\n", txn->local.tua / 8);
+				vm_bus_evnt_t evnt =
+				{
+					.evnt.load = {.addr = address },
+					.type = VM_IO_LOAD,
+				};
 
-			return VM_OP_STATUS_LOADING;
+
+				txn->local.tia = vm_bus_put_evnt(vm, txn->handle.port, evnt);
+				txn->local.tud = JMP_STATE_LOAD_WAIT;
+
+				return VM_OP_STATUS_TRANSITION;
+			}
+
 
 		}
 		else if(txn->local.tud == JMP_STATE_LOAD_WAIT)
@@ -224,36 +246,55 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 				vm_bus_pull_evnt(vm,txn->handle.port, txn->local.tia, &response);
 				txn->local.tue = response.resp.load_response.value;
 				txn->local.tud = JMP_STATE_LOAD_DONE;
-				return VM_OP_STATUS_WAITING;
+				return VM_OP_STATUS_LOADING;
 
 			}
 			else
 			{
-				return VM_OP_STATUS_LOADING;
+				return VM_OP_STATUS_WAITING;
 			}
 		}
 		else if(txn->local.tud == JMP_STATE_LOAD_DONE)
 		{
-			uint32_t inst0 = vm_get_inst_aligned_pc(txn->local.tue, false);
-
-
-			if ((inst0 & 0x1) > 0)
+		//	printf("load state done\n");
+			for(int i = 1; i >= 0; i--)
 			{
-				txn->local.tuc++;
+			//	print_bin(txn->local.tue, 64, 1);
+				uint32_t inst = vm_get_inst_aligned_pc(txn->local.tue, i);
+				inst_t temp = decode_inst(inst);
+				//printf("%d %d %d %s \n", txn->local.iter.x,( (CODE_DESC_STRIDE) % txn->local.tua), txn->local.tuc , vm_wcpu_ops[temp.path].ops[temp.subpath].string);
+
+				//printf("tuc %d inst_addr %d == addr %d\n",txn->local.tuc, txn->local.iter.x , txn->local.tua % CODE_DESC_STRIDE);
+				print_inst(&temp);
+				if ((inst & 0x1) > 0)
+				{
+					txn->local.tuc++;
+				}
+
+				if( txn->local.iter.x >= (txn->local.tua / (CODE_DESC_STRIDE / 2))  || txn->local.iter.x >= CODE_DESC_STRIDE - 1)
+				{
+					//printf("done %d \n", txn->local.tua);
+					txn->local.tud = JMP_STATE_LOAD_START;
+					txn->local.tib = 1;
+					return VM_OP_STATUS_TRANSITION;
+
+				}
+				txn->local.iter.x++;
+
+
+
+
 			}
-			uint32_t inst1 =vm_get_inst_aligned_pc(txn->local.tue, true);
 
 
-			if ((inst1 & 0x1) > 0)
-			{
-				txn->local.tuc++;
 
-			}
-			
-			txn->local.iter.x++;
+			txn->local.tud = JMP_STATE_LOAD_START;
 
-			txn->local.tub = JMP_STATE_LOAD_INST;
-			return VM_OP_STATUS_WAITING;
+
+
+			return VM_OP_STATUS_TRANSITION;
+
+
 
 		}
 		else
@@ -264,8 +305,10 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 	}
 	else if(txn->local.tub == JMP_STATE_DONE)
 	{
+		//printf("jmp to(pc=%d ipc=%d)\n", txn->local.tua, txn->local.tuc);
 		vm_set_pc(vm, txn->local.tua);
-		vm_set_ipc(vm, txn->local.tuc);
+		printf("jmp to %d %d\n",txn->local.tua, txn->local.tug + txn->local.tuc);
+		vm_set_ipc(vm, txn->local.tuc + txn->local.tug);
 		vm->txn->out.jumped = true;
 		vm->txn->out.out = 0;
 		return VM_OP_STATUS_DONE;
@@ -283,26 +326,238 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 
 }
 
+#define JUMP_CALL_PC 0
+#define JUMP_CALL_IPC 1
+#define JUMP_CALL_SFP 2
+#define JUMP_CALL_JUMP 3
+
+
+vm_op_status_t vm_jump_call(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+	//uses tia initially
+	//uses tid as a hold
+	//tic is the state machine
+	if(txn->local.tic == JUMP_CALL_PC)
+	{
+
+		vm_bus_evnt_t evnt =
+		{
+			.evnt.store = {.addr = 	vm_inc_sp(vm, 1), .val = txn->op.pc + 1 },
+			.type = VM_IO_STORE,
+		};
+		txn->local.tia = vm_bus_put_evnt(vm, txn->handle.port, evnt);
+		txn->local.tic = JUMP_CALL_IPC;
+		return VM_OP_STATUS_TRANSITION;
+	}
+	else if(txn->local.tic == JUMP_CALL_IPC)
+	{
+		vm_bus_evnt_t evnt =
+		{
+			.evnt.store = {.addr = 	vm_inc_sp(vm, 1), .val = txn->op.ipc  + (txn->op.op.immflag)? 1 : 0 },
+			.type = VM_IO_STORE,
+		};
+		txn->local.tia = vm_bus_put_evnt(vm, txn->handle.port, evnt);
+
+		txn->local.tic = JUMP_CALL_SFP;
+
+		return VM_OP_STATUS_TRANSITION;
+
+	}
+	else if(txn->local.tic == JUMP_CALL_SFP)
+	{
+		vm_bus_evnt_t evnt =
+		{
+			.evnt.store = {.addr = 	vm_inc_sp(vm, 1), .val = vm_get_sfp(vm) },
+			.type = VM_IO_STORE,
+		};
+		txn->local.tia = vm_bus_put_evnt(vm, txn->handle.port, evnt);
+
+		txn->local.tic = JUMP_CALL_JUMP;
+
+		return VM_OP_STATUS_TRANSITION;
+
+	}
+	else if(txn->local.tic == JUMP_CALL_JUMP)
+	{
+		if(txn->local.tid == 0)
+		{
+			vm_set_sfp(vm, vm_get_sp(vm));
+			txn->local.tid = 1;
+		}
+
+		return vm_jump_address(vm, op, txn);
+	}
+	else
+	{
+		assert(0);
+	}
+}
+#define JUMP_RET_START 0
+#define JUMP_RET_SFP 1
+#define JUMP_RET_IPC 2
+#define JUMP_RET_PC 3
+#define JUMP_RET_JUMP 4
+
+
+vm_op_status_t vm_jump_return(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+	if(txn->local.tic ==JUMP_RET_START)
+	{
+		vm_set_sp(vm, vm_get_sfp(vm));
+		txn->local.tic = JUMP_RET_SFP;
+		return VM_OP_STATUS_START;
+	}
+
+	if(txn->local.tic == JUMP_RET_SFP)
+	{
+		if(txn->local.tud == JMP_STATE_LOAD_START)
+		{
+			vm_bus_evnt_t evnt =
+			{
+				.evnt.load = {.addr = vm_dec_sp(vm, 1)},
+				.type = VM_IO_LOAD,
+			};
+			txn->local.tia = vm_bus_put_evnt(vm, txn->handle.port, evnt);
+			txn->local.tud = JMP_STATE_LOAD_WAIT;
+			return VM_OP_STATUS_TRANSITION;
+		}
+		else if(txn->local.tud == JMP_STATE_LOAD_WAIT)
+		{
+			if(vm_bus_poll_evnt(vm, txn->handle.port, txn->local.tia))
+			{
+				vm_bus_response_t response;
+				vm_bus_pull_evnt(vm,txn->handle.port, txn->local.tia, &response);
+				txn->local.tue = response.resp.load_response.value;
+				txn->local.tud = JMP_STATE_LOAD_DONE;
+				return VM_OP_STATUS_WAITING;
+
+			}
+			else
+			{
+				return VM_OP_STATUS_LOADING;
+			}
+		}
+		else if(txn->local.tud == JMP_STATE_LOAD_DONE)
+		{
+			txn->local.tud = JMP_STATE_LOAD_START;
+			txn->local.tua = txn->local.tue;
+			txn->local.tic = JUMP_RET_IPC;
+			return VM_OP_STATUS_TRANSITION;
+		}
+		else
+		{
+			assert(0);
+		}
+	}
+	else if(txn->local.tic == JUMP_RET_IPC)
+	{
+		if(txn->local.tud == JMP_STATE_LOAD_START)
+		{
+			vm_bus_evnt_t evnt =
+			{
+				.evnt.load = {.addr = vm_dec_sp(vm, 1)},
+				.type = VM_IO_LOAD,
+			};
+			txn->local.tia = vm_bus_put_evnt(vm, txn->handle.port, evnt);
+			txn->local.tud = JMP_STATE_LOAD_WAIT;
+			return VM_OP_STATUS_TRANSITION;
+		}
+		else if(txn->local.tud == JMP_STATE_LOAD_WAIT)
+		{
+			if(vm_bus_poll_evnt(vm, txn->handle.port, txn->local.tia))
+			{
+				vm_bus_response_t response;
+				vm_bus_pull_evnt(vm,txn->handle.port, txn->local.tia, &response);
+				txn->local.tue = response.resp.load_response.value;
+				txn->local.tud = JMP_STATE_LOAD_DONE;
+				return VM_OP_STATUS_WAITING;
+
+			}
+			else
+			{
+				return VM_OP_STATUS_LOADING;
+			}
+		}
+		else if(txn->local.tud == JMP_STATE_LOAD_DONE)
+		{
+			txn->local.tud = JMP_STATE_LOAD_START;
+			txn->local.tub = txn->local.tue;
+			txn->local.tic = JUMP_RET_PC;
+
+			return VM_OP_STATUS_TRANSITION;
+		}
+		else
+		{
+			assert(0);
+		}
+
+	}
+	else if(txn->local.tic == JUMP_RET_PC)
+	{
+		if(txn->local.tud == JMP_STATE_LOAD_START)
+		{
+			vm_bus_evnt_t evnt =
+			{
+				.evnt.load = {.addr = vm_dec_sp(vm, 1)},
+				.type = VM_IO_LOAD,
+			};
+			txn->local.tia = vm_bus_put_evnt(vm, txn->handle.port, evnt);
+			txn->local.tud = JMP_STATE_LOAD_WAIT;
+			return VM_OP_STATUS_TRANSITION;
+		}
+		else if(txn->local.tud == JMP_STATE_LOAD_WAIT)
+		{
+			if(vm_bus_poll_evnt(vm, txn->handle.port, txn->local.tia))
+			{
+				vm_bus_response_t response;
+				vm_bus_pull_evnt(vm,txn->handle.port, txn->local.tia, &response);
+				txn->local.tue = response.resp.load_response.value;
+				txn->local.tud = JMP_STATE_LOAD_DONE;
+				return VM_OP_STATUS_WAITING;
+
+			}
+			else
+			{
+				return VM_OP_STATUS_LOADING;
+			}
+		}
+		else if(txn->local.tud == JMP_STATE_LOAD_DONE)
+		{
+			txn->local.tud = JMP_STATE_LOAD_START;
+			txn->local.tuc = txn->local.tue;
+			txn->local.tic = JUMP_RET_JUMP;
+
+			return VM_OP_STATUS_TRANSITION;
+		}
+		else
+		{
+			assert(0);
+		}
+
+	}
+	else if(txn->local.tic == JUMP_RET_JUMP)
+	{
+
+		vm_set_pc(vm, txn->local.tuc);
+		vm_set_ipc(vm, txn->local.tub);
+		vm_set_sfp(vm, txn->local.tua);
+
+		//printf("%d %d %d\n", txn->local.tuc, txn->local.tub, txn->local.tua);
+
+
+		vm->txn->out.jumped = true;
+		vm->txn->out.out = 0;
+		return VM_OP_STATUS_DONE;
+	}
 
 
 
+}
 
 /*
 void jump_call(vima_t *vm, uint64_t target, char immf)
-{
-	assert(0);
-	/*
-	store(inc_sp(1), get_pc() + 1);
-	store(inc_sp(1), get_ipc() + ((immf)? 1: 0)) ;
-	store(inc_sp(1), get_sfp());
-	//memory_print(components.mem, 1000, 1010);
-	//printf("\n\nipc %d\n\n", get_ipc());
 
-	//printf("sp = %d\n", get_sp());
-	set_sfp(get_sp());
-	//printf("CALL before sp=%lu sfp=%lu\n", get_sp(), get_sfp());
-
-	jump_to(cpu, target);
 */
 /*
 
@@ -441,42 +696,123 @@ vm_op_status_t vm_JMP_BEQ_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 
 vm_op_status_t vm_JMP_BNE_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
-	return VM_OP_STATUS_DONE;
+	if(txn->inp.lane1 != txn->inp.lane2)
+	{
+
+		if(txn->local.tub == 0)
+		{
+			uint64_t sum = txn->inp.lane3;
+			txn->local.tua = sum;
+
+		}
+		return vm_jump_address(vm, op, txn);
+	}
+	else
+	{
+		return VM_OP_STATUS_DONE;
+	}
 
 }
 
 vm_op_status_t vm_JMP_BLE_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
-	return VM_OP_STATUS_DONE;
+	if(txn->inp.lane1 <= txn->inp.lane2)
+	{
+
+		if(txn->local.tub == 0)
+		{
+			uint64_t sum = txn->inp.lane3;
+			txn->local.tua = sum;
+
+		}
+		return vm_jump_address(vm, op, txn);
+	}
+	else
+	{
+		return VM_OP_STATUS_DONE;
+	}
 
 }
 
 vm_op_status_t vm_JMP_BLT_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
-	return VM_OP_STATUS_DONE;
+
+	if(txn->inp.lane1 < txn->inp.lane2)
+	{
+
+		if(txn->local.tub == 0)
+		{
+			uint64_t sum = txn->inp.lane3;
+			txn->local.tua = sum;
+
+		}
+		return vm_jump_address(vm, op, txn);
+	}
+	else
+	{
+		return VM_OP_STATUS_DONE;
+	}
+
 
 }
 
 vm_op_status_t vm_JMP_CALL_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
-	return VM_OP_STATUS_DONE;
 
+
+
+	if(txn->local.tub == 0)
+	{
+		uint64_t sum = txn->inp.lane3;
+		txn->local.tua = sum;
+	}
+	return vm_jump_call(vm, op, txn);
 }
 
 vm_op_status_t vm_JMP_RET_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
-	return VM_OP_STATUS_DONE;
+
+
+	return vm_jump_return(vm, op, txn);
 
 }
 
 vm_op_status_t vm_JMP_BLEU_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
-	return VM_OP_STATUS_DONE;
+	if((uint64_t)txn->inp.lane1 <= (uint64_t)txn->inp.lane2)
+	{
+
+		if(txn->local.tub == 0)
+		{
+			uint64_t sum = txn->inp.lane3;
+			txn->local.tua = sum;
+
+		}
+		return vm_jump_address(vm, op, txn);
+	}
+	else
+	{
+		return VM_OP_STATUS_DONE;
+	}
 
 }
 
 vm_op_status_t vm_JMP_BLTU_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
-	return VM_OP_STATUS_DONE;
+	if((uint64_t)txn->inp.lane1 < (uint64_t)txn->inp.lane2)
+	{
+
+		if(txn->local.tub == 0)
+		{
+			uint64_t sum = txn->inp.lane3;
+			txn->local.tua = sum;
+
+		}
+		return vm_jump_address(vm, op, txn);
+	}
+	else
+	{
+		return VM_OP_STATUS_DONE;
+	}
 
 }

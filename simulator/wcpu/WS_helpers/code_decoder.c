@@ -25,7 +25,7 @@ char path_codes[16][PATH_STR_SIZE] =
 
 
 
-
+#define SUBPATH_MNEMONIC(PU, PL, SU, SL, N, KEY,V,OP,EQU, DESC, SIG ) [N] = #KEY,
 
 
 
@@ -36,58 +36,23 @@ char subpath_codes[16][0xff][PATH_STR_SIZE] =
 {
 	[PATH_ALU] =
 	{
-		[ALU_ADD  ]	=	"add",
-		[ALU_SUB ]	=	"sub",
-		[ALU_SUBU]	=	"subu",
-		[ALU_AND ]	=	"and",
-		[ALU_OR  ]	=	"or",
-		[ALU_XOR ]	=	"xor",
-		[ALU_SLL ]	=	"sll",
-		[ALU_SRL ]	=	"srl",
-		[ALU_SRA ]	=	"sra",
-		[ALU_DIV ]	=	"div",
-		[ALU_MUL ]	=	"mul",
-		[ALU_REM ]	=	"rem",
-		[ALU_MULHI]	=	"mulhi",
-		[ALU_MULU]	=	"mulu",
-		[ALU_MULUS]	=	"mulus",
-		[ALU_DIVU]	=	"divu",
-		[ALU_NOT ]	=	"not",
-		[ALU_CLE ]	=	"cle",
-		[ALU_CLT ]	=	"clt",
-		[ALU_CLTU]	=	"cltu",
-		[ALU_CNE ]	=	"cne",
-		[ALU_CEQ ]	=	"ceq",
+		WCPU_SUBPATH_ALU_LIST(SUBPATH_MNEMONIC)
+
 	},
 	[PATH_MEM] =
 	{
-		[MEM_LDI ]= "ld",
-		[MEM_STI ]=	"st",
-		[MEM_PUSH]=	"push",
-		[MEM_POP ]=	"pop",
-		[MEM_SP  ]=	"sp",
-		[MEM_SFP ]=	"sfp",
-		[MEM_LDS ]=	"lds",
-		[MEM_STS ]=	"sts",
-		[MEM_INCSP]="isp",
-		[MEM_DECSP]="dsp",
+		WCPU_SUBPATH_MEM_LIST(SUBPATH_MNEMONIC)
 
 	},
 	[PATH_JMP] =
 	{
-		[JMP_JMP] = "jmp",
-		[JMP_BNE] = "bne",
-		[JMP_BLT] = "blt",
-		[JMP_BEQ] = "beq",
-		[JMP_BLE] = "ble",
-		[JMP_CALL]= "call",
-		[JMP_RET] = "ret",
-		[JMP_BLEU]= "bleu",
-		[JMP_BLTU]= "bltu",
+		WCPU_SUBPATH_JMP_LIST(SUBPATH_MNEMONIC)
+
 	},
 	[PATH_SYS] =
 	{
-		[SYS_BREAK] = "break",
+		WCPU_SUBPATH_SYS_LIST(SUBPATH_MNEMONIC)
+
 	},
 	[PATH_FPU] =
 	{

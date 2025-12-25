@@ -344,10 +344,12 @@ void init(int argc, char **argv)
 	WS_free_config_file(file);
 
 
-	for(int i = 0; i < 100; ++i)
+	for(int i = 0; i < 1000; ++i)
 	{
 		WS_simulator_update(sim);
 	}
+
+	WS_simulator_print_all_devices(sim);
 
 	parse_args();
 	//create_cli_context(&globalstate.ctx);

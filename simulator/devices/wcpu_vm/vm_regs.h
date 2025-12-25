@@ -1,6 +1,6 @@
 
-#ifndef __VM_CPU_HEADER__
-#define __VM_CPU_HEADER__
+#ifndef __VM_REG_HEADER__
+#define __VM_REG_HEADER__
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -77,7 +77,7 @@ typedef struct
 
 
 
-
+extern char *reg_codes[64];
 
 void vm_cpu_print_regs(vima_t *vm);
 

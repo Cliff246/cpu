@@ -27,6 +27,9 @@ WS_dev_t *WS_device_init(WS_dev_desc_t *desc, device_command_t *cmd);
 //update devices
 void WS_device_update(WS_dev_t *device);
 
+void WS_device_print(WS_dev_t *dev);
+
+
 
 bool WS_device_read(WS_dev_t *device, WS_dev_msg_t *msg);
 bool WS_device_send(WS_dev_t *device, WS_dev_msg_t **msg);

@@ -64,7 +64,11 @@ bool WS_device_send(WS_dev_t *device, WS_dev_msg_t **msg)
 }
 
 
-
+void WS_device_print(WS_dev_t *dev)
+{
+	assert(dev->desc->vtable->print);
+	dev->desc->vtable->print(dev);
+}
 
 
 

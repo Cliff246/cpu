@@ -38,5 +38,5 @@ END:
 
 .data
 str:
-	string "abc"
+	string "hello world"
 

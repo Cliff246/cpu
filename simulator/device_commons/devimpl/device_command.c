@@ -176,6 +176,22 @@ WS_dev_cmd_flag_t *WS_cmd_flag_create(tok_t *key, tok_t *value)
 
 			break;
 
+		case TOK_WORD:
+
+			if(strcmp(value->token, "true") == 0)
+			{
+				(*flag_value).BOOL = true;
+				flag->type = WS_DEV_CMD_FLAG_TYPE_BOOL;
+
+			}
+			else if(strcmp(value->token, "false") == 0)
+			{
+				(*flag_value).BOOL = false;
+				flag->type = WS_DEV_CMD_FLAG_TYPE_BOOL;
+			}
+
+
+			break;
 		default:
 			flag->type = WS_DEV_CMD_FLAG_TYPE_UNKNOWN;
 			break;

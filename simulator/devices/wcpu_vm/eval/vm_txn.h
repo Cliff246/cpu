@@ -204,6 +204,7 @@ void vm_txn_print_inp(vm_txn_t *txn);
 void vm_txn_print_handle(vm_txn_t *txn);
 void vm_txn_print_inflight(vm_txn_t *txn);
 void vm_txn_print_private(vm_txn_t *txn);
+void vm_txn_print_local(vm_txn_t *txn);
 void vm_txn_print_out(vm_txn_t *txn);
 void vm_txn_print_next(vm_txn_t *txn);
 void vm_txn_print_status(vm_txn_t *txn);

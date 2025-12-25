@@ -295,8 +295,9 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 			}
 			inst_t *instruction = &entry->entry.inst;
 			//printf("content %s\n", entry->node->tok->lexeme);
-			print_inst(instruction);
+			printf("%s: ", ASM_mnemonics_list[instruction->path].subpaths[instruction->subpath].str);
 
+			print_inst(instruction);
 			if(instruction->immflag )
 			{
 
