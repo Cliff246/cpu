@@ -1,5 +1,7 @@
-.text 
+%order MAIN dat OTHER
+.text tag MAIN start
 run:
+	sys.setcd x0, x0, x0, other
 	jmp.jmp x0, x0, x0, @open
 	alu.div zero, x0, x0
 	alu.add x0, x0, x0, @run
@@ -10,16 +12,16 @@ open:
 	alu.add x0, x0, x0
 	jmp.jmp x0, x0, x0, @again
 
-.data
-ref:
+.data tag dat
+data_string:
 	string "test test"
 fun:
 	i64 0x1234
 
 
 
-.text
+.text tag OTHER ref other
 
 
 continue:
-	jmp.jmp x0, x0, x0, continue;
+	jmp.jmp x0, x0, x0, @continue

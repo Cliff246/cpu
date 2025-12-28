@@ -58,7 +58,7 @@ vm_path_t vm_wcpu_ops[] =
 		.string = "sys",
 
 		.ops = {
-
+			WCPU_SUBPATH_SYS_LIST(OP_FILL)
 		},
 
 	}

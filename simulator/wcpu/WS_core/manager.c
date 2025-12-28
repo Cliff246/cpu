@@ -344,7 +344,7 @@ void init(int argc, char **argv)
 	WS_free_config_file(file);
 
 
-	for(int i = 0; i < 5000; ++i)
+	for(int i = 0; i < 20000; ++i)
 	{
 		WS_simulator_update(sim);
 		//printf("%d\n", i);

@@ -30,7 +30,7 @@ typedef struct virtual_machine
 	vm_bookmark_t bookmarks[BOOKMARKS_MAX];
 
 	vm_regfile_t regs;
-
+	bool wait_until_inst_end;
 	bool load_cd;
 	int cd_count;
 	int cd_base;

@@ -32,7 +32,6 @@ mat_mul:
 
 
 
-
 	;tix = iterator x
 	alu.add tix, zero, zero
 

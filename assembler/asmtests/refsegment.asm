@@ -13,7 +13,7 @@ start:
 value:
 	string "the little white rabbit jumped over the hen"
 
-.text tag program start
+.text tag program
 main:
 	alu.add x0, x0, x0, hello_world
 

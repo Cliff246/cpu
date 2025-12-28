@@ -130,14 +130,14 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 
 		if(vm->bookmarks[idx].valid && vm->bookmarks[idx].cd_addr == cd_ptr)
 		{
-			//printf("bookmarked\n");
-			//txn->local.tuc = get_from_bookmark(vm, txn->local.tua, cd_ptr);
-			//txn->local.tub = JMP_STATE_DONE;
-			//return VM_OP_STATUS_WAITING;
+			printf("bookmarked\n");
+			txn->local.tuc = get_from_bookmark(vm, txn->local.tua, cd_ptr);
+			txn->local.tub = JMP_STATE_DONE;
+			return VM_OP_STATUS_WAITING;
 
 
 		}
-
+		else
 		{
 			txn->local.tub = JMP_STATE_LOAD_CT_CLOSEST;
 			txn->local.tud = JMP_STATE_LOAD_START;
@@ -207,7 +207,7 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 
 				uint64_t idx = bookmark_index(txn->local.tua, cd_ptr);
 				vm->bookmarks[idx].inst_addr = txn->local.tua ;
-				vm->bookmarks[idx].imm_addr  = txn->local.tuc;
+				vm->bookmarks[idx].imm_addr  = txn->local.tuc + txn->local.tug;
 				vm->bookmarks[idx].cd_addr = cd_ptr;
 				vm->bookmarks[idx].valid = 1;
 				txn->local.tub = JMP_STATE_DONE;

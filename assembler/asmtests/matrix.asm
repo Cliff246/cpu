@@ -29,7 +29,7 @@ mat_mul:
 	mem.push! a1, zero, zero
 	mem.push! a2, zero, zero
 	mem.push! a3, zero, zero
-
+	alu.add t10, zero, zero
 
 
 
@@ -81,6 +81,7 @@ mat_z:
 	alu.add tiz, tiz, #1
 
 	;loop 1
+	alu.add t10, t10, #1
 	sys.break null, null, null
 	jmp.blt zero, tiz, a3, @mat_z
 

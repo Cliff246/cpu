@@ -275,6 +275,8 @@ void vm_txn_state_wire(vima_t *vm, vm_txn_t *txn)
 {
 	if(txn->op.op.accflag)
 	{
+		//printf("acc flag\n");
+
 		txn->inp.dst = 63;
 		txn->inp.lane1 = txn->srcs.rs1;
 		txn->inp.lane2 = txn->srcs.rs2;
@@ -299,9 +301,10 @@ void vm_txn_state_wire(vima_t *vm, vm_txn_t *txn)
 
 void vm_txn_state_exec(vima_t *vm, vm_txn_t *txn)
 {
-
 	int path = txn->op.op.path;
 	int subpath = txn->op.op.subpath;
+	//printf("exec %d %d\n",path, subpath);
+
 	vm_op_t *op =  &vm_wcpu_ops[path].ops[subpath];
 
 	txn->inflight.op = op;
@@ -320,7 +323,7 @@ void vm_txn_state_exec(vima_t *vm, vm_txn_t *txn)
 void vm_txn_state_output(vima_t *vm, vm_txn_t *txn)
 {
 	vm_cpu_set_reg(vm, txn->inp.dst, txn->out.out);
-	//printf("register: %d %d\n",txn->inp.dst,txn->out.out);
+	//printf("register: %d %d\n",txn->inp.dst, txn->out.out);
 	//vm_cpu_print_regs(vm);
 	txn->next.next = VM_TXN_RETIRE;
 	vm_txn_set_next_state(txn, VM_TXN_RETIRE);
@@ -331,7 +334,7 @@ void vm_txn_state_output(vima_t *vm, vm_txn_t *txn)
 void vm_txn_state_retire(vima_t *vm, vm_txn_t *txn)
 {
 	printf("op:%s pc:%d ipc:%d\n", txn->inflight.op->string, txn->op.pc, txn->op.ipc);
-	printf("sp:%d sfp:%d\n", vm_get_sp(vm), vm_get_sfp(vm));
+	//printf("sp:%d sfp:%d\n", vm_get_sp(vm), vm_get_sfp(vm));
 	if(!txn->out.jumped)
 	{
 		if(txn->op.op.immflag)

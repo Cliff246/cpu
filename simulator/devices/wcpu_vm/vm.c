@@ -82,13 +82,13 @@ void device_vima_update(device_t *dev)
 {
 	vima_t *vm = (vima_t *)dev->ptr;
 
-	if(vm->load_cd == true)
+	if(vm->load_cd == true && vm->wait_until_inst_end == false)
 	{
 		if(vm_bus_poll_evnt(vm, vm->port, vm->hnd))
 		{
 			vm_bus_response_t resp;
 			vm_bus_pull_evnt(vm, vm->port, vm->hnd, &resp);
-			//printf("%d %d\n", resp.resp.load_response.value, vm->cd_count);
+			printf("%d %d %d\n", resp.resp.load_response.value, vm->cd_count, vm->cd_base);
 			switch(vm->cd_count)
 			{
 				case 1:
@@ -115,12 +115,13 @@ void device_vima_update(device_t *dev)
 			{
 				vm->load_cd = false;
 				vm->new_inst = true;
+				vm->wait_until_inst_end = true;
 			}
 			else
 			{
 				vm_bus_evnt_t bus_event =
 				{
-					.evnt.load = {.addr = vm->cd_count++},
+					.evnt.load = {.addr = vm->cd_base + vm->cd_count++},
 					.type = VM_IO_LOAD
 				};
 				vm->hnd = vm_bus_put_evnt(vm, vm->port, bus_event);
@@ -132,14 +133,32 @@ void device_vima_update(device_t *dev)
 	{
 		if(vm->new_inst)
 		{
-			if(vm->txn != NULL)
+			if(vm->load_cd == true)
 			{
-				free(vm->txn);
-				vm->txn = NULL;
+				printf("load cd\n");
+				vm->wait_until_inst_end = false;
+				vm->regs.code_desc.ipc = 0;
+				vm->regs.code_desc.pc = 0;
+				vm_bus_evnt_t bus_event =
+				{
+					.evnt.load = {.addr = (vm->cd_base + vm->cd_count++)},
+					.type = VM_IO_LOAD
+				};
+				vm->hnd = vm_bus_put_evnt(vm, vm->port, bus_event);
 			}
-			vm->new_inst = false;
+			else
+			{
+				if(vm->txn != NULL)
+				{
+					free(vm->txn);
+					vm->txn = NULL;
+				}
+				vm->new_inst = false;
 
-			vm->txn = vm_txn_create(vm);
+				vm->txn = vm_txn_create(vm);
+
+			}
+
 
 		}
 		else
