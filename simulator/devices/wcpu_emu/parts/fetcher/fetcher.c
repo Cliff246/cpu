@@ -93,13 +93,25 @@ bool wcpu_fetcher_import( part_t *part, part_signal_t *signal)
 			//should
 			fetcher_port_order_t *order = fetcher_port_code_description_order_create(cd_swap.address);
 
-			fetcher->controller->orders[WCPU_FETCHER_PORT_CODE_DESCRIPTOR] = order;
+		}
+		else if(fetch_command->type == FETCHER_COMMAND_CT_LOAD)
+		{
+			_fetcher_command_ct_load_t ct_load = fetch_command->cmd.ct_load;
+		}
+		else if(fetch_command->type == FETCHER_COMMAND_IMM_LOAD)
+		{
+			_fetcher_command_imm_load_t imm_load = fetch_command->cmd.imm_load;
+		}
+		else if(fetch_command->type == FETCHER_COMMAND_INS_LOAD)
+		{
+			_fetcher_command_ins_load_t ins_load = fetch_command->cmd.ins_load;
 		}
 		else
 		{
 			assert(0 && "fetch command not implemented");
 		}
 	}
+
 	//strong assumption here
 	if(signal->signal_type == PART_SIGNAL_TYPE_LSU)
 	{

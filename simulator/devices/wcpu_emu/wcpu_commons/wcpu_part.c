@@ -7,6 +7,7 @@
 #include "fetcher.h"
 #include "mau.h"
 #include "deployer.h"
+#include "scheduler.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -83,7 +84,18 @@ wcpu_part_class_t part_vtable[UNIQUE_PARTS] =
 		.init = wcpu_deployer_generate,
 		.step = wcpu_deployer_update,
 		.export = wcpu_deployer_export,
-		.import = wcpu_deployer_import
+		.import = wcpu_deployer_import,
+	},
+	[WCPU_PART_SCHEDULER] =
+	{
+		.init = wcpu_scheduler_generate,
+		.step = wcpu_aggregator_update,
+		.export = wcpu_aggregator_export,
+		.import = wcpu_scheduler_import,
+	},
+	[WCPU_PART_CCU] =
+	{
+
 	}
 };
 

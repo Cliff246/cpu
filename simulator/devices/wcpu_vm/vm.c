@@ -259,25 +259,6 @@ void device_vima_commit(WS_dev_t *dev)
 
 }
 
-vima_t *vm_init(uint64_t memory_size)
-{
-
-}
-
-
-int64_t vm_load(vima_t *vm, uint64_t address)
-{
-
-}
-
-void vm_store(vima_t *vm, uint64_t address, int64_t data)
-{
-}
-
-void vm_step(vima_t *vm)
-{
-	//vm_cpu_step(vm);
-}
 
 
 /*

@@ -16,7 +16,7 @@ void fetcher_port_code_table_create(fetcher_port_t *port)
 	assert(ct != NULL);
 	port->port.ct = ct;
 
-	port->requires_mask = FETCHER_PORT_CAPACITY_CODE_DESCRIPTOR;
+;	port->requires_mask = 0;
 	port->produces_mask = FETCHER_PORT_CAPACITY_CODE_TABLE;
 
 }

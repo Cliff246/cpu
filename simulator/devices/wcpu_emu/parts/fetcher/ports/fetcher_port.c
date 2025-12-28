@@ -1,7 +1,6 @@
 #include "fetcher_port_ptr.h"
 #include "fetcher_port.h"
 
-#include "fetcher_code_descriptor_port.h"
 #include "fetcher_code_table_port.h"
 #include "fetcher_immediate_port.h"
 #include "fetcher_instruction_port.h"
@@ -17,17 +16,7 @@
 
 fetcher_port_class_t fetcher_port_vtable[WCPU_FETCHER_PORTS_COUNT] =
 {
-	[WCPU_FETCHER_PORT_CODE_DESCRIPTOR] =
-	{
-		.create = fetcher_port_code_description_create,
-		.export = fetcher_port_code_description_export,
-		.flush = fetcher_port_code_description_flush,
-		.import = fetcher_port_code_description_import,
-		.issue = fetcher_port_code_description_issue,
-		.poll = fetcher_port_code_description_poll,
-		.cycle = fetcher_port_code_description_cycle,
-		.order = fetcher_port_code_description_order,
-	},
+
 
 	[WCPU_FETCHER_PORT_CODE_TABLE] =
 	{

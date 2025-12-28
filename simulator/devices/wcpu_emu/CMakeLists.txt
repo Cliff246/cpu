@@ -10,6 +10,12 @@ set(DEVICE_WCPU_EMU_CFILES
 	${CMAKE_CURRENT_SOURCE_DIR}/wcpu_commons/wcpu_part_signal.c
 	${CMAKE_CURRENT_SOURCE_DIR}/core/core.c
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/deployer/deployer.c
+	${CMAKE_CURRENT_SOURCE_DIR}/parts/scheduler/scheduler.c
+	${CMAKE_CURRENT_SOURCE_DIR}/parts/ccu/ccu.c
+	${CMAKE_CURRENT_SOURCE_DIR}/parts/ccu/ccu_cd_loader.c
+
+
+
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/cache/cache.c
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/cache/cache_line.c
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/aggregator/aggregator.c
@@ -31,9 +37,7 @@ set(DEVICE_WCPU_EMU_CFILES
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/fetcher/fetcher_interface.c
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/fetcher/ports/fetcher_port.c
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/fetcher/ports/fetcher_port_order.c
-	${CMAKE_CURRENT_SOURCE_DIR}/parts/fetcher/ports/port_code_descriptor/fetcher_code_descriptor_port.c
-	${CMAKE_CURRENT_SOURCE_DIR}/parts/fetcher/ports/port_code_descriptor/fetcher_code_descriptor_port_context.c
-	${CMAKE_CURRENT_SOURCE_DIR}/parts/fetcher/ports/port_code_descriptor/fetcher_code_descriptor_port_order.c
+
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/fetcher/ports/port_immediate/fetcher_immediate_port.c
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/fetcher/ports/port_instruction/fetcher_instruction_port.c
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/fetcher/ports/port_code_table/fetcher_code_table_port.c
@@ -76,6 +80,8 @@ target_include_directories(sim_dev_wcpu_emu PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/fetcher/ports/port_code_table/
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/cache
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/deployer
+	${CMAKE_CURRENT_SOURCE_DIR}/parts/scheduler
+	${CMAKE_CURRENT_SOURCE_DIR}/parts/ccu
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/ledger
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/regfile
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/mau

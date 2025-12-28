@@ -7,11 +7,9 @@
 
 
 #define FETCHER_PORT_ORDER_LIST(X)\
-	X(CD_SWAP)					  \
 	X(IMMEDIATE)				  \
 	X(INSTRUCTION)				  \
 	X(CODE_TABLE)				  \
-	X(CODE_TABLE_LOAD)			  \
 
 
 
@@ -34,7 +32,6 @@ FETCHER_PORT_ORDER_LIST(FETCHER_PORT_ORDER_STRUCT)
 typedef struct wcpu_fetcher_port_order fetcher_port_order_t;
 
 
-#include "fetcher_code_descriptor_port_order.h"
 
 
 struct wcpu_fetcher_port_order_IMMEDIATE
@@ -55,12 +52,6 @@ struct wcpu_fetcher_port_order_CODE_TABLE
 	uint64_t ct_base;
 	uint64_t ct_len;
 
-};
-
-struct wcpu_fetcher_port_order_CODE_TABLE_LOAD
-{
-	uint64_t base;
-	uint64_t len;
 };
 
 #define FETCHER_PORT_ORDER_UNION_ELEMENT(X) X

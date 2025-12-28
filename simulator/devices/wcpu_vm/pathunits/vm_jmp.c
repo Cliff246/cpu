@@ -45,7 +45,7 @@ uint64_t closest_rel(vima_t *vm, uint64_t ct_addr, uint64_t ct_len, uint64_t rel
 		closest = rel_address / CODE_DESC_STRIDE;
 	}
 
-	uint64_t relative = vm_load(vm, ct_addr + closest);
+	uint64_t relative = 0;
 	//printf("c:%ld r:%ld\n", closest, relative);
 	return relative;
 }

@@ -2,14 +2,16 @@
 #define __WCPU_PART_PTR_HEADER__
 
 typedef struct wcpu_part_fetcher 		fetcher_t;
-typedef struct wcpu_part_mau 			mau_t;
+typedef struct wcpu_part_mau 			mau_t; //math algorithm unit
 typedef struct wcpu_part_regfile 		regfile_t;
 typedef struct wcpu_part_mattress 		mattress_t;
 typedef struct wcpu_part_ledger 		ledger_t;
 typedef struct wcpu_part_cache 			cache_t;
-typedef struct wcpu_part_lsu 			lsu_t;
+typedef struct wcpu_part_lsu 			lsu_t; //load store unit
 typedef struct wcpu_part_aggregator 	aggregator_t;
 typedef struct wcpu_part_deployer 		deployer_t;
+typedef struct wcpu_part_scheduler 		scheduler_t;
+typedef struct wcpu_part_ccu 			ccu_t; //central control unit
 
 
 typedef union wcpu_part_ptr
@@ -23,6 +25,8 @@ typedef union wcpu_part_ptr
 	lsu_t *lsu;
 	aggregator_t *aggregator;
 	deployer_t *deployer;
+	scheduler_t *scheduler;
+	ccu_t *ccu;
 	void *raw;
 }part_ptr_t;
 

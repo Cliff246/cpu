@@ -29,6 +29,8 @@
 	PART(LEDGER)				\
 	PART(MAU)					\
 	PART(DEPLOYER)				\
+	PART(SCHEDULER)				\
+	PART(CCU)					\
 
 
 #define NAME_PART(n) WCPU_PART_ ## n

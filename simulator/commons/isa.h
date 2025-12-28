@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define CODE_DESCRIPTION_SIZE 6
 
 typedef struct instruction
 {

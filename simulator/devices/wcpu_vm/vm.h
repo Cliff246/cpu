@@ -52,13 +52,6 @@ void device_vima_print(device_t *dev);
 WS_dev_cmd_t *device_vima_stringfy(toklex_t *tl);
 void device_vima_commit(WS_dev_t *dev);
 
-int64_t vm_load(vima_t *vm, uint64_t address);
-void vm_store(vima_t *vm, uint64_t address, int64_t data);
 
 
-
-//vima_t *vm_init(uint64_t memory_size);
-//void vm_step(vima_t *vm);
-void vm_setmemory(vima_t *vm, int64_t *memory, uint64_t size);
-void vm_print_mem(vima_t *vm, uint64_t start, uint64_t stop);
 #endif

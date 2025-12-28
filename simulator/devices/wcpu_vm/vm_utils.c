@@ -16,7 +16,7 @@
 
 
 
-
+/*
 
 void vm_push_scd(vima_t *vm, vm_reg_cd_t desc)
 {
@@ -82,7 +82,7 @@ vm_reg_cd_t vm_get_cd_from_address(vima_t *vm, uint64_t address)
 	};
 	return frame;
 }
-
+*/
 vm_reg_cd_t vm_get_desc(vima_t *vm)
 {
 
@@ -185,6 +185,7 @@ uint64_t vm_inc_sp(vima_t *vm, uint64_t degree)
 	return sp;
 }
 
+/*
 uint32_t vm_get_inst_at_pc_address(vima_t *vm, uint64_t address)
 {
 	uint64_t dest = (address / 2) + vm_get_pc_base(vm);
@@ -198,6 +199,7 @@ uint32_t vm_get_inst_at_pc_address(vima_t *vm, uint64_t address)
 		return (uint32_t)((vm_load(vm, dest) & 0xffffffff));
 	}
 }
+*/
 
 uint32_t vm_get_inst_aligned_pc(int64_t val, bool even)
 {

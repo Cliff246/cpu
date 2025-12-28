@@ -21,6 +21,7 @@ void wcpu_regfile_update(part_t *part)
 {
 	assert(part);
 	assert(part->type == WCPU_PART_REGFILE && "part type for import must be of type WCPU_PART_regfile");
+	regfile_t *rf = part->ptr.regfile;
 
 }
 
@@ -30,7 +31,7 @@ bool wcpu_regfile_import( part_t *part, part_signal_t *signal)
 
 	assert(part->type == WCPU_PART_REGFILE && "part type for import must be of type WCPU_PART_regfile");
 
-
+	regfile_t *rf = part->ptr.regfile;
 	if(signal != NULL)
 	{
 		printf("recieved signal\n");
@@ -42,6 +43,7 @@ bool wcpu_regfile_export( part_t *part, part_signal_t **signal)
 {
 	assert(part);
 	assert(part->type == WCPU_PART_REGFILE && "part type for import must be of type WCPU_PART_regfile");
+	regfile_t *rf = part->ptr.regfile;
 
 	return false;
 }

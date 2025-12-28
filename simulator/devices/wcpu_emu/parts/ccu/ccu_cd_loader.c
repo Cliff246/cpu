@@ -1,7 +1,7 @@
 #include "fetcher_port_ptr.h"
 #include "fetcher_port_order.h"
 
-#include "fetcher_code_descriptor_port.h"
+#include "ccu_cd_loader.h"
 #include "wcpu_part_signal_cd_transfer.h"
 #include "wcpu_part.h"
 
@@ -11,6 +11,8 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <string.h>
+
+/*
 
 void fetcher_port_code_description_create(fetcher_port_t *port)
 {
@@ -128,11 +130,10 @@ void fetcher_port_code_description_order(fetcher_port_t *port, fetcher_port_orde
 	assert(port->type == WCPU_FETCHER_PORT_CODE_DESCRIPTOR);
 	assert(port->port.raw != NULL);
 	assert(order);
-	assert(order->type == FETCHER_PORT_ORDER_TYPE_CD_SWAP);
 	fetcher_port_code_descriptor_t *cd = port->port.cd;
-	cd->active_context.address = order->order.CD_SWAP.load_address;
 	port->state = FETCHER_PORT_ISSUE;
 	port->ready = true;
 }
 //
 
+*/

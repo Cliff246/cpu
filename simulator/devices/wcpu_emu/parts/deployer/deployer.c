@@ -1,7 +1,8 @@
 #include "wcpu_part.h"
 #include "deployer.h"
+#include <stdlib.h>
+#include <stdbool.h>
 #include <assert.h>
-
 
 part_ptr_t wcpu_deployer_generate(void)
 {

@@ -24,4 +24,5 @@ fun:
 
 
 continue:
+	alu.add x1, x1, #1
 	jmp.jmp x0, x0, x0, @continue

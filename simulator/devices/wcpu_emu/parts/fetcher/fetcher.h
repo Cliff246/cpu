@@ -2,13 +2,17 @@
 #define __WCPU_PART_FETCHER_HEADER__
 
 #include "wcpu_part_ptr.h"
-#include <stdint.h>
-#include <stdbool.h>
+
 #include "wcpu_part_signal.h"
 
 #include "fetcher_controller.h"
 #include "fetcher_interface.h"
 
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <assert.h>
 
 #define FETCHER_BUFFER_LIMIT 10
 

@@ -232,9 +232,7 @@ void vm_txn_state_source(vima_t *vm, vm_txn_t *txn)
 		if(txn->op.op.immflag && txn->op.op.reallocflag)
 		{
 
-		//sidestream = vm_load(vm, txn->op);
-		//
-		//
+		
 			vm_bus_evnt_t event = {
 				.type = VM_IO_LOAD,
 				.evnt.load = {.addr = (uint64_t)txn->op.imm}
