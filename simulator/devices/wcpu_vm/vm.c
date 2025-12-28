@@ -199,6 +199,7 @@ bool device_vima_send(WS_dev_t *dev, WS_dev_msg_t **msg)
 				}
 				else
 				{
+					//printf("write\n");
 					*msg = WS_device_message_create(dev->desc, dev->id, -1,DEVMSG_WRITE, hnd->evnt.evnt.store.addr, hnd->evnt.evnt.store.val);
 					vm_bus_free_handle(vm, hnd->hnd);
 				}

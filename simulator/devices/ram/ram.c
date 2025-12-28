@@ -265,6 +265,7 @@ bool device_ram_read(WS_dev_t *dev, WS_dev_msg_t *msg)
 		dev_msg_type_t type = WS_get_device_message_type(msg);
 		if(type == DEVMSG_WRITE)
 		{
+			printf("ram write %d:%d\n", msg->address, msg->value);
 			write_ram(ram, msg->address, msg->value);
 			ram->has_msg = false;
 		}

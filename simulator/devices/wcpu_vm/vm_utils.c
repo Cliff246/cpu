@@ -175,15 +175,14 @@ uint64_t vm_get_sp(vima_t *vm)
 
 uint64_t vm_dec_sp(vima_t *vm, uint64_t degree)
 {
-
-	uint64_t sp = vm->regs.stack.sp;
 	vm->regs.stack.sp -= degree;
-	return sp;
+	return vm->regs.stack.sp ;
 }
 uint64_t vm_inc_sp(vima_t *vm, uint64_t degree)
 {
+	uint64_t sp = vm->regs.stack.sp;
 	vm->regs.stack.sp += degree;
-	return vm->regs.stack.sp;
+	return sp;
 }
 
 uint32_t vm_get_inst_at_pc_address(vima_t *vm, uint64_t address)

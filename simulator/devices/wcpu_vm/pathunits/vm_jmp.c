@@ -111,7 +111,8 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 
 	//tud = jmp state minor load
 	//tue = load response value
-
+	//tug
+	//tuf
 	//iter.x = current instruction offset
 
 	//tia = hnd
@@ -319,10 +320,11 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 
 }
 
-#define JUMP_CALL_PC 0
-#define JUMP_CALL_IPC 1
-#define JUMP_CALL_SFP 2
-#define JUMP_CALL_JUMP 3
+#define JUMP_CALL_START 0
+#define JUMP_CALL_PC 1
+#define JUMP_CALL_IPC 2
+#define JUMP_CALL_SFP 3
+#define JUMP_CALL_JUMP 4
 
 
 vm_op_status_t vm_jump_call(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
@@ -331,8 +333,17 @@ vm_op_status_t vm_jump_call(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 	//uses tid as a hold
 	//tic is the state machine
 	//printf("sp: %d\n", vm_get_sp(vm));
+	if(txn->local.tic == JUMP_CALL_START)
+	{
 
-	if(txn->local.tic == JUMP_CALL_PC)
+		txn->local.tuf = vm_get_sp(vm);
+
+		txn->local.tic = JUMP_CALL_PC;
+		return VM_OP_STATUS_TRANSITION;
+
+	}
+
+	else if(txn->local.tic == JUMP_CALL_PC)
 	{
 		vm_bus_evnt_t evnt =
 		{
@@ -377,14 +388,15 @@ vm_op_status_t vm_jump_call(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 	}
 	else if(txn->local.tic == JUMP_CALL_JUMP)
 	{
-		if(txn->local.tid == 0)
-		{
-			//printf("set sfp\n");
-			vm_set_sfp(vm, vm_get_sp(vm));
-			txn->local.tid = 1;
-		}
+		vm_op_status_t st = vm_jump_address(vm, op, txn);
 		txn->local.tic = JUMP_CALL_JUMP;
-		return vm_jump_address(vm, op, txn);
+
+		if(st == VM_OP_STATUS_DONE)
+		{
+			vm_set_sfp(vm, txn->local.tuf);
+		}
+
+		return st;
 	}
 	else
 	{
@@ -403,9 +415,9 @@ vm_op_status_t vm_jump_return(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 	//printf("retun: %d %d %d %d\n", txn->local.tuc, txn->local.tub, txn->local.tua, vm_get_sp(vm));
 
 
-	if(txn->local.tic ==JUMP_RET_START)
+	if(txn->local.tic == JUMP_RET_START)
 	{
-		vm_set_sp(vm, vm_get_sfp(vm));
+		vm_set_sp(vm, vm_get_sfp(vm) + 3);
 		txn->local.tud = JMP_STATE_LOAD_START;
 		txn->local.tic = JUMP_RET_SFP;
 		return VM_OP_STATUS_START;
