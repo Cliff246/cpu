@@ -130,13 +130,13 @@
 #define WCPU_SUBPATH_JMP_LIST(X)\
 	X(JMP,jmp,BEQ		, beq		, 0x00, beq			, T0	, "=="		,	"dst = 0, goto l3 iff l1 == l2"						, "branch equals"								, 0)				\
 	X(JMP,jmp,BNE		, bne		, 0x01, bne			, T0	, "!="		,	"dst = 0, goto l3 iff l1 == l2"						, "branch not equals"							, 0)				\
-	X(JMP,jmp,JMP		, jmp		, 0x02, jmp			, T0	, ""		,	"dst = 0, goto l3 + l2 + l1"						, "jump"										, 0)					\
+	X(JMP,jmp,JMP		, jmp		, 0x02, jmp			, T0	, ""		,	"dst = 0, goto l3 + l2 + l1"						, "jump"										, 0)				\
 	X(JMP,jmp,BLT		, blt		, 0x03, blt			, T0	, "<"		,	"dst = 0, goto l3 iff l1 < l2"						, "branch less than"							, 0)				\
 	X(JMP,jmp,BLE		, ble		, 0x04, ble			, T0	, "<="		,	"dst = 0, goto l3 iff l1 <= l2"						, "branch less than equals"						, 0)				\
 	X(JMP,jmp,CALL		, call		, 0x05, call		, T0	, "call"	,	"dst = 0, call l1 + l2 + l3 "						, "call"										, 0)				\
 	X(JMP,jmp,RET		, ret		, 0x06, ret			, T0	, "ret"		,	"dst = 0, return"									, "return"										, 0)				\
-	X(JMP,jmp,BLTU		, bltu		, 0x07, bltu		, T0	, "<"		,	"dst = 0, goto l3 iff (unsigned)l1 < (unsigned)l2)"	, "branch less than unsigned"					, 0)				\
-	X(JMP,jmp,BLEU		, bleu		, 0x08, bleu		, T0	, "<="		,	"dst = 0, goto l3 iff (unsigned)l1 <= (unsigned)l2)", "branch less than equals unsigned"			, 0)				\
+	X(JMP,jmp,BLTU		, bltu		, 0x07, bltu		, T0	, "<"		,	"dst = 0, goto l3 iff (uint)l1 < (uint)l2)"	, "branch less than unsigned"							, 1)				\
+	X(JMP,jmp,BLEU		, bleu		, 0x08, bleu		, T0	, "<="		,	"dst = 0, goto l3 iff (uint)l1 <= (uint)l2)", "branch less than equals unsigned"					, 1)				\
 
 
 

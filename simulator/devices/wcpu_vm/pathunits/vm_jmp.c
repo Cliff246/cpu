@@ -153,7 +153,7 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 
 			uint64_t closest = txn->local.tua / CODE_DESC_STRIDE;
 			uint64_t address = closest + ct_base;
-			//printf("ct closet %d\n", address);
+			//printf("ct closet %d\n", closest);
 			vm_bus_evnt_t evnt =
 			{
 				.evnt.load = {.addr = address },
@@ -205,7 +205,7 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 			{
 
 				uint64_t idx = bookmark_index(txn->local.tua, cd_ptr);
-				vm->bookmarks[idx].inst_addr = txn->local.iter.x ;
+				vm->bookmarks[idx].inst_addr = txn->local.tua ;
 				vm->bookmarks[idx].imm_addr  = txn->local.tuc;
 				vm->bookmarks[idx].cd_addr = cd_ptr;
 				vm->bookmarks[idx].valid = 1;
@@ -217,8 +217,8 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 			{
 
 
-				uint64_t address = (txn->local.tua / 2)  + vm_get_pc_base(vm) + (txn->local.iter.x / 2);
-				//printf("addr %d %d\n", address, txn->local.iter.x);
+				uint64_t address = ((txn->local.tua / CODE_DESC_STRIDE) * 8)  + vm_get_pc_base(vm) + (txn->local.iter.x / 2);
+				//printf("addr tua:%d tua mod:%d base:%d addr:%d\n", txn->local.tua, (txn->local.tua / CODE_DESC_STRIDE) * 8, txn->local.tug, address);
 				//printf("tua/2 %d, x:%d base %d \n", txn->local.tua / 2, txn->local.iter.x, vm_get_pc_base(vm));
 				//printf("jmp to %d chunK: %d\n", txn->local.tua, address);
 				//printf("address: %d\n", address);
@@ -265,13 +265,13 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 				//printf("%d %d %d %s \n", txn->local.iter.x,( (CODE_DESC_STRIDE) % txn->local.tua), txn->local.tuc , vm_wcpu_ops[temp.path].ops[temp.subpath].string);
 
 				//printf("tuc %d inst_addr %d == addr %d\n",txn->local.tuc, txn->local.iter.x , txn->local.tua % CODE_DESC_STRIDE);
-				print_inst(&temp);
+				//print_inst(&temp);
 				if ((inst & 0x1) > 0)
 				{
 					txn->local.tuc++;
 				}
-
-				if( txn->local.iter.x >= (txn->local.tua / (CODE_DESC_STRIDE / 2))  || txn->local.iter.x >= CODE_DESC_STRIDE - 1)
+				txn->local.iter.x++;
+				if( txn->local.iter.x == (txn->local.tua % CODE_DESC_STRIDE)  || txn->local.iter.x >= CODE_DESC_STRIDE - 1)
 				{
 					//printf("done %d \n", txn->local.tua);
 					txn->local.tud = JMP_STATE_LOAD_START;
@@ -279,14 +279,7 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 					return VM_OP_STATUS_TRANSITION;
 
 				}
-				txn->local.iter.x++;
-
-
-
-
 			}
-
-
 
 			txn->local.tud = JMP_STATE_LOAD_START;
 
@@ -307,7 +300,7 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 	{
 		//printf("jmp to(pc=%d ipc=%d)\n", txn->local.tua, txn->local.tuc);
 		vm_set_pc(vm, txn->local.tua);
-		printf("jmp to %d %d\n",txn->local.tua, txn->local.tug + txn->local.tuc);
+		//printf("jmp to %d %d\n",txn->local.tua, txn->local.tug + txn->local.tuc);
 		vm_set_ipc(vm, txn->local.tuc + txn->local.tug);
 		vm->txn->out.jumped = true;
 		vm->txn->out.out = 0;
@@ -337,11 +330,13 @@ vm_op_status_t vm_jump_call(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 	//uses tia initially
 	//uses tid as a hold
 	//tic is the state machine
+	//printf("sp: %d\n", vm_get_sp(vm));
+
 	if(txn->local.tic == JUMP_CALL_PC)
 	{
-
 		vm_bus_evnt_t evnt =
 		{
+
 			.evnt.store = {.addr = 	vm_inc_sp(vm, 1), .val = txn->op.pc + 1 },
 			.type = VM_IO_STORE,
 		};
@@ -351,9 +346,12 @@ vm_op_status_t vm_jump_call(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 	}
 	else if(txn->local.tic == JUMP_CALL_IPC)
 	{
+		uint64_t val =  txn->op.ipc  + ((txn->op.op.immflag)? 1 : 0);
+		//printf("val:%d\n", val);
+
 		vm_bus_evnt_t evnt =
 		{
-			.evnt.store = {.addr = 	vm_inc_sp(vm, 1), .val = txn->op.ipc  + (txn->op.op.immflag)? 1 : 0 },
+			.evnt.store = {.addr = 	vm_inc_sp(vm, 1), .val = val},
 			.type = VM_IO_STORE,
 		};
 		txn->local.tia = vm_bus_put_evnt(vm, txn->handle.port, evnt);
@@ -381,10 +379,11 @@ vm_op_status_t vm_jump_call(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 	{
 		if(txn->local.tid == 0)
 		{
+			//printf("set sfp\n");
 			vm_set_sfp(vm, vm_get_sp(vm));
 			txn->local.tid = 1;
 		}
-
+		txn->local.tic = JUMP_CALL_JUMP;
 		return vm_jump_address(vm, op, txn);
 	}
 	else
@@ -401,10 +400,13 @@ vm_op_status_t vm_jump_call(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 
 vm_op_status_t vm_jump_return(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+	//printf("retun: %d %d %d %d\n", txn->local.tuc, txn->local.tub, txn->local.tua, vm_get_sp(vm));
+
 
 	if(txn->local.tic ==JUMP_RET_START)
 	{
 		vm_set_sp(vm, vm_get_sfp(vm));
+		txn->local.tud = JMP_STATE_LOAD_START;
 		txn->local.tic = JUMP_RET_SFP;
 		return VM_OP_STATUS_START;
 	}
@@ -539,11 +541,12 @@ vm_op_status_t vm_jump_return(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 	else if(txn->local.tic == JUMP_RET_JUMP)
 	{
 
+
+
 		vm_set_pc(vm, txn->local.tuc);
 		vm_set_ipc(vm, txn->local.tub);
 		vm_set_sfp(vm, txn->local.tua);
 
-		//printf("%d %d %d\n", txn->local.tuc, txn->local.tub, txn->local.tua);
 
 
 		vm->txn->out.jumped = true;
@@ -772,7 +775,7 @@ vm_op_status_t vm_JMP_CALL_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 vm_op_status_t vm_JMP_RET_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
 
-
+	//printf("return\n");
 	return vm_jump_return(vm, op, txn);
 
 }

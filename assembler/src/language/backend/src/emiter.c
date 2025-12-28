@@ -269,7 +269,7 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 	size_t inst_iter = 0;
 	size_t table_iter = 0;
 	bool failed = false;
-
+	printf("imm len %d\n", imm_len);
 	for(int fi = 0; fi < mod->size; ++fi)
 	{
 		modfrag_t *frag;
@@ -285,6 +285,7 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 
 			if(inst_iter % CODE_DESC_STRIDE == 0)
 			{
+				//printf("%d\n",imm_iter);
 				table[table_iter++] = imm_iter;
 			}
 
@@ -295,7 +296,7 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 			}
 			inst_t *instruction = &entry->entry.inst;
 			//printf("content %s\n", entry->node->tok->lexeme);
-			printf("%s: ", ASM_mnemonics_list[instruction->path].subpaths[instruction->subpath].str);
+			printf("(%d %d)%s: ", inst_iter,imm_iter, ASM_mnemonics_list[instruction->path].subpaths[instruction->subpath].str);
 
 			print_inst(instruction);
 			if(instruction->immflag )
@@ -313,7 +314,7 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 					}
 
 					symbol_t *sym = resolve_symbol(tempref, ll, frag);
-
+					printf("%d\n", imm_iter);
 					if(!sym)
 					{
 						errelm_line_t line = {.column = entry->node->tok->locale.col, .line = entry->node->tok->locale.row};
@@ -387,7 +388,6 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 		escape(1);
 	}
 	size_t compacted = (inst_len / 2) + (inst_len % 2);
-
 	txt.desc[0] = 6 + base;
 	txt.desc[1] = table_size;
 
@@ -439,7 +439,7 @@ segout_data_t create_segout_data(linker_t *ll, region_t *region)
 				data_holder_t holder = mop->data;
 				for(int wi = 0; wi < holder.words_len; ++wi)
 				{
-					//printf("%16x holder words\n",holder.words[wi]);
+					printf("%d holder words\n",holder.words[wi]);
 					content[iter++] = holder.words[wi];
 
 				}
@@ -547,7 +547,7 @@ size_t fix_align_scope_addresses(scope_t *scope, size_t module_offset, size_t fr
 		if(sym->type == SYMBOL_REFERENCE)
 		{
 			ref_t *ref = sym->symbol.ref;
-
+			
 			ref->fragment_offset = fragment_offset;
 			ref->absolute_offset = module_offset;
 			ref->resolved = true;

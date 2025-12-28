@@ -1,3 +1,16 @@
+load context
+10
+7
+8
+9
+1
+5
+globals:
+global SORT srcs:
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+implemented 1 file:0
+0
+0
 
 
           START b:0 l:0 f:0 a:0 r:0
@@ -9,61 +22,63 @@ PARTITION_WHILE_1 b:44 l:11 f:0 a:0 r:0
   SORT_CONTINUE b:140 l:35 f:0 a:0 r:0
       SORT_DOWN b:168 l:42 f:0 a:0 r:0
            ARRY b:0 l:0 f:0 a:42 r:0
-
-path:1 subpath 2: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [immediate: 1000]
-path:1 subpath 6: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [immediate: 1000]
-path:0 subpath 0: rs1: 16, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: ARRY]
-path:0 subpath 0: rs1: 1, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:0 subpath 0: rs1: 2, rs2: 0, rs3: 5, accflag 0, selflag: 1, realocflag 0, immf: 0
-path:2 subpath 6: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @SORT]
+done
+output 1
+emit order 0
+(0 0)sp: path:1 subpath 2: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [immediate: 1000]
+(1 1)sfp: path:1 subpath 7: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [immediate: 1000]
+(2 2)add: path:0 subpath 0: rs1: 16, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: ARRY]
+(3 3)add: path:0 subpath 0: rs1: 1, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
+(4 3)add: path:0 subpath 0: rs1: 2, rs2: 0, rs3: 5, accflag 0, selflag: 1, realocflag 0, immf: 0
+(5 3)call: path:2 subpath 5: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @SORT]
 locale offset 31
-path:2 subpath 3: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @EXIT]
+(6 4)jmp: path:2 subpath 2: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @EXIT]
 locale offset 6
-path:1 subpath 0: rs1: 5, rs2: 2, rs3: 16, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:0 subpath 1: rs1: 6, rs2: 1, rs3: 1, accflag 0, selflag: 1, realocflag 0, immf: 0
-path:0 subpath 0: rs1: 7, rs2: 1, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:0 subpath 1: rs1: 8, rs2: 2, rs3: 1, accflag 0, selflag: 1, realocflag 0, immf: 0
-path:1 subpath 0: rs1: 9, rs2: 7, rs3: 16, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:2 subpath 5: rs1: 0, rs2: 9, rs3: 5, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @PARTITION_END]
+(7 5)ld: path:1 subpath 0: rs1: 5, rs2: 2, rs3: 16, accflag 0, selflag: 0, realocflag 0, immf: 0
+(8 5)sub: path:0 subpath 1: rs1: 6, rs2: 1, rs3: 1, accflag 0, selflag: 1, realocflag 0, immf: 0
+(9 5)add: path:0 subpath 0: rs1: 7, rs2: 1, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
+(10 5)sub: path:0 subpath 1: rs1: 8, rs2: 2, rs3: 1, accflag 0, selflag: 1, realocflag 0, immf: 0
+(11 5)ld: path:1 subpath 0: rs1: 9, rs2: 7, rs3: 16, accflag 0, selflag: 0, realocflag 0, immf: 0
+(12 5)ble: path:2 subpath 4: rs1: 0, rs2: 9, rs3: 5, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @PARTITION_END]
 locale offset 20
-path:0 subpath 0: rs1: 6, rs2: 6, rs3: 1, accflag 0, selflag: 1, realocflag 0, immf: 0
-path:0 subpath 0: rs1: 13, rs2: 6, rs3: 16, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:0 subpath 0: rs1: 14, rs2: 7, rs3: 16, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:1 subpath 0: rs1: 10, rs2: 13, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:1 subpath 0: rs1: 11, rs2: 14, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:1 subpath 1: rs1: 0, rs2: 10, rs3: 14, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:1 subpath 1: rs1: 0, rs2: 11, rs3: 13, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:0 subpath 0: rs1: 7, rs2: 7, rs3: 1, accflag 0, selflag: 1, realocflag 0, immf: 0
-path:2 subpath 5: rs1: 0, rs2: 7, rs3: 8, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @PARTITION_WHILE_1]
+(13 6)add: path:0 subpath 0: rs1: 6, rs2: 6, rs3: 1, accflag 0, selflag: 1, realocflag 0, immf: 0
+(14 6)add: path:0 subpath 0: rs1: 13, rs2: 6, rs3: 16, accflag 0, selflag: 0, realocflag 0, immf: 0
+(15 6)add: path:0 subpath 0: rs1: 14, rs2: 7, rs3: 16, accflag 0, selflag: 0, realocflag 0, immf: 0
+(16 6)ld: path:1 subpath 0: rs1: 10, rs2: 13, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
+(17 6)ld: path:1 subpath 0: rs1: 11, rs2: 14, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
+(18 6)st: path:1 subpath 1: rs1: 0, rs2: 10, rs3: 14, accflag 0, selflag: 0, realocflag 0, immf: 0
+(19 6)st: path:1 subpath 1: rs1: 0, rs2: 11, rs3: 13, accflag 0, selflag: 0, realocflag 0, immf: 0
+(20 6)add: path:0 subpath 0: rs1: 7, rs2: 7, rs3: 1, accflag 0, selflag: 1, realocflag 0, immf: 0
+(21 6)ble: path:2 subpath 4: rs1: 0, rs2: 7, rs3: 8, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @PARTITION_WHILE_1]
 locale offset 11
-path:0 subpath 0: rs1: 6, rs2: 6, rs3: 1, accflag 0, selflag: 1, realocflag 0, immf: 0
-path:0 subpath 0: rs1: 49, rs2: 6, rs3: 16, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:0 subpath 0: rs1: 50, rs2: 2, rs3: 16, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:1 subpath 0: rs1: 15, rs2: 49, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:1 subpath 0: rs1: 48, rs2: 50, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:1 subpath 1: rs1: 0, rs2: 15, rs3: 50, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:1 subpath 1: rs1: 0, rs2: 48, rs3: 49, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:0 subpath 0: rs1: 17, rs2: 6, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:2 subpath 7: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:1 subpath 4: rs1: 0, rs2: 1, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:1 subpath 4: rs1: 0, rs2: 2, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:2 subpath 4: rs1: 0, rs2: 1, rs3: 2, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @SORT_CONTINUE]
+(22 7)add: path:0 subpath 0: rs1: 6, rs2: 6, rs3: 1, accflag 0, selflag: 1, realocflag 0, immf: 0
+(23 7)add: path:0 subpath 0: rs1: 49, rs2: 6, rs3: 16, accflag 0, selflag: 0, realocflag 0, immf: 0
+(24 7)add: path:0 subpath 0: rs1: 50, rs2: 2, rs3: 16, accflag 0, selflag: 0, realocflag 0, immf: 0
+(25 7)ld: path:1 subpath 0: rs1: 15, rs2: 49, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
+(26 7)ld: path:1 subpath 0: rs1: 48, rs2: 50, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
+(27 7)st: path:1 subpath 1: rs1: 0, rs2: 15, rs3: 50, accflag 0, selflag: 0, realocflag 0, immf: 0
+(28 7)st: path:1 subpath 1: rs1: 0, rs2: 48, rs3: 49, accflag 0, selflag: 0, realocflag 0, immf: 0
+(29 7)add: path:0 subpath 0: rs1: 17, rs2: 6, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
+(30 7)ret: path:2 subpath 6: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
+(31 7)push: path:1 subpath 3: rs1: 0, rs2: 1, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
+(32 7)push: path:1 subpath 3: rs1: 0, rs2: 2, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
+(33 7)blt: path:2 subpath 3: rs1: 0, rs2: 1, rs3: 2, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @SORT_CONTINUE]
 locale offset 35
-path:2 subpath 3: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @SORT_DOWN]
+(34 8)jmp: path:2 subpath 2: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @SORT_DOWN]
 locale offset 42
-path:2 subpath 6: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @PARTITION]
+(35 9)call: path:2 subpath 5: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @PARTITION]
 locale offset 7
-path:1 subpath 4: rs1: 0, rs2: 17, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:0 subpath 1: rs1: 2, rs2: 17, rs3: 1, accflag 0, selflag: 1, realocflag 0, immf: 0
-path:2 subpath 6: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @SORT]
+(36 10)push: path:1 subpath 3: rs1: 0, rs2: 17, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
+(37 10)sub: path:0 subpath 1: rs1: 2, rs2: 17, rs3: 1, accflag 0, selflag: 1, realocflag 0, immf: 0
+(38 10)call: path:2 subpath 5: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @SORT]
 locale offset 31
-path:1 subpath 5: rs1: 17, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:0 subpath 0: rs1: 1, rs2: 17, rs3: 1, accflag 0, selflag: 1, realocflag 0, immf: 0
-path:2 subpath 6: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @SORT]
+(39 11)pop: path:1 subpath 4: rs1: 17, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
+(40 11)add: path:0 subpath 0: rs1: 1, rs2: 17, rs3: 1, accflag 0, selflag: 1, realocflag 0, immf: 0
+(41 11)call: path:2 subpath 5: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 1 [reference: @SORT]
 locale offset 31
-path:1 subpath 5: rs1: 2, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:1 subpath 5: rs1: 1, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
-path:2 subpath 7: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
+(42 12)pop: path:1 subpath 4: rs1: 2, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
+(43 12)pop: path:1 subpath 4: rs1: 1, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
+(44 12)ret: path:2 subpath 6: rs1: 0, rs2: 0, rs3: 0, accflag 0, selflag: 0, realocflag 0, immf: 0
 done
 output 2
 000: 0000000000000006 6
@@ -75,29 +90,29 @@ output 2
 006: 0000000000000000 0
 007: 0000000000000006 6
 008: 0000000000000007 7
-009: 2080000121800001 2341871811089661953
+009: 2080000121c00001 2341871811093856257
 010: 0010000100010000 4503603922403328
-011: 0002005441800001 563311829581825
-012: 40c0000120050900 4665729218788002048
+011: 0002005441400001 563311825387521
+012: 4080000120050900 4647714820278520064
 013: 0046041400070400 19707732316062720
 014: 0048081420091d00 20275080853003520
-015: 4140245100061814 4701797941286148116
+015: 4100245100061814 4683783542776666132
 016: 000d1900000e1d00 3686662488857856
 017: 200a3400200b3800 2308714934123051008
 018: 204028e020402cd0 2323902350802037968
-019: 00071c1441401c81 2001198156618881
+019: 00071c1441001c81 2001198152424577
 020: 0006181400311900 1715324041894144
 021: 00320900200fc400 14083644978086912
 022: 2030c80020403f20 2319573710962442016
 023: 2040c31000111800 2324071881211189248
-024: 41c0000021000400 4737786808547410944
-025: 2100080041000421 2377909400435164193
-026: 40c0000141800001 4665729219349708801
-027: 2100440000424414 2377975370046653460
-028: 4180000121510000 4719772414338203648
-029: 0001441441800001 356328765652993
-030: 2142000021410000 2396477952272433152
-031: 41c0000000000000 4737786807993761792
+024: 4180000020c00400 4719772410033734656
+025: 20c0080040c00421 2359895001921487905
+026: 4080000141400001 4647714820836032513
+027: 20c0440000424414 2359960971537171476
+028: 4140000121110000 4701758015824527360
+029: 0001441441400001 356328761458689
+030: 2102000021010000 2378463553758756864
+031: 4180000000000000 4719772409484279808
 032: 00000000000003e8 1000
 033: 00000000000003e8 1000
 034: 000000000000002a 42

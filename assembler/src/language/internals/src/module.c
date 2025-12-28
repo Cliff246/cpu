@@ -2,6 +2,8 @@
 #include "commons.h"
 #include "linker.h"
 #include "eerror.h"
+#include "flags.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -19,6 +21,7 @@ static modfrag_code_t module_code_resolve(scope_t *txt)
 		{
 			if(entry->entry.inst.immflag != 0)
 			{
+				printf("imms: %d\n", immedates);
 				immedates++;
 			}
 			instructions++;
@@ -35,7 +38,7 @@ static modfrag_code_t module_code_resolve(scope_t *txt)
 
 
 
-
+	printf("%d %d\n", immedates, instructions / 2);
 	modfrag_code_t code = {.imms = immedates, .insts = instructions};
 	return code;
 
@@ -158,7 +161,6 @@ void fill_fragment_code(scope_t *scope, modfrag_t *frag)
 
 void fill_fragment_data(scope_t *scope, modfrag_t *frag)
 {
-
 
 	frag->frag.data = module_data_resolve(scope);
 
@@ -311,8 +313,8 @@ static size_t total_module_size_code(module_t *mod)
 	size_t actual_insts = (insts / 2) + (insts % 2);
 	const size_t desc = 6;
 
-	size_t table = (imms / 128) + 1;
-
+	size_t table = (insts / CODE_DESC_STRIDE) + 1;
+	printf("table: %d imms: %d\n", table, imms);
 	return actual_insts + desc + table + imms;
 }
 

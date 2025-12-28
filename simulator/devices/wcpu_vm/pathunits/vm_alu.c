@@ -248,19 +248,9 @@ int64_t (*alu_fn[255])(int64_t lhs, int64_t rhs) = {WCPU_SUBPATH_ALU_LIST(ALU_AR
 #undef SET
 #undef INST
 
-void vm_cpu_path_alu_init(vima_t *vm)
-{
-	set_alu_instructions();
-}
 
 int64_t vm_alu_exec( char subflag, int64_t lane1, int64_t lane2, int64_t lane3, bool swap)
 {
-	static bool init = false;
-	if(init == false)
-	{
-		set_alu_instructions();
-		init = true;
-	}
 
 
 	int64_t lhs = lane1;
