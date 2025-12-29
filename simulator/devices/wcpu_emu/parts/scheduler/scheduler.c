@@ -1,4 +1,9 @@
 #include "scheduler.h"
+#include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
+
+
 
 part_ptr_t wcpu_scheduler_generate(void)
 {

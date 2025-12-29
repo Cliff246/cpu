@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define WCPU_REGISTER_COUNT 64
+
 #define CODE_DESCRIPTION_SIZE 6
 
 typedef struct instruction

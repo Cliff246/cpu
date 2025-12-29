@@ -3,15 +3,11 @@
 #include "wcpu_part_signal.h"
 #include "wcpu_part_ptr.h"
 #include "wcpu_isa.h"
-
+#include "ccu_cd_loader.h"
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef struct wcpu_ccu_code_description
-{
-	uint64_t buffer;
-	uint64_t address;
-}ccu_code_description_t;
+
 
 typedef struct wcpu_part_ccu
 {

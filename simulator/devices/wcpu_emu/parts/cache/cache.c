@@ -1,6 +1,7 @@
 #include "cache.h"
 #include <stdlib.h>
 #include <assert.h>
+#include <stdbool.h>
 
 part_ptr_t wcpu_cache_generate(void)
 {

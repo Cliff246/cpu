@@ -5,9 +5,20 @@
 #include <stdbool.h>
 #include "wcpu_part_ptr.h"
 #include "wcpu_part_signal.h"
+#include "wcpu_isa.h"
+
+typedef struct wcpu_scheduler_owner
+{
+	int fabid;
+	int owns[WCPU_REGISTER_COUNT];
+	
+}scheduler_owner_t;
 
 typedef struct wcpu_part_scheduler
 {
+	int edges_inflight;
+	//should be equal to max fabrics
+	scheduler_owner_t owners[4];
 
 }scheduler_t;
 

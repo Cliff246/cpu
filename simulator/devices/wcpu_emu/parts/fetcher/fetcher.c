@@ -86,15 +86,8 @@ bool wcpu_fetcher_import( part_t *part, part_signal_t *signal)
 	{
 
 		_part_signal_FETCHER_COMMAND_t *fetch_command = signal->ptr.FETCHER_COMMAND;
-		if(fetch_command->type == FETCHER_COMMAND_CD_SWAP)
-		{
-			//will free on the fetcher_controller... dangerous but it should be fine
-			_fetcher_command_cd_swap_t cd_swap = fetch_command->cmd.cd_swap;
-			//should
-			fetcher_port_order_t *order = fetcher_port_code_description_order_create(cd_swap.address);
 
-		}
-		else if(fetch_command->type == FETCHER_COMMAND_CT_LOAD)
+		if(fetch_command->type == FETCHER_COMMAND_CT_LOAD)
 		{
 			_fetcher_command_ct_load_t ct_load = fetch_command->cmd.ct_load;
 		}

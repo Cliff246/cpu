@@ -87,19 +87,6 @@ WS_dev_cmd_t * device_ram_stringfy(toklex_t *tl)
 	return cmd;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 const static size_t ram_base_size = 1000;
 const static size_t ram_base_start = 0;
 

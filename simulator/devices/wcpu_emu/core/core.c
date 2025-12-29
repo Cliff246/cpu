@@ -66,8 +66,7 @@ void wcpu_core_update(core_t *core)
 		assert(fetch_cmd != NULL);
 
 
-		fetch_cmd->type == FETCHER_COMMAND_CD_SWAP;
-		fetch_cmd->cmd.cd_swap.address = 0;
+
 
 		part_signal_content_ptr_t pscp;
 		pscp.FETCHER_COMMAND = fetch_cmd;
@@ -188,14 +187,16 @@ static core_signal_handle_t signal_handles[] =
 	[PART_SIGNAL_TYPE_CORE_MEM_RESPONSE] = {.distrubutes = true, .fn = NULL},
 	//todo
 	[PART_SIGNAL_TYPE_REG_TRANSFER] = {.distrubutes = true, .fn = NULL},
-
 	//todo
 	[PART_SIGNAL_TYPE_LEDGER_TRANSFER] = {false, NULL},
 	//todo
 	[PART_SIGNAL_TYPE_AGGREGATOR_COMMAND] = {false, NULL},
+	//TODO
 	[PART_SIGNAL_TYPE_FETCHER_COMMAND] = {.distrubutes = true, .fn = NULL},
 	//TODO
 	[PART_SIGNAL_TYPE_CD_TRANSFER] = {.distrubutes = true, .fn = NULL},
+	//TODO
+	[PART_SIGNAL_TYPE_CCU_MESSAGE] = {.distrubutes = true, .fn = NULL},
 };
 
 

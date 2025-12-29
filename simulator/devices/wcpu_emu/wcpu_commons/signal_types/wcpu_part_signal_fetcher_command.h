@@ -11,17 +11,11 @@
 
 typedef enum
 {
-	FETCHER_COMMAND_CD_SWAP,
 	FETCHER_COMMAND_CT_LOAD,
 	FETCHER_COMMAND_INS_LOAD,
 	FETCHER_COMMAND_IMM_LOAD,
 }_fetcher_command_type_t;
 
-typedef struct
-{
-	uint64_t address;
-
-}_fetcher_command_cd_swap_t;
 
 
 
@@ -55,7 +49,6 @@ struct wcpu_part_signal_FETCHER_COMMAND
 
 	union
 	{
-		_fetcher_command_cd_swap_t cd_swap;
 		_fetcher_command_ct_load_t ct_load;
 		_fetcher_command_imm_load_t imm_load;
 		_fetcher_command_ins_load_t ins_load;

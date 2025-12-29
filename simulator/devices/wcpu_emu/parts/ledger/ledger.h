@@ -8,7 +8,6 @@
 #include "wcpu_part.h"
 #include "wcpu_part_signal.h"
 
-#include "ledger_operation.h"
 #include "ledger_tensor.h"
 
 #include <stdbool.h>

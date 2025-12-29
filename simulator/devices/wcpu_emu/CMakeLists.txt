@@ -20,8 +20,8 @@ set(DEVICE_WCPU_EMU_CFILES
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/cache/cache_line.c
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/aggregator/aggregator.c
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/aggregator/aggregator_command.c
+	${CMAKE_CURRENT_SOURCE_DIR}/parts/aggregator/aggregator_chunk.c
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/ledger/ledger.c
-	${CMAKE_CURRENT_SOURCE_DIR}/parts/ledger/ledger_operation.c
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/ledger/ledger_tensor.c
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/mau/mau.c
 	${CMAKE_CURRENT_SOURCE_DIR}/parts/mau/mau_operation.c

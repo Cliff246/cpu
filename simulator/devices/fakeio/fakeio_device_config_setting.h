@@ -2,7 +2,40 @@
 #define __DEV_FAKEIO_DEVICE_CONFIG_SETTING_HEADER__
 
 #include "device_list.h"
+#include "commons.h"
 #include "device_description.h"
+#include "device_command.h"
+#include <stdint.h>
+#include <stdbool.h>
+
+#define DEVICE_FAKEIO_CMD_OPTIONS_LIST(X)					\
+	X(SIZE, WS_DEV_CMD_FLAG_TYPE_INT)					\
+	X(START, WS_DEV_CMD_FLAG_TYPE_INT)					\
+	X(PRINT_CONTENT, WS_DEV_CMD_FLAG_TYPE_BOOL)			\
+	X(RESET, WS_DEV_CMD_FLAG_TYPE_BOOL)					\
+
+#define DEVICE_FAKEIO_CMD_OPTIONS_NAME(X) DEV_FAKEIO_CMD_OPTIONS_FLAG_ ## X
+
+#define DEVICE_FAKEIO_CMD_OPTIONMS_ENUM(X, Y) DEVICE_FAKEIO_CMD_OPTIONS_NAME(X),
+
+typedef enum
+{
+	DEVICE_FAKEIO_CMD_OPTIONS_LIST(DEVICE_FAKEIO_CMD_OPTIONMS_ENUM)
+
+}dev_fakeio_cmd_options_t;
+
+#define DEVICE_FAKEIO_CMD_OPTIONS_COUNT (0 + DEVICE_FAKEIO_CMD_OPTIONS_LIST(COUNTER2D))
+#define DEVICE_FAKEIO_CMD_PRODUCER_NAME(X) device_cmd_option_producer_ ## X
+
+#define DEVICE_FAKEIO_CMD_PRODUCER(X, Y) bool DEVICE_FAKEIO_CMD_PRODUCER_NAME(X)(WS_dev_t *device, WS_dev_cmd_flag_t *flag);
+DEVICE_FAKEIO_CMD_OPTIONS_LIST(DEVICE_FAKEIO_CMD_PRODUCER)
+#define DEVICE_FAKEIO_CMD_PRODUCER_FUNC_ARRAY(X,Y)[DEVICE_FAKEIO_CMD_OPTIONS_NAME(X)] = DEVICE_FAKEIO_CMD_PRODUCER_NAME(X),
+#define DEVICE_FAKEIO_CMD_PRODUCER_NAME_ARRAY(X,Y) [DEVICE_FAKEIO_CMD_OPTIONS_NAME(X)] = #X,
+#define DEVICE_FAKEIO_CMD_PRODUCER_TYPE_ARRAY(X,Y) [DEVICE_FAKEIO_CMD_OPTIONS_NAME(X)] = Y,
+
+extern WS_dev_cmd_flag_apply_fn device_fakeio_producer_functions[DEVICE_FAKEIO_CMD_OPTIONS_COUNT];
+extern char *device_fakeio_producer_names[DEVICE_FAKEIO_CMD_OPTIONS_COUNT];
+extern WS_dev_cmd_flag_type_t device_fakeio_producer_types[DEVICE_FAKEIO_CMD_OPTIONS_COUNT];
 
 
 
