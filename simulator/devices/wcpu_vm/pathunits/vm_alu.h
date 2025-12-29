@@ -45,7 +45,6 @@ vm_op_status_t vm_ALU_SIEX_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn);
 vm_op_status_t vm_ALU_RAND_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn);
 vm_op_status_t vm_ALU_POPCNT_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn);
 
-void vm_cpu_path_alu_init(vima_t *vm);
 
 int64_t vm_alu_exec( char subflag, int64_t lane1, int64_t lane2, int64_t lane3, bool swap);
 

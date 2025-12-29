@@ -5,7 +5,6 @@
 
 typedef struct virtual_machine vima_t;
 
-#include "vm_eval.h"
 #include "vm_bus.h"
 #include "vm_regs.h"
 #include "vm_op.h"
@@ -25,7 +24,6 @@ typedef struct virtual_machine vima_t;
 typedef struct virtual_machine
 {
 	vm_bus_t bus;
-	vm_eval_live_t *live;
 
 	vm_bookmark_t bookmarks[BOOKMARKS_MAX];
 

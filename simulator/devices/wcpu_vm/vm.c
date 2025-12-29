@@ -190,7 +190,7 @@ bool device_vima_read(WS_dev_t *dev, WS_dev_msg_t *msg)
 					hnd->internal.has_response = true;
 					hnd->internal.response.resp.load_response.value = msg->value;
 
-					return;
+					return true;
 				}
 			}
 		}
