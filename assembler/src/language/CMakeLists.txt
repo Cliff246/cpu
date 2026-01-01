@@ -1,23 +1,23 @@
 
 set(ASM_LANG_SRC ${ASM_LANG_SRC}
-	${CMAKE_CURRENT_SOURCE_DIR}/frontend/src/lexer.c
-	${CMAKE_CURRENT_SOURCE_DIR}/frontend/src/parser.c
-	${CMAKE_CURRENT_SOURCE_DIR}/frontend/src/inter.c
-	${CMAKE_CURRENT_SOURCE_DIR}/backend/src/objfile.c
-	${CMAKE_CURRENT_SOURCE_DIR}/backend/src/linker.c
-	${CMAKE_CURRENT_SOURCE_DIR}/backend/src/emiter.c
-	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/entry.c
-	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/instruction.c
-	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/metaop.c
-	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/decoder.c
-	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/reference.c
-	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/segment.c
-	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/scope.c
-	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/symbol.c
-	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/directive.c
-	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/module.c
-	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/psudeoop.c
-	${CMAKE_CURRENT_SOURCE_DIR}/internals/src/keywords.c
+	${CMAKE_CURRENT_SOURCE_DIR}/frontend/lexer.c
+	${CMAKE_CURRENT_SOURCE_DIR}/frontend/parser.c
+	${CMAKE_CURRENT_SOURCE_DIR}/frontend/inter.c
+	${CMAKE_CURRENT_SOURCE_DIR}/backend/objfile.c
+	${CMAKE_CURRENT_SOURCE_DIR}/backend/linker.c
+	${CMAKE_CURRENT_SOURCE_DIR}/backend/emiter.c
+	${CMAKE_CURRENT_SOURCE_DIR}/internals/entry.c
+	${CMAKE_CURRENT_SOURCE_DIR}/internals/instruction.c
+	${CMAKE_CURRENT_SOURCE_DIR}/internals/metaop.c
+	${CMAKE_CURRENT_SOURCE_DIR}/internals/decoder.c
+	${CMAKE_CURRENT_SOURCE_DIR}/internals/reference.c
+	${CMAKE_CURRENT_SOURCE_DIR}/internals/segment.c
+	${CMAKE_CURRENT_SOURCE_DIR}/internals/scope.c
+	${CMAKE_CURRENT_SOURCE_DIR}/internals/symbol.c
+	${CMAKE_CURRENT_SOURCE_DIR}/internals/directive.c
+	${CMAKE_CURRENT_SOURCE_DIR}/internals/module.c
+	${CMAKE_CURRENT_SOURCE_DIR}/internals/psudeoop.c
+	${CMAKE_CURRENT_SOURCE_DIR}/internals/keywords.c
 
 )
 
@@ -28,9 +28,9 @@ add_library(ASM_LANG STATIC
 
 target_include_directories(ASM_LANG
 	PUBLIC
-	${CMAKE_CURRENT_SOURCE_DIR}/frontend/inc
-	${CMAKE_CURRENT_SOURCE_DIR}/backend/inc
-	${CMAKE_CURRENT_SOURCE_DIR}/internals/inc
+	${CMAKE_CURRENT_SOURCE_DIR}/frontend
+	${CMAKE_CURRENT_SOURCE_DIR}/backend
+	${CMAKE_CURRENT_SOURCE_DIR}/internals
 )
 
 target_link_libraries(ASM_LANG

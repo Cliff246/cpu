@@ -87,7 +87,6 @@ context_t *load_context(file_desc_t *desc)
 
 	ctx->desc_id = desc->id;
 	ctx->staged_ctx.l_ctx = create_token_stream(desc->src, desc->id);
-
 	LOG("finished lexer\n", 0);
 
 

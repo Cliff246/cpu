@@ -47,8 +47,9 @@ int main(int argc, char *argv[])
 		linker_t *lk = create_linker();
 		for(int i = 0; i < target.inputs_count; ++i)
 		{
-
 			contexts[i] = load_context(get_fdesc(i));
+			printf("targets\n");
+
 			context_resolve(contexts[i]);
 
 			add_context_to_linker(lk, contexts[i]);

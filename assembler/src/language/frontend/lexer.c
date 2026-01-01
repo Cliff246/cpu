@@ -158,7 +158,6 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 	{
 		ch = GETCHAR;
 		++index;
-		//printf("%c\n", ch);
 		if(ch == 0)
 		{
 			break;
@@ -285,7 +284,6 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 		else if(ch == '.')
 		{
 			//printf("%d %c\n", index, ch);
-
 			if(isalpha(PEEK) && ctx->locale.col == 0)
 			{
 				start = ctx->pos;
@@ -313,6 +311,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 		}
 		else if(ch == '@')
 		{
+			//printf("%d %c\n", index, ch);
 
 			if(isalpha(PEEK))
 			{
@@ -330,6 +329,10 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 
 				EMIT(TOK_TOKEN, lexeme);
 
+			}
+			else
+			{
+				ADVANCE;
 			}
 			seperator = false;
 
