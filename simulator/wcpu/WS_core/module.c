@@ -27,9 +27,15 @@ WS_module_t *WS_global_module_list[WS_GLOBAL_MODULE_LIST_MAX_SIZE] = {NULL};
 
 void WS_add_default_flags_to_hashmap(WS_module_t *module)
 {
+	if(module->dev_desc->flag_table->tablesize < WS_DEV_FLAG_DEFAULT_COUNT)
+	{
+		fprintf(stderr, "%s does not have a properly sized hash table, expected > %d, got %d\n", module->dev_desc->dev_name,WS_DEV_FLAG_DEFAULT_COUNT,module->dev_desc->flag_table->tablesize );
+		exit(EXIT_FAILURE);
+	}
 	for(int i = 0; i < WS_DEV_FLAG_DEFAULT_COUNT; ++i)
 	{
-		WS_cmd_producer_print(&WS_flag_default_producers[i]);
+		//WS_cmd_producer_print(&WS_flag_default_producers[i]);
+
 		addto_hash_table(module->dev_desc->flag_table, WS_flag_default_producers[i].id, &WS_flag_default_producers[i]);
 
 	}

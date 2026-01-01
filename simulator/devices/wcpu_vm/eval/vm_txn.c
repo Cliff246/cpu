@@ -162,10 +162,7 @@ void vm_txn_state_fetch(vima_t *vm, vm_txn_t *txn)
 
 				txn->op.imm = resp.resp.load_response.value;
 				vm_txn_set_next_state(txn, VM_TXN_DECODE);
-
-
 			}
-
 		}
 		else
 		{
@@ -183,7 +180,7 @@ void vm_txn_state_fetch(vima_t *vm, vm_txn_t *txn)
 		//printf("\n\nbefore pc:%lld\n\n", txn->private.ut1);
 		vm_bus_evnt_t evnt =
 		{
-			.evnt.load = {.addr = ((txn->op.pc / 2)+ txn->private.ut1)},
+			.evnt.load = {.addr = ((txn->op.pc / 2) + txn->private.ut1)},
 			.type = VM_IO_LOAD,
 		};
 		txn->private.it1 = _TXN_FETCH_T1_STATE_INST;
@@ -232,7 +229,7 @@ void vm_txn_state_source(vima_t *vm, vm_txn_t *txn)
 		if(txn->op.op.immflag && txn->op.op.reallocflag)
 		{
 
-		
+
 			vm_bus_evnt_t event = {
 				.type = VM_IO_LOAD,
 				.evnt.load = {.addr = (uint64_t)txn->op.imm}
@@ -350,7 +347,7 @@ void vm_txn_state_retire(vima_t *vm, vm_txn_t *txn)
 
 void vm_txn_state_done(vima_t *vm, vm_txn_t *txn)
 {
-	vm->new_inst = true;
+	vm->control.new_inst = true;
 
 	vm_bus_free_port(vm, txn->handle.port);
 }

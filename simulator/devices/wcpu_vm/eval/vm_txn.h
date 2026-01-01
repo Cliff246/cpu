@@ -191,10 +191,10 @@ void vm_txn_set_flag(vm_txn_t *txn, vm_txn_flag_t flag);
 char *vm_txn_flag_to_str(vm_txn_flag_t flag);
 char *vm_txn_flag_mask_to_str(vm_txn_flag_mask_t flag);
 
-char *vm_txn_to_str(vm_txn_t *txn);
+//char *vm_txn_to_str(vm_txn_t *txn);
 
 
-void vm_txn_switch_state(vima_t *vm, vm_txn_t *txn);
+//void vm_txn_switch_state(vima_t *vm, vm_txn_t *txn);
 void vm_txn_advance(vima_t *vm, vm_txn_t *txn);
 vm_txn_t *vm_txn_create(vima_t *vm);
 

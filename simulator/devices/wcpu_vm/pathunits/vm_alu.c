@@ -480,50 +480,62 @@ vm_op_status_t vm_ALU_CNE_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 
 vm_op_status_t vm_ALU_CLEU_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+	return VM_OP_STATUS_DONE;
 
 }
 
 vm_op_status_t vm_ALU_COR_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+	return VM_OP_STATUS_DONE;
 
 }
 vm_op_status_t vm_ALU_CAND_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+	return VM_OP_STATUS_DONE;
 
 }
 vm_op_status_t vm_ALU_CLTMV_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+	return VM_OP_STATUS_DONE;
 
 }
 vm_op_status_t vm_ALU_CLEMV_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+	return VM_OP_STATUS_DONE;
 
 }
 vm_op_status_t vm_ALU_CEQMV_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+	return VM_OP_STATUS_DONE;
 
 }
 vm_op_status_t vm_ALU_CNEMV_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+	return VM_OP_STATUS_DONE;
 
 }
 vm_op_status_t vm_ALU_MAX_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+	return VM_OP_STATUS_DONE;
 
 }
 vm_op_status_t vm_ALU_MIN_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+	return VM_OP_STATUS_DONE;
 
 }
 vm_op_status_t vm_ALU_SIEX_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+	return VM_OP_STATUS_DONE;
 
 }
 vm_op_status_t vm_ALU_RAND_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+	return VM_OP_STATUS_DONE;
 
 }
 vm_op_status_t vm_ALU_POPCNT_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
+	return VM_OP_STATUS_DONE;
 
 }

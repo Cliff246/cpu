@@ -27,6 +27,13 @@ typedef enum device_message_type
 
 //extern char *device_message_type_string[];
 
+typedef struct
+{
+	
+}WS_dev_msg_block_t;
+
+
+
 typedef struct wcpu_simulator_device_message
 {
 	int ref_count;

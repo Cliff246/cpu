@@ -314,24 +314,8 @@ static void load_module(const char *module)
 
 void init(int argc, char **argv)
 {
-	/*
-	emuconfig_t *config = create_emuconfig_internal(EMUCONFIG_INTERNAL_BASIC_CONSOLE);
 
-
-	emulator_t *emu = 	emulator_generate(config);
-
-	vima_t *vima = vm_init(1000);
-
-	load_file(vima, "a.bin");
-	vm_cpu_set_inital_cd(vima);
-	for(int i = 0; i < 1001; ++i)
-	{
-		vm_step(vima);
-	}
-	vm_print_mem(vima, 0, 25);
-	vm_cpu_print_regs(vima);
-	exit(1);
-	*/
+	
 	logger_set = false;
 	globalstate.args.argc = argc;
 	globalstate.args.argv = argv;

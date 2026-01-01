@@ -19,7 +19,10 @@ typedef struct virtual_machine vima_t;
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
-#define STAGES_COUNT 5
+
+
+//TODO move towards more correct design, with multiple inflight instructions for speed
+
 
 typedef struct virtual_machine
 {
@@ -28,13 +31,20 @@ typedef struct virtual_machine
 	vm_bookmark_t bookmarks[BOOKMARKS_MAX];
 
 	vm_regfile_t regs;
-	bool wait_until_inst_end;
-	bool load_cd;
-	int cd_count;
-	int cd_base;
-	vm_bus_port_id_t port;
-	vm_bus_hnd_t hnd;
-	bool new_inst;
+
+
+	struct
+	{
+		bool wait_until_inst_end;
+		bool load_cd;
+		int cd_count;
+		int cd_base;
+		vm_bus_port_id_t port;
+		vm_bus_hnd_t hnd;
+		bool new_inst;
+	}control;
+
+
 	vm_txn_t *txn;
 }vima_t;
 
