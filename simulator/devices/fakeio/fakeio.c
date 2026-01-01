@@ -11,7 +11,6 @@
 
 static const WS_dev_vtable_t vtable =
 {
-	.stringfy = device_fakeio_stringfy,
 	.init = device_fakeio_init,
 	.print = device_fakeio_print,
 	.read = device_fakeio_read,
@@ -41,12 +40,12 @@ const WS_dev_desc_t *WS_get_dev_desc(void)
 
 	if(initialized == false)
 	{
-		p_hashtable_t hashtable = new_hash_table(DEVICE_FAKEIO_CMD_OPTIONS_COUNT, WS_cmd_producer_free);
+		p_hashtable_t hashtable = new_hash_table(DEVICE_FAKEIO_CMD_OPTIONS_COUNT + WS_DEV_FLAG_DEFAULT_COUNT, WS_cmd_producer_free);
 
 		for(int i = 0; i < DEVICE_FAKEIO_CMD_OPTIONS_COUNT; ++i)
 		{
 
-			WS_dev_cmd_flag_producer_t *producer = WS_cmd_flag_producer_create(device_fakeio_producer_names[i], device_fakeio_producer_types[i], device_fakeio_producer_functions[i]);
+			WS_dev_flag_producer_t *producer = WS_cmd_flag_producer_create(device_fakeio_producer_names[i], device_fakeio_producer_types[i], device_fakeio_producer_functions[i]);
 
 			addto_hash_table(hashtable, device_fakeio_producer_names[i], producer);
 
@@ -107,18 +106,6 @@ void device_fakeio_print(device_t *dev)
 
 }
 
-WS_dev_cmd_t *device_fakeio_stringfy(toklex_t *tl)
-{
-
-	WS_dev_cmd_t *cmd =  calloc(1, sizeof(WS_dev_cmd_t));
-
-	cmd->type = &fakeio_desc;
-	cmd->used = false;
-	cmd->collection = WS_cmd_collection_create(tl);
-
-
-	return cmd;
-}
 
 void device_fakeio_commit(WS_dev_t *dev)
 {

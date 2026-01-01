@@ -337,11 +337,11 @@ void init(int argc, char **argv)
 	globalstate.args.argv = argv;
 	//after seting args
 
-	WS_config_file_t *file = WS_create_config_file("configfiles/basic_config.txt");
+	WS_cfg_file_t *file = WS_cfg_create_file("configfiles/basic_config.txt");
 
 	WS_simulator_t *sim = WS_simulator_init();
 	WS_simulator_load_config(sim, file);
-	WS_free_config_file(file);
+	WS_cfg_free_file(file);
 
 
 	for(int i = 0; i < 20000; ++i)

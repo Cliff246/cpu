@@ -31,7 +31,7 @@ bool get_canopen_sourcefile(sourcefile_t *sf)
 		assert(0);
 	if(test == NULL )
 	{
-		
+
 
 		return false;
 	}
@@ -306,25 +306,29 @@ int get_sourcefile_length(sourcefile_t *sf)
 	int length = 0;
 
 	int cursor = get_cursor_sourcefile(sf);
-
 	reset_cursor_sourcefile(sf);
-
 	int seek = fseek(get_sourcefile_fp(sf), 0, SEEK_END);
 	if(seek < 0)
 	{
+
 		force_close_sourcefile(sf);
 		return -2;
 	}
-	length = seek;
+	length = ftell(get_sourcefile_fp(sf));
+
+	//printf("%d\n", seek);
 
 	if(!set_cursor_sourcefile(sf, cursor))
 	{
+
 		return false;
 	}
 
 
 	sf->length = length;
-	sf->haslength = false;
+	sf->haslength = true;
+	//printf("cursor\n");
+
 	return length;
 }
 

@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 
-WS_dev_cmd_flag_apply_fn device_ram_producer_functions[DEVICE_RAM_CMD_OPTIONS_COUNT] =
+WS_dev_flag_apply_fn device_ram_producer_functions[DEVICE_RAM_CMD_OPTIONS_COUNT] =
 {
 	DEVICE_RAM_CMD_OPTIONS_LIST(DEVICE_RAM_CMD_PRODUCER_FUNC_ARRAY)
 };
@@ -23,7 +23,7 @@ char *device_ram_producer_names[DEVICE_RAM_CMD_OPTIONS_COUNT] =
 	DEVICE_RAM_CMD_OPTIONS_LIST(DEVICE_RAM_CMD_PRODUCER_NAME_ARRAY)
 };
 
-WS_dev_cmd_flag_type_t device_ram_producer_types[DEVICE_RAM_CMD_OPTIONS_COUNT] =
+WS_dev_flag_type_t device_ram_producer_types[DEVICE_RAM_CMD_OPTIONS_COUNT] =
 {
 	DEVICE_RAM_CMD_OPTIONS_LIST(DEVICE_RAM_CMD_PRODUCER_TYPE_ARRAY)
 
@@ -87,7 +87,7 @@ static bool load_file(dev_ram_t *ram, const char *file_name)
 
 
 
-bool device_cmd_option_producer_FILENAME(WS_dev_t *device, WS_dev_cmd_flag_t *flag)
+bool device_cmd_option_producer_FILENAME(WS_dev_t *device, WS_dev_flag_t *flag)
 {
 	dev_ram_t *ram = device->ptr;
 	load_file(ram, flag->value->STRING);
@@ -97,7 +97,7 @@ bool device_cmd_option_producer_FILENAME(WS_dev_t *device, WS_dev_cmd_flag_t *fl
 	return true;
 }
 
-bool device_cmd_option_producer_SIZE(WS_dev_t *device, WS_dev_cmd_flag_t *flag)
+bool device_cmd_option_producer_SIZE(WS_dev_t *device, WS_dev_flag_t *flag)
 {
 	dev_ram_t *ram = device->ptr;
 
@@ -107,7 +107,7 @@ bool device_cmd_option_producer_SIZE(WS_dev_t *device, WS_dev_cmd_flag_t *flag)
 
 }
 
-bool device_cmd_option_producer_START(WS_dev_t *device, WS_dev_cmd_flag_t *flag)
+bool device_cmd_option_producer_START(WS_dev_t *device, WS_dev_flag_t *flag)
 {
 	dev_ram_t *ram = device->ptr;
 
@@ -116,7 +116,7 @@ bool device_cmd_option_producer_START(WS_dev_t *device, WS_dev_cmd_flag_t *flag)
 
 }
 
-bool device_cmd_option_producer_PRINT_CONTENT(WS_dev_t *device, WS_dev_cmd_flag_t *flag)
+bool device_cmd_option_producer_PRINT_CONTENT(WS_dev_t *device, WS_dev_flag_t *flag)
 {
 	dev_ram_t *ram = device->ptr;
 
@@ -126,7 +126,7 @@ bool device_cmd_option_producer_PRINT_CONTENT(WS_dev_t *device, WS_dev_cmd_flag_
 
 }
 
-bool device_cmd_option_producer_RESET(WS_dev_t *device, WS_dev_cmd_flag_t *flag)
+bool device_cmd_option_producer_RESET(WS_dev_t *device, WS_dev_flag_t *flag)
 {
 	return true;
 

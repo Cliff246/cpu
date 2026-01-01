@@ -22,7 +22,7 @@ typedef struct wcpu_simulator_device
 	WS_dev_desc_t *desc;
 	WS_dev_mailbox_t *mailbox;
 	WS_dev_id_t id;
-
+	char *name;
 
 	size_t address_range_start;
 	size_t address_range_length;

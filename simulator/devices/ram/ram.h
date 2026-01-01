@@ -39,7 +39,6 @@ void device_ram_update(device_t *device);
 bool device_ram_read(WS_dev_t *dev, WS_dev_msg_t *msg);
 bool device_ram_send(WS_dev_t *dev, WS_dev_msg_t **msg);
 void device_ram_print(device_t *dev);
-WS_dev_cmd_t *device_ram_stringfy(toklex_t *tl);
 void device_ram_commit(WS_dev_t *dev);
 
 void write_ram(dev_ram_t *ram, uint64_t address, int64_t data);

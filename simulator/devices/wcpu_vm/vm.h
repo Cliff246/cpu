@@ -47,7 +47,6 @@ bool device_vima_read(WS_dev_t *dev, WS_dev_msg_t *msg);
 bool device_vima_send(WS_dev_t *dev, WS_dev_msg_t **msg);
 
 void device_vima_print(device_t *dev);
-WS_dev_cmd_t *device_vima_stringfy(toklex_t *tl);
 void device_vima_commit(WS_dev_t *dev);
 
 

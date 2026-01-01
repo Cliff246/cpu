@@ -92,11 +92,14 @@ toklex_t *lex_string(const char *string)
 
 		size_t begin = position(tl);
 		char cur = advance(tl);
-		if(isblank(cur))
+		//printf("%d\n", cur);
+		if(cur == '\n')
 		{
-			if(cur == 10)
-			{
-			}
+			emit(tl, TOK_NEWLINE, to_string('~'));
+
+		}
+		else if(isblank(cur))
+		{
 		}
 		else if(isalpha(cur))
 		{
@@ -325,6 +328,14 @@ toklex_t *lex_string(const char *string)
 
 			emit(tl, TOK_DOT, to_string(cur));
 		}
+		else if(cur == ':')
+		{
+			emit(tl, TOK_COLON, to_string(cur));
+		}
+		else if(cur == ';')
+		{
+			emit(tl, TOK_SEMICOLON, to_string(cur));
+		}
 
 	}
 	emit(tl, TOK_END, to_string('%'));
@@ -345,6 +356,14 @@ void print_toklex(toklex_t *tl)
 		print_tok(&tl->tokens[i]);
 	}
 }
+
+//dont use this on toklex, only on copies
+void free_tok(tok_t *tok)
+{
+	free_tokstring(tok);
+	free(tok);
+}
+
 
 void free_tokstring(tok_t *token)
 {
@@ -402,4 +421,12 @@ bool expect_toklex(toklex_t *tl, tok_type_t type)
 	{
 		return (tok->type == type)? true : false;
 	}
+}
+
+tok_t *copy_tok(tok_t *tok)
+{
+	tok_t *copy = calloc(1, sizeof(tok_t));
+	copy->token = strdup(tok->token);
+	copy->type = tok->type;
+	return copy;
 }

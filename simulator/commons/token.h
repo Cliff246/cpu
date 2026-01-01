@@ -7,6 +7,7 @@
 typedef enum token_type
 {
 	TOK_NONE,
+	TOK_NEWLINE,
 	TOK_END,
 	TOK_WORD,
 	TOK_HEX,
@@ -19,8 +20,8 @@ typedef enum token_type
 	TOK_STRING,
 	TOK_COMMA,
 	TOK_DOT,
-
-
+	TOK_COLON,
+	TOK_SEMICOLON,
 
 
 }tok_type_t;
@@ -54,9 +55,10 @@ void reset_toklex(toklex_t *tl);
 tok_t *get_toklex(toklex_t *tl, int index);
 tok_t *peek_toklex(toklex_t *tl);
 bool expect_toklex(toklex_t *tl, tok_type_t type);
-
+tok_t *copy_tok(tok_t *tok);
 
 void free_tokstring(tok_t *token);
+void free_tok(tok_t *tok);
 void free_toklex(toklex_t *toklex);
 
 

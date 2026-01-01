@@ -26,7 +26,6 @@ void device_fakeio_update(device_t *dev);
 bool device_fakeio_read(WS_dev_t *dev, WS_dev_msg_t *msg);
 bool device_fakeio_send(WS_dev_t *dev, WS_dev_msg_t **msg);
 void device_fakeio_print(device_t *dev);
-WS_dev_cmd_t *device_fakeio_stringfy(toklex_t *tl);
 void device_fakeio_commit(WS_dev_t *dev);
 
 

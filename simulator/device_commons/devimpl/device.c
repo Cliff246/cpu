@@ -35,7 +35,10 @@ WS_dev_t *WS_device_init(WS_dev_desc_t *desc, device_command_t *cmd)
 	device->mailbox = WS_device_mailbox_init();
 	device->ptr = desc->vtable->init(device);
 	device->id = devid++;
+
 	WS_device_cmd(device, cmd);
+
+
 
 	return device;
 }

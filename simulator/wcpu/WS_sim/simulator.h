@@ -32,7 +32,7 @@ void WS_simulator_add_device(WS_simulator_t *sim, WS_dev_t *dev);
 
 
 //loads a group of devices from a config
-bool WS_simulator_load_config(WS_simulator_t *sim, WS_config_file_t *config);
+bool WS_simulator_load_config(WS_simulator_t *sim, WS_cfg_file_t *config);
 
 
 

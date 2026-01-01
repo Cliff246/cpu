@@ -1,4 +1,7 @@
 #include "module.h"
+#include "device_command_impl.h"
+#include "hashmap.h"
+
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -12,12 +15,25 @@
 #include <limits.h>
 #include <unistd.h>
 #include <libgen.h>
+
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
 #endif
 
 WS_module_t *WS_global_module_list[WS_GLOBAL_MODULE_LIST_MAX_SIZE] = {NULL};
 
+
+
+
+void WS_add_default_flags_to_hashmap(WS_module_t *module)
+{
+	for(int i = 0; i < WS_DEV_FLAG_DEFAULT_COUNT; ++i)
+	{
+		WS_cmd_producer_print(&WS_flag_default_producers[i]);
+		addto_hash_table(module->dev_desc->flag_table, WS_flag_default_producers[i].id, &WS_flag_default_producers[i]);
+
+	}
+}
 
 static int WS_get_executable_path(char out[PATH_MAX])
 {
@@ -169,7 +185,9 @@ WS_module_t *WS_module_create(const char *filename)
 	module->flags = flags;
 	//this is not a safe reference to the device_description, but all device_descriptions should be static
 	module->dev_desc = get_desc();
-
 	assert(module->dev_desc);
+
+	WS_add_default_flags_to_hashmap(module);
+
 	return module;
 }

@@ -18,7 +18,6 @@
 
 static const WS_dev_vtable_t vtable =
 {
-	.stringfy = device_ram_stringfy,
 	.init = device_ram_init,
 	.print = device_ram_print,
 	.read = device_ram_read,
@@ -52,12 +51,12 @@ const WS_dev_desc_t *WS_get_dev_desc(void)
 
 	if(initialized == false)
 	{
-		p_hashtable_t hashtable = new_hash_table(DEVICE_RAM_CMD_OPTIONS_COUNT, WS_cmd_producer_free);
+		p_hashtable_t hashtable = new_hash_table(DEVICE_RAM_CMD_OPTIONS_COUNT + WS_DEV_FLAG_DEFAULT_COUNT, WS_cmd_producer_free);
 
 		for(int i = 0; i < DEVICE_RAM_CMD_OPTIONS_COUNT; ++i)
 		{
 
-			WS_dev_cmd_flag_producer_t *producer = WS_cmd_flag_producer_create(device_ram_producer_names[i], device_ram_producer_types[i], device_ram_producer_functions[i]);
+			WS_dev_flag_producer_t *producer = WS_cmd_flag_producer_create(device_ram_producer_names[i], device_ram_producer_types[i], device_ram_producer_functions[i]);
 
 			addto_hash_table(hashtable, device_ram_producer_names[i], producer);
 
@@ -74,18 +73,7 @@ const WS_dev_desc_t *WS_get_dev_desc(void)
 
 
 
-WS_dev_cmd_t * device_ram_stringfy(toklex_t *tl)
-{
 
-	WS_dev_cmd_t *cmd =  calloc(1, sizeof(WS_dev_cmd_t));
-
-	cmd->type = &ram_desc;
-	cmd->used = false;
-	cmd->collection = WS_cmd_collection_create(tl);
-
-
-	return cmd;
-}
 
 const static size_t ram_base_size = 1000;
 const static size_t ram_base_start = 0;

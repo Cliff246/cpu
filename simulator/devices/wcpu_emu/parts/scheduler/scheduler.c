@@ -29,6 +29,6 @@ bool wcpu_scheduler_import(part_t *part, part_signal_t *signal)
 
 bool wcpu_scheduler_export(part_t *part, part_signal_t **signal)
 {
-	return true;
+	return false;
 
 }

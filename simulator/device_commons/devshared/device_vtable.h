@@ -16,7 +16,6 @@ typedef bool (*WS_device_read_fn)(WS_dev_t *dev, WS_dev_msg_t *msg);
 typedef bool (*WS_device_send_fn)(WS_dev_t *dev, WS_dev_msg_t **msg);
 typedef void (*WS_device_print_fn)(WS_dev_t *dev);
 //should generate void *setting for config
-typedef WS_dev_cmd_t *(*WS_device_cmd_stringfy_fn)(toklex_t *tl);
 typedef void (*WS_device_cmd_commit_fn)(WS_dev_t *dev);
 
 
@@ -28,7 +27,6 @@ typedef struct device_class
 	WS_device_read_fn read;
 	WS_device_send_fn send;
 	WS_device_print_fn print;
-	WS_device_cmd_stringfy_fn stringfy ;
 	WS_device_cmd_commit_fn cmd_commit;
 
 }WS_dev_vtable_t;

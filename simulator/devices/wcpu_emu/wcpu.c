@@ -20,7 +20,6 @@ static const WS_dev_vtable_t vtable =
 	.read = device_wcpu_read,
 	.send = device_wcpu_send,
 	.update = device_wcpu_update,
-	.stringfy = device_wcpu_stringfy,
 	.cmd_commit = device_wcpu_commit,
 };
 
@@ -42,7 +41,7 @@ const WS_dev_desc_t *WS_get_dev_desc(void)
 
 	if(initialized == false)
 	{
-		p_hashtable_t hashtable = new_hash_table(0, WS_cmd_producer_free);
+		p_hashtable_t hashtable = new_hash_table(WS_DEV_FLAG_DEFAULT_COUNT, WS_cmd_producer_free);
 
 
 		wcpu_emu_desc.flag_table = hashtable;
@@ -55,19 +54,6 @@ const WS_dev_desc_t *WS_get_dev_desc(void)
 
 
 
-
-WS_dev_cmd_t *device_wcpu_stringfy(toklex_t *tl)
-{
-
-	WS_dev_cmd_t *cmd =  calloc(1, sizeof(WS_dev_cmd_t));
-
-	cmd->type = &wcpu_emu_desc;
-	cmd->used = false;
-	cmd->collection = WS_cmd_collection_create(tl);
-
-
-	return cmd;
-}
 
 void device_wcpu_commit(WS_dev_t *dev)
 {

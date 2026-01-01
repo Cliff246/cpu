@@ -16,13 +16,17 @@ void WS_cmd_free(WS_dev_cmd_t *cmd);
 
 
 void WS_cmd_producer_free(void *producer);
-void WS_cmd_producer_print(WS_dev_cmd_flag_producer_t *producer);
-WS_dev_cmd_flag_producer_t *WS_cmd_flag_producer_create(char *string, WS_dev_cmd_flag_type_t type, WS_dev_cmd_flag_apply_fn fn);
+void WS_cmd_producer_print(WS_dev_flag_producer_t *producer);
+WS_dev_flag_producer_t *WS_cmd_flag_producer_create(char *string, WS_dev_flag_type_t type, WS_dev_flag_apply_fn fn);
 
-static void WS_cmd_collection_append(WS_dev_cmd_collection_t *col, WS_dev_cmd_flag_t *flag);
-WS_dev_cmd_flag_t *WS_cmd_flag_create(tok_t *key, tok_t *value);
-WS_dev_cmd_collection_t *WS_cmd_collection_create(toklex_t *tl);
+void WS_cmd_collection_append(WS_dev_cmd_collection_t *col, WS_dev_flag_t *flag);
+void WS_cmd_collection_free(WS_dev_cmd_collection_t *col);
 
-extern void (*WS_cmd_flag_value_free_list[])(WS_dev_cmd_flag_value_t *value);
-extern char *WS_cmd_flag_type_strings[];
+WS_dev_flag_t *WS_dev_flag_create(tok_t *key, tok_t *value);
+WS_dev_cmd_t *WS_dev_cmd_create(WS_dev_cmd_collection_t *collection, WS_dev_desc_t *desc);
+WS_dev_cmd_collection_t *WS_cmd_collection_create(void);
+
+extern void (*WS_flag_value_free_list[])(WS_dev_flag_value_t *value);
+extern char *WS_flag_type_strings[];
+extern WS_dev_flag_producer_t WS_flag_default_producers[];
 #endif

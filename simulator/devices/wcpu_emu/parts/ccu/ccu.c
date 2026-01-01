@@ -18,12 +18,13 @@ void wcpu_ccu_update(part_t *part)
 
 bool wcpu_ccu_import(part_t *part, part_signal_t *signal)
 {
-	return true;
+	return false;
 
 }
 
 bool wcpu_ccu_export(part_t *part, part_signal_t **signal)
 {
+
 	return false;
 
 }

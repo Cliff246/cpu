@@ -191,18 +191,19 @@ void WS_simulator_add_device(WS_simulator_t *sim, WS_dev_t *dev)
 
 }
 
-bool WS_simulator_load_config(WS_simulator_t *sim, WS_config_file_t *config)
+bool WS_simulator_load_config(WS_simulator_t *sim, WS_cfg_file_t *config)
 {
 	//printf("%d\n",config->module_container_list_count);
-	for(int i = 0; i <config->module_container_list_count; ++i)
+	for(int i = 0; i <config->size; ++i)
 	{
-		WS_config_module_container_t *container = config->module_container_list[i];
+		WS_cfg_hdr_t *header = config->headers[i];
 
 		//printf("%s entry list count: %d\n", container->module->dev_desc->dl_name,container->entry_list_count);
-		for(int x = 0; x < container->entry_list_count; ++x)
+		for(int x = 0; x < header->size; ++x)
 		{
-			WS_config_entry_t *entry = container->entry_list[x];
-			device_t *device = WS_device_init(container->module->dev_desc, entry->cmd);
+
+			device_t *device = WS_device_init(header->module->dev_desc, header->cmds[x]);
+
 			WS_simulator_add_device(sim, device);
 		}
 	}

@@ -106,7 +106,7 @@ bool wcpu_fetcher_import( part_t *part, part_signal_t *signal)
 	}
 
 	//strong assumption here
-	if(signal->signal_type == PART_SIGNAL_TYPE_LSU)
+	else if(signal->signal_type == PART_SIGNAL_TYPE_LSU)
 	{
 		_part_signal_LSU_t *lsu = signal->ptr.LSU;
 		//printf("mark import %d %d\n", lsu->address, lsu->value);

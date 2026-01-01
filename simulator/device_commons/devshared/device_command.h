@@ -12,7 +12,7 @@ typedef struct device_description WS_dev_desc_t;
 
 
 
-#define WS_DEV_CMD_FLAG_LIST(X) \
+#define WS_DEV_FLAG_LIST(X) \
 	X(UNKNOWN, char)			   \
 	X(BOOL, bool)				   \
 	X(UINT, uint64_t)			   \
@@ -20,56 +20,64 @@ typedef struct device_description WS_dev_desc_t;
 	X(STRING, char *)			\
 
 
-#define WS_DEV_CMD_FLAG_ENUM_NAME(X) WS_DEV_CMD_FLAG_TYPE_ ## X
-#define WS_DEV_CMD_FLAG_ENUM(X, Y) WS_DEV_CMD_FLAG_ENUM_NAME(X),
+#define WS_DEV_FLAG_ENUM_NAME(X) WS_DEV_FLAG_TYPE_ ## X
+#define WS_DEV_FLAG_ENUM(X, Y) WS_DEV_FLAG_ENUM_NAME(X),
 
-#define WS_DEV_CMD_FLAG_COUNT (0 WS_DEV_CMD_FLAG_LIST(COUNTER2D))
+#define WS_DEV_FLAG_COUNT (0 WS_DEV_FLAG_LIST(COUNTER2D))
 
 typedef enum
 {
-	WS_DEV_CMD_FLAG_LIST(WS_DEV_CMD_FLAG_ENUM)
+	WS_DEV_FLAG_LIST(WS_DEV_FLAG_ENUM)
 
-}WS_dev_cmd_flag_type_t;
+}WS_dev_flag_type_t;
 
-#define WS_DEV_CMD_FLAG_UNION(X, Y) Y X;
+#define WS_DEV_FLAG_UNION(X, Y) Y X;
 
 typedef union
 {
-	WS_DEV_CMD_FLAG_LIST(WS_DEV_CMD_FLAG_UNION)
-}WS_dev_cmd_flag_value_t;
+	WS_DEV_FLAG_LIST(WS_DEV_FLAG_UNION)
+}WS_dev_flag_value_t;
 
 
 //goes into a hashmap is index and then executed via the function in it
 
+#define WS_DEV_FLAG_DEFAULT_LIST(X)\
+	X(NAME, STRING)						   \
+	X(ENABLED, BOOL)					   \
+
+#define WS_DEV_FLAG_DEFAULT_COUNT (0 WS_DEV_FLAG_DEFAULT_LIST(COUNTER2D))
 
 
 
 typedef struct
 {
-	char *flag;
-	WS_dev_cmd_flag_type_t type;
-	WS_dev_cmd_flag_value_t *value;
-}WS_dev_cmd_flag_t;
+	char *key;
+	WS_dev_flag_type_t type;
+	WS_dev_flag_value_t *value;
+	bool used;
+
+}WS_dev_flag_t;
 
 
-typedef bool (*WS_dev_cmd_flag_apply_fn)(WS_dev_t *device, WS_dev_cmd_flag_t *flag);
+typedef bool (*WS_dev_flag_apply_fn)(WS_dev_t *device, WS_dev_flag_t *flag);
 
 
 //should be the elements of a device
 typedef struct
 {
 	char *id;
-	WS_dev_cmd_flag_type_t expect;
+	WS_dev_flag_type_t expect;
 	//applies flag to function
-	WS_dev_cmd_flag_apply_fn fn;
-} WS_dev_cmd_flag_producer_t;
+	WS_dev_flag_apply_fn fn;
+} WS_dev_flag_producer_t;
 
 
 //collections of flags used to send to device
 typedef struct
 {
-	WS_dev_cmd_flag_t **flags;
+	WS_dev_flag_t **flags;
 	size_t flags_count;
+	bool taken;
 }WS_dev_cmd_collection_t;
 
 

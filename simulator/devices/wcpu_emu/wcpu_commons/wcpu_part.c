@@ -8,6 +8,7 @@
 #include "mau.h"
 #include "deployer.h"
 #include "scheduler.h"
+#include "ccu.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -89,13 +90,16 @@ wcpu_part_class_t part_vtable[UNIQUE_PARTS] =
 	[WCPU_PART_SCHEDULER] =
 	{
 		.init = wcpu_scheduler_generate,
-		.step = wcpu_aggregator_update,
-		.export = wcpu_aggregator_export,
+		.step = wcpu_scheduler_update,
+		.export = wcpu_scheduler_export,
 		.import = wcpu_scheduler_import,
 	},
 	[WCPU_PART_CCU] =
 	{
-
+		.init = wcpu_ccu_generate,
+		.step = wcpu_ccu_update,
+		.export = wcpu_ccu_export,
+		.import = wcpu_ccu_import,
 	}
 };
 
@@ -159,7 +163,7 @@ bool wcpu_part_import(part_t *part, part_signal_t *signal)
 	assert(type >= 0 && type < UNIQUE_PARTS && "part outside of bounds");
 
 	wcpu_part_class_t funcs = part_vtable[type];
-	assert(funcs.import != NULL && "part must not have a defined import");
+	assert(funcs.import != NULL && "part must have a defined import");
 	bool result = funcs.import(part, signal);
 	return result;
 }
@@ -171,7 +175,7 @@ bool wcpu_part_export(part_t *part, part_signal_t **signal)
 	assert(type >= 0 && type < UNIQUE_PARTS && "part outside of bounds");
 
 	wcpu_part_class_t funcs = part_vtable[type];
-	assert(funcs.export != NULL && "part must not have a defined export");
+	assert(funcs.export != NULL && "part must have a defined export");
 	bool result = funcs.export(part, signal);
 	return result;
 }
