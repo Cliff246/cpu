@@ -31,7 +31,7 @@ SET(WS_SIM_CFILES
 	${CMAKE_CURRENT_SOURCE_DIR}/WS_sim/simulator_bus_slot.c
 	${CMAKE_CURRENT_SOURCE_DIR}/WS_sim/simulator_event.c
 	${CMAKE_CURRENT_SOURCE_DIR}/WS_sim/simulator_port.c
-	${CMAKE_CURRENT_SOURCE_DIR}/WS_sim/simulator_actor.c
+	${CMAKE_CURRENT_SOURCE_DIR}/WS_sim/sim_actor.c
 
 )
 

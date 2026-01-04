@@ -4,7 +4,6 @@ set (SIMULATOR_DEV_SHARED
 	${CMAKE_CURRENT_SOURCE_DIR}/device_list.h
 	${CMAKE_CURRENT_SOURCE_DIR}/device_mailbox.h
 	${CMAKE_CURRENT_SOURCE_DIR}/device_message.h
-	${CMAKE_CURRENT_SOURCE_DIR}/device_bus.h
 	#PARENT_SCOPE
 )
 
