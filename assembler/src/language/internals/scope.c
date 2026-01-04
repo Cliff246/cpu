@@ -141,8 +141,9 @@ scope_t create_scope(parse_node_t *head)
 				implement_reference_manually(ref, fid, sid, row, col);
 				ref->byte_offset = 0;
 				ref->locale_offset = 0;
-
 				symbol_t *sym = create_symbol_with_ref(ref);
+				print_symbol(sym);
+				//printf("print symbol\n");
 				add_symbol_to_scope(&scope, sym);
 			}
 			else

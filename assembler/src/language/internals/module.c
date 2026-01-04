@@ -21,7 +21,7 @@ static modfrag_code_t module_code_resolve(scope_t *txt)
 		{
 			if(entry->entry.inst.immflag != 0)
 			{
-				printf("imms: %d\n", immedates);
+				//printf("imms: %d\n", immedates);
 				immedates++;
 			}
 			instructions++;
@@ -29,7 +29,8 @@ static modfrag_code_t module_code_resolve(scope_t *txt)
 		}
 		else if(entry->type == ENTRY_MOP)
 		{
-
+			printf("cannot put mop in code module\n");
+			escape(1);
 		}
 
 
@@ -38,7 +39,7 @@ static modfrag_code_t module_code_resolve(scope_t *txt)
 
 
 
-	printf("%d %d\n", immedates, instructions / 2);
+	//printf("%d %d\n", immedates, instructions / 2);
 	modfrag_code_t code = {.imms = immedates, .insts = instructions};
 	return code;
 
@@ -68,11 +69,15 @@ static modfrag_data_t module_data_resolve(scope_t *scope)
 			}
 			else
 			{
+				printf("cannot put non mop data in data module\n");
+				escape(1);
 				//Not allowed
 			}
 		}
 		else
 		{
+			printf("cannot put non mop in data module\n");
+			escape(1);
 			//TODO error out
 		}
 
@@ -121,7 +126,6 @@ void append_scope_ref(struct linker *lk, module_t *mod, int ctx_id, int local_in
 	{
 		mod->set = true;
 		mod->fragments = CALLOC(1, modfrag_t);
-
 	}
 	else
 	{
@@ -132,7 +136,7 @@ void append_scope_ref(struct linker *lk, module_t *mod, int ctx_id, int local_in
 	mf->ref.ctx_id = ctx_id;
 	mf->ref.locale_index = local_index;
 	module_type_t current =  segment_type_to_module_type(get_scope_from_ref(lk, mf->ref)->segment.segtype);
-	printf("%d\n", mod->type);
+	//printf("%d\n", mod->type);
 	if(mod->type == MODULE_UNSET)
 	{
 		mod->type = current;
@@ -153,19 +157,12 @@ void append_scope_ref(struct linker *lk, module_t *mod, int ctx_id, int local_in
 
 void fill_fragment_code(scope_t *scope, modfrag_t *frag)
 {
-
-
-
 	frag->frag.code = module_code_resolve(scope);
 }
 
 void fill_fragment_data(scope_t *scope, modfrag_t *frag)
 {
-
 	frag->frag.data = module_data_resolve(scope);
-
-
-
 }
 
 void fill_fragment(struct linker *lk, module_t *in, int index)
@@ -275,14 +272,14 @@ void fill_module(struct linker *lk, module_t *mod)
 
 
 	int start = get_module_start(lk, mod);
-	LOG("start %d\n", start);
+	LOG("start %d %d\n", start, mod->tag);
 	for(int i = 0; i < mod->size; ++i)
 	{
 		mod->emit_order[i] = i;
 	}
 	if(start != -1 && start != 0)
 	{
-		//printf("swap %d %d\n", start, mod->emit_order[0]);
+		printf("swap %d %d\n", start, mod->emit_order[0]);
 		int swap_start = mod->emit_order[0];
 		mod->emit_order[0] = start;
 		mod->emit_order[start] = swap_start;
@@ -314,7 +311,7 @@ static size_t total_module_size_code(module_t *mod)
 	const size_t desc = 6;
 
 	size_t table = (insts / CODE_DESC_STRIDE) + 1;
-	printf("table: %d imms: %d\n", table, imms);
+	//printf("table: %d imms: %d\n", table, imms);
 	return actual_insts + desc + table + imms;
 }
 
@@ -369,7 +366,7 @@ int get_module_start(struct linker *lk, module_t *module)
 	}
 	int set_state = 0;
 	LOG("module size %d\n", module->size);
-	for(int i = 0;i < module->size; ++i)
+	for(int i = 0; i < module->size; ++i)
 	{
 		scope_t *scope = get_scope_from_ref(lk, module->fragments[i].ref);
 		if(scope == NULL)

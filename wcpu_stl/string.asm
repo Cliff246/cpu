@@ -130,5 +130,11 @@ memcpy_loop:
 ;a1 = value
 ;a2 = length
 memset:
+	alu.add t0, zero, zero
 
+memset_loop:
+	mem.st! a1, a0, t0
+	alu.add t0, t0, #1
+	jmp.blt null, t0, a2, @memset_loop
 
+	jmp.ret zero, zero, zero

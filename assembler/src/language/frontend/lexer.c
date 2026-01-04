@@ -393,10 +393,10 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 	}
 	EMIT(TOK_EOF, to_string(0));
 
-	for(int i = 0; i < ctx->count; ++i)
-	{
-		print_token(&ctx->toks[i]);
-	}
+	//for(int i = 0; i < ctx->count; ++i)
+	//{
+	//	print_token(&ctx->toks[i]);
+	//}
 	return ctx;
 }
 

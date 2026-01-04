@@ -56,13 +56,14 @@ int file_load(const char *file_name, char **ref)
 
 int allocate_fdesc(const char *file_name)
 {
+	///perror("errorno\n");
+
 	if(description_used >= ASM_MAX_FILES)
 	{
 		printf("too many files used %d\n ", description_used);
 		exit(1);
 	}
 	file_desc_t *desc = &descptions[description_used];
-
 	desc->has_read = false;
 	desc->is_closed = true;
 	desc->name = (char *)file_name;

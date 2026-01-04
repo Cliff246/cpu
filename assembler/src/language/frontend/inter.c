@@ -159,7 +159,6 @@ void context_resolve(context_t *ctx)
 			local_t *local = create_local(ctx, scope);
 			for(int i = 0; i < scope.symbols.count; ++i)
 			{
-				//printf("refs: %d %s\n", i, scope.refs.refs[i]->ref_string);
 				create_alias(ctx,scope.symbols.symbols[i]);
 			}
 
@@ -170,7 +169,7 @@ void context_resolve(context_t *ctx)
 			directive_t *dir = create_directive(ctx, child);
 			if(dir == NULL)
 			{
-				LOG("directive at %d %d is inval", child->tok->locale.file,  child->tok->locale.row, 0);
+				//LOG("directive at %d %d is inval", child->tok->locale.file,  child->tok->locale.row, 0);
 				escape(1);
 			}
 			apply_directive(ctx, dir);
@@ -226,7 +225,7 @@ void context_resolve(context_t *ctx)
 
 	ctx->resolved = true;
 	//print_depth(ctx->head, 0);
-	//print_hash_table(ctx->alias_map);
+	print_hash_table(ctx->alias_map);
 	//print_directives(ctx);
 	//print_publics(ctx);
 	//print_defines(ctx);

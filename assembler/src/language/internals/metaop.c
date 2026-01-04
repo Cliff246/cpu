@@ -111,7 +111,7 @@ data_holder_t decode_string(parse_node_t *head)
 	}
 	buffer[buffer_size++] = 0;
 
-	printf("buffer: %s\n", buffer);
+	//printf("buffer: %s\n", buffer);
 	size_t mod = buffer_size % 8;
 	size_t len = buffer_size / 8;
 	if(mod > 0)
@@ -139,7 +139,7 @@ data_holder_t decode_integer(parse_node_t *head)
 	for(int i = 0; i < word_size; ++i)
 	{
 		char *tok = head->children[i]->tok->lexeme;
-		printf("%s\n", tok);
+		//printf("%s\n", tok);
 
 		number_type_t type = get_number_type(tok);
 		int64_t imm = 0;

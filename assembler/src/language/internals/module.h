@@ -56,7 +56,7 @@ typedef struct module
 	module_type_t type;
 	modfrag_t *fragments;
 	int *emit_order;
-
+	
 
 	bool set;
 	bool filled;

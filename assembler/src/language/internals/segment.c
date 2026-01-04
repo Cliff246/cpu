@@ -154,6 +154,8 @@ static void generate_argument_data(seg_t *seg)
 			seg->has_ref = i;
 			arg->used = true;
 			ref_state = false;
+			//to fix a bug all references must be defined in start state
+			seg->start_state = true;
 		}
 
 		// segment tag
@@ -171,6 +173,7 @@ static void generate_argument_data(seg_t *seg)
 		{
 			//LOG("Start state set\n", 0);
 			seg->start_state = true;
+
 		}
 		else if(!strcmp(arg->arg, "ref"))
 		{

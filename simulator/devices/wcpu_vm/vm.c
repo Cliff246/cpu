@@ -87,7 +87,7 @@ void device_vima_update(device_t *dev)
 		{
 			vm_bus_response_t resp;
 			vm_bus_pull_evnt(vm, vm->control.port, vm->control.hnd, &resp);
-			printf("%d %d %d\n", resp.resp.load_response.value, vm->control.cd_count, vm->control.cd_base);
+			//printf("%d %d %d\n", resp.resp.load_response.value, vm->control.cd_count, vm->control.cd_base);
 			switch(vm->control.cd_count)
 			{
 				case 1:

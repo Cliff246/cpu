@@ -3,18 +3,22 @@
 	START 0 .
  	SIZE 2000 .
 	FILENAME "a.bin" .
-	PRINT_CONTENT true .
+	PRINT_CONTENT false .
 	}
 	{
-		START 2000 .
-	SIZE 10006 .
-	FILENAME "a.bin" .
+		START 2001 .
+		SIZE 5000 .
+	};
+
+"libsim_dev_fakeio" :
+	{
+		START 10000 .
+		SIZE 200 .
+		PRINT_CONTENT true .
+		OUTPUT_BUTTON 10101 .
 	};
 
 "libsim_dev_wcpu_vm" : {
 	NAME "virtual machine" .
 } ;
 
-"libsim_dev_wcpu_emu" : {
-	NAME "emulator" .
-} ;

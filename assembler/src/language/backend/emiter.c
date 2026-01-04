@@ -230,7 +230,7 @@ output_t *combine_segouts(segout_t *segouts, int length)
 
 		else
 		{
-			perror("segout type emit not done yet\n");
+			printf("segout type emit not done yet\n");
 			escape(1);
 		}
 	}
@@ -269,12 +269,12 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 	size_t inst_iter = 0;
 	size_t table_iter = 0;
 	bool failed = false;
-	printf("imm len %d\n", imm_len);
+	//printf("imm len %d\n", imm_len);
 	for(int fi = 0; fi < mod->size; ++fi)
 	{
 		modfrag_t *frag;
 		frag = &mod->fragments[mod->emit_order[fi]];
-		printf("emit order %d\n", mod->emit_order[fi]);
+		//printf("emit order %d\n", mod->emit_order[fi]);
 		scope_t *scope = get_scope_from_ref(ll, frag->ref);
 		//printf("%s\n", get_filename_from_id(scope->segment.fid));
 
@@ -311,10 +311,11 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 					if(tempref == NULL)
 					{
 						printf("temp ref null \n");
+						escape(1);
 					}
 
 					symbol_t *sym = resolve_symbol(tempref, ll, frag);
-					printf("%d\n", imm_iter);
+					//printf("%d\n", imm_iter);
 					if(!sym)
 					{
 						errelm_line_t line = {.column = entry->node->tok->locale.col, .line = entry->node->tok->locale.row};
@@ -349,13 +350,13 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 					else if(instruction->imm.iref.ref_type == INST_REF_LOCAL)
 					{
 						ref_t *ref = sym->symbol.ref;
-						printf("locale offset %d\n", ref->locale_offset);
+						//printf("locale offset %d\n", ref->locale_offset);
 						current_imm = ref->fragment_offset + ref->locale_offset;
 
 					}
 					else
 					{
-						perror("reference has not a valid type");
+						printf("reference has not a valid type\n");
 						escape(1);
 					}
 
@@ -439,7 +440,7 @@ segout_data_t create_segout_data(linker_t *ll, region_t *region)
 				data_holder_t holder = mop->data;
 				for(int wi = 0; wi < holder.words_len; ++wi)
 				{
-					printf("%d holder words\n",holder.words[wi]);
+					//printf("%d holder words\n",holder.words[wi]);
 					content[iter++] = holder.words[wi];
 
 				}
@@ -461,7 +462,7 @@ segout_t create_segout(linker_t *ll, region_t *region)
 {
 
 	segout_t out = {0};
-	printf("output %d\n", region->mod->type);
+	//printf("output %d\n", region->mod->type);
 	switch(region->mod->type)
 	{
 		case MODULE_CODE:
@@ -547,7 +548,7 @@ size_t fix_align_scope_addresses(scope_t *scope, size_t module_offset, size_t fr
 		if(sym->type == SYMBOL_REFERENCE)
 		{
 			ref_t *ref = sym->symbol.ref;
-			
+
 			ref->fragment_offset = fragment_offset;
 			ref->absolute_offset = module_offset;
 			ref->resolved = true;

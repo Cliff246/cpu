@@ -1,6 +1,7 @@
 #ifndef __DEVICE_MESSAGE_HEADER__
 #define __DEVICE_MESSAGE_HEADER__
 
+#include "flags.h"
 #include "device_list.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -29,7 +30,8 @@ typedef enum device_message_type
 
 typedef struct
 {
-	
+	uint64_t data[CACHE_LINE_SIZE];
+	uint8_t used;
 }WS_dev_msg_block_t;
 
 

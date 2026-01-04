@@ -18,18 +18,22 @@ void add_input_file(asmtarget_t *target, char *argv)
 		printf("must be a valid path %s\n", argv);
 		exit(1);
 	}
-
 	if(target->inputs == NULL)
 	{
-		target->inputs = CALLOC(1, char **);
+		//printf("null\n");
+
+		target->inputs = CALLOC(1, char *);
 		target->inputs[target->inputs_count++] = argv;
 		return;
 	}
 	else
 	{
+		//printf("realloc\n");
+
 		int index = target->inputs_count;
-		target->inputs = REALLOC(target->inputs, target->inputs_count ++, char **);
+		target->inputs = REALLOC(target->inputs, ++target->inputs_count, char **);
 		target->inputs[index] = argv;
+		return;
 	}
 }
 
@@ -54,6 +58,7 @@ void parse_assembler_args(asmtarget_t *target)
 		{
 			if(i + 1 < argc)
 			{
+				printf("set out file\n");
 				set_output_file(target, argv[++i]);
 			}
 			else
@@ -70,6 +75,7 @@ void parse_assembler_args(asmtarget_t *target)
 		else
 		{
 			//shit ass set up
+			//printf("add input file\n");
 			add_input_file(target, argv[i]);
 		}
 	}
@@ -83,7 +89,7 @@ void generate_target(int argc, char *argv[])
 
 	target.args.argc = argc;
 	target.args.argv = argv;
-
+	//printf("generate targets\n");
 	parse_assembler_args(&target);
 
 

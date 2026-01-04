@@ -57,7 +57,7 @@ vm_op_status_t vm_MEM_LDI_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 vm_op_status_t vm_MEM_STI_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
 
-	printf("[%d] = %d\n", txn->inp.lane2 + txn->inp.lane3, txn->inp.lane1);
+	//printf("[%d] = %d\n", txn->inp.lane2 + txn->inp.lane3, txn->inp.lane1);
 	uint64_t sum = txn->inp.lane2 + txn->inp.lane3;
 	int64_t val = txn->inp.lane1;
 	vm_bus_evnt_t evnt =

@@ -31,7 +31,7 @@ vm_op_status_t vm_SYS_CALL_CD_PTR_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 
 vm_op_status_t vm_SYS_BREAK_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 {
-	vm_cpu_print_regs(vm);
+	//vm_cpu_print_regs(vm);
 	return VM_OP_STATUS_DONE;
 
 }

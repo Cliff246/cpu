@@ -3,8 +3,8 @@ set (SIMULATOR_DEV_SHARED
 	${CMAKE_CURRENT_SOURCE_DIR}/device_command.h
 	${CMAKE_CURRENT_SOURCE_DIR}/device_list.h
 	${CMAKE_CURRENT_SOURCE_DIR}/device_mailbox.h
-	${CMAKE_CURRENT_SOURCE_DIR}/device_event.h
 	${CMAKE_CURRENT_SOURCE_DIR}/device_message.h
+	${CMAKE_CURRENT_SOURCE_DIR}/device_bus.h
 	#PARENT_SCOPE
 )
 
@@ -17,6 +17,8 @@ target_include_directories(sim_dev_interface INTERFACE
 
 	${CMAKE_CURRENT_SOURCE_DIR}/
 	private wcpu_commons
+	${CMAKE_SOURCE_DIR}/flags/
+
 
 )
 

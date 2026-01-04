@@ -20,6 +20,7 @@ set(ASM_LANG_SRC ${ASM_LANG_SRC}
 	${CMAKE_CURRENT_SOURCE_DIR}/internals/keywords.c
 
 )
+set(CMAKE_BUILD_TYPE Debug)
 
 add_library(ASM_LANG STATIC
 	${ASM_LANG_SRC}

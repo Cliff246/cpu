@@ -223,10 +223,10 @@
 #define SYS_REL_QUERY_PTR		0x1e
 #define SYS_REL_CHECK_PTR		0x1f
 
-#define SYS_HALT				0xa0
+#define SYS_HALT				0x20
 
-#define SYS_STRIKE				0xa2
-
+#define SYS_STRIKE				0x21
+#define SYS_ID					0x22
 //FPU
 //add
 //(lane1 + lane2)
@@ -499,5 +499,6 @@
 */
 
 #define CODE_DESC_STRIDE 16
+#define CACHE_LINE_SIZE 8
 
 #endif

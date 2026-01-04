@@ -15,9 +15,9 @@ typedef enum number_type
 
 
 
-#define SETBIT(n, k) (1 | (n << k))
-#define CLRBIT(n, k) (n & ~(1 << k))
-#define GETBIT(n, k) (1 & (n >> k))
+#define SETBIT(n, k) (n | (1 << (k - 1)))
+#define CLRBIT(n, k) (n & (~(1 << (k - 1))))
+#define GETBIT(n, k) ((n >> k) & 1)
 #define ARYSIZE(ary) sizeof(ary)/sizeof(*ary)
 
 #define MIN(x,y) ((x < y)? x : y)

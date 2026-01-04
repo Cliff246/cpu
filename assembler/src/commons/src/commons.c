@@ -12,8 +12,9 @@
 
 void *safe_calloc(size_t size, size_t type_size)
 {
-	void *ptr = calloc(size, type_size);
 	//printf("calloc(%lu,%lu)\n", size, type_size);
+
+	void *ptr = calloc(size, type_size);
 	if(!ptr)
 	{
 		ERR(ENOMEM, "calloc failed");
@@ -25,6 +26,7 @@ void *safe_calloc(size_t size, size_t type_size)
 
 void *safe_realloc(void *ptr, size_t size, int type_size)
 {
+	//printf("realloc %d %d\n", size, type_size);
 	if(ptr == NULL)
 	{
 		ERR(EINVAL, "realloc argument was NULL");
@@ -33,6 +35,7 @@ void *safe_realloc(void *ptr, size_t size, int type_size)
 	else
 	{
 		//printf("realloc: %zu\n", size * type_size);
+		//printf("%p\n", ptr);
 		void *temp = realloc(ptr, size * type_size);
 		if(temp == NULL)
 		{

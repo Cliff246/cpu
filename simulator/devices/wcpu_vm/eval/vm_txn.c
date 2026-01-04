@@ -328,7 +328,7 @@ void vm_txn_state_output(vima_t *vm, vm_txn_t *txn)
 
 void vm_txn_state_retire(vima_t *vm, vm_txn_t *txn)
 {
-	printf("op:%s pc:%d ipc:%d\n", txn->inflight.op->string, txn->op.pc, txn->op.ipc);
+	//printf("op:%s pc:%d ipc:%d\n", txn->inflight.op->string, txn->op.pc, txn->op.ipc);
 	//printf("sp:%d sfp:%d\n", vm_get_sp(vm), vm_get_sfp(vm));
 	if(!txn->out.jumped)
 	{

@@ -17,8 +17,8 @@ void add_src_to_global(global_t *global, int index)
 	int page = index / __CHAR_BIT__;
 	int offset = index % __CHAR_BIT__;
 	uint8_t content = glb->srcs.files[page];
-	content = SETBIT(content, offset);
-	//LOG("set bit i:%d offset:%d content:%d \n", index , offset, content);
+	content = SETBIT(content, offset + 1);
+	//LOG("set bit i:%d, page %d, offset:%d content:%d \n", index , page, offset, content);
 
 	glb->srcs.files[page] = content;
 }
@@ -31,8 +31,8 @@ bool get_src_in_global(global_t *global, int index)
 	int page = index / __CHAR_BIT__;
 	int offset = index % __CHAR_BIT__;
 	uint8_t content = glb.srcs.files[page];
-	int bit = GETBIT(content, offset - 1);
-	//LOG("get src: %d file:0x%x, %d =[%d]\n", index, content, bit, offset);
+	int bit = GETBIT(content, offset);
+	//LOG("get src: %d,  page %d, file:0x%x, %d =[%d]\n", index, page,  content, bit, offset);
 
 	return bit;
 }
@@ -317,7 +317,7 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 
 	ctx_dirs_t *ctx_dirs = &ctx->dirs;
 	directive_t *dir = ctx_dirs->directives[index_dir];
-	LOG("directive type %d\n", dir->type, 0);
+	//LOG("directive type %d\n", dir->type, 0);
 	if(dir->type == DIR_IMP)
 	{
 
@@ -401,7 +401,7 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 
 				if(!is_symbol_implemented(ctx, glb->key))
 				{
-					LOG("adding src %d\n", ctx->desc_id, 0);
+					//LOG("adding src %d\n", ctx->desc_id, 0);
 					add_src_to_global(glb, ctx->desc_id);
 				}
 				else
@@ -420,7 +420,7 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 				}
 
 			}
-			//print_global_content(glb);
+			print_global_content(glb);
 
 		}
 		return;
@@ -538,7 +538,7 @@ bool check_global_validity(linker_t *lk)
 
 void build_module_stack(linker_t *lk)
 {
-	//printf("build stack\n");
+	printf("build stack\n");
 
 	for(int i = 0; i < get_number_of_sources(); ++i)
 	{
@@ -555,6 +555,7 @@ void build_module_stack(linker_t *lk)
 			module->tag = segment_ids_to_tag[sid];
 
 			append_scope_ref(lk, module, i, x);
+			//printf("scope reference added %d %d\n", scope->segment.sid, module->tag);
 		}
 	}
 
@@ -564,10 +565,9 @@ void build_module_stack(linker_t *lk)
 		module_t *module = &lk->modules[m];
 		if(module->set == false)
 			break;
-		//LOG("fill module %d\n", m, 0);
 		fill_module(lk, module);
 	}
-	//print_linker_tagorder(lk);
+	print_linker_tagorder(lk);
 }
 
 

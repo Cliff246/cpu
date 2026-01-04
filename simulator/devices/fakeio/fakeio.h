@@ -8,14 +8,17 @@
 #include "fakeio_device_config_setting.h"
 #include "device_command.h"
 
-#define FAKEIO_BUFFER_SIZE 1024
+#define FAKEIO_BUFFER_SIZE 1000
 
 
 typedef struct device_fakeio
 {
-	int start;
-	int stop;
-	char fakeio_buffer[FAKEIO_BUFFER_SIZE];
+	uint64_t start;
+	uint64_t length;
+	uint64_t button_address;
+	uint64_t fakeio_buffer[FAKEIO_BUFFER_SIZE];
+	uint64_t button_value;
+	WS_dev_msg_t *msg;
 }dev_fakeio_t;
 
 

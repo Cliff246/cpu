@@ -130,7 +130,7 @@ vm_op_status_t vm_jump_address(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 
 		if(vm->bookmarks[idx].valid && vm->bookmarks[idx].cd_addr == cd_ptr)
 		{
-			printf("bookmarked\n");
+			//printf("bookmarked\n");
 			txn->local.tuc = get_from_bookmark(vm, txn->local.tua, cd_ptr);
 			txn->local.tub = JMP_STATE_DONE;
 			return VM_OP_STATUS_WAITING;
@@ -680,7 +680,8 @@ vm_op_status_t vm_JMP_CALL_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 
 	if(txn->local.tub == 0)
 	{
-		uint64_t sum = txn->inp.lane3;
+
+		uint64_t sum = txn->inp.lane3 + txn->inp.lane2 + txn->inp.lane1;
 		txn->local.tua = sum;
 	}
 	return vm_jump_call(vm, op, txn);

@@ -4,8 +4,9 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "flags.h"
-#include "decoder.h"
 #include "commons.h"
+
+#include "decoder.h"
 #include "eerror.h"
 #include "lexer.h"
 #include "parser.h"
@@ -24,9 +25,10 @@ int main(int argc, char *argv[])
 
 	setup_errors();
 	errno = 0;
+	//printf("run\n");
 
 	generate_target(argc, argv);
-	printf("load context\n");
+	//printf("load context\n");
 
 
 	for(int filldesc = 0; filldesc < target.inputs_count; ++filldesc)
@@ -48,7 +50,7 @@ int main(int argc, char *argv[])
 		for(int i = 0; i < target.inputs_count; ++i)
 		{
 			contexts[i] = load_context(get_fdesc(i));
-			printf("targets\n");
+			//printf("targets\n");
 
 			context_resolve(contexts[i]);
 
@@ -61,7 +63,7 @@ int main(int argc, char *argv[])
 			exit(EXIT_FAILURE);
 		}
 
-		print_globals(lk);
+		//print_globals(lk);
 		//printf("%s\n", get_filename_from_context(contexts[0]));
 		build_module_stack(lk);
 		//printf("build modules\n");
@@ -69,7 +71,7 @@ int main(int argc, char *argv[])
 
 		int buffer[100] = {0};
 		create_link_order(lk, buffer, 100);
-		printf("\n\n");
+		//printf("\n\n");
 		for(int bufi = 0; bufi < 10; bufi++)
 		{
 			//printf("%d \n", buffer[bufi]);
@@ -83,7 +85,7 @@ int main(int argc, char *argv[])
 		segout_t outs[oo->count];
 		for(int ri = 0; ri < oo->count; ++ri)
 		{
-			printf("done\n");
+			//printf("done\n");
 
 			outs[ri] = create_segout(lk, oo->regions[ri]);
 
