@@ -1,8 +1,8 @@
 #ifndef __MODULE_DESCRIPTION_HEADER__
 #define __MODULE_DESCRIPTION_HEADER__
 
-#include "module_vtable.h"
-#include "monolith_tag.h"
+#include "object_vtable.h"
+#include "object_tag.h"
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -24,11 +24,11 @@ typedef struct WS_MOD_description
 	const char *mod_typeclass;
 	const char *dl_name;
 
-	const MOD_vtable_t *vtable;
+	const OBJ_vtable_t *vtable;
 
 	const struct
 	{
-		MLTH_tag_handle_t *handles;
+		OBJ_tag_handle_t *handles;
 	 	uint64_t size;
 	}default_hnd;
 

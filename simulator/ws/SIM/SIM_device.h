@@ -1,11 +1,13 @@
 #ifndef __SIMULATOR_DEVICE_HEADER__
 #define __SIMULATOR_DEVICE_HEADER__
 
-#include "module_description.h"
 
+#include "SIM_handle.h"
 typedef struct WS_SIM_device
 {
+	SIM_handle_t *hnd;
+	int count;
 
-}SIM_dev_t;
+}SIM_device_t;
 
 #endif

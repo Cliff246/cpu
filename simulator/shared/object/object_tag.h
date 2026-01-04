@@ -1,13 +1,13 @@
-#ifndef __MONOLITH_TAG_HEADER__
-#define __MONOLITH_TAG_HEADER__
+#ifndef __OBJECT_TAG_HEADER__
+#define __OBJECT_TAG_HEADER__
 
 #include "commons.h"
 
-#define MLTH_TAG_STRING_SIZE 20
+#define OBJ_TAG_STRING_SIZE 20
 
 
 
-#define MLTH_TAG_LIST(X) \
+#define OBJ_TAG_LIST(X) \
 	X(UNKNOWN, char)	\
 	X(BOOL, bool)		\
 	X(UINT, uint64_t)	\
@@ -15,40 +15,40 @@
 	X(STRING, char *)	\
 
 
-#define MLTH_TAG_KEY_SIZE 25
+#define OBJ_TAG_KEY_SIZE 25
 
-#define MLTH_TAG_ENUM_NAME(X) MLTH_TAG_TYPE_ ## X
-#define MLTH_TAG_ENUM(X, Y) MLTH_TAG_ENUM_NAME(X),
+#define OBJ_TAG_ENUM_NAME(X) OBJ_TAG_TYPE_ ## X
+#define OBJ_TAG_ENUM(X, Y) OBJ_TAG_ENUM_NAME(X),
 
-#define MLTH_TAG_COUNT (0 MLTH_TAG_LIST(COUNTER2D))
+#define OBJ_TAG_COUNT (0 OBJ_TAG_LIST(COUNTER2D))
 
-typedef enum WS_MLTH_tag_type
+typedef enum WS_OBJ_tag_type
 {
-	MLTH_TAG_LIST(MLTH_TAG_ENUM)
+	OBJ_TAG_LIST(OBJ_TAG_ENUM)
 
-}MLTH_tag_type_t;
+}OBJ_tag_type_t;
 
-#define MLTH_TAG_UNION(X, Y) Y X;
+#define OBJ_TAG_UNION(X, Y) Y X;
 
 
-typedef union WS_MLTH_tag_union
+typedef union WS_OBJ_tag_union
 {
-	MLTH_TAG_LIST(MLTH_TAG_UNION)
-}MLTH_tag_union_t;
+	OBJ_TAG_LIST(OBJ_TAG_UNION)
+}OBJ_tag_union_t;
 
 
 
-typedef struct WS_MLTH_tag
+typedef struct WS_OBJ_tag
 {
-	char key[MLTH_TAG_KEY_SIZE];
-	MLTH_tag_type_t type;
-	MLTH_tag_union_t value;
-}MLTH_tag_t;
+	char key[OBJ_TAG_KEY_SIZE];
+	OBJ_tag_type_t type;
+	OBJ_tag_union_t value;
+}OBJ_tag_t;
 
-typedef struct WS_MLTH_tag_local_handle
+typedef struct WS_OBJ_tag_local_handle
 {
 
-}MLTH_tag_handle_t;
+}OBJ_tag_handle_t;
 
 #endif
 /*

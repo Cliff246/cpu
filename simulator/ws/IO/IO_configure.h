@@ -1,6 +1,8 @@
-#ifndef __WS_SIM_CONFIGURE_HEADER__
-#define __WS_SIM_CONFIGURE_HEADER__
+#ifndef __WS_IO_CONFIGURE_HEADER__
+#define __WS_IO_CONFIGURE_HEADER__
 
+
+#endif
 /*
 
 #include "loader.h"

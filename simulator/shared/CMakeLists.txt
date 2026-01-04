@@ -2,4 +2,4 @@
 
 add_subdirectory(module)
 
-add_subdirectory(monolith)
+add_subdirectory(object)
