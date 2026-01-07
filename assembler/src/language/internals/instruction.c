@@ -5,6 +5,7 @@
 #include "eerror.h"
 #include "decoder.h"
 #include "parser.h"
+#include "flags.h"
 #include "strtools.h"
 #include <stdio.h>
 #include <stdint.h>
@@ -20,9 +21,8 @@ void print_inst(inst_t *inst)
 		{
 
 			default:
-				printf("path:%d subpath %d: rs1: %d, rs2: %d, rs3: %d, accflag %d, selflag: %d, realocflag %d, immf: %d [immediate: %lld]\n", inst->path, inst->subpath, inst->rs1, inst->rs2, inst->rs3, inst->accflag, inst->selflag, inst->realocflag, inst->immflag, inst->imm.ilit.lit);
+				printf("path:%d subpath %d: rs1: %d, rs2: %d, rs3: %d, modeflag %d, selflag: %d, immf: %d [immediate: %lld]\n", inst->path, inst->subpath, inst->rs1, inst->rs2, inst->rs3, inst->modeflag, inst->selflag, inst->immflag, inst->imm.ilit.lit);
 
-				break;
 		}
 
 	}
@@ -31,19 +31,19 @@ void print_inst(inst_t *inst)
 
 		if(inst->imm.iref.ref_type == INST_REF_GLOBAL)
 		{
-			printf("path:%d subpath %d: rs1: %d, rs2: %d, rs3: %d, accflag %d, selflag: %d, realocflag %d, immf: %d [reference: %s]\n", inst->path, inst->subpath, inst->rs1, inst->rs2, inst->rs3, inst->accflag, inst->selflag, inst->realocflag, inst->immflag, inst->imm.iref.ref);
+			printf("path:%d subpath %d: rs1: %d, rs2: %d, rs3: %d, modeflag %d, selflag: %d, immf: %d [reference: %s]\n", inst->path, inst->subpath, inst->rs1, inst->rs2, inst->rs3, inst->modeflag, inst->selflag, inst->immflag, inst->imm.iref.ref);
 
 		}
 		else
 		{
-			printf("path:%d subpath %d: rs1: %d, rs2: %d, rs3: %d, accflag %d, selflag: %d, realocflag %d, immf: %d [reference: @%s]\n", inst->path, inst->subpath, inst->rs1, inst->rs2, inst->rs3, inst->accflag, inst->selflag, inst->realocflag, inst->immflag, inst->imm.iref.ref);
+			printf("path:%d subpath %d: rs1: %d, rs2: %d, rs3: %d, modeflag %d, selflag: %d, immf: %d [reference: @%s]\n", inst->path, inst->subpath, inst->rs1, inst->rs2, inst->rs3, inst->modeflag, inst->selflag, inst->immflag, inst->imm.iref.ref);
 		}
 
 	}
 
 	else if(inst->imm_type == INSTIMM_NONE)
 	{
-		printf("path:%d subpath %d: rs1: %d, rs2: %d, rs3: %d, accflag %d, selflag: %d, realocflag %d, immf: %d\n", inst->path, inst->subpath, inst->rs1, inst->rs2, inst->rs3, inst->accflag, inst->selflag, inst->realocflag, inst->immflag);
+		printf("path:%d subpath %d: rs1: %d, rs2: %d, rs3: %d, modeflag %d, selflag: %d, immf: %d\n", inst->path, inst->subpath, inst->rs1, inst->rs2, inst->rs3, inst->modeflag, inst->selflag, inst->immflag);
 	}
 }
 
@@ -55,9 +55,8 @@ inst_t decode_inst(uint32_t instr)
 	in.rs1 = (instr >> 16) & 0x3F;
 	in.rs1 = (instr >> 10) & 0x3F;
 	in.rs2 = (instr >> 4) & 0x3F;
-	in.accflag = (instr >> 3) & 0x01;
-	in.selflag = (instr >> 2) & 0x01;
-	in.realocflag = (instr >> 1) & 0x01;
+	in.modeflag = (instr >> 2) & 0x02;
+	in.selflag = (instr >> 1) & 0x01;
 	in.immflag = instr & 0x01;
 	return in;
 }
@@ -65,7 +64,7 @@ inst_t decode_inst(uint32_t instr)
 uint32_t encode_inst(inst_t *inst)
 {
 
-	return ((inst->path << 29) | (inst->subpath << 22) | (inst->rs1 << 16) | (inst->rs2 << 10) | (inst->rs3 << 4) | (inst->accflag << 3) | ((inst->selflag << 2)) | ((inst->realocflag << 1)) | inst->immflag);
+	return ((inst->path << 29) | (inst->subpath << 22) | (inst->rs1 << 16) | (inst->rs2 << 10) | (inst->rs3 << 4) | (inst->modeflag << 2) | ((inst->selflag << 1)) | inst->immflag);
 }
 
 
@@ -123,7 +122,7 @@ int fill_instruction_start(parse_node_t *node, inst_t *inst)
 
 
 		set_instruction_keyword_error(node->children[0]->tok, path_str);
-		inst->imm_type == INSTIMM_ERROR;
+		inst->imm_type = INSTIMM_ERROR;
 		return 0;
 	}
 	//rint_depth(node, 0);
@@ -132,16 +131,22 @@ int fill_instruction_start(parse_node_t *node, inst_t *inst)
 	if(subpath == -1)
 	{
 		set_instruction_keyword_error(node->children[1]->tok, node->children[1]->tok->lexeme);
-		inst->imm_type == INSTIMM_ERROR;
+		inst->imm_type = INSTIMM_ERROR;
 		return 1;
 
 	}
 	inst->subpath = subpath;
 	int offset = 2;
-
+	inst->modeflag = MODE_DEFAULT;
 	if(node->children[offset]->kind == NODE_EXCLAIM)
 	{
-		inst->accflag = 1;
+		inst->modeflag = MODE_ACCUMLATOR;
+		offset++;
+	}
+	else if(node->children[offset]->kind == NODE_QUESTION)
+	{
+
+		inst->modeflag = MODE_SINK;
 		offset++;
 	}
 
@@ -152,7 +157,7 @@ int fill_instruction_start(parse_node_t *node, inst_t *inst)
 	if(rd == -1)
 	{
 		set_instruction_keyword_error(node->children[offset]->tok, node->children[offset]->tok->lexeme);
-		inst->imm_type == INSTIMM_ERROR;
+		inst->imm_type = INSTIMM_ERROR;
 		return offset;
 
 	}
@@ -163,7 +168,7 @@ int fill_instruction_start(parse_node_t *node, inst_t *inst)
 	if(rs1 == -1)
 	{
 		set_instruction_keyword_error(node->children[offset]->tok,  node->children[offset]->tok->lexeme);
-		inst->imm_type == INSTIMM_ERROR;
+		inst->imm_type = INSTIMM_ERROR;
 		return offset;
 
 	}
@@ -192,7 +197,7 @@ int fill_instruction_start(parse_node_t *node, inst_t *inst)
 	if(rs2 == -1)
 	{
 		set_instruction_keyword_error(node->children[offset]->tok, node->children[offset]->tok->lexeme);
-		inst->imm_type == INSTIMM_ERROR;
+		inst->imm_type = INSTIMM_ERROR;
 		return offset;
 
 	}
@@ -229,7 +234,7 @@ void inst_imm(parse_node_t *node, inst_t *inst, int offset)
 	number_type_t type = get_number_type(final);
 	uint64_t imm = 0;
 	//printf("final: %s %d\n", final, type);
-	inst->realocflag = 0;
+	inst->modeflag = 0;
 	inst->immflag = 1;
 	if(type != NUM_NONE)
 	{
@@ -249,12 +254,6 @@ void inst_imm(parse_node_t *node, inst_t *inst, int offset)
 		inst->imm.ilit.lit = imm;
 		inst->imm.ilit.lit_type = INST_LIT_UNSET;
 	}
-	else if(!strcmp(final, "acc"))
-	{
-		inst->imm_type = INSTIMM_NONE,
-		inst->immflag = 0;
-		inst->realocflag = 1;
-	}
 	else
 	{
 
@@ -270,6 +269,8 @@ void inst_imm(parse_node_t *node, inst_t *inst, int offset)
 			}
 			else
 			{
+
+				set_instruction_keyword_error(node->children[1]->tok, node->children[1]->tok->lexeme);
 
 			}
 		}

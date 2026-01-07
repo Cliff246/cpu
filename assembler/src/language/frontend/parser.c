@@ -226,6 +226,12 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 		add_child(n, make_node(NODE_EXCLAIM, exclaim));
 
 	}
+	else if(ahead->type == TOK_QUESTION)	
+	{
+		tok_t *question = expect(ctx, TOK_QUESTION);
+		add_child(n, make_node(NODE_QUESTION, question));
+
+	}
 
 
 	tok_t *sep = expect(ctx, TOK_IDENT);

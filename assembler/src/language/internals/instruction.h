@@ -57,8 +57,7 @@ typedef struct instruction
 	char rs1;
 	char rs2;
 	char rs3;
-	char accflag;
-	char realocflag;
+	char modeflag;
 	char selflag;
 	char immflag;
 	union

@@ -33,22 +33,52 @@
 #define PATH_VEC 6
 
 
-//acc_mode
-//lane1 = lhs
-//lane2 = rhs
-//lane3 = other
 
 
 //
 
 //instruction convention is always
-//3			7		6		6		  6	     1 	       1	      1              1
-//[31:28] [27:21] [20:15] [15:10]   [9:4]   [3] 	  [2]        [1]   		   [0]
-//path    subpath  rd      rs1     rs2     accflag	selflag  reallocflag        immf
+//3			7		6		6		  6	      2 	   1	    1
+//[31:28] [27:21] [20:15] [15:10]   [9:4]   [3:2] 	  [1]  	   [0]
+//path    subpath  rd      rs1     rs2     modeflag	selflag    immf
 
 
 //realloc has the associated immediate turn into a key thats reallocable. so you can do dynamic code with constants
 //selflag turns rs2 into a number... as in, dont load rs2 convert it into a 6 bit number
+
+
+//dst = rs1
+//lane1 = rs2
+//lane2 = rs3
+//lane3 = sidestream
+
+
+#define MODE_DEFAULT 0
+//undecided mod
+
+
+//dst = TBD
+//lane1 = TBD
+//lane2 = TBD
+//lane3 = TBD
+
+#define MODE_UNDECIDED 1
+
+
+//dst = x63(acc)
+//lane1 = rs1
+//lane2 = rs2
+//lane3 = rs3 + sidestream
+#define MODE_ACCUMLATOR 2
+
+
+
+#define MODE_SINK 3
+
+//dst = x0
+//lane1 = rs1
+//lane2 = rs2
+//lane3 = rs3 + sidestream
 
 
 

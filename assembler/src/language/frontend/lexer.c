@@ -281,6 +281,11 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 			EMIT(TOK_EXCLAIM, to_string(ch));
 			ADVANCE;
 		}
+		else if(ch == '?')
+		{
+			EMIT(TOK_QUESTION, to_string(ch));
+			ADVANCE;
+		}
 		else if(ch == '.')
 		{
 			//printf("%d %c\n", index, ch);
@@ -420,6 +425,7 @@ char *tok_type_strings[] =
 	[TOK_EOF] = "end of file",
 	[TOK_COMMENT] = "comment",
 	[TOK_EXCLAIM] = "exclamation mark",
+	[TOK_QUESTION] = "question mark",
 	[TOK_EMPTY] = "empty",
 };
 
@@ -453,7 +459,6 @@ char *printable_tok(tok_t *tok)
 		return NULL;
 	char *type = get_tok_type_string(tok->type);
 	char *lexme = get_token_lexme(tok);
-
 	const char fmt[] = "[type: %s, str: %s]";
 
 	size_t type_size = strlen(type);
