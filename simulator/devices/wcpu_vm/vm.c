@@ -162,7 +162,7 @@ void device_vima_update(device_t *dev)
 		else
 		{
 			//vm_cpu_print_regs(vm);
-
+			
 			vm_txn_advance(vm, vm->txn);
 			//vm_txn_print_inflight(vm->txn);
 			//printf("\n");

@@ -323,7 +323,7 @@ void init(int argc, char **argv)
 	parse_args();
 
 	WS_cfg_file_t *file = WS_cfg_create_file("configfiles/basic_config.txt");
-
+	//printf("try\n");
 	WS_simulator_t *sim = WS_simulator_init();
 	WS_simulator_load_config(sim, file);
 	WS_cfg_free_file(file);
@@ -335,7 +335,8 @@ void init(int argc, char **argv)
 		//printf("%d\n", i);
 	}
 
-	//WS_simulator_print_all_devices(sim);
+	//printf("try\n");
+	WS_simulator_print_all_devices(sim);
 
 	//create_cli_context(&globalstate.ctx);
 

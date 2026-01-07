@@ -208,54 +208,11 @@ void vm_txn_state_source(vima_t *vm, vm_txn_t *txn)
 {
 
 	int64_t sidestream = 0;
-	if(txn->private.it2 > 0)
+	
+	if(txn->op.op.immflag)
 	{
-		if(vm_bus_poll_evnt(vm, txn->handle.port, txn->private.it1))
-		{
-
-			vm_bus_response_t resp;
-			assert(vm_bus_pull_evnt(vm, txn->handle.port, txn->private.it1, &resp));
-			sidestream = resp.resp.load_response.value;
-
-		}
-		else
-		{
-
-			return;
-		}
+		sidestream = txn->op.imm;
 	}
-	else
-	{
-		if(txn->op.op.immflag && txn->op.op.reallocflag)
-		{
-
-
-			vm_bus_evnt_t event = {
-				.type = VM_IO_LOAD,
-				.evnt.load = {.addr = (uint64_t)txn->op.imm}
-			};
-			vm_bus_hnd_t hnd = vm_bus_put_evnt(vm, txn->handle.port, event);
-			txn->private.it1 = hnd;
-			txn->private.it2 = _TXN_SOURCE_T2_STATE_POLL;
-
-			return;
-		}
-		else if(txn->op.op.immflag)
-		{
-			sidestream = txn->op.imm;
-		}
-		else if(txn->op.op.reallocflag)
-		{
-			sidestream = vm_cpu_get_reg(vm, 63);
-		}
-		else
-		{
-			sidestream = 0;
-		}
-	}
-
-
-
 
 	txn->srcs.rs1 = vm_cpu_get_reg(vm, txn->op.op.rs1);
 	txn->srcs.rs2 = vm_cpu_get_reg(vm, txn->op.op.rs2);
@@ -268,23 +225,42 @@ void vm_txn_state_source(vima_t *vm, vm_txn_t *txn)
 
 void vm_txn_state_wire(vima_t *vm, vm_txn_t *txn)
 {
-	if(txn->op.op.accflag)
-	{
-		//printf("acc flag\n");
-
-		txn->inp.dst = 63;
-		txn->inp.lane1 = txn->srcs.rs1;
-		txn->inp.lane2 = txn->srcs.rs2;
-		txn->inp.lane3 = txn->srcs.rs3 + txn->srcs.side;
-
-	}
-	else
+	int modeflag = txn->op.op.modeflag; 
+	printf("%d\n", modeflag); 
+	if(modeflag == MODE_DEFAULT)
 	{
 		txn->inp.dst = txn->op.op.rs1;
 		txn->inp.lane1 = txn->srcs.rs2;
 		txn->inp.lane2 = txn->srcs.rs3;
 		txn->inp.lane3 = txn->srcs.side;
 
+		
+	}
+	else if(modeflag == MODE_UNDECIDED)
+	{
+		assert(0);
+
+	}
+	else if(modeflag == MODE_ACCUMLATOR)
+	{
+		txn->inp.dst = 63;
+		txn->inp.lane1 = txn->srcs.rs1;
+		txn->inp.lane2 = txn->srcs.rs2;
+		txn->inp.lane3 = txn->srcs.rs3 + txn->srcs.side;
+
+	}
+	else if(modeflag == MODE_SINK)
+	{
+		txn->inp.dst = 0;
+		txn->inp.lane1 = txn->srcs.rs1;
+		txn->inp.lane2 = txn->srcs.rs2;
+		txn->inp.lane3 = txn->srcs.rs3 + txn->srcs.side;
+
+		
+	}
+	else 
+	{
+		assert(0);
 	}
 	txn->inp.swap = txn->op.op.immflag;
 	vm_txn_set_next_state(txn, VM_TXN_EXEC);

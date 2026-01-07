@@ -3,11 +3,7 @@
 	START 0 .
  	SIZE 2000 .
 	FILENAME "a.bin" .
-	PRINT_CONTENT false .
-	}
-	{
-		START 2001 .
-		SIZE 5000 .
+	PRINT_CONTENT true .
 	};
 
 "libsim_dev_fakeio" :
