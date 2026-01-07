@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <assert.h>
-
+#include <stdalign.h>
 
 
 #define WS_OBJ_VALUE_LIST(X) 			\
@@ -38,7 +38,7 @@ static_assert(8 == sizeof(OBJ_value_union_t), "that should always be aligned" );
 
 typedef struct WS_OBJ_value_primitive
 {
-	OBJ_value_union_t content;
+	_Alignas(8) OBJ_value_union_t content;
 }OBJ_primitive_t;
 
 typedef struct WS_OBJ_value
