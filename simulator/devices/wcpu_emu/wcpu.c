@@ -1,6 +1,5 @@
 #include "wcpu.h"
 #include "device.h"
-#include "device_description.h"
 #include "device_vtable.h"
 #include "wcpu_device_config_setting.h"
 #include "device_command_impl.h"
@@ -10,6 +9,7 @@
 #include <assert.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "module_description.h"
 
 
 static const WS_dev_vtable_t vtable =
@@ -154,7 +154,7 @@ void device_wcpu_update(device_t *dev)
 
 		dev_msg_type_t msg_type = (core->core_io.type == CORE_IO_READ)? DEVMSG_READ_SEND : DEVMSG_WRITE;
 
-		dev_msg_t *msg_out = WS_device_message_create(&wcpu_emu_desc, dev->id, -1, msg_type, core->core_io.address, core->core_io.value);
+		dev_msg_t *msg_out = WS_device_message_create(&wcpu_emu_desc, 0, -1, msg_type, core->core_io.address, core->core_io.value);
 		assert(msg_out);
 		wcpu->current_msg_out = msg_out;
 		wcpu->has_out = true;

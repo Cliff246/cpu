@@ -1,6 +1,6 @@
 #include "device.h"
 #include "device_list.h"
-#include "device_description.h"
+#include "module_description.h"
 #include "device_command.h"
 #include "ram.h"
 #include "ram_device_config_setting.h"

@@ -1,5 +1,5 @@
-#ifndef __DEVICE_DESCRIPTION_HEADER__
-#define __DEVICE_DESCRIPTION_HEADER__
+#ifndef __MODULE_DESCRIPTION_HEADER__
+#define __MODULE_DESCRIPTION_HEADER__
 
 #include "device_vtable.h"
 #include "hashmap.h"
@@ -9,7 +9,6 @@
 #else
 #  define DEVICE_EXPORT __attribute__((visibility("default")))
 #endif
-
 
 
 
@@ -29,6 +28,14 @@ typedef struct device_description
 
 	void *extra;
 }WS_dev_desc_t;
+
+typedef struct WS_MOD_description
+{
+	WS_dev_desc_t *desc;
+
+
+}MOD_description_t;
+
 
 
 DEVICE_EXPORT const WS_dev_desc_t *WS_get_dev_desc(void);

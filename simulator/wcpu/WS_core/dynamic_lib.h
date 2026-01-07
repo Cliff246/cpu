@@ -1,13 +1,13 @@
-#ifndef __MODULE_HEADER__
-#define __MODULE_HEADER__
+#ifndef __DYLIB_HEADER__
+#define __DYLIB_HEADER__
 
 #include "device.h"
-#include "device_description.h"
+#include "module_description.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <limits.h>
 
-typedef struct wcpu_simulator_module
+typedef struct WS_dylib
 {
 	char *filepath;
 	WS_dev_desc_t *dev_desc;

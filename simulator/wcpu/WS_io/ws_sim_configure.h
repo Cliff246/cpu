@@ -2,7 +2,7 @@
 #define __WS_SIM_CONFIGURE_HEADER__
 
 #include "loader.h"
-#include "module.h"
+#include "dynamic_lib.h"
 #include "token.h"
 #include "device_command.h"
 #include <stdlib.h>

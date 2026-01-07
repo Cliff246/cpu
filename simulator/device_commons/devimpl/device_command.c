@@ -82,7 +82,6 @@ WS_dev_cmd_t *WS_dev_cmd_create(WS_dev_cmd_collection_t *collection, WS_dev_desc
 
 bool WS_default_producer_NAME(WS_dev_t *device, WS_dev_flag_t *flag)
 {
-	device->name = strdup(flag->value->STRING);
 	return true;
 }
 
@@ -93,14 +92,11 @@ bool WS_default_producer_ENABLED(WS_dev_t *device, WS_dev_flag_t *flag)
 }
 
 //assumes a fully valid
-bool WS_device_cmd(WS_dev_t *device, WS_dev_cmd_t *cmd)
+bool WS_device_cmd(WS_dev_t *device, WS_dev_desc_t *desc, WS_dev_cmd_t *cmd)
 {
 	assert(device && cmd);
 	//printf("%d %d\n", device->desc, cmd->type);
-	assert(device->desc == cmd->type);
 	assert(cmd->collection);
-	const WS_dev_desc_t *desc = device->desc;
-
 	assert(desc->flag_table && "must have a valid flag hashtable in a device description");
 
 	for(int i = 0; i < cmd->collection->flags_count; ++i)
@@ -129,8 +125,8 @@ bool WS_device_cmd(WS_dev_t *device, WS_dev_cmd_t *cmd)
 		assert(allowed && "producer for a flag must always be allowed");
 
 	}
-	assert(device->desc->vtable->cmd_commit);
-	device->desc->vtable->cmd_commit(device);
+	assert(desc->vtable->cmd_commit);
+	desc->vtable->cmd_commit(device);
 	//for now this will be changed later
 	return true;
 

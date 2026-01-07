@@ -1,7 +1,7 @@
 #include "fakeio.h"
 
 #include "device_commons.h"
-#include "device_description.h"
+#include "module_description.h"
 #include "device_vtable.h"
 #include "hashmap.h"
 #include "device_command_impl.h"
@@ -67,7 +67,7 @@ void *device_fakeio_init(device_t *dev)
 {
 	assert(dev);
 	dev_fakeio_t *fakeio = calloc(1, sizeof(dev_fakeio_t));
-	dev->has_address = true;
+	//dev->has_address = true;
 	fakeio->button_address = 0;
 	fakeio->button_value = 0;
 	fakeio->start = 0;
@@ -176,6 +176,6 @@ void device_fakeio_commit(WS_dev_t *dev)
 {
 	dev_fakeio_t *fakeio = dev->ptr;
 
-	dev->has_address = true;
+	//dev->has_address = true;
 }
 

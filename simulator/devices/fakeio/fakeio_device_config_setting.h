@@ -3,7 +3,7 @@
 
 #include "device_list.h"
 #include "commons.h"
-#include "device_description.h"
+#include "module_description.h"
 #include "device_command.h"
 #include <stdint.h>
 #include <stdbool.h>

@@ -6,7 +6,7 @@
 #include "device_mailbox.h"
 #include "device_command.h"
 #include "device_vtable.h"
-#include "device_description.h"
+#include "module_description.h"
 
 
 size_t WS_get_device_address_start(WS_dev_t *device);
@@ -42,14 +42,14 @@ void WS_set_device_changed(WS_dev_t *device);
 
 
 
+bool WS_device_mailbox_put(WS_dev_mailbox_t *dev, WS_dev_msg_t *msg);
 
+bool WS_device_mailbox_pop(WS_dev_mailbox_t *dev, WS_dev_msg_t **msg);
 
-bool WS_device_mailbox_put(WS_dev_t *dev, WS_dev_msg_t *msg);
-bool WS_device_mailbox_pop(WS_dev_t *dev, WS_dev_msg_t **msg);
 
 WS_dev_mailbox_t *WS_device_mailbox_init(void);
+void WS_device_mailbox_print(WS_dev_mailbox_t *mb);
 
-void WS_device_mailbox_print(WS_dev_t *dev);
 
 WS_dev_msg_t *WS_device_message_create(WS_dev_desc_t *src_type, WS_dev_id_t src_id, WS_dev_id_t dest_id, WS_dev_msg_type_t type, uint64_t address, int64_t value);
 

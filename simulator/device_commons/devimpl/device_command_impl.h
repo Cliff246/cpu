@@ -3,13 +3,11 @@
 
 #include "device.h"
 #include "device_command.h"
-#include "device_description.h"
 #include <stdbool.h>
 #include "token.h"
-#include "device_description.h"
+#include "module_description.h"
 
-
-bool WS_device_cmd(WS_dev_t *device, WS_dev_cmd_t *cmd);
+bool WS_device_cmd(WS_dev_t *device, WS_dev_desc_t *desc, WS_dev_cmd_t *cmd);
 
 void WS_cmd_free(WS_dev_cmd_t *cmd);
 

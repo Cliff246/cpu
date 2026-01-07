@@ -1,6 +1,7 @@
 #include "ws_sim_configure.h"
 #include "loader.h"
-#include "module.h"
+#include "dynamic_lib.h"
+
 #include "token.h"
 #include "device_command_impl.h"
 #include <stdlib.h>

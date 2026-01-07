@@ -31,7 +31,7 @@ bool device_cmd_option_producer_SIZE(WS_dev_t *dev, WS_dev_flag_t *flag)
 	dev_fakeio_t *fakeio = dev->ptr;
 	fakeio->length = flag->value->INT;
 
-	dev->address_range_length = flag->value->INT;
+	//dev->address_range_length = flag->value->INT;
 
 	return true;
 
@@ -42,7 +42,7 @@ bool device_cmd_option_producer_START(WS_dev_t *dev, WS_dev_flag_t *flag)
 	//printf("start %d\n", flag->value->INT);
 	dev_fakeio_t *fakeio = dev->ptr;
 	fakeio->start = flag->value->INT;
-	dev->address_range_start = flag->value->INT;
+	//dev->address_range_start = flag->value->INT;
 
 	return true;
 

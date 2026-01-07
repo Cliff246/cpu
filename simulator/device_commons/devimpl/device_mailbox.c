@@ -8,9 +8,9 @@
 
 
 //returns false on cannot and returns true on success
-bool WS_device_mailbox_put(WS_dev_t *dev, WS_dev_msg_t *msg)
+bool WS_device_mailbox_put(WS_dev_mailbox_t *dev, WS_dev_msg_t *msg)
 {
-	WS_dev_mailbox_t *mb = dev->mailbox;
+	WS_dev_mailbox_t *mb = dev;
 
 	if(((mb->write + 1) % DEVICE_MAILBOX_SIZE) == mb->read)
 	{
@@ -25,11 +25,11 @@ bool WS_device_mailbox_put(WS_dev_t *dev, WS_dev_msg_t *msg)
 }
 
 
-bool WS_device_mailbox_pop(WS_dev_t *dev, WS_dev_msg_t **msg)
+bool WS_device_mailbox_pop(WS_dev_mailbox_t *dev, WS_dev_msg_t **msg)
 {
 	assert(dev);
 
-	WS_dev_mailbox_t *mb = dev->mailbox;
+	WS_dev_mailbox_t *mb = dev;
 	if(mb->read == mb->write)
 	{
 		*msg = NULL;
@@ -54,9 +54,9 @@ WS_dev_mailbox_t *WS_device_mailbox_init(void)
 
 }
 
-void WS_device_mailbox_print(WS_dev_t *dev)
+void WS_device_mailbox_print(WS_dev_mailbox_t *mb)
 {
-	WS_dev_mailbox_t *mailbox = dev->mailbox;
+	WS_dev_mailbox_t *mailbox = mb;
 	assert(mailbox);
 	for(int i = 0; i < DEVICE_MAILBOX_SIZE; ++i)
 	{

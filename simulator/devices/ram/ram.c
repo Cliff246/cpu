@@ -3,7 +3,9 @@
 #include "ram.h"
 #include "ram_device_config_setting.h"
 #include "device_commons.h"
-#include "device_description.h"
+
+#include "module_description.h"
+
 #include "device_vtable.h"
 #include "hashmap.h"
 #include "device_command_impl.h"
@@ -93,7 +95,7 @@ void *device_ram_init(device_t *device)
 	//assert(config->settings[DEVICE_RAM_CONFIG_SETTING_ENABLE_FLAG_RESET] && "generate must force a reset");
 	//cmd_ram(ram, cmd);
 	align_ram(device, ram);
-	device->has_address = true;
+	//device->has_address = true;
 
 	return ram;
 }
@@ -205,10 +207,10 @@ void align_ram(device_t *device, dev_ram_t *ram)
 {
 	assert(device != NULL && "device must not be null");
 	assert(ram);
-	device->address_range_length = ram->local_address_size;
-	device->address_range_start = ram->local_address_start;
+	//device->address_range_length = ram->local_address_size;
+	//device->address_range_start = ram->local_address_start;
 	ram->changed = false;
-	device->has_address = true;
+	//device->has_address = true;
 	WS_set_device_changed(device);
 
 }
@@ -275,7 +277,7 @@ bool device_ram_send(WS_dev_t *dev, WS_dev_msg_t **msg)
 		//get the read address
 		uint64_t read_address = WS_get_device_message_address(current);
 		//this realigns the correct read with the start of addressing
-		uint64_t correct_read = read_address -  dev->address_range_start;
+		uint64_t correct_read = read_address - ram->local_address_start;
 		assert(correct_read < ram->length && "correct read must not be invalid");
 
 		int64_t respond = read_ram(ram, correct_read);

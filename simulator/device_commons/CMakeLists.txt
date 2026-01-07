@@ -1,5 +1,5 @@
 
 
-add_subdirectory(devshared)
+add_subdirectory(shared)
 
 add_subdirectory(devimpl)

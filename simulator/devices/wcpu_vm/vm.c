@@ -4,7 +4,7 @@
 #include "device_command.h"
 #include "device_commons.h"
 #include "device_command_impl.h"
-#include "device_description.h"
+#include "module_description.h"
 #include "vm_op.h"
 #include "vm_txn.h"
 
@@ -162,7 +162,7 @@ void device_vima_update(device_t *dev)
 		else
 		{
 			//vm_cpu_print_regs(vm);
-			
+
 			vm_txn_advance(vm, vm->txn);
 			//vm_txn_print_inflight(vm->txn);
 			//printf("\n");
@@ -212,12 +212,12 @@ bool device_vima_send(WS_dev_t *dev, WS_dev_msg_t **msg)
 			{
 				if(hnd->evnt.type == VM_IO_LOAD)
 				{
-					*msg = WS_device_message_create(dev->desc, dev->id, -1, DEVMSG_READ_SEND, hnd->evnt.evnt.load.addr, 0);
+					*msg = WS_device_message_create(&wcpu_vm_desc, 0, -1, DEVMSG_READ_SEND, hnd->evnt.evnt.load.addr, 0);
 				}
 				else
 				{
 					//printf("write\n");
-					*msg = WS_device_message_create(dev->desc, dev->id, -1,DEVMSG_WRITE, hnd->evnt.evnt.store.addr, hnd->evnt.evnt.store.val);
+					*msg = WS_device_message_create(&wcpu_vm_desc, 0, -1,DEVMSG_WRITE, hnd->evnt.evnt.store.addr, hnd->evnt.evnt.store.val);
 					vm_bus_free_handle(vm, hnd->hnd);
 				}
 				hnd->internal.has_send = true;

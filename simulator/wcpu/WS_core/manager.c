@@ -6,8 +6,6 @@
 //#include "coreutils.h"
 #include "cli.h"
 #include "commons.h"
-#include "code_decoder.h"
-#include "hydra.h"
 #include "export.h"
 #include "simulator.h"
 #include "ws_sim_configure.h"

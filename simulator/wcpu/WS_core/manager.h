@@ -4,7 +4,7 @@
 
 #include "cli.h"
 #include "simulator.h"
-#include "module.h"
+#include "dynamic_lib.h"
 
 #include <stdio.h>
 #include <stdint.h>

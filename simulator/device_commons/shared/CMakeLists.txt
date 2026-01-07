@@ -7,13 +7,14 @@ set (SIMULATOR_DEV_SHARED
 	#PARENT_SCOPE
 )
 
+add_subdirectory(module)
 
 add_library(sim_dev_interface INTERFACE
 	${SIMULATOR_DEV_SHARED}
 )
 
 target_include_directories(sim_dev_interface INTERFACE
-
+	ws_module_shared
 	${CMAKE_CURRENT_SOURCE_DIR}/
 	private wcpu_commons
 	${CMAKE_SOURCE_DIR}/flags/
@@ -23,5 +24,5 @@ target_include_directories(sim_dev_interface INTERFACE
 
 target_link_libraries(sim_dev_interface INTERFACE
 	wcpu_commons
-
+	ws_module_shared
 )

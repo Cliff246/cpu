@@ -3,12 +3,12 @@
 
 #include "device.h"
 #include "device_list.h"
-#include "device_description.h"
+#include "module_description.h"
 #include "commons.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-typedef struct device_description WS_dev_desc_t;
+typedef struct WS_MOD_description MOD_description_t;
 
 
 

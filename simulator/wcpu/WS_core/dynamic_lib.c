@@ -1,6 +1,6 @@
-#include "module.h"
 #include "device_command_impl.h"
 #include "hashmap.h"
+#include "dynamic_lib.h"
 
 #include <dlfcn.h>
 #include <stdlib.h>
