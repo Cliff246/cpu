@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-//shoulld
+//sshould be fine
 typedef struct WS_SIM_wirechannel
 {
 	//entry id

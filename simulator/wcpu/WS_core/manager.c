@@ -10,7 +10,6 @@
 
 #include "SIM_simulator.h"
 #include "ws_sim_configure.h"
-#include "device_commons.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>

@@ -2,6 +2,7 @@
 #define __SIMULATOR_HEADER__
 
 #include "simulator_bus_slot.h"
+#include "WS_MOD_description.h"
 #include "ws_sim_configure.h"
 #include <stdlib.h>
 #include <stdbool.h>
@@ -97,6 +98,8 @@ void SIM_simulator_add_entry(SIM_simulator_t *sim,  SIM_entry_t entry);
 
 
 
+//advances a packet into from active forward
+bool SIM_simulator_advance_packet(SIM_simulator_t *sim, uint64_t index);
 //loads a group of devices from a config
 bool SIM_simulator_load_config(SIM_simulator_t *sim, WS_cfg_file_t *config);
 

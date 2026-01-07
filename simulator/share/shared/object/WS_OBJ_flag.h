@@ -18,8 +18,7 @@ typedef struct WS_OBJ_flag
 {
 	char key[WS_OBJ_KEY_FLAG_SIZE];
 
-	OBJ_value_t *value;
-	
+
 }OBJ_flag_t;
 
 

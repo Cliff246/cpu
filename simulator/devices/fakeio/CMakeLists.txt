@@ -25,10 +25,8 @@ target_include_directories(sim_dev_fakeio
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
 	ws_module_shared
-	ws_module_shared
 )
 target_link_libraries(sim_dev_fakeio PUBLIC
-	ws_module_shared
 	ws_module_shared
 )
 

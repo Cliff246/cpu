@@ -3,7 +3,6 @@
 #include "dynamic_lib.h"
 
 #include "token.h"
-#include "device_command_impl.h"
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -70,7 +69,7 @@ void WS_cfg_print_body(WS_cfg_body_t *body)
 
 void WS_cfg_collect_body(WS_cfg_body_t *body)
 {
-	WS_dev_cmd_collection_t *collect = WS_cmd_collection_create();
+	/*WS_dev_cmd_collection_t *collect = WS_cmd_collection_create();
 
 	//printf("body size: %d\n", body->size);
 
@@ -83,16 +82,16 @@ void WS_cfg_collect_body(WS_cfg_body_t *body)
 	}
 
 	body->collection = collect;
-
+	*/
 }
 
 void WS_cfg_collect_header(WS_cfg_hdr_t *header)
 {
-	header->cmds = calloc(header->size, sizeof(WS_dev_cmd_t *));
-	assert(header->cmds);
+	//header->cmds = calloc(header->size, sizeof(WS_dev_cmd_t *));
+	//assert(header->cmds);
 	for(int i = 0; i < header->size; ++i)
 	{
-		header->cmds[i] = WS_dev_cmd_create(header->bodies[i]->collection, header->dl->dev_desc);
+		//header->cmds[i] = WS_dev_cmd_create(header->bodies[i]->collection, header->dl->dev_desc);
 	}
 }
 
@@ -303,7 +302,7 @@ void WS_cfg_free_header(WS_cfg_hdr_t *header)
 	}
 
 	free(header->bodies);
-	free(header->cmds);
+	//free(header->cmds);
 	free(header);
 }
 

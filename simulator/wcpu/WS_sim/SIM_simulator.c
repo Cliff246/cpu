@@ -12,7 +12,6 @@ SIM_graph_t *SIM_graph_init(void)
 {
 	SIM_graph_t *graph = calloc(1, sizeof(SIM_graph_t));
 
-	graph->
 
 
 
@@ -32,8 +31,59 @@ void SIM_simulator_rebuild_graph(SIM_simulator_t *sim)
 
 }
 
+bool SIM_simulator_advance_packet(SIM_simulator_t *sim, uint64_t index)
+{
+
+}
 
 void SIM_simulator_update(SIM_simulator_t *sim)
+{
+
+	if(!sim->graph->built)
+	{
+		assert(0 && "graph must be built for update");
+	}
+
+	for(uint64_t iset = 0; iset < 1; ++iset)
+	{
+
+	}
+
+
+	uint32_t advanced = 0;
+	for(uint64_t iact = 0; iact < sim->active_packets->size; ++iact)
+	{
+		advanced += (uint32_t)SIM_simulator_advance_packet(sim, iact);
+	}
+
+
+	for(uint64_t ipull = 0; ipull < sim->graph->aliases_size; ++ipull)
+	{
+		SIM_entry_t *alias = sim->graph->aliases[ipull].alias;
+
+		//TODO make this fast
+		int todo = 0;
+		//this should send dispatch to all ports if they are done
+		for(uint64_t iintake = 0; iintake < todo; ++iintake)
+		{
+
+		}
+		//pull 
+		alias->handle.vtable.pull(alias->object);
+	}
+}
+
+bool SIM_simulator_load_config(SIM_simulator_t *sim, WS_cfg_file_t *config)
+{
+
+}
+
+void SIM_simulator_print_slots(SIM_simulator_t *sim)
+{
+
+}
+
+void SIM_simulator_print_all_devices(SIM_simulator_t *sim)
 {
 
 }

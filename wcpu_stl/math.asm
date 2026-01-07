@@ -2,7 +2,8 @@
 
 %pub SQRT
 %pub POW
-
+%pub LOG2
+%pub LOG10
 .text tag std
 
 
@@ -45,3 +46,9 @@ LOG10:
 	alu.add a0, a0, #1
 ELSE_LOG10:
 	mem.pop s0, null, null
+
+
+
+
+MATMUL:
+	

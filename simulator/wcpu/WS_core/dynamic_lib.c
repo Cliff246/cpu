@@ -1,4 +1,3 @@
-#include "device_command_impl.h"
 #include "hashmap.h"
 #include "dynamic_lib.h"
 
@@ -26,7 +25,7 @@ WS_dynamic_lib_t *WS_global_dl_list[WS_GLOBAL_DL_LIST_MAX_SIZE] = {NULL};
 
 void WS_add_default_flags_to_hashmap(WS_dynamic_lib_t *dl)
 {
-	
+
 	/*if(dl->dev_desc->flag_table->tablesize < WS_DEV_FLAG_DEFAULT_COUNT)
 	{
 		fprintf(stderr, "%s does not have a properly sized hash table, expected > %d, got %d\n", dl->dev_desc->dev_name,WS_DEV_FLAG_DEFAULT_COUNT, dl->dev_desc->flag_table->tablesize );
