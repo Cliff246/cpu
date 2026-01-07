@@ -7,7 +7,8 @@
 #include "cli.h"
 #include "commons.h"
 #include "export.h"
-#include "simulator.h"
+
+#include "SIM_simulator.h"
 #include "ws_sim_configure.h"
 #include "device_commons.h"
 #include <stdlib.h>
@@ -322,19 +323,19 @@ void init(int argc, char **argv)
 
 	WS_cfg_file_t *file = WS_cfg_create_file("configfiles/basic_config.txt");
 	//printf("try\n");
-	WS_simulator_t *sim = WS_simulator_init();
-	WS_simulator_load_config(sim, file);
+	SIM_simulator_t *sim = SIM_simulator_init();
+	SIM_simulator_load_config(sim, file);
 	WS_cfg_free_file(file);
 
 
 	for(int i = 0; i < 20000; ++i)
 	{
-		WS_simulator_update(sim);
+		SIM_simulator_update(sim);
 		//printf("%d\n", i);
 	}
 
 	//printf("try\n");
-	WS_simulator_print_all_devices(sim);
+	SIM_simulator_print_all_devices(sim);
 
 	//create_cli_context(&globalstate.ctx);
 

@@ -26,7 +26,8 @@ WS_dynamic_lib_t *WS_global_dl_list[WS_GLOBAL_DL_LIST_MAX_SIZE] = {NULL};
 
 void WS_add_default_flags_to_hashmap(WS_dynamic_lib_t *dl)
 {
-	if(dl->dev_desc->flag_table->tablesize < WS_DEV_FLAG_DEFAULT_COUNT)
+	
+	/*if(dl->dev_desc->flag_table->tablesize < WS_DEV_FLAG_DEFAULT_COUNT)
 	{
 		fprintf(stderr, "%s does not have a properly sized hash table, expected > %d, got %d\n", dl->dev_desc->dev_name,WS_DEV_FLAG_DEFAULT_COUNT, dl->dev_desc->flag_table->tablesize );
 		exit(EXIT_FAILURE);
@@ -38,6 +39,7 @@ void WS_add_default_flags_to_hashmap(WS_dynamic_lib_t *dl)
 		addto_hash_table(dl->dev_desc->flag_table, WS_flag_default_producers[i].id, &WS_flag_default_producers[i]);
 
 	}
+	*/
 }
 
 static int WS_get_executable_path(char out[PATH_MAX])

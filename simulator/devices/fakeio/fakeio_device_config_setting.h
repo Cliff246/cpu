@@ -1,5 +1,7 @@
 #ifndef __DEV_FAKEIO_DEVICE_CONFIG_SETTING_HEADER__
 #define __DEV_FAKEIO_DEVICE_CONFIG_SETTING_HEADER__
+
+/*
 #include "WS_OBJ_flag.h"
 
 #include "device_list.h"
@@ -38,6 +40,6 @@ extern WS_dev_flag_apply_fn device_fakeio_producer_functions[DEVICE_FAKEIO_CMD_O
 extern char *device_fakeio_producer_names[DEVICE_FAKEIO_CMD_OPTIONS_COUNT];
 extern WS_dev_flag_type_t device_fakeio_producer_types[DEVICE_FAKEIO_CMD_OPTIONS_COUNT];
 
-
+*/
 
 #endif

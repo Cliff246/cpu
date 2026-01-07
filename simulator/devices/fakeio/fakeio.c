@@ -1,22 +1,16 @@
 #include "fakeio.h"
 
 #include "WS_OBJ_flag.h"
-#include "module_description.h"
+#include "WS_MOD_description.h"
 #include "hashmap.h"
-#include "device_command_impl.h"
 #include "fakeio_version.h"
 #include <stdlib.h>
 #include <assert.h>
 #include "fakeio_device_config_setting.h"
 
-static const WS_dev_vtable_t vtable =
+static const MOD_vtable_t vtable =
 {
-	.init = device_fakeio_init,
-	.print = device_fakeio_print,
-	.read = device_fakeio_read,
-	.send = device_fakeio_send,
-	.update = device_fakeio_update,
-	.cmd_commit = device_fakeio_commit,
+
 };
 
 static MOD_description_t fakeio_desc =
@@ -40,20 +34,21 @@ const MOD_description_t *MOD_get_dev_desc(void)
 
 	if(initialized == false)
 	{
-		p_hashtable_t hashtable = new_hash_table(DEVICE_FAKEIO_CMD_OPTIONS_COUNT + WS_DEV_FLAG_DEFAULT_COUNT, WS_cmd_producer_free);
+		
+		//p_hashtable_t hashtable = new_hash_table(DEVICE_FAKEIO_CMD_OPTIONS_COUNT + WS_DEV_FLAG_DEFAULT_COUNT, WS_cmd_producer_free);
 
-		for(int i = 0; i < DEVICE_FAKEIO_CMD_OPTIONS_COUNT; ++i)
+		//for(int i = 0; i < DEVICE_FAKEIO_CMD_OPTIONS_COUNT; ++i)
 		{
 
-			WS_dev_flag_producer_t *producer = WS_cmd_flag_producer_create(device_fakeio_producer_names[i], device_fakeio_producer_types[i], device_fakeio_producer_functions[i]);
+			//WS_dev_flag_producer_t *producer = WS_cmd_flag_producer_create(device_fakeio_producer_names[i], device_fakeio_producer_types[i], device_fakeio_producer_functions[i]);
 
-			addto_hash_table(hashtable, device_fakeio_producer_names[i], producer);
+			//addto_hash_table(hashtable, device_fakeio_producer_names[i], producer);
 
 		}
 
 		//print_hash_table(hashtable);
-		fakeio_desc.flag_table = hashtable;
-		initialized = true;
+		//fakeio_desc.flag_table = hashtable;
+		//initialized = true;
 	}
 
 
@@ -61,7 +56,7 @@ const MOD_description_t *MOD_get_dev_desc(void)
 }
 
 
-
+/*
 void *device_fakeio_init(device_t *dev)
 {
 	assert(dev);
@@ -178,3 +173,4 @@ void device_fakeio_commit(WS_dev_t *dev)
 	//dev->has_address = true;
 }
 
+*/

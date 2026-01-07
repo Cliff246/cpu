@@ -7,6 +7,7 @@
 #include <stdbool.h>
 
 #include <stdbool.h>
+#include <stdalign.h>
 
 #define WS_OBJ_MESSAGE_HEAD_TYPE_SIZE 6
 #define WS_OBJ_MESSAGE_BODY_LINE_SIZE 8
@@ -15,7 +16,7 @@
 
 typedef struct WS_OBJ_messsage_body
 {
-	uint8_t line[WS_OBJ_MESSAGE_BODY_LINE_SIZE];
+	_Alignas(2) uint8_t line[WS_OBJ_MESSAGE_BODY_LINE_SIZE];
 }OBJ_message_body_t;
 
 typedef struct WS_OBJ_message_head

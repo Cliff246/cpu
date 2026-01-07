@@ -10,6 +10,11 @@ typedef struct WS_SIM_packet
 {
 	int width;
 	char data[SIM_MAX_PACKET_SIZE];
+	
+
+	int wire;
+
+
 }SIM_packet_t;
 
 

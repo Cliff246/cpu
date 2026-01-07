@@ -1,8 +1,7 @@
+/*
 #include "fakeio.h"
 #include "fakeio_device_config_setting.h"
-#include "device.h"
 
-#include "device_list.h"
 #include <stdlib.h>
 #include <assert.h>
 
@@ -72,3 +71,5 @@ bool device_cmd_option_producer_OUTPUT_BUTTON(WS_dev_t *dev, WS_dev_flag_t *flag
 	return true;
 
 }
+
+*/

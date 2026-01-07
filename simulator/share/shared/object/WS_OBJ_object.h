@@ -15,6 +15,10 @@
 typedef struct WS_OBJ_object
 {
 	void *ptr;
+	//simulator id
+	const int sid;
+	//index id
+	const int iid;
 }OBJ_object_t;
 
 

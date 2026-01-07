@@ -1,7 +1,4 @@
-#include "simulator.h"
-#include "device_commons.h"
-#include "device_mailbox.h"
-#include "device_message.h"
+#include "SIM_simulator.h"
 #include "simulator_bus_slot.h"
 #include "ws_sim_configure.h"
 
@@ -10,6 +7,38 @@
 #include <assert.h>
 #include <stdbool.h>
 
+
+SIM_graph_t *SIM_graph_init(void)
+{
+	SIM_graph_t *graph = calloc(1, sizeof(SIM_graph_t));
+
+	graph->
+
+
+
+	return graph;
+}
+
+SIM_simulator_t *SIM_simulator_init(void)
+{
+	SIM_simulator_t *sim = calloc(1, sizeof(SIM_simulator_t));
+
+
+	return sim;
+}
+
+void SIM_simulator_rebuild_graph(SIM_simulator_t *sim)
+{
+
+}
+
+
+void SIM_simulator_update(SIM_simulator_t *sim)
+{
+
+}
+
+/*
 static bool cmp_overlap(size_t addr1, size_t addr2, size_t addr1_size, size_t addr2_size)
 {
 	size_t end1 = addr1 + addr1_size;
@@ -339,3 +368,5 @@ void WS_simulator_print_all_devices(WS_simulator_t *sim)
 	}
 }
 
+
+*/

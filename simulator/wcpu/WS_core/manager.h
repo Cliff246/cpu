@@ -3,7 +3,7 @@
 
 
 #include "cli.h"
-#include "simulator.h"
+#include "SIM_simulator.h"
 #include "dynamic_lib.h"
 
 #include <stdio.h>

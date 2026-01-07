@@ -4,8 +4,7 @@
 #include "loader.h"
 #include "dynamic_lib.h"
 #include "token.h"
-#include "device_command.h"
-#include "module_description.h"
+#include "WS_MOD_description.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -24,7 +23,6 @@ WS_cfg_elem_t WS_cfg_create_element(tok_t **buf, size_t size);
 void WS_cfg_print_element(WS_cfg_elem_t *elem);
 typedef struct WS_config_body
 {
-	WS_dev_cmd_collection_t *collection;
 	WS_cfg_elem_t *elements;
 	size_t size;
 }WS_cfg_body_t;
@@ -39,7 +37,6 @@ void WS_cfg_collect_body(WS_cfg_body_t *body);
 typedef struct WS_config_header
 {
 	WS_dynamic_lib_t *dl;
-	WS_dev_cmd_t **cmds;
 
 	WS_cfg_body_t **bodies;
 	size_t size;

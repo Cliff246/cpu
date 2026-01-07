@@ -14,7 +14,8 @@ typedef bool (*WS_MOD_object_pull_fn_t)(OBJ_object_t obj);
 //to close off all writing
 typedef bool (*WS_MOD_object_push_fn_t)(OBJ_object_t obj);
 
-
+typedef bool (*WS_MOD_object_get_fn_t)(OBJ_object_t obj);
+typedef bool (*WS_MOD_object_set_fn_t)(OBJ_object_t obj);
 
 typedef void (*WS_MOD_object_print_fn_t)(OBJ_object_t obj);
 //should generate void *setting for config
