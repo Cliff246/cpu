@@ -1,7 +1,7 @@
 #ifndef __MODULE_DESCRIPTION_HEADER__
 #define __MODULE_DESCRIPTION_HEADER__
 
-#include "device_vtable.h"
+#include "WS_MOD_vtable.h"
 #include "hashmap.h"
 
 #ifdef _WIN32
@@ -22,7 +22,7 @@ typedef struct WS_MOD_description
 	const char *dev_typeclass;
 	const char *dl_name;
 
-	const WS_dev_vtable_t *vtable;
+	const MOD_vtable_t *vtable;
 
 	//contains elements of WS_dev_cmd_flag_producer_t
 	p_hashtable_t flag_table;

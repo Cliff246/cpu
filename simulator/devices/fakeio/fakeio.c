@@ -1,8 +1,7 @@
 #include "fakeio.h"
 
-#include "device_commons.h"
+#include "WS_OBJ_flag.h"
 #include "module_description.h"
-#include "device_vtable.h"
 #include "hashmap.h"
 #include "device_command_impl.h"
 #include "fakeio_version.h"

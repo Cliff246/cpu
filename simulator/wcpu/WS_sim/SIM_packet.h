@@ -4,12 +4,15 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define SIM_MAX_PACKET_SIZE 16
+
 typedef struct WS_SIM_packet
 {
-	int64_t control;
-	int64_t data;
-	int64_t address;
+	int width;
+	char data[SIM_MAX_PACKET_SIZE];
 }SIM_packet_t;
+
+
 
 
 #endif

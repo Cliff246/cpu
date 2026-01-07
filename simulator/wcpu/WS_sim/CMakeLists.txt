@@ -2,7 +2,7 @@ SET(WS_SIM_CFILES
 	${CMAKE_CURRENT_SOURCE_DIR}/simulator.c
 	${CMAKE_CURRENT_SOURCE_DIR}/simulator_bus_slot.c
 	${CMAKE_CURRENT_SOURCE_DIR}/SIM_packet.c
-	${CMAKE_CURRENT_SOURCE_DIR}/entry/SIM_object.c
+	${CMAKE_CURRENT_SOURCE_DIR}/entry/SIM_device.c
 	${CMAKE_CURRENT_SOURCE_DIR}/entry/SIM_handle.c
 	${CMAKE_CURRENT_SOURCE_DIR}/entry/SIM_port.c
 	${CMAKE_CURRENT_SOURCE_DIR}/entry/SIM_tag.c

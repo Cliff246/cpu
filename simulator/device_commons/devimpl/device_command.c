@@ -1,3 +1,4 @@
+/*
 #include "device_command.h"
 #include "commons.h"
 #include "device_commons.h"
@@ -255,3 +256,4 @@ WS_dev_cmd_collection_t *WS_cmd_collection_create(void)
 }
 
 
+*/

@@ -1,10 +1,10 @@
 #ifndef __DEV_FAKEIO_DEVICE_CONFIG_SETTING_HEADER__
 #define __DEV_FAKEIO_DEVICE_CONFIG_SETTING_HEADER__
+#include "WS_OBJ_flag.h"
 
 #include "device_list.h"
 #include "commons.h"
 #include "module_description.h"
-#include "device_command.h"
 #include <stdint.h>
 #include <stdbool.h>
 

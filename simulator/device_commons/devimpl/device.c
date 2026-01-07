@@ -2,12 +2,12 @@
 
 #include <stdlib.h>
 #include <assert.h>
-#include "device.h"
 #include "device_commons.h"
 #include "device_command_impl.h"
 
 
 
+/*
 
 
 
@@ -46,3 +46,4 @@ void WS_set_device_changed(WS_dev_t *device)
 }
 
 
+*/

@@ -1,6 +1,5 @@
-#include "device_mailbox.h"
-#include "device_commons.h"
 
+/*
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -71,3 +70,4 @@ void WS_device_mailbox_print(WS_dev_mailbox_t *mb)
 
 	}
 }
+*/

@@ -1,12 +1,14 @@
-#ifndef __DEVICE_COMMONS_HEADER__
-#define __DEVICE_COMMONS_HEADER__
+#ifndef __OBJECT_COMMONS_HEADER__
+#define __OBJECT_COMMONS_HEADER__
 
-#include "device.h"
+/*
+
+#include "WS_OBJ_object.h"
 #include "device_message.h"
 #include "device_mailbox.h"
 #include "device_command.h"
-#include "device_vtable.h"
-#include "module_description.h"
+#include "WS_MOD_vtable.h"
+#include "WS_MOD_description.h"
 
 
 size_t WS_get_device_address_start(WS_dev_t *device);
@@ -70,5 +72,7 @@ void WS_print_device_message(WS_dev_msg_t *msg);
 bool WS_device_message_consume(WS_dev_msg_t **msg);
 bool WS_device_message_release(WS_dev_msg_t **msg);
 
+
+*/
 
 #endif

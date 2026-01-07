@@ -6,11 +6,10 @@
 #include "device.h"
 #include "SIM_port.h"
 #include "SIM_tag.h"
-#include "SIM_handle.h"
 
 
 
-typedef struct WS_SIM_object
+typedef struct WS_SIM_device
 {
 	char *name;
 	WS_dev_t *deivce;
@@ -18,7 +17,7 @@ typedef struct WS_SIM_object
 
 
 
-}SIM_object_t;
+}SIM_device_t;
 
 
 #endif

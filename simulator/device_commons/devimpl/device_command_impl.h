@@ -1,6 +1,7 @@
 #ifndef __DEVICE_COMMAND_IMPL_HEADER__
 #define __DEVICE_COMMAND_IMPL_HEADER__
 
+/*
 #include "device.h"
 #include "device_command.h"
 #include <stdbool.h>
@@ -25,4 +26,5 @@ WS_dev_cmd_collection_t *WS_cmd_collection_create(void);
 extern void (*WS_flag_value_free_list[])(WS_dev_flag_value_t *value);
 extern char *WS_flag_type_strings[];
 extern WS_dev_flag_producer_t WS_flag_default_producers[];
+*/
 #endif

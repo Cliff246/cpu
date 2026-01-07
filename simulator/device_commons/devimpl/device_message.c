@@ -1,4 +1,4 @@
-#include "device_message.h"
+
 #include <stdlib.h>
 #include <errno.h>
 #include <stdio.h>
@@ -10,6 +10,8 @@ char *device_message_type_string[] =
 	DEVICE_MESSAGE_TYPE_LIST(DEVICE_MESSAGE_TYPE_STRING)
 };
 */
+
+/*
 
 WS_dev_msg_t *WS_device_message_create(WS_dev_desc_t *src_type, WS_dev_id_t src_id, WS_dev_id_t dest_id, WS_dev_msg_type_t type, uint64_t address, int64_t value)
 {
@@ -126,3 +128,5 @@ bool WS_device_message_release(WS_dev_msg_t **msg)
 	*msg = NULL;
 	return true;
 }
+
+*/
