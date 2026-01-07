@@ -57,7 +57,7 @@ typedef struct breakpoint
 
 typedef struct loaded_modules
 {
-	WS_module_t **modules;
+	WS_dynamic_lib_t **dynamic_libs;
 
 	size_t count;
 }loaded_modules_t;

@@ -6,9 +6,7 @@
 #include <stdbool.h>
 #include "token.h"
 #include "module_description.h"
-
-bool WS_device_cmd(WS_dev_t *device, WS_dev_desc_t *desc, WS_dev_cmd_t *cmd);
-
+bool WS_device_cmd(WS_dev_t *device, MOD_description_t *desc, WS_dev_cmd_t *cmd);
 void WS_cmd_free(WS_dev_cmd_t *cmd);
 
 

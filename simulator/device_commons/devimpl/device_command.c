@@ -92,7 +92,7 @@ bool WS_default_producer_ENABLED(WS_dev_t *device, WS_dev_flag_t *flag)
 }
 
 //assumes a fully valid
-bool WS_device_cmd(WS_dev_t *device, WS_dev_desc_t *desc, WS_dev_cmd_t *cmd)
+bool WS_device_cmd(WS_dev_t *device, MOD_description_t *desc, WS_dev_cmd_t *cmd)
 {
 	assert(device && cmd);
 	//printf("%d %d\n", device->desc, cmd->type);

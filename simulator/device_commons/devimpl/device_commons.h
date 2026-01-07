@@ -21,7 +21,7 @@ bool WS_get_device_has_address(WS_dev_t *device);
 
 //generate devices
 //WS_dev_t *device_generate(emuconfig_dev_settings_t *settings );
-WS_dev_t *WS_device_init(WS_dev_desc_t *desc, device_command_t *cmd);
+WS_dev_t *WS_device_init(MOD_description_t *desc, device_command_t *cmd);
 
 
 //update devices

@@ -23,7 +23,7 @@ static const WS_dev_vtable_t vtable =
 	.cmd_commit = device_wcpu_commit,
 };
 
-static WS_dev_desc_t wcpu_emu_desc =
+static MOD_description_t wcpu_emu_desc =
 {
 	.id = 0,
 	.version = 0,
@@ -35,7 +35,7 @@ static WS_dev_desc_t wcpu_emu_desc =
 	.extra = NULL,
 };
 
-const WS_dev_desc_t *WS_get_dev_desc(void)
+const MOD_description_t *WS_get_dev_desc(void)
 {
 	static bool initialized = false;
 

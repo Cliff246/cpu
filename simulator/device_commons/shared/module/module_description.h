@@ -13,7 +13,8 @@
 
 
 
-typedef struct device_description
+
+typedef struct WS_MOD_description
 {
 	int id;
 	int version;
@@ -27,16 +28,10 @@ typedef struct device_description
 	p_hashtable_t flag_table;
 
 	void *extra;
-}WS_dev_desc_t;
-
-typedef struct WS_MOD_description
-{
-	WS_dev_desc_t *desc;
-
 
 }MOD_description_t;
 
 
 
-DEVICE_EXPORT const WS_dev_desc_t *WS_get_dev_desc(void);
+DEVICE_EXPORT const MOD_description_t *MOD_get_dev_desc(void);
 #endif

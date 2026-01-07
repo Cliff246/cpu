@@ -92,7 +92,7 @@ void WS_cfg_collect_header(WS_cfg_hdr_t *header)
 	assert(header->cmds);
 	for(int i = 0; i < header->size; ++i)
 	{
-		header->cmds[i] = WS_dev_cmd_create(header->bodies[i]->collection, header->module->dev_desc);
+		header->cmds[i] = WS_dev_cmd_create(header->bodies[i]->collection, header->dl->dev_desc);
 	}
 }
 
@@ -167,8 +167,8 @@ static void load_cfg_file(WS_cfg_file_t *file)
 
 		else if(tok->type == TOK_STRING && cur_head_state == HEAD_STATE_EMPTY)
 		{
-			WS_module_t *module = WS_module_create(tok->token);
-			cur_head = WS_cfg_create_header(module);
+			WS_dynamic_lib_t *dl = WS_dynamic_lib_create(tok->token);
+			cur_head = WS_cfg_create_header(dl);
 			cur_head_state = HEAD_STATE_STRING;
 		}
 		else if(tok->type == TOK_COLON && cur_head_state == HEAD_STATE_STRING)
@@ -234,13 +234,12 @@ static void load_cfg_file(WS_cfg_file_t *file)
 
 }
 
-
-WS_cfg_hdr_t *WS_cfg_create_header(WS_module_t *module)
+WS_cfg_hdr_t *WS_cfg_create_header(	WS_dynamic_lib_t *dl)
 {
 	WS_cfg_hdr_t *header =  calloc(1, sizeof(WS_cfg_hdr_t));
 
 
-	header->module = module;
+	header->dl = dl;
 
 	return header;
 }

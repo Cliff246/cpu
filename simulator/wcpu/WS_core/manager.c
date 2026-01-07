@@ -67,7 +67,7 @@ globalstate_t globalstate =
 	.args = {.argc = 0, .argv = 0},
 	.breakpoints = {-1},
 	.runfor = 0,
-	.loaded = {.modules = NULL, .count = 0,}
+	.loaded = {.dynamic_libs = NULL, .count = 0,}
 
 };
 
@@ -300,11 +300,11 @@ static void load_module(const char *module)
 {
 
 
-	WS_module_t **temp = (WS_module_t **)realloc(globalstate.loaded.modules, (globalstate.loaded.count + 1) * sizeof(WS_module_t *));
+	WS_dynamic_lib_t **temp = (WS_dynamic_lib_t **)realloc(globalstate.loaded.dynamic_libs, (globalstate.loaded.count + 1) * sizeof(WS_dynamic_lib_t *));
 	assert(temp);
-	globalstate.loaded.modules = temp;
+	globalstate.loaded.dynamic_libs = temp;
 
-	globalstate.loaded.modules[globalstate.loaded.count++] = WS_module_create(module);
+	globalstate.loaded.dynamic_libs[globalstate.loaded.count++] = WS_dynamic_lib_create(module);
 
 
 

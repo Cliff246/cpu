@@ -28,7 +28,7 @@ static const WS_dev_vtable_t vtable =
 	.cmd_commit = device_ram_commit,
 };
 
-static WS_dev_desc_t ram_desc =
+static MOD_description_t ram_desc =
 {
 	.id = 0,
 	.version = 0,
@@ -47,7 +47,7 @@ static WS_dev_desc_t ram_desc =
 
 
 
-const WS_dev_desc_t *WS_get_dev_desc(void)
+const MOD_description_t *MOD_get_dev_desc(void)
 {
 	static bool initialized = false;
 

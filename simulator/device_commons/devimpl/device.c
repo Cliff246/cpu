@@ -12,8 +12,7 @@
 
 
 
-
-WS_dev_t *WS_device_init(WS_dev_desc_t *desc, device_command_t *cmd)
+WS_dev_t *WS_device_init(MOD_description_t *desc, device_command_t *cmd)
 {
 	static int devid = 0;
 	WS_dev_t *device = calloc(1, sizeof(WS_dev_t));

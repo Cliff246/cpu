@@ -20,7 +20,7 @@ static const WS_dev_vtable_t vtable =
 	.cmd_commit = device_fakeio_commit,
 };
 
-static WS_dev_desc_t fakeio_desc =
+static MOD_description_t fakeio_desc =
 {
 	.id = 0,
 	.version = SIM_DEV_FAKEIO_VERSION,
@@ -35,7 +35,7 @@ static WS_dev_desc_t fakeio_desc =
 };
 
 
-const WS_dev_desc_t *WS_get_dev_desc(void)
+const MOD_description_t *MOD_get_dev_desc(void)
 {
 	static bool initialized = false;
 

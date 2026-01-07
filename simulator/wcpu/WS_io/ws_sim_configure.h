@@ -5,6 +5,7 @@
 #include "dynamic_lib.h"
 #include "token.h"
 #include "device_command.h"
+#include "module_description.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -37,7 +38,7 @@ void WS_cfg_print_body(WS_cfg_body_t *body);
 void WS_cfg_collect_body(WS_cfg_body_t *body);
 typedef struct WS_config_header
 {
-	WS_module_t *module;
+	WS_dynamic_lib_t *dl;
 	WS_dev_cmd_t **cmds;
 
 	WS_cfg_body_t **bodies;
@@ -45,7 +46,7 @@ typedef struct WS_config_header
 
 }WS_cfg_hdr_t;
 
-WS_cfg_hdr_t *WS_cfg_create_header(WS_module_t *module);
+WS_cfg_hdr_t *WS_cfg_create_header(	WS_dynamic_lib_t *dl);
 void WS_cfg_append_header(WS_cfg_hdr_t *header, WS_cfg_body_t *body);
 void WS_cfg_free_header(WS_cfg_hdr_t *header);
 void WS_cfg_collect_header(WS_cfg_hdr_t *header);
