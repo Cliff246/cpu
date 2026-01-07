@@ -18,23 +18,10 @@ set(WS_CONSOLE_CFILES
 )
 
 
-SET(WS_IO_CFILES
 
-	${CMAKE_CURRENT_SOURCE_DIR}/WS_io/export.c
-	${CMAKE_CURRENT_SOURCE_DIR}/WS_io/WSio.c
-	${CMAKE_CURRENT_SOURCE_DIR}/WS_io/ws_sim_configure.c
 
-)
-
-SET(WS_SIM_CFILES
-	${CMAKE_CURRENT_SOURCE_DIR}/WS_sim/simulator.c
-	${CMAKE_CURRENT_SOURCE_DIR}/WS_sim/simulator_bus_slot.c
-	${CMAKE_CURRENT_SOURCE_DIR}/WS_sim/simulator_event.c
-	${CMAKE_CURRENT_SOURCE_DIR}/WS_sim/simulator_port.c
-	${CMAKE_CURRENT_SOURCE_DIR}/WS_sim/sim_actor.c
-
-)
-
+add_subdirectory(WS_sim)
+add_subdirectory(WS_io)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
@@ -42,8 +29,6 @@ add_executable(wcpu
 	${WS_CORE_CFILES}
 	${WS_HELPERS_CFILES}
 	${WS_CONSOLE_CFILES}
-	${WS_IO_CFILES}
-	${WS_SIM_CFILES}
 )
 
 
