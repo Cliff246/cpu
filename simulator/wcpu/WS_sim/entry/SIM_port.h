@@ -7,11 +7,14 @@
 #include "device.h"
 #include "device_message.h"
 
-typedef struct WS_simulator_packet
+
+
+
+typedef struct WS_SIM_port
 {
-	WS_dev_msg_t *msg;
-	int latency;
-}WS_sim_pkt_t;
+
+
+}SIM_port_t;
 
 
 
