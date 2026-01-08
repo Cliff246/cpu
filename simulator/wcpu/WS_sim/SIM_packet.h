@@ -8,11 +8,11 @@
 
 typedef struct WS_SIM_packet
 {
-	int width;
-	char data[SIM_MAX_PACKET_SIZE];
-	
+	uint8_t data[SIM_MAX_PACKET_SIZE];
 
-	int wire;
+	uint64_t wire;
+	uint32_t time;
+	uint16_t width;
 
 
 }SIM_packet_t;

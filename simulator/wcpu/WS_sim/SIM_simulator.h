@@ -53,6 +53,8 @@ typedef struct WS_SIM_active_packets
 	uint64_t *active;
 }SIM_active_packets_t;
 
+void SIM_active_packets_clear(SIM_active_packets_t *act);
+
 //all the packets that are defined in the system
 typedef struct WS_SIM_live_packets
 {
@@ -60,6 +62,7 @@ typedef struct WS_SIM_live_packets
 	uint64_t size;
 	SIM_packet_t *live;
 }SIM_live_packets_t;
+
 
 
 //this should be a flat list of ports that are active in each entry
