@@ -143,5 +143,8 @@ void logit(char *fmt, size_t line, char *filename, ...);
 
 extern bool logger_set;
 
+
+
+
 #endif
 

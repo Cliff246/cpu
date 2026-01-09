@@ -1,6 +1,5 @@
 #include "SIM_simulator.h"
-#include "simulator_bus_slot.h"
-#include "ws_sim_configure.h"
+#include "IO_configure.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -10,143 +9,21 @@
 #include <string.h>
 
 //TODO not done should create a simple graph unready
-SIM_graph_t *SIM_graph_init(void)
-{
-	SIM_graph_t *graph = calloc(1, sizeof(SIM_graph_t));
 
-
-
-
-	return graph;
-}
-
-
-//SIM base
-SIM_simulator_t *SIM_simulator_init(void)
-{
-	SIM_simulator_t *sim = calloc(1, sizeof(SIM_simulator_t));
-
-
-	return sim;
-}
-
-//rebuild the main graph of the simulator then set it
-void SIM_simulator_rebuild_graph(SIM_simulator_t *sim)
-{
-
-	SIM_graph_t *toset = NULL;
-
-
-
-	sim->graph = toset;
-
-}
 
 //advance packet forward if retired return true
 //if not retired return false
-bool SIM_simulator_advance_packet(SIM_simulator_t *sim, uint64_t index)
+SIM_simulator_t *SIM_simulator_init(void)
 {
-	//something like this...
-
-
-	SIM_wire_t wire = sim->graph->wires[sim->live_packets->live[index].wire];
-	uint32_t wire_latency = wire.latency;
-	if(sim->live_packets->live[index].time > wire_latency)
-	{
-		return true;
-	}
-	sim->live_packets->live[index].time++;
-	return false;
-
-}
-
-void SIM_active_packets_clear(SIM_active_packets_t *act)
-{
-	memset(act->active, 0, sizeof(uint64_t) * act->alloc);
-	act->size = 0;
+	SIM_simulator_t *sim = calloc(1, sizeof(SIM_simulator_t));
+	return sim;
 }
 
 void SIM_simulator_update(SIM_simulator_t *sim)
 {
 
 
-	if(!sim->graph->built)
-	{
-		assert(0 && "graph must be built for update");
-		exit(EXIT_FAILURE);
-	}
 
-	const uint64_t alias_size = sim->graph->aliases_size;
-
-
-	//TODO something with iget
-	for(uint64_t iget = 0; iget < 1; ++iget)
-	{
-
-		SIM_entry_t *alias = sim->graph->aliases[iget].alias;
-
-	}
-
-	//this needs to advance packets forward
-	uint32_t advanced = 0;
-	for(uint64_t iact = 0; iact < sim->active_packets->size; ++iact)
-	{
-		advanced += (uint32_t)SIM_simulator_advance_packet(sim, iact);
-	}
-
-
-	for(uint64_t ipull = 0; ipull < alias_size; ++ipull)
-	{
-		SIM_entry_t *alias = sim->graph->aliases[ipull].alias;
-
-		//TODO make this fast
-		int todo = 0;
-		//this should send dispatch to all ports if they are done
-		for(uint64_t iintake = 0; iintake < todo; ++iintake)
-		{
-
-		}
-		//pull
-		alias->handle.vtable.pull(alias->object);
-	}
-
-	//main update loop for the simulator
-	for(uint64_t iupdate = 0; iupdate < alias_size; ++iupdate)
-	{
-		SIM_entry_t *alias = sim->graph->aliases[iupdate].alias;
-		//generally just this
-		alias->handle.vtable.update(alias->object);
-
-	}
-
-	//push out content on port
-	for(uint64_t ipush = 0; ipush < alias_size; ++ipush)
-	{
-		SIM_entry_t *alias = sim->graph->aliases[ipush].alias;
-		//TODO
-		int todo = 0;
-		//this should send dispatch to all ports if they are done
-		for(uint64_t iouttake = 0; iouttake < todo; ++iouttake)
-		{
-
-		}
-
-		alias->handle.vtable.push(alias->object);
-
-	}
-
-	//todo with setting device whatever
-	for(uint64_t iset = 0; iset < 1; ++iset)
-	{
-		SIM_entry_t *alias = sim->graph->aliases[iset].alias;
-
-	}
-
-
-	//release the current packet on ports out
-
-	//something clear move to new list blah fuck
-	SIM_active_packets_clear(sim->active_packets);
 
 }
 

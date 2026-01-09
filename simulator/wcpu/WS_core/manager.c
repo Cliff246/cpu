@@ -9,7 +9,7 @@
 #include "export.h"
 
 #include "SIM_simulator.h"
-#include "ws_sim_configure.h"
+#include "IO_configure.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
