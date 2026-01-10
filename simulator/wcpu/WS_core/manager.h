@@ -2,7 +2,6 @@
 #define __MANAGER_HEADER__
 
 
-#include "cli.h"
 #include "simulator.h"
 #include "module.h"
 
