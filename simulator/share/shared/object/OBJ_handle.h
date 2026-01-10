@@ -10,11 +10,13 @@
 //ownns subhandles in the object
 typedef struct WS_OBJ_handle
 {
-	int oid;
-	int hid;
-
-	
-
+	const int sid;
+	//object id
+	const int oid;
+	//handle id
+	const int hid;
+	//context id;
+	const int cid;
 }OBJ_hnd_t;
 
 #endif

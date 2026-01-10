@@ -10,18 +10,15 @@
 
 
 
-typedef struct WS_OBJ_chunk
-{
-	//target hid
 
-}OBJ_chk_t;
 
 //local context of data traveling between parts
 typedef struct WS_OBJ_context
 {
 
 	//must be aligned with and / 2
-
+	const size_t size;
+	_Aligned(8) uint8_t bytes[];
 
 }OBJ_ctx_t;
 
