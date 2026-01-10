@@ -1,7 +1,6 @@
 #ifndef __WS_OBJ_FUNCTION_HEADER__
 #define __WS_OBJ_FUNCTION_HEADER__
 
-#include "OBJ_object.h"
 #include "OBJ_context.h"
 #include "OBJ_handle.h"
 
@@ -11,12 +10,11 @@
 //hnd is the local stage data
 //ctx is the context of the data in
 //ctx is the context of the data out
-typedef void (*OBJ_tmplfn_t)(OBJ_object_t *obj, OBJ_hnd_t *hnd, OBJ_ctx_t *ctx_in, OBJ_ctx_t *ctx_out);
-
+typedef void (*OBJ_tmpl_fn_t)(OBJ_hnd_t *hnd, OBJ_ctx_t *ctx);
 
 typedef struct WS_OBJ_function
 {
-	OBJ_tmplfn_t tmplfn;
+	OBJ_tmpl_fn_t tmplfn;
 	char key[OBJ_FN_KEY_SIZE];
 }OBJ_fn_t;
 

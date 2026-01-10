@@ -7,10 +7,7 @@
 #include <assert.h>
 #include "fakeio_device_config_setting.h"
 
-static const MOD_vtable_t vtable =
-{
 
-};
 
 static MOD_description_t fakeio_desc =
 {
@@ -21,8 +18,6 @@ static MOD_description_t fakeio_desc =
 	.dev_typeclass = "mmio",
 	.dl_name = "sim_dev_fakeio",
 
-	.vtable = &vtable,
-	.extra = NULL,
 
 };
 

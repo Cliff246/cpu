@@ -16,7 +16,6 @@ target_include_directories(sim_dev_impl PUBLIC
 )
 
 target_link_libraries(sim_dev_impl
-
+	sim_shared_interface
 	wcpu_commons
-   	sim_shared_interface
 )

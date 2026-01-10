@@ -6,7 +6,7 @@
 typedef struct WS_SIM_handle
 {
 	MOD_description_t *desc;
-	MOD_vtable_t vtable;
+
 
 
 
