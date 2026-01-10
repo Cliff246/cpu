@@ -2,7 +2,6 @@
 #define __WS_SIMULATOR_PORT__
 
 
-#include "OBJ_port.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -20,7 +19,6 @@ typedef enum WS_SIM_port_state
 
 typedef struct WS_SIM_port
 {
-	OBJ_port_t port;
 	SIM_port_state_t state;
 	int wire_id;
 
@@ -28,7 +26,6 @@ typedef struct WS_SIM_port
 
 }SIM_port_t;
 
-SIM_port_t *SIM_port_init(OBJ_port_t port, int wire_id);
 
 
 

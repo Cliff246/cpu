@@ -1,6 +1,5 @@
 #include "fakeio.h"
 
-#include "OBJ_flag.h"
 #include "MOD_description.h"
 #include "hashmap.h"
 #include "fakeio_version.h"

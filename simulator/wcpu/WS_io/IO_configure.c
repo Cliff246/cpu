@@ -1,6 +1,7 @@
 #include "IO_configure.h"
 #include "loader.h"
 #include "dynamic_lib.h"
+#include "commons.h"
 
 #include "token.h"
 #include <stdlib.h>

@@ -3,7 +3,6 @@
 
 #include "SIM_handle.h"
 #include "SIM_port.h"
-#include "OBJ_object.h"
 #include "hashmap.h"
 
 #include <stdint.h>
@@ -11,7 +10,6 @@
 
 typedef struct WS_SIM_entry
 {
-	OBJ_object_t object;
 	SIM_handle_t handle;
 	p_hashtable_t flags;
 	uint64_t port_count;
