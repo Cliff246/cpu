@@ -2,7 +2,7 @@
 #define __WS_OBJ_TAG_HEADER__
 
 #define WS_OBJ_KEY_TAG_SIZE 20
-#include "WS_OBJ_value.h"
+#include "OBJ_value.h"
 
 typedef struct WS_OBJ_tag
 {

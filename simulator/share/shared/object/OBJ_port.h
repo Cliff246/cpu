@@ -1,8 +1,8 @@
 #ifndef __WS_OBJ_PORT_HEADER__
 #define __WS_OBJ_PORT_HEADER__
 
-#include "WS_OBJ_object.h"
-#include "WS_OBJ_message.h"
+#include "OBJ_object.h"
+#include "OBJ_message.h"
 
 #include <stdint.h>
 #include <stdbool.h>

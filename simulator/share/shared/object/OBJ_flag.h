@@ -1,8 +1,8 @@
 #ifndef __WS_OBJECT_FLAG_HEADER__
 #define __WS_OBJECT_FLAG_HEADER__
 
-#include "WS_OBJ_object.h"
-#include "WS_OBJ_value.h"
+#include "OBJ_object.h"
+#include "OBJ_value.h"
 #include "commons.h"
 #include <stdbool.h>
 #include <stdint.h>

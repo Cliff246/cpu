@@ -1,14 +1,14 @@
 #ifndef __WS_SIM_HANDLE_HEADER__
 #define __WS_SIM_HANDLE_HEADER__
 
-#include "WS_MOD_description.h"
+#include "MOD_description.h"
 
 typedef struct WS_SIM_handle
 {
 	MOD_description_t *desc;
 	MOD_vtable_t vtable;
 
-	
+
 
 }SIM_handle_t;
 

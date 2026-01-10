@@ -1,7 +1,7 @@
 #ifndef __DYLIB_HEADER__
 #define __DYLIB_HEADER__
 
-#include "WS_MOD_description.h"
+#include "MOD_description.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <limits.h>

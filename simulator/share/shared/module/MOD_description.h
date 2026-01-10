@@ -1,7 +1,7 @@
 #ifndef __MODULE_DESCRIPTION_HEADER__
 #define __MODULE_DESCRIPTION_HEADER__
 
-#include "WS_MOD_vtable.h"
+#include "MOD_vtable.h"
 #include "hashmap.h"
 
 #ifdef _WIN32

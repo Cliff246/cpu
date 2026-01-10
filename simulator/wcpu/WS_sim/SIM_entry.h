@@ -3,7 +3,7 @@
 
 #include "SIM_handle.h"
 #include "SIM_port.h"
-#include "WS_OBJ_object.h"
+#include "OBJ_object.h"
 #include "hashmap.h"
 
 #include <stdint.h>

@@ -60,20 +60,41 @@ bool SIM_wire_config_set(SIM_wire_config_t *wire_config)
 		return false;
 	}
 
-	/*
-	uint64_t basic_size = wire_config->ends_size * 2;
-	int *ptr = calloc(basic_size, sizeof(int));
 
-	to lazy to implement a dictonary check, dont over lap elements
+	const uint64_t basic_size = wire_config->ends_size * 2;
+	void *map[basic_size];
+	memset(map, 0, sizeof(void *) * basic_size);
 
 	for(uint32_t i = 0; i < wire_config->ends_size; ++i)
 	{
-		uint32_t pos = (uint32_t)((uint64_t)wire_config->ends[i].entry % basic_size);
+		void *entry = wire_config->ends[i].entry;
+		uint64_t pos = (uint64_t)((uint64_t)entry % basic_size);
+		bool found = false;
+		for(uint32_t p = pos, c = 0; c < basic_size; p++, c++)
+		{
+			if(p == basic_size)
+			{
+				p = 0;
+			}
+			if(map[p] == NULL)
+			{
+				map[p] = entry;
+				found = true;
+				break;
+			}
+			else if(map[p] == entry)
+			{
+				assert(0 && "cannot over lap wires");
 
-		ptr[pos]++;
+			}
+		}
+		if(found == false)
+		{
+			assert(0);
+		}
+
 	}
 
-	*/
 
 
 	wire_config->flags.set;

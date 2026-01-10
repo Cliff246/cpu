@@ -1,7 +1,7 @@
 #include "fakeio.h"
 
-#include "WS_OBJ_flag.h"
-#include "WS_MOD_description.h"
+#include "OBJ_flag.h"
+#include "MOD_description.h"
 #include "hashmap.h"
 #include "fakeio_version.h"
 #include <stdlib.h>
@@ -34,7 +34,7 @@ const MOD_description_t *MOD_get_dev_desc(void)
 
 	if(initialized == false)
 	{
-		
+
 		//p_hashtable_t hashtable = new_hash_table(DEVICE_FAKEIO_CMD_OPTIONS_COUNT + WS_DEV_FLAG_DEFAULT_COUNT, WS_cmd_producer_free);
 
 		//for(int i = 0; i < DEVICE_FAKEIO_CMD_OPTIONS_COUNT; ++i)

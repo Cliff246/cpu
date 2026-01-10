@@ -2,7 +2,7 @@
 #define __WS_SIMULATOR_PORT__
 
 
-#include "WS_OBJ_port.h"
+#include "OBJ_port.h"
 
 #include <stdint.h>
 #include <stdbool.h>

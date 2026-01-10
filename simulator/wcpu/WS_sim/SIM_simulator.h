@@ -2,7 +2,7 @@
 #define __SIMULATOR_HEADER__
 
 #include "SIM_wireslot.h"
-#include "WS_MOD_description.h"
+#include "MOD_description.h"
 #include "IO_configure.h"
 #include <stdlib.h>
 #include <stdbool.h>
