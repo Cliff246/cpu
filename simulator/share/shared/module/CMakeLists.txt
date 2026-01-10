@@ -1,6 +1,7 @@
 set (WS_MODULE_SHARED
-	${CMAKE_CURRENT_SOURCE_DIR}/WS_MOD_description.h
-	${CMAKE_CURRENT_SOURCE_DIR}/WS_MOD_vtable.h
+	${CMAKE_CURRENT_SOURCE_DIR}/MOD_description.h
+	${CMAKE_CURRENT_SOURCE_DIR}/MOD_vtable.h
+	${CMAKE_CURRENT_SOURCE_DIR}/MOD_setup.h
 
 	#PARENT_SCOPE
 )
@@ -16,10 +17,12 @@ target_include_directories(ws_module_shared INTERFACE
 	private wcpu_commons
 	${CMAKE_SOURCE_DIR}/flags/
 	ws_object_shared
+	ws_service_shared
 
 )
 
 target_link_libraries(ws_module_shared INTERFACE
 	wcpu_commons
 	ws_object_shared
+	ws_service_shared
 )

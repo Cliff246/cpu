@@ -6,20 +6,16 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+typedef int OBJ_hid_t;
 
-
-typedef struct WS_OBJ_hnd_utls
-{
-	
-}OBJ_hnd_utls_t;
-
+//ownns subhandles in the object
 typedef struct WS_OBJ_handle
 {
-	uint8_t *state;
-	uint64_t state_size;
+	//handle id in the object
+	OBJ_hid_t hid;
 
-	void *hnd;
-
+	size_t memsize;
+	uint8_t *mem;
 }OBJ_hnd_t;
 
 #endif

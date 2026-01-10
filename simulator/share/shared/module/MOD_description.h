@@ -3,6 +3,8 @@
 
 #include "MOD_vtable.h"
 #include "hashmap.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 #ifdef _WIN32
 #  define DEVICE_EXPORT __declspec(dllexport)
@@ -22,13 +24,13 @@ typedef struct WS_MOD_description
 	const char *dev_typeclass;
 	const char *dl_name;
 
+
+
 	const MOD_vtable_t *vtable;
 
 	//contains elements of WS_dev_cmd_flag_producer_t
-	p_hashtable_t flag_table;
-
-	void *extra;
-
+	bool object_desc;
+	bool service_desc;
 }MOD_description_t;
 
 
