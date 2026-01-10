@@ -8,6 +8,8 @@
 //cold is allowed on cold path
 //hot is allowed on hot path
 
+
+typedef struct WS_OBJ_object OBJ_object_t;
 #define OBJ_COMMON_UTILS_LIST(X)\
 	X(FUNC	,COLD	,ALLOC			,uint64_t	,uint64_t id)		  \
 	X(FLAG	,HOT	,ERROR			,void		,const char *)		  \
@@ -26,7 +28,7 @@ typedef enum WS_OBJ_util_type
 	OBJ_COMMON_UTILS_LIST(OBJ_COMMON_UTILS_ENUM)
 }OBJ_util_type_t;
 
-#define OBJ_COMMON_UTILS_FNPTR(A, B, C, D, ...) typedef D (UTIL_ ## C ## _t)(OBJ_object_t *obj, OBJ_hnd_t *hnd, __VA_ARGS__);
+#define OBJ_COMMON_UTILS_FNPTR(A, B, C, D, ...) typedef D (*UTIL_ ## C ## _t)(OBJ_object_t *obj, OBJ_hnd_t *hnd, __VA_ARGS__);
 OBJ_COMMON_UTILS_LIST(OBJ_COMMON_UTILS_FNPTR)
 #define OBJ_COMMON_UTILS_STRUCT(A, B, C, D, ...) UTIL_ ## C ## _t C;
 
