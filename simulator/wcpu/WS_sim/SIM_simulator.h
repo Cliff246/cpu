@@ -8,11 +8,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "SIM_entry.h"
 #include "SIM_wire.h"
 #include "SIM_packet.h"
-
-
+#include "SIM_graph.h"
 
 
 
@@ -20,10 +18,7 @@ typedef struct WS_SIM_simulator
 {
 	int sid;
 
-	uint64_t entries_size;
-	SIM_entry_t *entries;
-
-
+	SIM_graph_t *graph;
 
 }SIM_simulator_t;
 
@@ -38,7 +33,6 @@ SIM_simulator_t *SIM_simulator_init(void);
 void SIM_simulator_rebuild_graph(SIM_simulator_t *sim);
 
 //add device to simulator
-void SIM_simulator_add_entry(SIM_simulator_t *sim,  SIM_entry_t entry);
 
 
 

@@ -10,6 +10,7 @@
 //ownns subhandles in the object
 typedef struct WS_OBJ_handle
 {
+	//simulator id
 	const int sid;
 	//object id
 	const int oid;

@@ -6,12 +6,19 @@
 #include <stdbool.h>
 #include "token.h"
 
+#define IO_NODE_TYPE_LIST(X)\
+	X(UNKNOWN)				\
+	X(MODULE)				\
+	X(CLASS)				\
+	X(FIELD)				\
+	
+
 
 //WS_IO_node
-//node of parse tree 
+//node of parse tree
 typedef struct WS_IO_node
 {
-	tok_t *tok;	
+	tok_t *tok;
 	size_t size;
 	struct WS_IO_node *nodes;
 }IO_node_t;

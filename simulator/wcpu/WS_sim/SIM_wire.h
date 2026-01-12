@@ -1,7 +1,6 @@
 #ifndef __WS_SIM_WIRE_HEADER__
 #define __WS_SIM_WIRE_HEADER__
 
-#include <SIM_entry.h>
 #include <SIM_packet.h>
 #include <SIM_channel.h>
 
@@ -10,11 +9,11 @@
 
 typedef struct WS_SIM_wire_config_end
 {
-	SIM_entry_t *entry;
-	uint32_t port;
+	uint16_t oid;
+	uint8_t cid;
 }SIM_wire_config_end_t;
 
-SIM_wire_config_end_t SIM_wire_config_end_init(SIM_entry_t *entry, uint32_t port_id);
+SIM_wire_config_end_t SIM_wire_config_end_init(uint16_t oid, uint8_t cid);
 
 
 
@@ -22,7 +21,8 @@ typedef struct WS_SIM_wire_config
 {
 
 	uint32_t delay;
-	uint32_t ends_size;
+	//this is the maximum amount a wire can hit the end
+	uint8_t ends_size;
 	SIM_wire_config_end_t *ends;
 	struct
 	{
@@ -43,14 +43,15 @@ typedef struct WS_SIM_wire
 
 	//designed for channels, shows where the wire can end up
 	uint32_t channel_start;
-	uint32_t channel_length;
-
+	uint8_t channel_length;
+	//target channel
+	uint8_t tchnl;
 	uint32_t slot_start;
 	uint32_t slot_length;
 
 	//current index of the scroll limit
-	uint32_t current_scroll;
-
+	uint32_t cur_scroll;
+	uint32_t cur_len;
 
 }SIM_wire_t;
 

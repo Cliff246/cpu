@@ -6,11 +6,6 @@
 typedef struct WS_SIM_handle
 {
 	MOD_description_t *desc;
-
-
-
-
 }SIM_handle_t;
-
 
 #endif

@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "OBJ_object.h"
 #include "OBJ_handle.h"
 //cold is allowed on cold path
 //hot is allowed on hot path

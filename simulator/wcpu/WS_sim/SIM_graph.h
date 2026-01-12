@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-
+#include "SIM_object.h"
 #include "SIM_wire.h"
 #include "SIM_wireslot.h"
 #include "SIM_channel.h"
@@ -14,11 +14,8 @@ typedef struct WS_SIM_graph
 
 
 
-	uint32_t entries_size;
-	SIM_entry_t **entries;
-
-
-
+	uint16_t objects_size;
+	SIM_object_t *objects;
 
 
 	//wire_size, total number of unique wires. each wire can connect to a channel
@@ -53,12 +50,17 @@ typedef struct WS_SIM_graph
 }SIM_graph_t;
 
 
+
+
 SIM_graph_t *SIM_graph_init(void);
+//basioc template for wire
 SIM_graph_t *SIM_graph_init_template(void);
-int64_t SIM_graph_find_entry(SIM_graph_t *graph, SIM_entry_t *entry);
-void SIM_graph_add_entry(SIM_graph_t *graph, SIM_entry_t *entry);
+
+//void SIM_graph_add_object(SIM_graph_t *graph, SIM_object_t *object);
 void SIM_graph_add_wire(SIM_graph_t *graph, SIM_wire_config_t *wire);
 
 bool SIM_graph_set(SIM_graph_t *graph);
+
+void SIM_graph_update(SIM_graph_t *graph);
 
 #endif

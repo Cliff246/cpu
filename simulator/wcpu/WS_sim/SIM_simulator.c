@@ -24,7 +24,6 @@ void SIM_simulator_update(SIM_simulator_t *sim)
 
 
 
-
 }
 
 bool SIM_simulator_load_config(SIM_simulator_t *sim, WS_cfg_file_t *config)
@@ -40,7 +39,10 @@ void SIM_simulator_print_slots(SIM_simulator_t *sim)
 void SIM_simulator_print_all_devices(SIM_simulator_t *sim)
 {
 
+
+
 }
+
 
 /*
 static bool cmp_overlap(size_t addr1, size_t addr2, size_t addr1_size, size_t addr2_size)
