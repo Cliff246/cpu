@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <string.h>
 
 WS_cfg_elem_t WS_cfg_create_element(tok_t **buf, size_t size)
 {

@@ -54,7 +54,7 @@ typedef struct WS_SIM_graph
 
 
 SIM_graph_t *SIM_graph_init(void);
-
+SIM_graph_t *SIM_graph_init_template(void);
 int64_t SIM_graph_find_entry(SIM_graph_t *graph, SIM_entry_t *entry);
 void SIM_graph_add_entry(SIM_graph_t *graph, SIM_entry_t *entry);
 void SIM_graph_add_wire(SIM_graph_t *graph, SIM_wire_config_t *wire);

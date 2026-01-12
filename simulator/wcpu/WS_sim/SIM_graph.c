@@ -17,13 +17,21 @@ SIM_graph_t *SIM_graph_init(void)
 	return graph;
 }
 
+
+SIM_graph_t *SIM_graph_init_template(void)
+{
+	SIM_graph_t *graph = SIM_graph_init();
+	return graph;
+}
+
+
 void SIM_graph_add_entry(SIM_graph_t *graph, SIM_entry_t *entry)
 {
 	assert(graph->flags.set != true );
 
 	graph->entries = realloc_safe(graph->entries, graph->entries_size, sizeof(SIM_entry_t *));
 
-	graph->entries[graph->entries_size++];
+	graph->entries[graph->entries_size++] = entry;
 	graph->flags.changed = true;
 	graph->flags.set = false;
 }
