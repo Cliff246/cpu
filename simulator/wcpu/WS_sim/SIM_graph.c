@@ -232,7 +232,7 @@ void SIM_graph_update(SIM_graph_t *graph)
 
 
 			OBJ_msg_t msg = SIM_channel_take_input(chnl);
-			
+
 
 			bnd->msgs[bnd->used++] = msg;
 
@@ -367,6 +367,7 @@ void SIM_graph_update(SIM_graph_t *graph)
 		else if(wire->cur_len == 0)
 		{
 			//TODO start up a new packet
+			assert(0);
 		}
 		//keep moving the packets forward
 
