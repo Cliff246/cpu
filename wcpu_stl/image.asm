@@ -23,4 +23,4 @@ MAIN:
 .data
 
 TEST_STRING:
-	string "hello world"
+	string "hello tiny world"

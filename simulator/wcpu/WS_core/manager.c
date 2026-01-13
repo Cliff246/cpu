@@ -4,10 +4,7 @@
 #include "manager.h"
 //#include "core.h"
 //#include "coreutils.h"
-#include "cli.h"
 #include "commons.h"
-#include "code_decoder.h"
-#include "hydra.h"
 #include "export.h"
 #include "simulator.h"
 #include "ws_sim_configure.h"
@@ -336,7 +333,7 @@ void init(int argc, char **argv)
 	}
 
 	//printf("try\n");
-	WS_simulator_print_all_devices(sim);
+	//WS_simulator_print_all_devices(sim);
 
 	//create_cli_context(&globalstate.ctx);
 

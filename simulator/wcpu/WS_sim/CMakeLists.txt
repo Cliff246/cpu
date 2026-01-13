@@ -7,7 +7,7 @@ SET(WS_SIM_CFILES
 )
 
 
-add_library(ws_sim SHARED ${WS_SIM_CFILES})
+add_library(ws_sim STATIC ${WS_SIM_CFILES})
 
 
 set(CMAKE_BUILD_TYPE Debug)

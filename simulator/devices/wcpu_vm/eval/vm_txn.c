@@ -208,7 +208,7 @@ void vm_txn_state_source(vima_t *vm, vm_txn_t *txn)
 {
 
 	int64_t sidestream = 0;
-	
+
 	if(txn->op.op.immflag)
 	{
 		sidestream = txn->op.imm;
@@ -225,8 +225,8 @@ void vm_txn_state_source(vima_t *vm, vm_txn_t *txn)
 
 void vm_txn_state_wire(vima_t *vm, vm_txn_t *txn)
 {
-	int modeflag = txn->op.op.modeflag; 
-	printf("%d\n", modeflag); 
+	int modeflag = txn->op.op.modeflag;
+	//printf("%d\n", modeflag);
 	if(modeflag == MODE_DEFAULT)
 	{
 		txn->inp.dst = txn->op.op.rs1;
@@ -234,7 +234,7 @@ void vm_txn_state_wire(vima_t *vm, vm_txn_t *txn)
 		txn->inp.lane2 = txn->srcs.rs3;
 		txn->inp.lane3 = txn->srcs.side;
 
-		
+
 	}
 	else if(modeflag == MODE_UNDECIDED)
 	{
@@ -256,9 +256,9 @@ void vm_txn_state_wire(vima_t *vm, vm_txn_t *txn)
 		txn->inp.lane2 = txn->srcs.rs2;
 		txn->inp.lane3 = txn->srcs.rs3 + txn->srcs.side;
 
-		
+
 	}
-	else 
+	else
 	{
 		assert(0);
 	}
