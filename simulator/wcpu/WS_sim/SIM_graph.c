@@ -155,7 +155,10 @@ void SIM_graph_update(SIM_graph_t *graph)
 		assert(wire->channel_start + wire->channel_length < chnlsize);
 		assert(wire->cur_scroll < wire->slot_length);
 		const SIM_packet_t *pkt =  graph->wireslots[wire->slot_start + wire->cur_scroll].packet;
-
+		if(pkt == NULL)
+		{
+			continue;
+		}
 
 		//the current wire target
 		const uint8_t target = wire->tgt_chnl;
@@ -367,7 +370,7 @@ void SIM_graph_update(SIM_graph_t *graph)
 		else if(wire->cur_len == 0)
 		{
 			//TODO start up a new packet
-			assert(0);
+			assert(0 && "TODO");
 		}
 		//keep moving the packets forward
 

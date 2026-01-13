@@ -1,0 +1,7 @@
+#ifndef __DEV_DISK_VERSION_HEADER__
+#define __DEV_DISK_VERSION_HEADER__
+
+#define SIM_DEV_DISK_VERSION @SIM_DEV_DISK_VERSION@
+
+
+#endif

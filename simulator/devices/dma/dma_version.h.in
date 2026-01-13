@@ -1,0 +1,7 @@
+#ifndef __DEV_DMA_VERSION_HEADER__
+#define __DEV_DMA_VERSION_HEADER__
+
+#define SIM_DEV_DMA_VERSION @SIM_DEV_DMA_VERSION@
+
+
+#endif
