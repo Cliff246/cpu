@@ -8,11 +8,13 @@
 #include "SIM_wire.h"
 #include "SIM_wireslot.h"
 #include "SIM_channel.h"
+#include "SIM_routetable.h"
 
 typedef struct WS_SIM_graph
 {
 
-
+	uint16_t routingtable_size;
+	SIM_routetable_t *routetable;
 
 	uint16_t objects_size;
 	SIM_object_t *objects;
@@ -55,7 +57,7 @@ typedef struct WS_SIM_graph
 SIM_graph_t *SIM_graph_init(void);
 //basioc template for wire
 SIM_graph_t *SIM_graph_init_template(void);
-
+int16_t SIM_graph_find_channel_open_routetable(SIM_graph_t *graph, uint16_t oid, uint8_t route);
 //void SIM_graph_add_object(SIM_graph_t *graph, SIM_object_t *object);
 void SIM_graph_add_wire(SIM_graph_t *graph, SIM_wire_config_t *wire);
 

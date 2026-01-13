@@ -45,7 +45,8 @@ typedef struct WS_SIM_wire
 	uint32_t channel_start;
 	uint8_t channel_length;
 	//target channel
-	uint8_t tchnl;
+	uint8_t tgt_chnl;
+	uint8_t src_chnl;
 	uint32_t slot_start;
 	uint32_t slot_length;
 

@@ -61,36 +61,7 @@ static void simulator_swap_slots(WS_simulator_t *sim, size_t i, size_t j)
 	sim->bus_slot[j] = temp;
 }
 
-static int simulator_device_address_search(WS_simulator_t *sim, size_t address)
-{
-	//WS_simulator_print_slots(sim);
-	size_t low = 0;
-	size_t high = sim->bus_slot_count - 1;
-	size_t mid = 0;
-	while(low <= high)
-	{
-		mid = low + (high - low) / 2;
-		WS_simulator_bus_slot_t *slot =  sim->bus_slot[mid];
-		size_t start = slot->start;
-		size_t end = slot->len + start;
-		//printf("%d %d\n", start, end);
-		if(address < start)
-		{
-			high = mid - 1;
 
-		}
-		else if(address >= end)
-		{
-			low = mid + 1;
-		}
-		else
-		{
-			return mid;
-
-		}
-	}
-	return -1;
-}
 
 static size_t simulator_partition(WS_simulator_t *sim, size_t lo, size_t hi)
 {
