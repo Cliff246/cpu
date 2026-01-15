@@ -1,0 +1,7 @@
+#ifndef __WS_DEV_RAM_VERSION_HEADER__
+#define __WS_DEV_RAM_VERSION_HEADER__
+
+#define SIM_DEV_RAM_VERSION @SIM_DEV_RAM_VERSION@
+
+
+#endif

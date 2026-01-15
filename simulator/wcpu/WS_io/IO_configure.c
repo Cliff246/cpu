@@ -139,7 +139,7 @@ static void load_cfg_file(WS_cfg_file_t *file)
 	}cur_head_state = HEAD_STATE_EMPTY;
 
 
-	//print_toklex(tl);
+	print_toklex(tl);
 
 	while(true)
 	{
@@ -269,12 +269,6 @@ WS_cfg_file_t *WS_cfg_create_file(const char *path)
 
 
 	load_cfg_file(config);
-
-
-
-
-
-
 
 
 

@@ -10,10 +10,7 @@ typedef struct virtual_machine vima_t;
 #include "vm_op.h"
 #include "vm_txn.h"
 
-#include "device.h"
 #include "token.h"
-#include "device_message.h"
-#include "device_command.h"
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -50,14 +47,6 @@ typedef struct virtual_machine
 
 
 
-void *device_vima_init(device_t *device);
-
-void device_vima_update(device_t *dev);
-bool device_vima_read(WS_dev_t *dev, WS_dev_msg_t *msg);
-bool device_vima_send(WS_dev_t *dev, WS_dev_msg_t **msg);
-
-void device_vima_print(device_t *dev);
-void device_vima_commit(WS_dev_t *dev);
 
 
 

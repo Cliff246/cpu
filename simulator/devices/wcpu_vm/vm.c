@@ -1,10 +1,8 @@
 #include "vm.h"
 #include "vm_path.h"
 #include "vm_regs.h"
-#include "device_command.h"
-#include "device_commons.h"
-#include "device_command_impl.h"
-#include "module_description.h"
+
+#include "MOD_description.h"
 #include "vm_op.h"
 #include "vm_txn.h"
 
@@ -14,16 +12,6 @@
 #include <stdio.h>
 
 
-static const WS_dev_vtable_t vtable =
-{
-
-	.init = device_vima_init,
-	.print = device_vima_print,
-	.read = device_vima_read,
-	.send = device_vima_send,
-	.update = device_vima_update,
-	.cmd_commit = device_vima_commit,
-};
 
 static MOD_description_t wcpu_vm_desc =
 {
@@ -33,29 +21,16 @@ static MOD_description_t wcpu_vm_desc =
 	.dev_name = "wcpu_vm",
 	.dev_typeclass = "cpu",
 	.dl_name = "sim_dev_wcpu_vm",
-	.vtable = &vtable,
-	.extra = NULL,
+
 };
 
-
-
-const MOD_description_t *WS_get_dev_desc(void)
+const MOD_description_t *MOD_get_dev_desc(void)
 {
 	static bool initialized = false;
-
-	if(initialized == false)
-	{
-		p_hashtable_t hashtable = new_hash_table(WS_DEV_FLAG_DEFAULT_COUNT, WS_cmd_producer_free);
-
-
-		wcpu_vm_desc.flag_table = hashtable;
-		initialized = true;
-	}
-
-
 	return &wcpu_vm_desc;
 }
 
+/*
 
 void *device_vima_init(device_t *device)
 {
@@ -246,36 +221,6 @@ void device_vima_commit(WS_dev_t *dev)
 
 
 }
-
-
-
-/*
-
-void vm_setmemory(vima_t *vm, int64_t *memory, uint64_t size)
-{
-	//printf("side: %lld\n", size);
-	vm->mem.mem = calloc(size, sizeof(int64_t));
-	vm->mem.size = size;
-
-	for(int i = 0; i < size; ++i)
-	{
-		vm->mem.mem[i] = memory[i];
-	}
-
-}
-void vm_print_mem(vima_t *vm, uint64_t start, uint64_t stop)
-{
-	if(stop < start)
-		return;
-	uint64_t diff = stop - start;
-	if(vm->mem.size < stop)
-	{
-		stop = vm->mem.size;
-	}
-	for(uint64_t i = start; i < stop; ++i)
-	{
-		printf("%4lld 0x%.8llx %llu\n", i, vm->mem.mem[i], vm->mem.mem[i]);
-	}
-
-}
 */
+
+

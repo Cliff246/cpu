@@ -13,8 +13,8 @@
 typedef struct WS_SIM_graph
 {
 
-	uint16_t routingtable_size;
-	SIM_routetable_t *routetable;
+	uint16_t routetables_size;
+	SIM_routetable_t *routetables;
 
 	uint16_t objects_size;
 	SIM_object_t *objects;
@@ -55,14 +55,33 @@ typedef struct WS_SIM_graph
 
 
 SIM_graph_t *SIM_graph_init(void);
-//basioc template for wire
+//basioc template for graph
 SIM_graph_t *SIM_graph_init_template(void);
+
+
+//set graph changed function
+//sets graphs flags to be modified
+void SIM_graph_set_changed(SIM_graph_t *graph);
+
+void SIM_graph_update_wire_write(SIM_graph_t *graph);
+void SIM_graph_update_wire_read(SIM_graph_t *graph);
+void SIM_graph_update_update(SIM_graph_t *graph);
+void SIM_graph_update_obj_read(SIM_graph_t *graph);
+void SIM_graph_update_obj_write(SIM_graph_t *graph);
+
+//reuturns 16 bit int -1 if invalid and 8 bit uint if valid
 int16_t SIM_graph_find_channel_open_routetable(SIM_graph_t *graph, uint16_t oid, uint8_t route);
 //void SIM_graph_add_object(SIM_graph_t *graph, SIM_object_t *object);
+
+//
 void SIM_graph_add_wire(SIM_graph_t *graph, SIM_wire_config_t *wire);
+
+
 
 bool SIM_graph_set(SIM_graph_t *graph);
 
+
+//main graph update loop
 void SIM_graph_update(SIM_graph_t *graph);
 
 #endif

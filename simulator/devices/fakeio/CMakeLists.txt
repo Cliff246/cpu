@@ -5,7 +5,7 @@ set(DEVICE_FAKEIO_CFILES
 	${CMAKE_CURRENT_SOURCE_DIR}/fakeio_device_config_setting.c
 )
 
-set(SIM_DEV_FAKEIO_VERSION 1.1)
+set(SIM_DEV_FAKEIO_VERSION 1)
 
 
 

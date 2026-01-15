@@ -2,21 +2,16 @@
 #define __RAM_HEADER__
 
 
-#include "device_list.h"
-#include "device_command.h"
-#include "device_command_impl.h"
-#include "device.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include <errno.h>
 
-typedef struct device_ram
+typedef struct WS_DEV_ram
 {
 
 	int64_t length;
 	int64_t *content;
 
-	dev_msg_t *current_msg;
 	bool has_msg;
 
 	//make this a boolean array index'd by a ram flag enum
@@ -26,22 +21,6 @@ typedef struct device_ram
 	uint64_t local_address_size;
 	bool changed;
 
-}dev_ram_t;
-
-dev_ram_t *create_ram(int64_t length);
-void update_ram(dev_ram_t *ram, uint64_t length);
-void cmd_ram(dev_ram_t *ram,  WS_dev_cmd_t *cmd);
-void align_ram(device_t *device, dev_ram_t *ram);
-
-
-void *device_ram_init(device_t *device);
-void device_ram_update(device_t *device);
-bool device_ram_read(WS_dev_t *dev, WS_dev_msg_t *msg);
-bool device_ram_send(WS_dev_t *dev, WS_dev_msg_t **msg);
-void device_ram_print(device_t *dev);
-void device_ram_commit(WS_dev_t *dev);
-
-void write_ram(dev_ram_t *ram, uint64_t address, int64_t data);
-int64_t read_ram(dev_ram_t *ram, uint64_t address);
+}DEV_ram_t;
 
 #endif

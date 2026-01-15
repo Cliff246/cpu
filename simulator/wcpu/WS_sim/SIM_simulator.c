@@ -1,6 +1,6 @@
 #include "SIM_simulator.h"
 #include "IO_configure.h"
-
+#include "SIM_graph.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -21,7 +21,7 @@ SIM_simulator_t *SIM_simulator_init(void)
 
 void SIM_simulator_update(SIM_simulator_t *sim)
 {
-
+	SIM_graph_update(sim->graph);
 
 
 }

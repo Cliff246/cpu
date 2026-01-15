@@ -31,7 +31,7 @@ typedef struct WS_SIM_object
 	OBJ_hnd_t *obj_hnd;
 	SIM_handle_t *sim_handle;
 
-	OBJ_locals_t locals;
+	OBJ_locals_t *locals;
 
 
 	//object pipeline for the

@@ -20,6 +20,9 @@ set(SIMULATOR_DEVICE_WCPU_VM_EVAL
 	${CMAKE_CURRENT_SOURCE_DIR}/eval/vm_txn.c
 )
 
+set(SIM_DEV_VM_VERSION 1)
+
+
 
 add_library(sim_dev_wcpu_vm SHARED
 	${SIMULATOR_DEVICE_WCPU_VM}
@@ -27,31 +30,26 @@ add_library(sim_dev_wcpu_vm SHARED
 	${SIMULATOR_DEVICE_WCPU_VM_PATHUNITS}
 )
 
-include_directories(sim_dev_wcpu_vm PUBLIC
-	${CMAKE_SOURCE_DIR}/flags/
-
-	${CMAKE_CURRENT_SOURCE_DIR}/
-	${CMAKE_CURRENT_SOURCE_DIR}/pathunits
-	${CMAKE_CURRENT_SOURCE_DIR}/eval
-	wcpu_commons
-
-
+configure_file(
+	${CMAKE_CURRENT_SOURCE_DIR}/vm_version.h.in
+	${CMAKE_CURRENT_BINARY_DIR}/vm_version.h
 )
 
 target_include_directories(sim_dev_wcpu_vm PUBLIC
-	${CMAKE_SOURCE_DIR}/flags/
-
+	${CMAKE_SOURCE_DIR}/flags
+	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}/eval
 	${CMAKE_CURRENT_SOURCE_DIR}/
 	${CMAKE_CURRENT_SOURCE_DIR}/pathunits
 
 	wcpu_commons
-	sim_dev_interface
-	sim_dev_impl
+	ws_module_shared
+
 )
 
 target_link_libraries(sim_dev_wcpu_vm PUBLIC
 	wcpu_commons
-	sim_dev_interface
-	sim_dev_impl
+	ws_module_shared
+
 )

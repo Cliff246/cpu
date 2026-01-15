@@ -1,5 +1,5 @@
 #include "fakeio.h"
-
+#include "commons.h"
 #include "MOD_description.h"
 #include "hashmap.h"
 #include "fakeio_version.h"
@@ -8,11 +8,10 @@
 #include "fakeio_device_config_setting.h"
 
 
-
 static MOD_description_t fakeio_desc =
 {
 	.id = 0,
-	.version = SIM_DEV_FAKEIO_VERSION,
+	.version = STR(SIM_DEV_FAKEIO_VERSION),
 
 	.dev_name = "fakeio",
 	.dev_typeclass = "mmio",

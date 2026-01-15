@@ -12,12 +12,12 @@
 
 
 
-
+#define VERSION_MAX_SIZE 20
 
 typedef struct WS_MOD_description
 {
 	int id;
-	int version;
+	const char *version;
 	const char *dev_name;
 	const char *dev_typeclass;
 	const char *dl_name;

@@ -1,7 +1,12 @@
 #include "SIM_routetable.h"
 #include <stdlib.h>
 #include <stdint.h>
+#include <assert.h>
 
+SIM_routetable_t SIM_routetable_init(void)
+{
+	assert(0 && "TODO sim routetable init");
+}
 
 int32_t SIM_routetable_search(SIM_routetable_t *rt, uint64_t address)
 {
