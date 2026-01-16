@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 #include "SIM_object.h"
+#include "SIM_port.h"
 #include "SIM_wire.h"
 #include "SIM_wireslot.h"
 #include "SIM_channel.h"
@@ -12,9 +13,8 @@
 
 typedef struct WS_SIM_graph
 {
-
-	uint16_t routetables_size;
-	SIM_routetable_t *routetables;
+	uint16_t ports_size;
+	SIM_port_t *ports;
 
 	uint16_t objects_size;
 	SIM_object_t *objects;

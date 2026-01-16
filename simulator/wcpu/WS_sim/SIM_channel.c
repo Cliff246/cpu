@@ -3,14 +3,17 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <assert.h>
-SIM_channel_t SIM_channel_init(uint32_t oid, uint32_t cid)
+
+
+void SIM_channel_init(SIM_channel_t *channel, uint32_t oid, uint32_t cid)
 {
-	SIM_channel_t channel =
-	{
-		.oid = oid,
-		.cid = cid
-	};
+	channel->oid = oid;
+	channel->cid = cid;
+	channel->state = SIM_CHANNEL_EMPTY;
+	
+}
 
-	return channel;
-
+bool SIM_channel_empty(SIM_channel_t *channel)
+{
+	return (channel->state == SIM_CHANNEL_EMPTY)? true : false;
 }

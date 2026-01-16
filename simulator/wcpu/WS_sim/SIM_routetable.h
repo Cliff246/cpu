@@ -26,9 +26,9 @@ typedef struct WS_SIM_routetable
 	uint32_t overlap_size;
 
 	//for all channels
-	SIM_route_t *table;
+	SIM_route_t table[OBJ_MAX_CHANNELS];
 	//this is a flat array of every channel that can address something on a wire
-	uint8_t *overlap;
+	uint8_t overlap[OBJ_MAX_CHANNELS * OBJ_MAX_CHANNELS];
 }SIM_routetable_t;
 
 //TODO generate an in order routetable for the object

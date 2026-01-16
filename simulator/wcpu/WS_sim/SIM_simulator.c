@@ -28,8 +28,8 @@ void SIM_simulator_update(SIM_simulator_t *sim)
 
 bool SIM_simulator_load_config(SIM_simulator_t *sim, WS_cfg_file_t *config)
 {
-
-}
+	assert(0);
+}	
 
 void SIM_simulator_print_slots(SIM_simulator_t *sim)
 {

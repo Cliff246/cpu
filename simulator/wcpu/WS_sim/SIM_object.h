@@ -22,11 +22,8 @@
 typedef struct WS_SIM_object
 {
 
-	uint16_t chnl_start;
-	uint16_t chnl_length;
-	uint8_t chnl_ready[OBJ_MAX_CHANNELS];
-	uint8_t chnl_ready_length;
-	uint16_t routetable_id;
+	uint64_t port_index;
+
 	OBJ_ctx_t *ctx;
 	OBJ_hnd_t *obj_hnd;
 	SIM_handle_t *sim_handle;

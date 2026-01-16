@@ -1,4 +1,5 @@
 #include "SIM_wire.h"
+#include "OBJ_constants.h"
 #include "commons.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -100,14 +101,14 @@ bool SIM_wire_config_set(SIM_wire_config_t *wire_config)
 
 
 
-	wire_config->flags.set;
+	wire_config->flags.set = true;
 	return true;
 }
 
 
 SIM_wire_t SIM_wire_init(uint32_t channel_start, uint32_t channel_length, uint32_t slot_start, uint32_t slot_length)
 {
-	assert(channel_length < UINT8_MAX);
+	assert(channel_length < OBJ_MAX_CHANNELS);
 	SIM_wire_t wire =
 	{
 		.channel_start = channel_start,

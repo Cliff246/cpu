@@ -9,7 +9,7 @@ typedef struct WS_SIM_wireslot
 {
 	//packet index
 	OBJ_msg_t msg;
-
+	bool used;
 
 }SIM_wireslot_t;
 

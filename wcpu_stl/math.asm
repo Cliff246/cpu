@@ -49,9 +49,14 @@ ELSE_LOG10:
 
 
 
-;a0 scr1
-;a1 src2
-;a2 src3
-;a2 dst
+;a0
+;a1
+;a3
+;s1
+;s2
 MATMUL:
+	alu.add s0, a0, zero
+	alu.add s1, a1, zero
+	alu.add s2, a2, zero
+
 	
