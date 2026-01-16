@@ -8,14 +8,13 @@
 #include <stdalign.h>
 
 
+#define OBJ_BUNDLE_SIZE 8
 
-typedef struct WS_OBJ_msgbnd
+typedef struct WS_OBJ_bundle
 {
-	const uint32_t size;
-	uint32_t used;
 
-	_Alignas(8) OBJ_msg_t msgs[];
+	_Alignas(128) OBJ_msg_t msg[OBJ_BUNDLE_SIZE];
 
-}OBJ_bnd_t;
+}OBJ_bundle_t;
 
 #endif

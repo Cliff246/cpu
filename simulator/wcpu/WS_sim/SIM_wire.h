@@ -1,7 +1,6 @@
 #ifndef __WS_SIM_WIRE_HEADER__
 #define __WS_SIM_WIRE_HEADER__
 
-#include <SIM_packet.h>
 #include <SIM_channel.h>
 
 #include <stdint.h>

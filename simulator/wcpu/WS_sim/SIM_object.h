@@ -36,11 +36,8 @@ typedef struct WS_SIM_object
 
 	//object pipeline for the
 	OBJ_pipeline_t pipeline;
-	OBJ_bnd_t *bnd;
 }SIM_object_t;
 
 
-void SIM_object_append_bundle(SIM_object_t *obj, OBJ_msg_t msg);
-OBJ_bnd_t *SIM_object_release_bundle(SIM_object_t *obj);
 
 #endif

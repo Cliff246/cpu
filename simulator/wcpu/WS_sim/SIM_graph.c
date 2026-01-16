@@ -146,7 +146,7 @@ int16_t SIM_graph_find_channel_open_routetable(SIM_graph_t *graph, uint16_t oid,
 
 
 
-		if(SIM_channel_can_take(channel))
+		//if(SIM_channel_can_take(channel))
 		{
 			return rchnl;
 		}
@@ -154,7 +154,12 @@ int16_t SIM_graph_find_channel_open_routetable(SIM_graph_t *graph, uint16_t oid,
 	return -1;
 }
 
+void SIM_graph_update(SIM_graph_t *graph)
+{
 
+}
+
+/*
 
 void SIM_graph_update(SIM_graph_t *graph)
 {
@@ -230,7 +235,7 @@ void SIM_graph_update(SIM_graph_t *graph)
 		OBJ_ctx_t *ctx = obj->ctx;
 
 		//there needs to be a bundle of the maximum amount of ports in
-		OBJ_bnd_t *bnd = NULL;
+		OBJ_bundle_t *bnd = NULL;
 		assert(bnd != NULL && "bundle cannot be null");
 
 
@@ -421,3 +426,5 @@ void SIM_graph_update(SIM_graph_t *graph)
 
 	}
 }
+
+*/

@@ -23,14 +23,11 @@ typedef struct WS_SIM_routetable
 {
 	//number of
 	uint8_t rows;
+	uint32_t overlap_size;
 
 	//for all channels
-	SIM_route_t table[OBJ_MAX_CHANNELS];
-
-
+	SIM_route_t *table;
 	//this is a flat array of every channel that can address something on a wire
-	
-	uint32_t overlap_size;
 	uint8_t *overlap;
 }SIM_routetable_t;
 

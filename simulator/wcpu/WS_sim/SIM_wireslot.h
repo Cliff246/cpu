@@ -4,12 +4,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "SIM_packet.h"
-
+#include "OBJ_message.h"
 typedef struct WS_SIM_wireslot
 {
 	//packet index
-	SIM_packet_t *packet;
+	OBJ_msg_t msg;
 
 
 }SIM_wireslot_t;
