@@ -1,4 +1,5 @@
 #include "SIM_graph.h"
+#include "OBJ_message.h"
 #include "commons.h"
 #include "SIM_routetable.h"
 
@@ -154,12 +155,6 @@ int16_t SIM_graph_find_channel_open_routetable(SIM_graph_t *graph, uint16_t oid,
 	return -1;
 }
 
-void SIM_graph_update(SIM_graph_t *graph)
-{
-
-}
-
-/*
 
 void SIM_graph_update(SIM_graph_t *graph)
 {
@@ -180,11 +175,7 @@ void SIM_graph_update(SIM_graph_t *graph)
 		assert(wire->slot_start + wire->slot_length < slotsize);
 		assert(wire->channel_start + wire->channel_length < chnlsize);
 		assert(wire->cur_scroll < wire->slot_length);
-		SIM_packet_t *pkt =  graph->wireslots[wire->slot_start + wire->cur_scroll].packet;
-		if(pkt == NULL)
-		{
-			continue;
-		}
+		OBJ_msg_t *msg =  &graph->wireslots[wire->slot_start + wire->cur_scroll].msg;
 
 		//the current wire target
 		const uint8_t target = wire->tgt_chnl;
@@ -205,7 +196,7 @@ void SIM_graph_update(SIM_graph_t *graph)
 		SIM_object_t *obj = &graph->objects[object_index];
 
 
-		SIM_channel_read(channel, pkt);
+		//SIM_channel_read(channel, pkt);
 		//process if the object is ready
 
 
@@ -257,10 +248,10 @@ void SIM_graph_update(SIM_graph_t *graph)
 			SIM_channel_t *chnl = &graph->channels[obj->chnl_start + obj_chnl_rdy_idx];
 
 
-			OBJ_msg_t msg = SIM_channel_take_input(chnl);
+			//OBJ_msg_t msg = SIM_channel_take_input(chnl);
 
 
-			bnd->msgs[bnd->used++] = msg;
+			//bnd->msgs[bnd->used++] = msg;
 
 			//TODO execute the port and yk... shit
 			assert(0 && "TODO execute channel");
@@ -300,7 +291,7 @@ void SIM_graph_update(SIM_graph_t *graph)
 		OBJ_ctx_t *ctx = obj->ctx;
 
 		//bundle should be new
-		OBJ_bnd_t *bnd = NULL;
+		OBJ_bundle_t *bnd = NULL;
 		assert(bnd != NULL);
 
 
@@ -310,8 +301,8 @@ void SIM_graph_update(SIM_graph_t *graph)
 
 
 
-
-		assert(bnd->size > bnd->used);
+		/*
+		//assert(bnd->size > bnd->used);
 		const uint8_t bndused = bnd->used;
 		//ibm = iterator bundle message
 		for(uint32_t ibm = 0; ibm < bndused; ++ibm)
@@ -385,7 +376,7 @@ void SIM_graph_update(SIM_graph_t *graph)
 			SIM_channel_take_output(chnl, *msg);
 			assert(0 && "SIM_channel_take_output overlap not handled");
 		}
-
+		*/
 		//free the bundle down after
 
 
@@ -405,26 +396,24 @@ void SIM_graph_update(SIM_graph_t *graph)
 		SIM_channel_t *chnl = &graph->channels[chnl_index];
 
 		//output on a packet
-		if(SIM_channel_can_output(chnl))
+		//if(SIM_channel_can_output(chnl))
 		{
-			SIM_packet_t *pkt = SIM_channel_write(chnl);
-			const uint32_t slot_start = wire->slot_start;
-			const uint32_t slot_length = wire->slot_length;
-
-			graph->wireslots[slot_start + wire->cur_scroll].packet = pkt;
-			wire->cur_len++;
+		//	SIM_packet_t *pkt = SIM_channel_write(chnl);
+		//	const uint32_t slot_start = wire->slot_start;
+		//	const uint32_t slot_length = wire->slot_length;
+		//
+		//	graph->wireslots[slot_start + wire->cur_scroll].packet = pkt;
+		//	wire->cur_len++;
 		}
 		//let channel negoatiate lease
-		else if(wire->cur_len == 0)
+		//else if(wire->cur_len == 0)
 		{
 			//TODO start up a new packet
 			assert(0 && "TODO");
 		}
 		//keep moving the packets forward
-		const uint32_t t_cur_scroll = wire->cur_scroll;
-		wire->cur_scroll = (t_cur_scroll == wire->slot_length)? 0 : t_cur_scroll + 1;
+		//const uint32_t t_cur_scroll = wire->cur_scroll;
+		//wire->cur_scroll = (t_cur_scroll == wire->slot_length)? 0 : t_cur_scroll + 1;
 
 	}
 }
-
-*/

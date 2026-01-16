@@ -49,6 +49,9 @@ ELSE_LOG10:
 
 
 
-
+;a0 scr1
+;a1 src2
+;a2 src3
+;a2 dst
 MATMUL:
 	
