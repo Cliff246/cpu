@@ -154,7 +154,7 @@ int16_t SIM_graph_find_channel_open_routetable(SIM_graph_t *graph, uint16_t oid,
 
 
 
-		if(SIM_channel_empty(channel))
+		assert(0);
 		{
 			return route_chnl;
 		}
@@ -176,8 +176,10 @@ void SIM_graph_update(SIM_graph_t *graph)
 	//iwr = iterator wire read
 	for(uint32_t iwr = 0; iwr < wiresize; ++iwr)
 	{
+		//tgt:import
+
 		//just the wire copy
-		const SIM_wire_t *wire =  &graph->wires[iwr];
+		SIM_wire_t *wire =  &graph->wires[iwr];
 
 		assert(wire->slot_start + wire->slot_length < slotsize);
 		assert(wire->channel_start + wire->channel_length < chnlsize);
@@ -196,31 +198,24 @@ void SIM_graph_update(SIM_graph_t *graph)
 		const uint32_t target_index = target + wire->channel_start;
 		assert(target_index < graph->channels_size && "channel out of bound");
 
-
 		//channel from target
-		SIM_channel_t *channel = &graph->channels[target_index];
-		if(channel->state == SIM_CHANNEL_IMPORT)
+		SIM_channel_t *tgt_chnl = &graph->channels[target_index];
+		if(tgt_chnl->has == false)
 		{
-			memcpy(&channel->msg, msg, sizeof(OBJ_msg_t));
-			//channel object id
-			const uint16_t object_index = channel->oid;
-			assert(object_index < graph->objects_size);
-			//object from object index
-			SIM_object_t *obj = &graph->objects[object_index];
+			memcpy(&tgt_chnl->msg, msg, sizeof(OBJ_msg_t));
+			slot->used = false;
+			wire->cur_len--;
+			tgt_chnl->has = true;
+			if(msg->index == msg->size)
+			{
+				wire->tgt_done = true;
+			}
 		}
 		else
 		{
 			assert(0);
 		}
-
-
-
-
 	}
-
-
-
-
 	//read loop
 	//ior = iterator object read
 	for(uint16_t ior = 0; ior < objsize; ++ior)
@@ -243,10 +238,8 @@ void SIM_graph_update(SIM_graph_t *graph)
 
 		SIM_port_bundle_write(port, &bnd);
 
-
 		assert(obj->pipeline.read != NULL);
 		obj->pipeline.read(hnd, ctx, &bnd);
-
 	}
 
 	//iou = iterator object update
@@ -289,8 +282,6 @@ void SIM_graph_update(SIM_graph_t *graph)
 		SIM_port_channel_release(graph, port);
 		SIM_port_channel_active_release(graph, port);
 
-
-
 		assert(0 && "TODO free the bundle or clean it");
 	}
 
@@ -298,34 +289,52 @@ void SIM_graph_update(SIM_graph_t *graph)
 	//write output and shit
 	for(uint32_t iww = 0; iww < wiresize; ++iww)
 	{
+		//src:export
 		SIM_wire_t *wire =  &graph->wires[iww];
 
-		//locals constants
-		const uint8_t chnl_length = wire->channel_length;
-		const uint8_t src_chnl = wire->src_chnl;
-		const uint32_t chnl_index = wire->channel_start + src_chnl;
-		SIM_channel_t *chnl = &graph->channels[chnl_index];
+		const uint32_t chnl_start = wire->channel_start;
+		const uint32_t chnl_length = wire->channel_length;
+		const uint8_t src_chnl_offset = wire->src_chnl;
+		const uint8_t tgt_chnl_offset = wire->tgt_chnl;
+		assert(src_chnl_offset < chnl_length && tgt_chnl_offset < chnl_length);
+
+		const uint32_t src_chnl_idx = chnl_start + src_chnl_offset;
+		const uint32_t tgt_chnl_idx = chnl_start + tgt_chnl_offset;
+
+		SIM_channel_t *src_chnl = &graph->channels[src_chnl_idx];
+
 		const uint32_t t_cur_scroll = wire->cur_scroll;
 
-		if(chnl->state == SIM_CHANNEL_EXPORT)
-		{
+		SIM_wireslot_t *slot = &graph->wireslots[t_cur_scroll];
 
-		}
-
-		else if(chnl->state == SIM_CHANNEL_EMPTY)
-		{
-
-		}
-		else
+		if(slot->used == true)
 		{
 			assert(0);
 		}
+		if(src_chnl->has == true)
+		{
+			memcpy(&slot->msg, &src_chnl->msg, sizeof(OBJ_msg_t));
+			slot->used = true;
+			wire->cur_len++;
+			src_chnl->has = false;
+				//set target
+		}
+		else
+		{
+			wire->src_done = true;
+			//
+		}
+		// Arbitration rule (UNDEFINED):
+		// Select next src/tgt channel pair for this wire.
+		// Must ensure progress without starvation.
+		// Must not violate channel ownership invariants.
 
-		//output on a packet
+		if(wire->tgt_done && wire->src_done)
+		{
+			//arbitrate new tgt and src
+			assert(0);
+		}
 
-		//else if(wire->cur_len == 0)
-			//TODO start up a new packet
-		//keep moving the packets forward
 		wire->cur_scroll = (t_cur_scroll == wire->slot_length)? 0 : t_cur_scroll + 1;
 
 	}

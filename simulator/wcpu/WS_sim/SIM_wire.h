@@ -43,6 +43,8 @@ typedef struct WS_SIM_wire
 	//designed for channels, shows where the wire can end up
 	uint32_t channel_start;
 	uint8_t channel_length;
+	bool tgt_done;
+	bool src_done;
 	//target channel
 	uint8_t tgt_chnl;
 	uint8_t src_chnl;
