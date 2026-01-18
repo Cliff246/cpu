@@ -4,6 +4,8 @@
 
 #include "OBJ_constants.h"
 
+#include "SIM_commons.h"
+
 #include <stdint.h>
 #include <stdalign.h>
 #include <stdlib.h>
@@ -28,7 +30,7 @@ typedef struct WS_SIM_routetable
 	//for all channels
 	SIM_route_t table[OBJ_MAX_CHANNELS];
 	//this is a flat array of every channel that can address something on a wire
-	uint8_t overlap[OBJ_MAX_CHANNELS * OBJ_MAX_CHANNELS];
+	SIM_channel_local_t overlap[OBJ_MAX_CHANNELS * OBJ_MAX_CHANNELS];
 }SIM_routetable_t;
 
 //TODO generate an in order routetable for the object

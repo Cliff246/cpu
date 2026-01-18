@@ -20,6 +20,6 @@ typedef struct WS_OBJ_context
 	const size_t size;
 	_Alignas(8) uint8_t bytes[];
 
-}OBJ_ctx_t;
+}OBJ_context_t;
 
 #endif

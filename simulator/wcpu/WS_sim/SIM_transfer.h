@@ -5,13 +5,16 @@
 #include <stdbool.h>
 
 #include "OBJ_message.h"
-typedef struct WS_SIM_wireslot
+#include "SIM_packet.h"
+
+
+typedef struct WS_SIM_transfer
 {
 	//packet index
-	OBJ_msg_t msg;
+	SIM_packet_t packet;
 	bool used;
 
-}SIM_wireslot_t;
+}SIM_transfer_t;
 
 
 

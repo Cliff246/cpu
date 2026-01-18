@@ -5,11 +5,11 @@
 #include "OBJ_constants.h"
 #include "SIM_message.h"
 #include "SIM_routetable.h"
+#include "SIM_commons.h"
 
 #include <stdint.h>
 #include <stdbool.h>
 
-#define SIM_PORT_SIZE 64
 
 typedef struct WS_SIM_msgkey
 {
@@ -21,13 +21,9 @@ typedef struct WS_SIM_port
 {
 	uint16_t object_id;
 
-	uint32_t channels[OBJ_MAX_CHANNELS];
-	OBJ_bundle_t read;
-	OBJ_bundle_t write;
+	SIM_channel_global_t local_to_global[OBJ_MAX_CHANNELS];
+
 	SIM_routetable_t routetable;
-	SIM_msgkey_t keytable[SIM_PORT_SIZE];
-	SIM_message_t msg[SIM_PORT_SIZE];
-	SIM_message_t chnl_buffer[OBJ_MAX_CHANNELS];
 }SIM_port_t;
 
 

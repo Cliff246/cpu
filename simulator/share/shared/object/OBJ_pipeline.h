@@ -10,11 +10,11 @@
 typedef struct WS_OBJ_pipeline
 {
 	//pulls in pkt's in
-	void (*read)(OBJ_hnd_t *hnd, OBJ_ctx_t *ctx, OBJ_bundle_t *in);
+	void (*read)(OBJ_handle_t *hnd, OBJ_context_t *ctx, OBJ_bundle_t *in);
 	//converts to context
-	void (*update)(OBJ_hnd_t *hnd, OBJ_ctx_t *ctx, OBJ_locals_t *lcl);
+	void (*update)(OBJ_handle_t *hnd, OBJ_context_t *ctx, OBJ_locals_t *lcl);
 	//pushes out new packets
-	void (*write)(OBJ_hnd_t *hnd, OBJ_ctx_t *ctx, OBJ_bundle_t *out);
+	void (*write)(OBJ_handle_t *hnd, OBJ_context_t *ctx, OBJ_bundle_t *out);
 }OBJ_pipeline_t;
 
 #endif

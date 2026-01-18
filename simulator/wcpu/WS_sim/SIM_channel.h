@@ -4,7 +4,9 @@
 
 #include "OBJ_message.h"
 #include "OBJ_bundle.h"
+#include "SIM_packet.h"
 #include "SIM_routetable.h"
+#include "SIM_commons.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -18,11 +20,11 @@
 typedef struct WS_SIM_channel
 {
 	//device id
-	uint16_t oid;
+	SIM_object_global_t oid;
 	//channel id
-	uint8_t cid;
-	OBJ_msg_t msg;
-	bool has;
+	SIM_channel_local_t cid;
+
+	SIM_packet_t packet;
 }SIM_channel_t;
 
 void SIM_channel_init(SIM_channel_t *channel, uint32_t oid, uint32_t cid);

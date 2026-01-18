@@ -3,7 +3,7 @@
 
 #include "IO_configure.h"
 #include "MOD_description.h"
-#include "SIM_wireslot.h"
+#include "SIM_transfer.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -11,7 +11,8 @@
 #include "SIM_graph.h"
 #include "SIM_wire.h"
 
-typedef struct WS_SIM_simulator {
+typedef struct WS_SIM_simulator
+{
   int sid;
 
   SIM_graph_t *graph;

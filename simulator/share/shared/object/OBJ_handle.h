@@ -18,6 +18,6 @@ typedef struct WS_OBJ_handle
 	const int hid;
 	//context id;
 	const int cid;
-}OBJ_hnd_t;
+}OBJ_handle_t;
 
 #endif
