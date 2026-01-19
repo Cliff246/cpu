@@ -60,8 +60,8 @@ typedef struct WS_SIM_wire
 
 	//current index of the scroll limit
 	uint32_t			current_transfer_scroll;
-	uint32_t 			current_transfer_length;
-
+	uint16_t 			current_transfer_length;
+	uint16_t 			wire_index;
 	//round robin queue
 	SIM_wire_channel_t bus_rr[OBJ_MAX_CHANNELS];
 	uint32_t bus_rr_used;

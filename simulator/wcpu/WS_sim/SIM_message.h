@@ -11,7 +11,7 @@
 
 typedef struct WS_SIM_message
 {
-	SIM_message_tag_t tag;
+	SIM_tag_t tag;
 }SIM_message_t;
 
 

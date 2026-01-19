@@ -1,5 +1,6 @@
 #include "SIM_wire.h"
 #include "OBJ_constants.h"
+#include "SIM_bus.h"
 #include "SIM_channel.h"
 #include "SIM_commons.h"
 #include "SIM_graph.h"
@@ -224,7 +225,20 @@ bool SIM_wire_bus_dequeue_roundrobin(SIM_graph_t *graph, SIM_wire_t *wire)
 	SIM_port_global_t global_port = object->port_index;
 	assert(global_port < graph->ports_size);
 	SIM_port_t *port = &graph->ports[global_port];
-	//port.
+
+	SIM_bus_t *bus = &graph->buses[wire->wire_index];
+
+	assert(bus->wire_id == wire->wire_index);
+	uint64_t address = port->waiting[channel->cid].address;
+	SIM_tag_t tag = SIM_bus_find_address(bus, address);
+	assert(tag > 0);
+	int16_t local = SIM_bus_find_local_channel(bus,tag);
+	assert(local < wire->channel_length);
+	if(local < 0)
+		assert(0);
+	wire->transfer_channel_output = local;
+	wire->transfering = true;
+	return true;
 }
 
 

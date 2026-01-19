@@ -11,23 +11,25 @@
 #include <stdbool.h>
 
 
-typedef struct WS_SIM_msgkey
+typedef struct WS_SIM_waiting
 {
-	uint64_t group;
-	int16_t index;
-}SIM_msgkey_t;
+	uint64_t address;
+}SIM_waiting_t;
 
 typedef struct WS_SIM_port
 {
 	uint16_t object_id;
 
 	SIM_channel_global_t local_to_global[OBJ_MAX_CHANNELS];
-
+	SIM_message_t messages[OBJ_MAX_CHANNELS];
+	SIM_waiting_t waiting[OBJ_MAX_CHANNELS];
 	SIM_routetable_t routetable;
 }SIM_port_t;
 
 
 typedef struct WS_SIM_graph SIM_graph_t;
+
+
 
 //can read the msg buffer is not empty
 bool SIM_port_can_read(SIM_graph_t *graph, SIM_port_t *port);
