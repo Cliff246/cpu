@@ -21,13 +21,13 @@ typedef struct WS_SIM_bus_address_table
 
 typedef struct WS_SIM_bus_tag_table
 {
-	//locale address of the wire
+	//local address of the wire
 	int16_t tags[SIM_TAGS_SIZE];
 }SIM_bus_tag_table_t;
 
 typedef struct WS_SIM_bus
 {
-	_Alignas(1024) uint64_t wire_id;
+	_Alignas(1024) uint64_t bus_index;
 	SIM_bus_tag_table_t tag_table;
 	SIM_bus_address_table_t address_table;
 	bool finished;

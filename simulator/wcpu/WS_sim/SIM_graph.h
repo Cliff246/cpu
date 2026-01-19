@@ -4,13 +4,14 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "SIM_commons.h"
 #include "SIM_object.h"
 #include "SIM_port.h"
 #include "SIM_bus.h"
 #include "SIM_wire.h"
 #include "SIM_transfer.h"
 #include "SIM_channel.h"
-#include "SIM_routetable.h"
+#include "SIM_routemap.h"
 
 typedef struct WS_SIM_graph
 {
@@ -62,11 +63,14 @@ SIM_graph_t *SIM_graph_init(void);
 //basioc template for graph
 SIM_graph_t *SIM_graph_init_template(void);
 
-
+SIM_channel_t *SIM_graph_get_channel(SIM_graph_t *graph, SIM_channel_global_t global);
+SIM_transfer_t *SIM_graph_get_transfer(SIM_graph_t *graph, SIM_transfer_global_t global);
 //set graph changed function
 //sets graphs flags to be modified
 void SIM_graph_set_changed(SIM_graph_t *graph);
 
+void SIM_graph_wire_read(SIM_graph_t *graph);
+void SIM_graph_wire_write(SIM_graph_t *graph);
 void SIM_graph_object_update(SIM_graph_t *graph);
 void SIM_graph_object_read(SIM_graph_t *graph);
 void SIM_graph_object_write(SIM_graph_t *graph);

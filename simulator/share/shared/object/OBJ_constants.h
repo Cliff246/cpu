@@ -4,6 +4,7 @@
 #include <ctype.h>
 
 #define OBJ_MAX_CHANNELS 32
-#define OBJ_MAX_WIRES
+
+
 
 #endif

@@ -110,19 +110,18 @@ bool SIM_wire_config_set(SIM_wire_config_t *wire_config)
 	wire_config->flags.set = true;
 	return true;
 }
-
-SIM_wire_t SIM_wire_init(uint32_t channel_start, uint32_t channel_length, uint32_t transfer_start, uint32_t transfer_length)
+SIM_wire_t SIM_wire_init(uint32_t channel_start, uint32_t channel_length, uint32_t transfer_start, uint32_t transfer_length, uint16_t index)
 {
 	assert(channel_length < OBJ_MAX_CHANNELS);
-	SIM_wire_t wire =
-	{
-		.channel_start = channel_start,
-		.channel_length = channel_length,
-		.transfer_start = transfer_start,
-		.transfer_length = transfer_length,
-		.current_transfer_scroll = 0,
-		.current_transfer_length = 0,
-	};
+	SIM_wire_t wire = {0};
+	wire.channel_start = channel_start;
+	wire.channel_length = channel_length;
+	wire.transfer_start = transfer_start;
+	wire.transfer_length = transfer_length;
+	wire.current_transfer_scroll = 0;
+	wire.current_transfer_length = 0;
+	wire.wire_index = index;
+
 	return wire;
 }
 
@@ -219,17 +218,12 @@ bool SIM_wire_bus_dequeue_roundrobin(SIM_graph_t *graph, SIM_wire_t *wire)
 	assert(global_channel < graph->channels_size);
 	SIM_channel_t *channel = &graph->channels[global_channel];
 
-	SIM_object_global_t global_object = channel->oid;
-	assert(global_object < graph->objects_size);
-	SIM_object_t *object = &graph->objects[global_object];
-	SIM_port_global_t global_port = object->port_index;
-	assert(global_port < graph->ports_size);
-	SIM_port_t *port = &graph->ports[global_port];
+
 
 	SIM_bus_t *bus = &graph->buses[wire->wire_index];
 
-	assert(bus->wire_id == wire->wire_index);
-	uint64_t address = port->waiting[channel->cid].address;
+	assert(bus->bus_index == wire->wire_index);
+	uint64_t address = channel->address;
 	SIM_tag_t tag = SIM_bus_find_address(bus, address);
 	assert(tag > 0);
 	int16_t local = SIM_bus_find_local_channel(bus,tag);
@@ -242,3 +236,25 @@ bool SIM_wire_bus_dequeue_roundrobin(SIM_graph_t *graph, SIM_wire_t *wire)
 }
 
 
+SIM_wire_channel_t SIM_wire_bus_get_input(SIM_wire_t *wire)
+{
+	assert(wire->transfering == true);
+	return wire->transfer_channel_input;
+}
+
+SIM_wire_channel_t SIM_wire_bus_get_output(SIM_wire_t *wire)
+{
+	assert(wire->transfering == true);
+
+	return wire->transfer_channel_output;
+
+}
+
+SIM_transfer_global_t SIM_wire_get_current_transfer_global(SIM_wire_t *wire)
+{
+	
+	assert(wire->transfering == true);
+
+	return wire->transfer_start + wire->current_transfer_scroll;
+
+}

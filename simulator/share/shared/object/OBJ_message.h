@@ -8,6 +8,7 @@
 
 #define OBJ_MESSAGE_SIZE 64
 #define OBJ_MESSAGE_KEY_SIZE 16
+
 typedef struct WS_OBJ_message
 {
 	_Alignas(64) uint8_t msg[OBJ_MESSAGE_SIZE];

@@ -63,8 +63,8 @@ typedef struct WS_SIM_wire
 	uint16_t 			current_transfer_length;
 	uint16_t 			wire_index;
 	//round robin queue
-	SIM_wire_channel_t bus_rr[OBJ_MAX_CHANNELS];
-	uint32_t bus_rr_used;
+	SIM_wire_channel_t 	bus_rr[OBJ_MAX_CHANNELS];
+	uint32_t 			bus_rr_used;
 
 
 }SIM_wire_t;
@@ -73,7 +73,7 @@ static_assert(OBJ_MAX_CHANNELS == sizeof(uint32_t) * 8, "object max channels mus
 
 typedef struct WS_SIM_graph SIM_graph_t;
 
-SIM_wire_t SIM_wire_init(uint32_t channel_start, uint32_t channel_length, uint32_t transfer_start, uint32_t transfer_length);
+SIM_wire_t SIM_wire_init(uint32_t channel_start, uint32_t channel_length, uint32_t transfer_start, uint32_t transfer_length, uint16_t index);
 SIM_channel_global_t SIM_wire_channel_has(SIM_graph_t *graph, SIM_wire_t *wire);
 
 bool SIM_wire_bus_used_channel_roundrobin(SIM_wire_t *wire, SIM_wire_channel_t local);
@@ -81,7 +81,9 @@ void SIM_wire_bus_set_used_channel_roundrobin(SIM_wire_t *wire, SIM_wire_channel
 void SIM_wire_bus_clear_used_channel_roundrobin(SIM_wire_t *wire, SIM_wire_channel_t local);
 SIM_channel_global_t SIM_wire_channel_convert(SIM_wire_t *wire, SIM_wire_channel_t local);
 void SIM_wire_update_scroll(SIM_wire_t *wire);
-
+SIM_transfer_global_t SIM_wire_get_current_transfer_global(SIM_wire_t *wire);
+SIM_wire_channel_t SIM_wire_bus_get_input(SIM_wire_t *wire);
+SIM_wire_channel_t SIM_wire_bus_get_output(SIM_wire_t *wire);
 void SIM_wire_bus_add_channel_roundrobin(SIM_wire_t *wire, SIM_wire_channel_t local);
 SIM_wire_channel_t SIM_wire_bus_get_channel_roundrobin(SIM_wire_t *wire);
 bool SIM_wire_bus_dequeue_roundrobin(SIM_graph_t *graph, SIM_wire_t *wire);

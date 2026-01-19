@@ -9,7 +9,7 @@
 #include "SIM_transfer.h"
 #include "SIM_wire.h"
 #include "commons.h"
-#include "SIM_routetable.h"
+#include "SIM_routemap.h"
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -126,7 +126,7 @@ bool SIM_graph_set(SIM_graph_t *graph)
 		}
 
 
-		graph->wires[iw] = SIM_wire_init(tmpchannel, tmpchannel_size, wireslot_count, cfg->delay);
+		graph->wires[iw] = SIM_wire_init(tmpchannel, tmpchannel_size, wireslot_count, cfg->delay, iw);
 		wireslot_count += cfg->delay;
 	}
 
@@ -138,38 +138,13 @@ bool SIM_graph_set(SIM_graph_t *graph)
 
 
 
-//assumes an open routetable
-//returns -1 on failure and on success returns an index in an object channels
-int16_t SIM_graph_find_channel_open_routetable(SIM_graph_t *graph, SIM_object_global_t oid, uint8_t route)
+
+SIM_channel_t *SIM_graph_get_channel(SIM_graph_t *graph, SIM_channel_global_t global)
 {
-	SIM_object_t *obj = &graph->objects[oid];
-	const uint16_t port_id = obj->port_index;
-	SIM_port_t *port = &graph->ports[port_id];
-	SIM_routetable_t *rt = &port->routetable;
-
-	SIM_route_t *route_ptr = &rt->table[route];
-
-
-	//iterator overlap
-	for(uint16_t io = 0; io < route_ptr->overlap_length; ++io)
-	{
-		//route channel
-		const uint8_t route_chnl = rt->overlap[route_ptr->overlap_start + io];
-		assert(route_chnl < OBJ_MAX_CHANNELS);
-		//const uint32_t port_chnl_id = port->channels[route_chnl];
-		//SIM_channel_t *channel = &graph->channels[port_chnl_id];
-
-
-
-		assert(0);
-		{
-			return route_chnl;
-		}
-	}
-	return -1;
+	assert(graph);
+	assert(global < graph->channels_size);
+	return &graph->channels[global];
 }
-
-
 
 void SIM_graph_object_update(SIM_graph_t *graph)
 {
@@ -222,36 +197,51 @@ void SIM_graph_object_write(SIM_graph_t *graph)
 	}
 }
 
+void SIM_graph_wire_read(SIM_graph_t *graph)
+{
+	const uint32_t wire_size = graph->wires_size;
+
+	for(uint32_t iwr = 0; iwr < wire_size; ++iwr)
+	{
+		SIM_wire_t *wire = &graph->wires[iwr];
+		if(wire->transfering)
+		{
+			SIM_wire_channel_t output =  SIM_wire_bus_get_output(wire);
+			SIM_channel_global_t global_output =  SIM_wire_channel_convert(wire, output);
+			SIM_channel_t *channel = SIM_graph_get_channel(graph, global_output);
+			SIM_transfer_global_t global_transfer = SIM_wire_get_current_transfer_global(wire);
+			channel->packet = SIM_graph_get_transfer(graph, global_transfer)->packet;
+		}
+	}
+
+}
+
+void SIM_graph_wire_write(SIM_graph_t *graph)
+{
+	const uint32_t wire_size = graph->wires_size;
+
+	for(uint32_t iww = 0; iww < wire_size; ++iww)
+	{
+		SIM_wire_t *wire = &graph->wires[iww];
+		SIM_wire_update_scroll(wire);
+	}
+}
+
 void SIM_graph_update(SIM_graph_t *graph)
 {
 
 	assert(graph->flags.changed == false);
-
-	const uint32_t wire_size = graph->wires_size;
-
-	//iwr = iterator wire read
-	for(uint32_t iwr = 0; iwr < wire_size; ++iwr)
-	{
-		//tgt:import
-
-	}
-
+	SIM_graph_wire_read(graph);
 	SIM_graph_object_read(graph);
 	SIM_graph_object_update(graph);
 	SIM_graph_object_write(graph);
+	SIM_graph_wire_write(graph);
+}
 
-	//write output and shit
-	for(uint32_t iww = 0; iww < wire_size; ++iww)
-	{
-
-		// Arbitration rule (UNDEFINED):
-		// Select next src/tgt channel pair for this wire.
-		// Must ensure progress without starvation.
-		// Must not violate channel ownership invariants.
-		SIM_wire_t *wire = &graph->wires[iww];
-
-		//SIM_
-
-
-	}
+SIM_transfer_t *SIM_graph_get_transfer(SIM_graph_t *graph, SIM_transfer_global_t global)
+{
+	assert(global);
+	assert(global < graph->transfer_size);
+	assert(global >= 0);
+	return &graph->transfers[global];
 }
