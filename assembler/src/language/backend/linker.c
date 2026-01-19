@@ -6,6 +6,7 @@
 #include "hashmap.h"
 #include "arguments.h"
 #include <stdbool.h>
+#include <stdlib.h>
 
 void add_src_to_global(global_t *global, int index)
 {
@@ -70,7 +71,7 @@ bool add_tag_to_tagorder(linker_t *lk, char *key, int order)
 
 
 	}
-	else if(lk->order.count <= order)
+	else if(lk->order.count < order)
 	{
 		lk->order.tagorder =  REALLOC(lk->order.tagorder, (lk->order.count = order + 1), linker_tagorder_t);
 
@@ -432,12 +433,16 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 		for(int da = 0; da < MAX_DIRECTIVE_CONTENTS; ++da)
 		{
 			dirarg_t arg = dir->contents[da];
-			LOG("arg type%d\n", arg.type);
 			if(arg.type == DIRARG_INVAL || arg.type == DIRARG_UNDEFINED)
 			{
 				break;
 			}
-			add_tag_to_tagorder(lk, arg.content, da);
+			bool try = add_tag_to_tagorder(lk, arg.content, da);
+			if(try == false)
+			{
+			LOG("arg type%d %s\n", arg.type, arg.content);
+
+			}
 		}
 	}
 	else
@@ -539,10 +544,10 @@ bool check_global_validity(linker_t *lk)
 void build_module_stack(linker_t *lk)
 {
 	printf("build stack\n");
+	printf("%lu\n", get_number_of_sources());
 
 	for(int i = 0; i < get_number_of_sources(); ++i)
 	{
-		//printf("%d\n", i);
 		linker_src_t *src = &lk->srcs[i];
 		context_t *ctx = src->ctx;
 		size_t local_scopes = get_number_of_scope_from_context(ctx);
@@ -555,7 +560,7 @@ void build_module_stack(linker_t *lk)
 			module->tag = segment_ids_to_tag[sid];
 
 			append_scope_ref(lk, module, i, x);
-			//printf("scope reference added %d %d\n", scope->segment.sid, module->tag);
+			printf("scope reference added %d %d\n", scope->segment.sid, module->tag);
 		}
 	}
 
@@ -564,7 +569,9 @@ void build_module_stack(linker_t *lk)
 	{
 		module_t *module = &lk->modules[m];
 		if(module->set == false)
+		{
 			break;
+		}
 		fill_module(lk, module);
 	}
 	print_linker_tagorder(lk);

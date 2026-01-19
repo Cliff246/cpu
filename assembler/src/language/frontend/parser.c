@@ -226,7 +226,7 @@ parse_node_t *parse_instruction(parser_ctx_t *ctx)
 		add_child(n, make_node(NODE_EXCLAIM, exclaim));
 
 	}
-	else if(ahead->type == TOK_QUESTION)	
+	else if(ahead->type == TOK_QUESTION)
 	{
 		tok_t *question = expect(ctx, TOK_QUESTION);
 		add_child(n, make_node(NODE_QUESTION, question));
@@ -656,7 +656,7 @@ parse_node_t *parse_program(parser_ctx_t *p)
 
     }
 
-	//print_depth(root, 0);
+	print_depth(root, 0);
 
     return root;
 }

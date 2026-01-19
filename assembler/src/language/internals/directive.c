@@ -150,6 +150,7 @@ void apply_directive(struct context *ctx, directive_t *dir)
 
 static dirarg_type_t fill_dirarg_type(directive_type_t type, dirarg_type_t args[MAX_DIRECTIVE_CONTENTS], int index, parse_node_t *cur)
 {
+	//printf("dirarg: %d\n\n", index);
 	if(index >= MAX_DIRECTIVE_CONTENTS)
 	{
 		return DIRARG_INVAL;
@@ -209,11 +210,15 @@ directive_t *create_directive(struct context *ctx, parse_node_t *head)
 		{
 			parse_node_t *child = head->children[next];
 			char *childtok = child->tok->lexeme;
+			printf("%s\n", childtok);
 			dir->contents[next].content = strdup(childtok);
 			args[next] = fill_dirarg_type(template.type, args, next, child);
 		}
 		else
+		{
 			args[next] = DIRARG_UNDEFINED;
+			break;
+		}
 		dir->contents[next].type = args[next];
 
 	}

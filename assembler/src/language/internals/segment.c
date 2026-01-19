@@ -1,6 +1,8 @@
 #include "segment.h"
 #include "commons.h"
 #include "eerror.h"
+#include "hashmap.h"
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -59,6 +61,12 @@ void init_tag_store(void)
 
 int check_tag(char *key)
 {
+	print_hash_table(segment_tags);
+	if(key == NULL)
+	{
+		//fprintf(stderr, "key failed");
+		//exit(EXIT_FAILURE);
+	}
 	tag_store_t *tag =  (tag_store_t *)getdata_from_hash_table(segment_tags, key);
 	if(tag == NULL)
 		return -1;
@@ -70,6 +78,7 @@ int check_tag(char *key)
 
 int register_tag(char *key)
 {
+	//printf("reg tag %s\n", key);
 	tag_store_t *tag =  new_tag_store(key);
 	addto_hash_table(segment_tags, key, tag);
 	return tag->tag;
@@ -133,13 +142,13 @@ static void generate_argument_data(seg_t *seg)
 	for(int i = 0; i < SEGMENT_MAX_ARGUMENTS; ++i)
 	{
 		seg_arg_t *arg = &seg->args[i];
+		//printf("tag %s\n", arg->arg);
 		if(!arg->used)
 			break;
 
 
 		if(tag_state)
 		{
-			//printf("%s associate tag\n", arg->arg);
 			seg->state_tag = true;
 			seg->tag = assiociate_tag(arg->arg);
 			tag_state = false;

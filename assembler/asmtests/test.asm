@@ -1,5 +1,6 @@
 %order MAIN dat OTHER
-.text tag MAIN start
+
+.text tag MAIN
 run:
 	sys.setcd x0, x0, x0, other
 	jmp.jmp x0, x0, x0, @open

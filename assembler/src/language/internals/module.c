@@ -285,7 +285,7 @@ void fill_module(struct linker *lk, module_t *mod)
 		mod->emit_order[start] = swap_start;
 	}
 
-
+	print_module(mod);
 
 
 }
