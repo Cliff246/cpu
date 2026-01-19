@@ -190,7 +190,7 @@ void SIM_wire_bus_complete_channel_roundrobin(SIM_wire_t *wire)
 	assert(SIM_wire_bus_has_channel_roundrobin(wire) == true && "wire must have round length > 0");
 	wire->transfering = false;
 	SIM_wire_channel_t channel = wire->bus_rr[wire->bus_rr_last];
-	wire->bus_rr_last = (wire->bus_rr_last >= wire->channel_length)? 0 : wire->bus_rr_last++;
+	wire->bus_rr_last = (wire->bus_rr_last >= wire->channel_length)? 0 : wire->bus_rr_last + 1;
 	SIM_wire_bus_clear_used_channel_roundrobin(wire, channel);
 	wire->bus_rr_length--;
 }
