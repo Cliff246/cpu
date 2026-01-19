@@ -6,8 +6,7 @@
 
 typedef struct WS_SIM_mail
 {
-	uint64_t address;
-	SIM_packet_t packets[];
+	OBJ_msg_t msg;
 }SIM_mail_t;
 
 #endif

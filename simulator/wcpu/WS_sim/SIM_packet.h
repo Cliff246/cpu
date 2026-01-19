@@ -9,7 +9,7 @@
 typedef struct WS_SIM_packet
 {
 	_Alignas(8) uint8_t bytes[SIM_PACKET_SIZE];
-	
+	uint8_t used;
 }SIM_packet_t;
 
 #endif

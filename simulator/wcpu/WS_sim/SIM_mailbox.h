@@ -9,7 +9,6 @@
 typedef struct WS_SIM_mailbox
 {
 	SIM_channel_global_t channel;
-
 	SIM_mail_t mail;
 }SIM_mailbox_t;
 
