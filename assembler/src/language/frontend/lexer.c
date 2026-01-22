@@ -158,6 +158,7 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 	{
 		ch = GETCHAR;
 		++index;
+
 		if(ch == 0)
 		{
 			break;
@@ -179,22 +180,20 @@ lexer_ctx_t *create_token_stream(char *src, size_t file_id)
 
 		else if (isalpha(ch) || ch == '_')
 		{
-			//printf("1, index: %d %d\n", index, ctx->pos);
 
 			start = ctx->pos;
 			while (isalnum(PEEK) || PEEK == '_')
 			{
-				//printf("peek: %d %c\n", PEEK, PEEK);
 				ADVANCE;
 			}
 			ADVANCE;
 
 			char *lexeme = SLICE(start, ctx->pos);
-			//printf("lexme: %s\n", lexeme);
 
 
 			if (GETCHAR == ':')
 			{
+
 				EMIT(TOK_REFERENCE, lexeme);
 			}
 			else

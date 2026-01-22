@@ -1,0 +1,26 @@
+
+set(WCC_CONSTANTS_SRC ${WCC_CONSTANTS_SRC}
+
+	${CMAKE_CURRENT_SOURCE_DIR}/WCC_constants.c
+
+
+)
+set(CMAKE_BUILD_TYPE Debug)
+
+add_library(WCC_CONSTANTS STATIC
+	${WCC_CONSTANTS_SRC}
+)
+
+
+target_include_directories(WCC_CONSTANTS
+	PUBLIC
+	${CMAKE_CURRENT_SOURCE_DIR}/
+
+)
+
+target_link_libraries(WCC_CONSTANTS
+	PUBLIC
+
+)
+
+

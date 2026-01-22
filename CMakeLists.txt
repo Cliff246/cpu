@@ -5,7 +5,7 @@ project(WEIRD_CPU)
 
 add_subdirectory(assembler)
 add_subdirectory(simulator)
-add_subdirectory(wcc)
+add_subdirectory(wcpu_c_compiler)
 
 add_custom_target(copy_stl ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory

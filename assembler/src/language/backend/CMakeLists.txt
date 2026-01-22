@@ -1,0 +1,29 @@
+set(ASM_BACKEND_SRC ${ASM_BACKEND_SRC}
+
+	${CMAKE_CURRENT_SOURCE_DIR}/objfile.c
+	${CMAKE_CURRENT_SOURCE_DIR}/linker.c
+	${CMAKE_CURRENT_SOURCE_DIR}/emiter.c
+)
+
+set(CMAKE_BUILD_TYPE Debug)
+
+
+add_library(ASM_BACKEND STATIC ${ASM_BACKEND_SRC})
+
+
+
+target_include_directories(ASM_BACKEND
+	PUBLIC
+	${CMAKE_CURRENT_SOURCE_DIR}/
+	ASM_COMMONS
+	ASM_INTERNALS
+
+)
+
+
+target_link_libraries(ASM_BACKEND
+	PUBLIC
+	ASM_COMMONS
+	ASM_INTERNALS
+
+)

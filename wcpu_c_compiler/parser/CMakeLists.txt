@@ -1,6 +1,6 @@
 
 set(WCC_PARSER_SRC ${WCC_PARSER_SRC}
-	${CMAKE_CURRENT_SOURCE_DIR}/wcc_parser.c
+	${CMAKE_CURRENT_SOURCE_DIR}/WCC_parser.c
 
 
 )
@@ -13,10 +13,14 @@ add_library(WCC_PARSER STATIC
 
 target_include_directories(WCC_PARSER
 	PUBLIC
+	WCC_COMMONS
+	${CMAKE_CURRENT_SOURCE_DIR}/
 
 )
 
 target_link_libraries(WCC_PARSER
 	PUBLIC
+	WCC_COMMONS
+
 )
 

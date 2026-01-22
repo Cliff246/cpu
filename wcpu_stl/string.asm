@@ -12,6 +12,7 @@
 .text tag std
 
 
+;---------------------------------
 
 ;a0 = string
 ;returns length
@@ -50,6 +51,7 @@ strlen_char_loop:
 strlen_end:
 	alu.add a0, t2, zero
 	jmp.ret null, null, null
+;---------------------------------
 
 ;a0 = src1
 ;a1 = src2
@@ -59,14 +61,15 @@ strcpy:
 	alu.add t1, a1, zero
 
 
-strcpy_loop:
+_strcpy_loop:
 
-
+	jmp.jmp null, null, null, @_strcpy_loop
 
 strcpy_end:
 
 
 	jmp.ret null, null, null
+;---------------------------------
 
 ;a0 = dst1
 ;a1 = src2
@@ -78,7 +81,7 @@ strcmp:
 
 	;counter
 	alu.add t2, zero, zero
-strcpy_loop:
+strcmp_loop:
 
 	mem.ld t3, t1, zero
 
@@ -89,18 +92,21 @@ strcpy_check:
 
 strcmp_end:
 	jmp.ret null, null, null
+;---------------------------------
 
 ;a0 = src1
 ;a1 = src2
 ;a2 = length
 strncpy:
 ;TODO
+;---------------------------------
 
 ;a0 = source
 ;a1 = index
 strindex:
 ;TODO
 
+;---------------------------------
 
 ;a0 = dest
 ;a1 = src
@@ -124,6 +130,7 @@ memcpy_loop:
 
 
 
+;---------------------------------
 
 
 ;a0 = source
@@ -141,8 +148,13 @@ memset_loop:
 
 
 
+;---------------------------------
+
 ;a0 src
 ;a1 length
 reverse:
 
 	jmp.ret zero, zero, zero
+
+
+

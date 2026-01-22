@@ -244,7 +244,7 @@ bool valid_name(char *name)
 		return false;
 	}
 	char *ch = name;
-	if(isalpha(*ch))
+	if(isalpha(*ch) || *ch == '_')
 	{
 		ch++;
 		for(;*ch; ch++)

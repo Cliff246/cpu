@@ -1,7 +1,9 @@
 
 set(WCC_COMMONS_SRC ${WCC_COMMONS_SRC}
 
-	${CMAKE_CURRENT_SOURCE_DIR}/wcc_map.c
+	${CMAKE_CURRENT_SOURCE_DIR}/WCC_map.c
+	${CMAKE_CURRENT_SOURCE_DIR}/WCC_token.c
+	${CMAKE_CURRENT_SOURCE_DIR}/WCC_file.c
 
 )
 set(CMAKE_BUILD_TYPE Debug)
@@ -13,11 +15,13 @@ add_library(WCC_COMMONS STATIC
 
 target_include_directories(WCC_COMMONS
 	PUBLIC
+	${CMAKE_CURRENT_SOURCE_DIR}/
 
 )
 
 target_link_libraries(WCC_COMMONS
 	PUBLIC
+
 )
 
 
