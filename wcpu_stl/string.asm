@@ -7,7 +7,7 @@
 %pub memset
 %pub strncpy
 %pub strindex
-
+%pub reverse
 
 .text tag std
 
@@ -136,5 +136,13 @@ memset_loop:
 	mem.st! a1, a0, t0
 	alu.add t0, t0, #1
 	jmp.blt null, t0, a2, @memset_loop
+
+	jmp.ret zero, zero, zero
+
+
+
+;a0 src
+;a1 length
+reverse:
 
 	jmp.ret zero, zero, zero

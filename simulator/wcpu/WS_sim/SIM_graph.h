@@ -71,6 +71,8 @@ void SIM_graph_set_changed(SIM_graph_t *graph);
 
 void SIM_graph_wire_read(SIM_graph_t *graph);
 void SIM_graph_wire_write(SIM_graph_t *graph);
+void SIM_graph_port_read(SIM_graph_t *graph);
+void SIM_graph_port_write(SIM_graph_t *graph);
 void SIM_graph_object_update(SIM_graph_t *graph);
 void SIM_graph_object_read(SIM_graph_t *graph);
 void SIM_graph_object_write(SIM_graph_t *graph);

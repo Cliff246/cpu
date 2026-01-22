@@ -210,6 +210,8 @@ void SIM_graph_wire_read(SIM_graph_t *graph)
 			SIM_channel_global_t global_output =  SIM_wire_channel_convert(wire, output);
 			SIM_channel_t *channel = SIM_graph_get_channel(graph, global_output);
 			SIM_transfer_global_t global_transfer = SIM_wire_get_current_transfer_global(wire);
+
+			//wire read from the graph and get packet via a copy
 			channel->packet = SIM_graph_get_transfer(graph, global_transfer)->packet;
 		}
 	}
@@ -223,18 +225,52 @@ void SIM_graph_wire_write(SIM_graph_t *graph)
 	for(uint32_t iww = 0; iww < wire_size; ++iww)
 	{
 		SIM_wire_t *wire = &graph->wires[iww];
+		SIM_wire_channel_t output =  SIM_wire_bus_get_output(wire);
+		SIM_channel_global_t global_output =  SIM_wire_channel_convert(wire, output);
+		SIM_channel_t *channel = SIM_graph_get_channel(graph, global_output);
+
+		SIM_transfer_global_t global_transfer = SIM_wire_get_current_transfer_global(wire);
+		SIM_transfer_t *transfer = SIM_graph_get_transfer(graph, global_transfer);
+		transfer->packet = channel->packet;
+
 		SIM_wire_update_scroll(wire);
 	}
 }
+
+void SIM_graph_port_read(SIM_graph_t *graph)
+{
+	const uint16_t port_size = graph->ports_size;
+
+	for(uint32_t ipr = 0; ipr < port_size; ++ipr)
+	{
+		SIM_port_t *port = &graph->ports[ipr];
+		SIM_port_read_channels(graph, port);
+	}
+}
+
+
+void SIM_graph_port_write(SIM_graph_t *graph)
+{
+	const uint16_t port_size = graph->ports_size;
+
+	for(uint32_t ipr = 0; ipr < port_size; ++ipr)
+	{
+		SIM_port_t *port = &graph->ports[ipr];
+		SIM_port_write_channels(graph, port);
+	}
+}
+
 
 void SIM_graph_update(SIM_graph_t *graph)
 {
 
 	assert(graph->flags.changed == false);
 	SIM_graph_wire_read(graph);
+	SIM_graph_port_read(graph);
 	SIM_graph_object_read(graph);
 	SIM_graph_object_update(graph);
 	SIM_graph_object_write(graph);
+	SIM_graph_port_write(graph);
 	SIM_graph_wire_write(graph);
 }
 

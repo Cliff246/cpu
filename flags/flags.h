@@ -33,7 +33,7 @@
 #define PATH_VEC 6
 
 
-
+//8 bit path rd = 6, rs1 = 6, rs2 = 6, 4,
 
 //
 
@@ -72,13 +72,13 @@
 #define MODE_ACCUMLATOR 2
 
 
-
-#define MODE_SINK 3
-
 //dst = x0
 //lane1 = rs1
 //lane2 = rs2
 //lane3 = rs3 + sidestream
+
+
+#define MODE_SINK 3
 
 
 

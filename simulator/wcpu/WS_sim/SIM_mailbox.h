@@ -5,7 +5,6 @@
 #include "SIM_commons.h"
 #include "SIM_packet.h"
 #include "SIM_mail.h"
-#include "SIM_port.h"
 
 typedef struct WS_SIM_mailbox
 {
