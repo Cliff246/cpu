@@ -11,10 +11,13 @@ typedef int64_t WCC_skey_t;
 typedef struct WCC_shared_pointer
 {
 	//dont touch this
+	uint64_t size;
 	WCC_skey_t lock;
 	int64_t refcount;
 	const WCC_malias_t ptr;
 }*WCC_sptr_t;
+
+
 
 
 //shared pointer release
@@ -22,13 +25,16 @@ void WCC_sptr_release(WCC_sptr_t sptr);
 //shared pointer share
 WCC_sptr_t WCC_sptr_share(WCC_sptr_t sptr);
 
-//reserves
+//reserves bytes, this is essentially alloc
 WCC_sptr_t WCC_sptr_reserve(uint64_t size);
+//extends bytes past
 WCC_sptr_t WCC_sptr_extend(WCC_sptr_t sptr, uint64_t size);
 
 //returns negative on failure
 WCC_skey_t WCC_sptr_lock(WCC_sptr_t sptr);
 
+//true on success
+//false on failure
 bool WCC_sptr_unlock(WCC_sptr_t sptr, WCC_skey_t key);
 
 //8 bit reader of sptr
