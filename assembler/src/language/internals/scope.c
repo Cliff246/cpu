@@ -117,7 +117,7 @@ scope_t create_scope(parse_node_t *head)
 	scope_t scope = {0};
 	if(head->child_count != 2)
 	{
-		printf("scope should have 2 children had %d\n", head->child_count);
+		printf("scope should have 2 children had %ld\n", head->child_count);
 		escape(1);
 	}
 
@@ -142,7 +142,7 @@ scope_t create_scope(parse_node_t *head)
 				ref->byte_offset = 0;
 				ref->locale_offset = 0;
 				symbol_t *sym = create_symbol_with_ref(ref);
-				print_symbol(sym);
+				//print_symbol(sym);
 				//printf("print symbol\n");
 				add_symbol_to_scope(&scope, sym);
 			}
@@ -154,9 +154,8 @@ scope_t create_scope(parse_node_t *head)
 		}
 		else
 		{
-				LOG("scope segment has reference is out of range %s %s\n", get_token_lexme(head->tok) ,get_filename_from_id(get_token_file(head->tok)));
-				escape(1);
-
+			LOG("scope segment has reference is out of range %s %s\n", get_token_lexme(head->tok) ,get_filename_from_id(get_token_file(head->tok)));
+			escape(1);
 		}
 
 	}

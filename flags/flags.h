@@ -262,6 +262,15 @@
 //(lane1 + lane2)
 //packed 2 times
 //
+
+#define WCPU_SUBPATH_FPU_LIST(X)\
+	X(FPU,fpu,FADD			,fadd		, 0x00, fadd		, T0	, "fadd"	,	"dst = lhs + rhs "										, "float32 add"										, 0)				\
+	X(FPU,fpu,FSUB			,fsub		, 0x01, fsub		, T0	, "fsub"	,	"dst = lhs - rhs "										, "float32 sub"										, 0)				\
+	X(FPU,fpu,FMAD			,fmad		, 0x02, fmad		, T0	, "fmad"	,	"dst = lhs * rhs + oth"									, "float32 multiply add"							, 0)				\
+	X(FPU,fpu,FMSUB			,fmsub		, 0x03, fmsub		, T0	, "fmsub"	,	"dst = lhs * rhs - oth"									, "float32 multiply subtract"						, 0)				\
+
+
+
 #define FPU_FADD				0x00
 //subtract
 //(lane1 - lane2)

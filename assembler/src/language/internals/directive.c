@@ -138,7 +138,7 @@ void apply_directive(struct context *ctx, directive_t *dir)
 {
 
 	ctx_dirs_t *dirs = &ctx->dirs;
-	if(dirs->count <= dirs->count)
+	if(dirs->alloc <= dirs->count)
 	{
 		dirs->directives = REALLOC(dirs->directives, dirs->alloc *= 2, directive_t *);
 	}
@@ -210,7 +210,7 @@ directive_t *create_directive(struct context *ctx, parse_node_t *head)
 		{
 			parse_node_t *child = head->children[next];
 			char *childtok = child->tok->lexeme;
-			printf("%s\n", childtok);
+			//printf("%s\n", childtok);
 			dir->contents[next].content = strdup(childtok);
 			args[next] = fill_dirarg_type(template.type, args, next, child);
 		}

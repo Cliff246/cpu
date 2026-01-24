@@ -2,7 +2,6 @@
 #define __DIRECTIVE_HEADER__
 
 #include "parser.h"
-#include "inter.h"
 
 
 //the define directives types count must be n - 1 size

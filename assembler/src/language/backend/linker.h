@@ -112,6 +112,9 @@ typedef struct linker
 }linker_t;
 
 
+static int context_in_linker(linker_t *lk, char *filename);
+static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_dir);
+
 void free_linker(linker_t *lk);
 
 void add_context_to_linker(linker_t *lk, context_t *context);

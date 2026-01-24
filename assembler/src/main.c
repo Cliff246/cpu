@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 
 		}
 		output_t *out =  combine_segouts(outs, oo->count);
-		write_out(out, target.output_file);
+		write_out(out, (char *)target.output_file);
 		//output_t *output = emit(contexts[0]);
 		//write_out(output, (char *)target.output_file);
 		//printf("assemble\n");

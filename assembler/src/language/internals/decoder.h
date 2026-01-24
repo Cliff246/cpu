@@ -28,7 +28,7 @@ typedef struct mnemonic
 	ASM_subpath_mnemonic_t subpaths[128];
 }ASM_mnemonic_t;
 
-extern ASM_mnemonic_t ASM_mnemonics_list[8];
+extern ASM_mnemonic_t ASM_mnemonics_list[];
 
 
 extern const char *const mem_mnemonics[];

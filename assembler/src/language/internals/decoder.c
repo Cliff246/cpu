@@ -23,7 +23,7 @@
 },			\
 
 
-ASM_mnemonic_t ASM_mnemonics_list[8] =
+ASM_mnemonic_t ASM_mnemonics_list[] =
 {
 	[PATH_ALU] =
 	{
@@ -62,6 +62,15 @@ ASM_mnemonic_t ASM_mnemonics_list[8] =
 		{
 			WCPU_SUBPATH_SYS_LIST(SUBPATH_MNEMONIC)
 
+		},
+	},
+	[PATH_FPU] =
+	{
+		.path = PATH_FPU,
+		.str = "fpu",
+		.subpaths =
+		{
+			WCPU_SUBPATH_FPU_LIST(SUBPATH_MNEMONIC)
 		},
 	}
 };
@@ -232,35 +241,6 @@ int ASM_get_subpath(int path, char *keyword)
 }
 
 
-int get_alu_subpath(char *keyword)
-{
-
-
-
-	return ASM_get_subpath(PATH_ALU, keyword);
-
-
-}
-
-int get_mem_subpath(char *keyword)
-{
-
-
-
-	return ASM_get_subpath(PATH_MEM, keyword);
-
-
-}
-
-int get_jmp_subpath(char *keyword)
-{
-	return ASM_get_subpath(PATH_JMP, keyword);
-
-
-
-
-}
-
 
 
 
@@ -283,6 +263,7 @@ int get_path(char *keyword)
 		"mem",
 		"jmp",
 		"sys",
+		"fpu",
 	};
 
 	const int pathvalue[] = {
@@ -290,6 +271,7 @@ int get_path(char *keyword)
 		PATH_MEM,
 		PATH_JMP,
 		PATH_SYS,
+		PATH_FPU,
 
 	};
 	int code = determine_code(keyword, pathwords, ARYSIZE(pathwords));
@@ -306,25 +288,13 @@ int get_path(char *keyword)
 
 int get_subpath(int path, char *keyword)
 {
-	//printf("path: %d\n", path);
-	switch(path)
-	{
 
-		case PATH_ALU:
-			return get_alu_subpath(keyword);
-			break;
-		case PATH_JMP:
-			return get_jmp_subpath(keyword);
-			break;
-		case PATH_MEM:
-			return get_mem_subpath(keyword);
-			break;
-		case PATH_SYS:
-			return get_sys_subpath(keyword);
-			break;
-		default:
-			return -1;
+	if(path < 0 || path > ARYSIZE(ASM_mnemonics_list))
+	{
+		return -1;
 	}
+
+	int val = ASM_get_subpath(path, keyword);
 }
 
 
@@ -339,6 +309,9 @@ bool valid_reference(char **str, int length)
 
 	return true;
 }
+
+
+
 bool valid_instruction(char **str, int length)
 {
 	if(str == NULL)

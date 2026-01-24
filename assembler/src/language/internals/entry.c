@@ -30,11 +30,6 @@ void entry_mop(entry_t *entry)
 
 }
 
-void entry_macro(entry_t *entry)
-{
-	//TODO
-
-}
 
 entry_t *create_entry(parse_node_t *node)
 {

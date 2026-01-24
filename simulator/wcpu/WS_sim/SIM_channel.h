@@ -24,7 +24,9 @@ typedef struct WS_SIM_channel
 	SIM_object_global_t oid;
 	//channel id
 	SIM_channel_local_t cid;
+	//boolean for whether it has an output
 	bool output;
+	bool changed;
 	//cringe
 	uint64_t address;
 	SIM_packet_t packet;

@@ -274,7 +274,7 @@ void print_mop_data(mop_t *mop)
 				break;
 		}
 	}
-	printf("\t%d\n", mop->data.words_len);
+	printf("\t%lu\n", mop->data.words_len);
 }
 
 void print_mop(mop_t *mop)
@@ -371,5 +371,6 @@ mop_id_t get_mop_code(char *keyword)
 	{
 		printf("not a valid mop code %s\n", keyword);
 		escape(1);
+		return MOP_UNKNOWN;
 	}
 }

@@ -566,7 +566,7 @@ parse_node_t *parse_program(parser_ctx_t *p)
 			newline = false;
 			continue;
 		}
-        else if (t->type == TOK_SEGMENT)
+		else if (t->type == TOK_SEGMENT)
 		{
 
 
@@ -577,7 +577,7 @@ parse_node_t *parse_program(parser_ctx_t *p)
 			newline = false;
 			continue;
 		}
-        else if (t->type == TOK_REFERENCE)
+		else if (t->type == TOK_REFERENCE)
 		{
 
 			if(!seg_root)
@@ -656,7 +656,7 @@ parse_node_t *parse_program(parser_ctx_t *p)
 
     }
 
-	print_depth(root, 0);
+	//print_depth(root, 0);
 
     return root;
 }

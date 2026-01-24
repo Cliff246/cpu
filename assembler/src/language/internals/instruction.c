@@ -21,7 +21,7 @@ void print_inst(inst_t *inst)
 		{
 
 			default:
-				printf("path:%d subpath %d: rs1: %d, rs2: %d, rs3: %d, modeflag %d, selflag: %d, immf: %d [immediate: %lld]\n", inst->path, inst->subpath, inst->rs1, inst->rs2, inst->rs3, inst->modeflag, inst->selflag, inst->immflag, inst->imm.ilit.lit);
+				printf("path:%d subpath %d: rs1: %d, rs2: %d, rs3: %d, modeflag %d, selflag: %d, immf: %d [immediate: %ld]\n", inst->path, inst->subpath, inst->rs1, inst->rs2, inst->rs3, inst->modeflag, inst->selflag, inst->immflag, inst->imm.ilit.lit);
 
 		}
 

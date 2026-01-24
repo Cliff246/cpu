@@ -421,7 +421,7 @@ static void fill_global_via_directive(linker_t *lk, context_t *ctx, int index_di
 				}
 
 			}
-			print_global_content(glb);
+			//print_global_content(glb);
 
 		}
 		return;
@@ -543,8 +543,8 @@ bool check_global_validity(linker_t *lk)
 
 void build_module_stack(linker_t *lk)
 {
-	printf("build stack\n");
-	printf("%lu\n", get_number_of_sources());
+	//printf("build stack\n");
+	//printf("%lu\n", get_number_of_sources());
 
 	for(int i = 0; i < get_number_of_sources(); ++i)
 	{
@@ -560,7 +560,7 @@ void build_module_stack(linker_t *lk)
 			module->tag = segment_ids_to_tag[sid];
 
 			append_scope_ref(lk, module, i, x);
-			printf("scope reference added %d %d\n", scope->segment.sid, module->tag);
+			//printf("scope reference added %d %d\n", scope->segment.sid, module->tag);
 		}
 	}
 
@@ -574,7 +574,7 @@ void build_module_stack(linker_t *lk)
 		}
 		fill_module(lk, module);
 	}
-	print_linker_tagorder(lk);
+	//print_linker_tagorder(lk);
 }
 
 
@@ -598,7 +598,7 @@ context_t *get_context_from_global(linker_t *lk, global_t *glb)
 		context_t *ctx = lk->srcs[index].ctx;
 		return ctx;
 	}
-	else if(glb->used == GLOBAL_IMPORT)
+	else if(glb->type == GLOBAL_IMPORT)
 	{
 		if(glb->glb.import.valid == false)
 		{

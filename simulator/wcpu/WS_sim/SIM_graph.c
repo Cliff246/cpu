@@ -212,7 +212,15 @@ void SIM_graph_wire_read(SIM_graph_t *graph)
 			SIM_transfer_global_t global_transfer = SIM_wire_get_current_transfer_global(wire);
 
 			//wire read from the graph and get packet via a copy
-			channel->packet = SIM_graph_get_transfer(graph, global_transfer)->packet;
+
+			SIM_transfer_t *transfer = SIM_graph_get_transfer(graph, global_transfer);
+			if(transfer->used == false)
+			{
+				assert(0);
+			}
+
+			channel->packet = transfer->packet;
+			transfer->used = false;
 		}
 	}
 
@@ -231,8 +239,14 @@ void SIM_graph_wire_write(SIM_graph_t *graph)
 
 		SIM_transfer_global_t global_transfer = SIM_wire_get_current_transfer_global(wire);
 		SIM_transfer_t *transfer = SIM_graph_get_transfer(graph, global_transfer);
-		transfer->packet = channel->packet;
 
+		if(transfer->used == true)
+		{
+			assert(false);
+		}
+
+		transfer->packet = channel->packet;
+		transfer->used = true;
 		SIM_wire_update_scroll(wire);
 	}
 }
@@ -244,7 +258,9 @@ void SIM_graph_port_read(SIM_graph_t *graph)
 	for(uint32_t ipr = 0; ipr < port_size; ++ipr)
 	{
 		SIM_port_t *port = &graph->ports[ipr];
+		//very naive
 		SIM_port_read_channels(graph, port);
+		SIM_port_produce_bundle(graph, port);
 	}
 }
 
@@ -256,6 +272,9 @@ void SIM_graph_port_write(SIM_graph_t *graph)
 	for(uint32_t ipr = 0; ipr < port_size; ++ipr)
 	{
 		SIM_port_t *port = &graph->ports[ipr];
+		//very naive
+		SIM_port_collect_bundle(graph, port);
+		//very naive
 		SIM_port_write_channels(graph, port);
 	}
 }
@@ -266,10 +285,12 @@ void SIM_graph_update(SIM_graph_t *graph)
 
 	assert(graph->flags.changed == false);
 	SIM_graph_wire_read(graph);
+	//a waste for now but i am so lazy
 	SIM_graph_port_read(graph);
 	SIM_graph_object_read(graph);
 	SIM_graph_object_update(graph);
 	SIM_graph_object_write(graph);
+	//another waste for now but i am soooooooo lazy
 	SIM_graph_port_write(graph);
 	SIM_graph_wire_write(graph);
 }

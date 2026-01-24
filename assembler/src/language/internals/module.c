@@ -203,12 +203,12 @@ static void print_scope_ref(scope_ref_t sr)
 
 static void print_modfrag_code(modfrag_t frag)
 {
-	printf("		instructions %d immediates %d\n", frag.frag.code.insts, frag.frag.code.imms);
+	printf("		instructions %ld immediates %ld\n", frag.frag.code.insts, frag.frag.code.imms);
 }
 
 static void print_modfrag_data(modfrag_t frag)
 {
-	printf("		words %d\n", frag.frag.data.words);
+	printf("		words %ld\n", frag.frag.data.words);
 }
 
 
@@ -279,13 +279,13 @@ void fill_module(struct linker *lk, module_t *mod)
 	}
 	if(start != -1 && start != 0)
 	{
-		printf("swap %d %d\n", start, mod->emit_order[0]);
+		//printf("swap %d %d\n", start, mod->emit_order[0]);
 		int swap_start = mod->emit_order[0];
 		mod->emit_order[0] = start;
 		mod->emit_order[start] = swap_start;
 	}
 
-	print_module(mod);
+	//print_module(mod);
 
 
 }

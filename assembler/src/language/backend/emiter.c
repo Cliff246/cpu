@@ -235,7 +235,7 @@ output_t *combine_segouts(segout_t *segouts, int length)
 			escape(1);
 		}
 	}
-	output->bin = bin;
+	output->bin = (uint64_t *)bin;
 	output->size = bin_iter;
 	return output;
 }
@@ -297,7 +297,7 @@ segout_txt_t create_segout_txt(linker_t *ll, region_t *region)
 			}
 			inst_t *instruction = &entry->entry.inst;
 			//printf("content %s\n", entry->node->tok->lexeme);
-			printf("(%d %d)%s: ", inst_iter,imm_iter, ASM_mnemonics_list[instruction->path].subpaths[instruction->subpath].str);
+			printf("(%ld %ld)%s: ", inst_iter,imm_iter, ASM_mnemonics_list[instruction->path].subpaths[instruction->subpath].str);
 
 			print_inst(instruction);
 			if(instruction->immflag )
@@ -490,26 +490,26 @@ segout_t create_segout(linker_t *ll, region_t *region)
 void print_segout_code(segout_txt_t *code)
 {
 
-	printf("table ptr %d\n", code->desc[0]);
-	printf("table len %d\n", code->desc[1]);
-	printf("inst ptr  %d\n", code->desc[2]);
-	printf("inst len  %d\n", code->desc[3]);
-	printf("imm ptr   %d\n", code->desc[4]);
-	printf("imm len   %d\n", code->desc[5]);
+	printf("table ptr %ld\n", code->desc[0]);
+	printf("table len %ld\n", code->desc[1]);
+	printf("inst ptr  %ld\n", code->desc[2]);
+	printf("inst len  %ld\n", code->desc[3]);
+	printf("imm ptr   %ld\n", code->desc[4]);
+	printf("imm len   %ld\n", code->desc[5]);
 
 	for(int ti = 0; ti < code->desc[1]; ++ti)
 	{
-		printf("table: %d\n", code->table[ti]);
+		printf("table: %ld\n", code->table[ti]);
 	}
 
 	for(int ii = 0; ii < code->inst_len; ++ii)
 	{
-		printf("%.3d: %.16llx %lld\n", ii, code->inst[ii], code->inst[ii]);
+		printf("%.3d: %.16lx %ld\n", ii, code->inst[ii], code->inst[ii]);
 
 	}
 	for(int iim = 0; iim < code->imm_len; ++iim)
 	{
-		printf("%.3d: %.16llx %lld\n", iim, code->imm[iim], code->imm[iim]);
+		printf("%.3d: %.16lx %ld\n", iim, code->imm[iim], code->imm[iim]);
 
 	}
 }
@@ -518,7 +518,7 @@ void print_segout_data(segout_data_t *data)
 {
 	for(int i = 0; i < data->data_size; ++i)
 	{
-		printf("%.3d: %.16llx %lld\n", i, data->data[i], data->data[i]);
+		printf("%.3d: %.16lx %ld\n", i, data->data[i], data->data[i]);
 	}
 
 }
@@ -553,7 +553,7 @@ size_t fix_align_scope_addresses(scope_t *scope, size_t module_offset, size_t fr
 			ref->fragment_offset = fragment_offset;
 			ref->absolute_offset = module_offset;
 			ref->resolved = true;
-			print_ref(ref);
+			//print_ref(ref);
 
 		}
 		else if(sym->type == SYMBOL_INVAL)
@@ -671,7 +671,7 @@ void write_out(output_t *output, char *name)
 	}
 	for(int i = 0; i < output->size; i++)
 	{
-		printf("%.3d: %.16llx %lld\n", i, output->bin[i], output->bin[i]);
+		printf("%.3d: %.16lx %ld\n", i, output->bin[i], output->bin[i]);
 
 
 

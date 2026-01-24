@@ -74,9 +74,18 @@ typedef struct segment
 
 }seg_t;
 
+
+extern char *seg_type_builtins[];
 seg_t create_segment(parse_node_t *head);
 
-
+int allocate_tag(void);
+void free_tag_store(void *ptr);
+tag_store_t *new_tag_store(char *key);
+void init_tag_store(void);
+int check_tag(char *key);
+static int assiociate_tag(char *key);
+seg_type_t get_seg_type(char *node);
+static void generate_argument_data(seg_t *seg);
 char *get_seg_type_string(seg_type_t segtype);
 
 #endif

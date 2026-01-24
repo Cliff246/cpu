@@ -61,11 +61,11 @@ void init_tag_store(void)
 
 int check_tag(char *key)
 {
-	print_hash_table(segment_tags);
+	//print_hash_table(segment_tags);
 	if(key == NULL)
 	{
-		//fprintf(stderr, "key failed");
-		//exit(EXIT_FAILURE);
+		fprintf(stderr, "key failed");
+		exit(EXIT_FAILURE);
 	}
 	tag_store_t *tag =  (tag_store_t *)getdata_from_hash_table(segment_tags, key);
 	if(tag == NULL)

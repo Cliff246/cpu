@@ -28,7 +28,7 @@ void create_ref_error(tok_t *tok, char *error)
 
 void print_ref(ref_t *ref)
 {
-	printf("%15s b:%d l:%d f:%d a:%d r:%d\n", ref->ref_string, ref->byte_offset, ref->locale_offset, ref->fragment_offset, ref->absolute_offset, ref->resolved_address);
+	printf("%15s b%ld l:%ld f:%ld a:%ld r:%ld\n", ref->ref_string, ref->byte_offset, ref->locale_offset, ref->fragment_offset, ref->absolute_offset, ref->resolved_address);
 }
 
 ref_t *create_reference( char *key)
@@ -88,7 +88,7 @@ void implement_reference(ref_t *ref, parse_node_t *head)
 	}
 	if(head->child_count != 2)
 	{
-		printf("references should implement two children implmeneted %s\n", head->child_count);
+		printf("references should implement two children implmeneted %ld\n", head->child_count);
 		escape(1);
 	}
 
