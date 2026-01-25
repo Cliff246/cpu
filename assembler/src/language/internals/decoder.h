@@ -36,8 +36,7 @@ extern const char *const alu_mnemonics[];
 extern const char *const jmp_mnemonics[];
 extern const char *const sys_mnemonics[];
 
-
-int get_register(char *keyword);
+int ASM_get_register_alias(char *keyword);
 
 int get_path(char *keyword);
 int get_subpath(int path,char *keyword);

@@ -17,7 +17,7 @@ typedef struct WS_OBJ_object OBJ_object_t;
 	X(FLAG	,COLD	,SET_TAG		,void 		,const char *)		  \
 	X(FUNC	,COLD	,FREE			,void		,uint64_t	 )		  \
 	X(FLAG	,HOT	,SET_STOP		,void		,uint64_t	 )		  \
-	X(FLAG	,COLD	,GET_HND		,OBJ_hid_t	,int	 )		  \
+	X(FLAG	,COLD	,GET_HND		,void 		,int	 )		  \
 
 
 #define OBJ_COMMON_UTILS_NAME(A, B) OBJ_UTIL_##A##_##B
@@ -27,7 +27,7 @@ typedef enum WS_OBJ_util_type
 	OBJ_COMMON_UTILS_LIST(OBJ_COMMON_UTILS_ENUM)
 }OBJ_util_type_t;
 
-#define OBJ_COMMON_UTILS_FNPTR(A, B, C, D, ...) typedef D (*UTIL_ ## C ## _t)(OBJ_object_t *obj, OBJ_hnd_t *hnd, __VA_ARGS__);
+#define OBJ_COMMON_UTILS_FNPTR(A, B, C, D, ...) typedef D (*UTIL_ ## C ## _t)(OBJ_object_t *obj, OBJ_handle_t *hnd, __VA_ARGS__);
 OBJ_COMMON_UTILS_LIST(OBJ_COMMON_UTILS_FNPTR)
 #define OBJ_COMMON_UTILS_STRUCT(A, B, C, D, ...) UTIL_ ## C ## _t C;
 

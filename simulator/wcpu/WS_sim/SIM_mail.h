@@ -7,6 +7,7 @@
 typedef struct WS_SIM_mail
 {
 	int current;
+	SIM_packet_t packet[8];
 	OBJ_msg_t msg;
 }SIM_mail_t;
 

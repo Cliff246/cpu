@@ -9,7 +9,7 @@
 ;a0 string
 ATOI:
 	alu.add s0, a0, zero
-	jmp.ret null, null, null
+	jmp.ret nil, nil, nil
 
 ;--------------------------------
 
@@ -17,7 +17,7 @@ ATOI:
 
 SORT:
 
-	jmp.ret null, null, null
+	jmp.ret nil, nil, nil
 
 ;--------------------------------
 

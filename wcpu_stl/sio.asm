@@ -11,8 +11,8 @@ sio_print:
 	;redundant for now
 	alu.add s0, a0, zero
 	alu.add s1, a1, zero
-	mem.push null, s0, null
-	mem.push null, s1, null
+	mem.push nil, s0, nil
+	mem.push nil, s1, nil
 
 	mem.ld t0, zero, zero, SIO_OUTBUFFER_ADDRESS
 	mem.ld t1, zero, zero, SIO_OUTBUFFER_LENGTH
@@ -24,16 +24,16 @@ sio_print:
 	mem.ld a0, zero, zero, SIO_OUTBUFFER_ADDRESS
 	mem.ld a2, zero, zero, SIO_OUTBUFFER_LENGTH
 
-	mem.pop s1, null, null
+	mem.pop s1, nil, nil
 	;put in jmp.call's src slot not length slot
-	mem.pop a1, null, null
+	mem.pop a1, nil, nil
 
 	jmp.call zero, zero, zero, @memcpy
 
 	mem.ld t0, zero, zero, SIO_PRESENT_ADDRESS
 	alu.add t1, zero, #1
 	mem.st! t1, t0, zero
-	jmp.ret null, null, null
+	jmp.ret nil, nil, nil
 
 .data tag std_extra
 

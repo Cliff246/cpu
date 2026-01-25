@@ -13,6 +13,7 @@
 #include "SIM_handle.h"
 
 #include "OBJ_constants.h"
+#include "SIM_port.h"
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -24,7 +25,7 @@
 typedef struct WS_SIM_object
 {
 
-	SIM_port_global_t port_index;
+	SIM_port_t *port;
 
 	OBJ_context_t *context;
 	OBJ_handle_t *obj_handle;

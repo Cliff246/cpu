@@ -22,7 +22,7 @@ SQRT:
 
 
 
-	jmp.ret null, null, null
+	jmp.ret nil, nil, nil
 
 
 ;---------------------------
@@ -41,28 +41,28 @@ LOG2:
 LOOP_LOG2:
 	alu.srl a0, a0, #1
 	alu.add t0, t0, #1
-	jmp.ble null, a0, zero, @LOOP_LOG2
+	jmp.ble nil, a0, zero, @LOOP_LOG2
 
 	alu.add a0, t0, zero
-	jmp.ret null, null, null
+	jmp.ret nil, nil, nil
 
 ;---------------------------
 
 ;TODO
 LOG10:
-	mem.push null, s0, null
+	mem.push nil, s0, nil
 	alu.add s0, a0, zero
 	;returns on a0
-	jmp.call null, null, null, @LOG2
+	jmp.call nil, nil, nil, @LOG2
 	;load 1 into lhs
 	alu.add t1, zero, #1
 	;computer 1ull << a0
 	alu.sll t0, t1, a0
 	;t0 != s0
-	jmp.beq null, t0, s0, @ELSE_LOG10
+	jmp.beq nil, t0, s0, @ELSE_LOG10
 	alu.add a0, a0, #1
 ELSE_LOG10:
-	mem.pop s0, null, null
+	mem.pop s0, nil, nil
 
 
 ;---------------------------
@@ -70,8 +70,8 @@ ELSE_LOG10:
 ;a0 list
 ;a1 length
 MEAN:
-	mem.push null, acc, null
-	mem.push null, s0, null
+	mem.push nil, acc, nil
+	mem.push nil, s0, nil
 	alu.add acc, zero, zero
 	alu.add s0, a0, zero
 MEAN_L1:
@@ -79,7 +79,7 @@ MEAN_L1:
 	alu.add acc, acc, t0
 	alu.sub s0, s0, #1
 
-	jmp.bne null, s0, zero, @MEAN_L1
+	jmp.bne nil, s0, zero, @MEAN_L1
 
 ;---------------------------
 	alu.div a0, acc, a1
@@ -111,7 +111,7 @@ STDDEV_L1:
 	;square inner
 	alu.mul! t1, t1, acc
 	alu.add t0, t0, #1
-	jmp.bne null, s1, t0, @STDDEV_L1
+	jmp.bne nil, s1, t0, @STDDEV_L1
 	alu.div s3, acc, s1
 	alu.add a0, s3, zero
 	jmp.call zero, zero, zero, @SQRT
@@ -233,7 +233,7 @@ MATMUL_COL:
 MATMUL_DOT:
 
 
-	jmp.jmp null, null, null, @MATMUL_DONE
+	jmp.jmp nil, nil, nil, @MATMUL_DONE
 
 MATMUL_DONE:
 

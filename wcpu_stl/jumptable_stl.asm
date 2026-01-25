@@ -17,11 +17,11 @@ jumptable:
 
 	;set the t0
 	alu.add t0, a0, zero
-	sys.break null, null, null
+	sys.break nil, nil, nil
 	alu.add a0, a1, zero
 	alu.add a1, a2, zero
 	alu.add a2, a3, zero
-	jmp.call null, null, t0
+	jmp.call nil, nil, t0
 
 repeat:
-	jmp.jmp null, null, null, @repeat
+	jmp.jmp nil, nil, nil, @repeat

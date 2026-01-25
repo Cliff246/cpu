@@ -153,7 +153,7 @@ int fill_instruction_start(parse_node_t *node, inst_t *inst)
 
 	//printf("<%s>\n",node->children[offset]->tok->lexeme);
 
-	int rd = get_register(node->children[offset]->tok->lexeme);
+	int rd = ASM_get_register_alias(node->children[offset]->tok->lexeme);
 	if(rd == -1)
 	{
 		set_instruction_keyword_error(node->children[offset]->tok, node->children[offset]->tok->lexeme);
@@ -164,7 +164,7 @@ int fill_instruction_start(parse_node_t *node, inst_t *inst)
 	offset++;
 
 	//printf("<%s>\n",node->children[offset]->tok->lexeme);
-	int rs1 = get_register(node->children[offset]->tok->lexeme);
+	int rs1 = ASM_get_register_alias(node->children[offset]->tok->lexeme);
 	if(rs1 == -1)
 	{
 		set_instruction_keyword_error(node->children[offset]->tok,  node->children[offset]->tok->lexeme);
@@ -191,7 +191,7 @@ int fill_instruction_start(parse_node_t *node, inst_t *inst)
 	}
 	else
 	{
-		rs2 = get_register(rs2_str);
+		rs2 = ASM_get_register_alias(rs2_str);
 
 	}
 	if(rs2 == -1)

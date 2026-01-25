@@ -9,6 +9,10 @@
 #include "strtools.h"
 #include "parser.h"
 #include <stdbool.h>
+#include <sys/types.h>
+
+#define REGISTER_ALIAS_MAX 2
+#define REGISTER_ALIAS_KEYSIZE 4
 
 #define SUBPATH_KEYCODE(PATH, S) PATH ## _ ## S
 #define PATH_KEYCODE(X) PATH_ ## X
@@ -75,156 +79,36 @@ ASM_mnemonic_t ASM_mnemonics_list[] =
 	}
 };
 
-const char *const reg_mnemonics[] =
+#define REGISTER_ALIAS_STRING(X)
+#define REGISTER_ALIAS_ENCODE(A, B, C, D, E) [A] = { .count = B, .alias = {#C, #D, #E}},
+
+struct ASM_register_alias
 {
-    	"zero", "x0", "null",
-    	"x1", "a0",
-    	"x2", "a1",
-    	"x3", "a2",
-    	"x4", "a3",
-    	"x5", "t0", "ta",
-    	"x6", "t1", "tb",
-    	"x7", "t2", "tc",
-    	"x8", "t3", "td",
-    	"x9", "t4", "te",
-    	"x10", "t5", "tf",
-    	"x11", "t6", "tg",
-    	"x12", "t7", "th",
-    	"x13", "t8", "ti",
-    	"x14", "t9", "tj",
-    	"x15", "t10", "tk",   // ✅ added comma here
-    	"x16", "g0",
-    	"x17", "g1",
-    	"x18", "g2",
-    	"x19", "g3",
-    	"x20", "g4",
-    	"x21", "g5",
-    	"x22", "g6",
-    	"x23", "g7",
-    	"x24", "s0",
-    	"x25", "s1",
-    	"x26", "s2",
-    	"x27", "s3",
-    	"x28", "s4",
-    	"x29", "sys",
-    	"x30", "aux0",
-    	"x31", "aux1",
-    	"x32", "a4",
-		"x33", "a5",
-		"x34", "a6",
-		"x35", "a7",
-		"x36", "a8",
-		"x37", "a9",
-		"x38", "s5",
-		"x39", "s6",
-		"x40", "s7",
-		"x41", "s8",
-		"x42", "s9",
-		"x43", "s10", "exs0",
-		"x44", "s11", "exs1",
-		"x45", "s12", "exs2",
-		"x46", "s13", "exs3",
-		"x47", "s14", "exs4",
-    	"x48", "t11", "tx", "ext0",
-		"x49", "t12", "ty", "ext1",
-		"x50", "t13", "tz", "ext2",
-		"x51", "t14", "tu", "ext3",
-		"x52", "six", "s15",
-		"x53", "siy", "s16",
-		"x54", "siz", "s17",
-		"x55", "tix", "t15",
-		"x56", "tiy", "t16",
-		"x57", "tiz", "t17",
-		"x58", "t18",
-		"x59", "t19",
-		"x60", "t20",
-		"x61", "t21",
-		"x62", "t22",
-		"x63", "acc",
-	};
+	int count;
+	char *alias[3];
+};
 
-int get_register(char *keyword)
+struct ASM_register_alias ASM_registers_aliases[64] =
 {
+	REGISTER_NAMES(REGISTER_ALIAS_ENCODE)
+};
 
 
-	int regvalue[] = {
-    	0, 0, 0,
-    	1, 1,
-    	2, 2,
-    	3, 3,
-    	4, 4,
-    	5, 5, 5,
-    	6, 6, 6,
-    	7, 7, 7,
-    	8, 8, 8,
-    	9, 9, 9,
-    	10, 10, 10,
-    	11, 11, 11,
-    	12, 12, 12,
-    	13, 13, 13,
-    	14, 14, 14,
-    	15, 15, 15,
-    	16, 16,
-    	17, 17,
-    	18, 18,
-    	19, 19,
-    	20, 20,
-    	21, 21,
-    	22, 22,
-    	23, 23,
-    	24, 24,
-    	25, 25,
-    	26, 26,
-    	27, 27,
-    	28, 28,
-    	29, 29,
-    	30, 30,
-    	31, 31,
-    	32, 32,
-		33, 33,
-		34, 34,
-		35, 35,
-		36, 36,
-		37, 37,
-		38, 38,
-		39, 39,
-   		40, 40,
-		41, 41,
-		42, 42,
-		43, 43, 43,
-		44, 44, 44,
-		45, 45, 45,
-		46, 46, 46,
-		47, 47, 47,
-    	48, 48, 48, 48,
-		49, 49, 49, 49,
-		50, 50, 50, 50,
-		51, 51, 51, 51,
-		52, 52, 52,
-		53, 53, 53,
-		54, 54, 54,
- 		55, 55, 55,
-		56, 56, 56,
-		57, 57, 57,
-		58, 58,
-		59, 59,
-		60, 60,
-		61, 61,
-		62, 62,
-		63, 63
-	};
-
-
-	int code = determine_code(keyword, reg_mnemonics, ARYSIZE(reg_mnemonics));
-	if(code != -1)
+int ASM_get_register_alias(char *keyword)
+{
+	for(int i = 0; i < 64; ++i)
 	{
+		struct ASM_register_alias *alias = &ASM_registers_aliases[i];
+		for(int s = 0; s < alias->count; ++s)
+		{
+			if(!strcmp(keyword, alias->alias[s]))
+			{
+				return i;
+			}
 
-		return regvalue[code];
+		}
 	}
-	else
-	{
-		return -1;
-	}
+	return -1;
 }
 
 

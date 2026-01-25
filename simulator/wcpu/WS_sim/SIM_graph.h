@@ -15,8 +15,7 @@
 
 typedef struct WS_SIM_graph
 {
-	uint16_t ports_size;
-	SIM_port_t *ports;
+
 
 	uint16_t objects_size;
 	SIM_object_t *objects;
@@ -65,14 +64,14 @@ SIM_graph_t *SIM_graph_init_template(void);
 
 SIM_channel_t *SIM_graph_get_channel(SIM_graph_t *graph, SIM_channel_global_t global);
 SIM_transfer_t *SIM_graph_get_transfer(SIM_graph_t *graph, SIM_transfer_global_t global);
+SIM_wire_t *SIM_graph_get_wire(SIM_graph_t *graph, SIM_wire_global_t wire);
 //set graph changed function
 //sets graphs flags to be modified
 void SIM_graph_set_changed(SIM_graph_t *graph);
 
 void SIM_graph_wire_read(SIM_graph_t *graph);
 void SIM_graph_wire_write(SIM_graph_t *graph);
-void SIM_graph_port_read(SIM_graph_t *graph);
-void SIM_graph_port_write(SIM_graph_t *graph);
+
 void SIM_graph_object_update(SIM_graph_t *graph);
 void SIM_graph_object_read(SIM_graph_t *graph);
 void SIM_graph_object_write(SIM_graph_t *graph);

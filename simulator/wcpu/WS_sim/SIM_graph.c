@@ -5,6 +5,7 @@
 #include "SIM_channel.h"
 #include "SIM_commons.h"
 #include "SIM_object.h"
+#include "SIM_packet.h"
 #include "SIM_port.h"
 #include "SIM_transfer.h"
 #include "SIM_wire.h"
@@ -71,6 +72,7 @@ void SIM_graph_add_wire(SIM_graph_t *graph, SIM_wire_config_t *wire)
 bool SIM_graph_set(SIM_graph_t *graph)
 {
 
+	assert(0 && "bad");
 	assert(graph);
 	assert(graph->flags.set == false);
 
@@ -101,9 +103,7 @@ bool SIM_graph_set(SIM_graph_t *graph)
 	assert(graph->wires && "graph wires alloc");
 	//graph->wireslots = calloc(graph->wireslots_size, sizeof(SIM_wireslot_t));
 	//assert(graph->wireslots && "graph wireslots alloc");
-	graph->ports_size = graph->objects_size;
-	graph->ports = calloc(graph->ports_size, sizeof(SIM_port_t));
-	assert(graph->ports && graph->ports_size);
+
 	uint32_t channel_count = 0;
 	uint32_t wireslot_count = 0;
 	const uint32_t wires_size =  graph->wires_size;
@@ -122,7 +122,7 @@ bool SIM_graph_set(SIM_graph_t *graph)
 				assert(0 && "cannot miss entry found in wire end");
 			}
 
-			 SIM_channel_init(&graph->channels[channel_count++],entry_postion, end.cid);
+			 SIM_channel_init(&graph->channels[channel_count++],entry_postion, end.cid, iw);
 		}
 
 
@@ -144,6 +144,13 @@ SIM_channel_t *SIM_graph_get_channel(SIM_graph_t *graph, SIM_channel_global_t gl
 	assert(graph);
 	assert(global < graph->channels_size);
 	return &graph->channels[global];
+}
+
+SIM_wire_t *SIM_graph_get_wire(SIM_graph_t *graph, SIM_wire_global_t wire)
+{
+	assert(graph);
+	assert(wire < graph->wires_size);
+	return &graph->wires[wire];
 }
 
 void SIM_graph_object_update(SIM_graph_t *graph)
@@ -169,11 +176,24 @@ void SIM_graph_object_read(SIM_graph_t *graph)
 	{
 
 		SIM_object_t *object = &graph->objects[i];
+		assert(object);
+		SIM_port_t *port = object->port;
+		assert(port);
 
 		OBJ_bundle_t bnd = {0};
 		assert(0 && "TODO");
 
+		bool produced = SIM_port_produce_bundle(graph, port,&bnd);
+
+		if(!produced)
+		{
+			assert(0 && "production of bundle and reading of channels failed");
+		}
+
 		SIM_object_read(object, &bnd);
+
+
+
 
 	}
 }
@@ -186,14 +206,27 @@ void SIM_graph_object_write(SIM_graph_t *graph)
 	{
 
 		SIM_object_t *object = &graph->objects[i];
+		assert(object);
 
-
-
+		SIM_port_t *port = object->port;
+		assert(port);
 		OBJ_bundle_t bnd = {0};
+
+
+
 		assert(0 && "TODO");
 
 		SIM_object_write(object, &bnd);
 		//todo gather bundle information send to port
+		//collect and distrubute out
+		bool recieved = SIM_port_recieve_bundle(graph, port, &bnd);
+
+		if(!recieved)
+		{
+			assert(0 && "recieving of bundle and writing of channels failed");
+		}
+
+
 	}
 }
 
@@ -214,13 +247,25 @@ void SIM_graph_wire_read(SIM_graph_t *graph)
 			//wire read from the graph and get packet via a copy
 
 			SIM_transfer_t *transfer = SIM_graph_get_transfer(graph, global_transfer);
-			if(transfer->used == false)
+			SIM_packet_t packet = {0};
+
+			bool transfer_success = SIM_transfer_read(transfer, &packet);
+			if(!transfer_success)
 			{
-				assert(0);
+				assert(0 && "TODO transfer failed");
 			}
 
-			channel->packet = transfer->packet;
-			transfer->used = false;
+
+			bool channel_set_success = SIM_channel_set_packet(channel, packet);
+
+			if(!channel_set_success)
+			{
+				assert(0 && "TODO set failed");
+
+			}
+
+
+
 		}
 	}
 
@@ -240,44 +285,25 @@ void SIM_graph_wire_write(SIM_graph_t *graph)
 		SIM_transfer_global_t global_transfer = SIM_wire_get_current_transfer_global(wire);
 		SIM_transfer_t *transfer = SIM_graph_get_transfer(graph, global_transfer);
 
-		if(transfer->used == true)
+		SIM_packet_t packet = {0};
+
+
+		bool channel_get_success = SIM_channel_get_packet(channel, &packet);
+		if(!channel_get_success)
 		{
-			assert(false);
+			assert(0 && "TODO get failed");
 		}
 
-		transfer->packet = channel->packet;
-		transfer->used = true;
+		bool transfer_success = SIM_transfer_send(transfer, packet);
+		if(!transfer_success)
+		{
+			assert(0 && "TODO transfer send failed");
+		}
 		SIM_wire_update_scroll(wire);
 	}
 }
 
-void SIM_graph_port_read(SIM_graph_t *graph)
-{
-	const uint16_t port_size = graph->ports_size;
 
-	for(uint32_t ipr = 0; ipr < port_size; ++ipr)
-	{
-		SIM_port_t *port = &graph->ports[ipr];
-		//very naive
-		SIM_port_read_channels(graph, port);
-		SIM_port_produce_bundle(graph, port);
-	}
-}
-
-
-void SIM_graph_port_write(SIM_graph_t *graph)
-{
-	const uint16_t port_size = graph->ports_size;
-
-	for(uint32_t ipr = 0; ipr < port_size; ++ipr)
-	{
-		SIM_port_t *port = &graph->ports[ipr];
-		//very naive
-		SIM_port_collect_bundle(graph, port);
-		//very naive
-		SIM_port_write_channels(graph, port);
-	}
-}
 
 
 void SIM_graph_update(SIM_graph_t *graph)
@@ -286,12 +312,10 @@ void SIM_graph_update(SIM_graph_t *graph)
 	assert(graph->flags.changed == false);
 	SIM_graph_wire_read(graph);
 	//a waste for now but i am so lazy
-	SIM_graph_port_read(graph);
 	SIM_graph_object_read(graph);
 	SIM_graph_object_update(graph);
 	SIM_graph_object_write(graph);
 	//another waste for now but i am soooooooo lazy
-	SIM_graph_port_write(graph);
 	SIM_graph_wire_write(graph);
 }
 

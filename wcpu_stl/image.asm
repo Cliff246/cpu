@@ -12,12 +12,12 @@
 
 MAIN:
 
-	mem.sp null, null, null, 1000
-	mem.sfp null, null, null, 1000
+	mem.sp nil, nil, nil, 1000
+	mem.sfp nil, nil, nil, 1000
 	alu.add a1, zero, zero, TEST_STRING
 	alu.add a2, zero, zero, 9
 	alu.add a0, zero, zero, @sio_print
-	sys.setcd null, null, null, stl
+	sys.setcd nil, nil, nil, stl
 
 
 .data

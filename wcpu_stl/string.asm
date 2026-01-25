@@ -22,7 +22,7 @@ strlen:
 	;ptr
 	alu.add t0, a0, zero
 	;total counter
-	alu.add t2, zero, zero
+	alu.add t2, nil, zero
 
 
 strlen_loop:
@@ -33,24 +33,24 @@ strlen_loop:
 	alu.add t1, zero, #8
 strlen_char_loop:
 
-	alu.and t4, t3, null, 0xff
+	alu.and t4, t3, nil, 0xff
 
-	jmp.beq null, t4, zero, @strlen_end
+	jmp.beq nil, t4, zero, @strlen_end
 	alu.srl t3, t3, #8
 
 
 	alu.sub t1, t1, #1
 	alu.add t2, t2, #1
 
-	jmp.bne null, t1, zero, @strlen_char_loop
+	jmp.bne nil, t1, zero, @strlen_char_loop
 
 	alu.add t0, t0, #1
-	jmp.jmp null, null, null, @strlen_loop
+	jmp.jmp nil, nil, nil, @strlen_loop
 
 
 strlen_end:
 	alu.add a0, t2, zero
-	jmp.ret null, null, null
+	jmp.ret nil, nil, nil
 ;---------------------------------
 
 ;a0 = src1
@@ -61,14 +61,14 @@ strcpy:
 	alu.add t1, a1, zero
 
 
-_strcpy_loop:
+strcpy_loop:
 
-	jmp.jmp null, null, null, @_strcpy_loop
+	jmp.jmp nil, nil, nil, @strcpy_loop
 
 strcpy_end:
 
 
-	jmp.ret null, null, null
+	jmp.ret nil, nil, nil
 ;---------------------------------
 
 ;a0 = dst1
@@ -91,7 +91,7 @@ strcpy_check:
 
 
 strcmp_end:
-	jmp.ret null, null, null
+	jmp.ret nil, nil, nil
 ;---------------------------------
 
 ;a0 = src1
@@ -125,7 +125,7 @@ memcpy_loop:
 	alu.add t1, t1, #1
 	;subtract counter
 	alu.sub t2, t2, #1
-	jmp.bne null, t2, zero, @memcpy_loop
+	jmp.bne nil, t2, zero, @memcpy_loop
 	jmp.ret zero, zero, zero
 
 
@@ -142,7 +142,7 @@ memset:
 memset_loop:
 	mem.st! a1, a0, t0
 	alu.add t0, t0, #1
-	jmp.blt null, t0, a2, @memset_loop
+	jmp.blt nil, t0, a2, @memset_loop
 
 	jmp.ret zero, zero, zero
 

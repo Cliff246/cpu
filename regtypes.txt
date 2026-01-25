@@ -3,67 +3,118 @@
 # Index | Primary | Alias | Description
 # --------------------------------------
 
- 00 | x0   | zero,  null | Constant zero / register
- 01 | x1   | a0   | Argument 0 / return value
- 02 | x2   | a1   | Argument 1
- 03 | x3   | a2   | Argument 2
- 04 | x4   | a3   | Argument 3
- 05 | x5   | t0, ta   | Temporary 0
- 06 | x6   | t1, tb   | Temporary 1
- 07 | x7   | t2, tc   | Temporary 2
- 08 | x8   | t3, td   | Temporary 3
- 09 | x9   | t4, te   | Temporary 4
- 10 | x10  | t5, tf   | Temporary 5
- 11 | x11  | t6, tg   | Temporary 6
- 12 | x12  | t7, th   | Temporary 7
- 13 | x13  | t8, ti   | Temporary 8
- 14 | x14  | t9, tj   | Temporary 9
- 15 | x15  | t10, tk  | Temporary 10
- 16 | x16  | g0   | Global 0
- 17 | x17  | g1   | Global 1
- 18 | x18  | g2   | Global 2
- 19 | x19  | g3   | Global 3
- 20 | x20  | g4   | Global 4
- 21 | x21  | g5   | Global 5
- 22 | x22  | g6   | Global 6
- 23 | x23  | g7   | Global 7
- 24 | x24  | s0   | Saved 0
- 25 | x25  | s1   | Saved 1
- 26 | x26  | s2   | Saved 2
- 27 | x27  | s3   | Saved 3
- 28 | x28  | s4   | Saved 4
- 29 | x29  | sys  | System register
- 30 | x30  | aux0 | Auxiliary 0 | used for get set
- 31 | x31  | aux1 | Auxiliary 1 |
- 32 | x32  | a4   | Argument 4
- 33 | x33  | a5   | Argument 5
- 34 | x34  | a6   | Argument 6
- 35 | x35  | a7   | Argument 7
- 36 | x36  | a8   | Argument 8
- 37 | x37  | a9   | Argument 9
- 38 | x38  | s5   | Saved 5
- 39 | x39  | s6   | Saved 6
- 40 | x40  | s7   | Saved 7
- 41 | x41  | s8   | Saved 8
- 42 | x42  | s9   | Saved 9
- 43 | x43  | s10, exs0  | Saved 10, saved eXternal 0 / external return
- 44 | x44  | s11, exs1  | Saved 11, saved eXternal 1 /
- 45 | x45  | s12, exs2  | Saved 12, saved eXternal 2 /
- 46 | x46  | s13, exs3  | Saved 13, saved eXternal 3 /
- 47 | x47  | s14, exs4  | Saved 14, saved eXternal 4 /
- 48 | x48  | t11, tx, ext0  | Temporary 11
- 49 | x49  | t12, ty, ext1  | Temporary 12
- 50 | x50  | t13, tz, ext2  | Temporary 13
- 51 | x51  | t14, tu, ext3  | Temporary 14
- 52 | x52  | six, s15  | Saved iterator x
- 53 | x53  | siy, s16  | Saved iterator y
- 54 | x54  | siz, s17  | Saved iterator z
- 55 | x55  | tix, t15  | Temporary iterator x
- 56 | x56  | tiy, t16  | Temporary iterator y
- 57 | x57  | tiz, t17  | Temporary iterator z
- 58 | x58  | t18   | Temporary 182
- 59 | x59  | t19   | Temporary 19
- 60 | x60  | t20   | Temporary 20
- 61 | x61  | t21   | Temporary 21
- 62 | x62  | t22   |   Temporary 22
- 63 | x63  | acc   | acc
+b0
+ 00 | x0   | nil  , zero | Constant zero / register
+ 01 | x1   | acc  , imp| acc
+ 02 | x2   | ia	  , inte| internal 1
+ 03 | x3   | ib   , imp| internal 2
+b1
+ 04 | x4   | t0   | Temporary 0
+ 05 | x5   | t1   | Temporary 1
+ 06 | x6   | t2   | Temporary 2
+ 07 | x7   | t3   | Temporary 3
+b2
+ 08 | x8   | t4   | Temporary 4
+ 09 | x9   | t5   | Temporary 5
+ 10 | x10  | t6   | Temporary 6
+ 11 | x11  | t7   | Temporary 7
+b3
+ 12 | x12  | t8   | Temporary 8
+ 13 | x13  | t9   | Temporary 9
+ 14 | x14  | t10  | Temporary 10
+ 15 | x15  | t11  | Temporary 11
+b4
+ 16 | x16  | t12  | Temporary 12
+ 17 | x17  | t13  | Temporary 13
+ 18 | x18  | t14  | Temporary 14
+ 19 | x19  | t15  | Temporary 15
+b5:
+ 20 | x20  | t16  | Temporary 16
+ 21 | x21  | t17  | Temporary 17
+ 22 | x22  | t18  | Temporary 18
+ 23 | x23  | t19  | Temporary 19
+b6:
+ 24 | x24  | g0   | Global 0
+ 25 | x25  | g1   | Global 1
+ 26 | x26  | g2   | Global 2
+ 27 | x27  | g3   | Global 3
+b7:
+ 28 | x28  | g4   | Global 4
+ 29 | x29  | g5   | Global 5
+ 30 | x30  | g6   | Global 6
+ 31 | x31  | g7   | Global 7
+b8:
+ 32 | x32  | a0   | Argument 0
+ 33 | x33  | a1   | Argument 1
+ 34 | x34  | a2   | Argument 2
+ 35 | x35  | a3   | Argument 3
+b9:
+ 36 | x36  | a4   | Argument 4
+ 37 | x37  | a5   | Argument 5
+ 38 | x38  | a6   | Argument 6
+ 39 | x39  | a7   | Argument 7
+b10:
+ 40 | x40  | a8   | Argument 8
+ 41 | x41  | a9   | Argument 9
+ 42 | x42  | a10  | Argument 10
+ 43 | x43  | a11  | Argument 11
+b11:
+ 44 | x44  | s0   | Saved 0
+ 45 | x45  | s1   | Saved 1
+ 46 | x46  | s2   | Saved 2
+ 47 | x47  | s3   | Saved 3
+b12:
+ 48 | x48  | s4   | Saved 4
+ 49 | x49  | s5   | Saved 5
+ 50 | x50  | s6   | Saved 6
+ 51 | x51  | s7   | Saved 7
+b13:
+ 52 | x52  | s8   | Saved 8
+ 53 | x53  | s9   | Saved 9
+ 54 | x54  | s10  | Saved 10
+ 55 | x55  | s11  | Saved 11
+b14:
+ 56 | X56  | s12  | saved 12
+ 57 | x57  | s13  | saved 13
+ 58 | x58  | s14  | saved 14
+ 59 | x59  | s15  | saved 15
+b15:
+ 60 | x60  | s16  | Saved 16
+ 61 | x61  | s17  | Saved 17
+ 62 | x62  | s18  | Saved 18
+ 63 | x63  | s19  | Saved 19
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

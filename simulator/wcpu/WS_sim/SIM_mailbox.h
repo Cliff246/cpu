@@ -9,13 +9,22 @@
 typedef struct WS_SIM_mailbox
 {
 	SIM_channel_global_t channel;
-	bool current_dir;
-	bool ready;
+
+
+	bool has_mailout;
+
+
 	SIM_mail_t mailin;
 	SIM_mail_t mailout;
 }SIM_mailbox_t;
 
 typedef struct WS_SIM_graph SIM_graph_t;
+
+
+bool SIM_mailbox_recieving(SIM_graph_t *graph, SIM_mailbox_t *mailbox);
+bool SIM_mailbox_sending(SIM_graph_t *graph, SIM_mailbox_t *mailbox);
+
+
 
 SIM_packet_t SIM_mailbox_dispatch_out(SIM_mailbox_t *mailbox);
 void SIM_mailbox_schedule(SIM_mail_t *mail, SIM_graph_t *graph);
