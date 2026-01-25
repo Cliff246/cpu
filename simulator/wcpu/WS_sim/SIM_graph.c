@@ -122,7 +122,7 @@ bool SIM_graph_set(SIM_graph_t *graph)
 				assert(0 && "cannot miss entry found in wire end");
 			}
 
-			 SIM_channel_init(&graph->channels[channel_count++],entry_postion, end.cid, iw);
+			 SIM_channel_init(&graph->channels[channel_count++], ie, end.cid, iw);
 		}
 
 

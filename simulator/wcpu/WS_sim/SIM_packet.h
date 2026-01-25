@@ -23,6 +23,11 @@ typedef struct WS_SIM_packet_value
 	OBJ_msgval_t val;
 }SIM_packet_value_t;
 
+typedef struct WS_SIM_packet_tag
+{
+	OBJ_msgtag_t tag;
+}SIM_packet_tag_t;
+
 typedef struct WS_SIM_packet_foot
 {
 	uint8_t bytes_used;
@@ -34,6 +39,7 @@ typedef enum WS_SIM_packet_type
 	SIM_PACKET_RAW,
 	SIM_PACKET_HEADER,
 	SIM_PACKET_VALUE,
+	SIM_PACKET_TAG,
 	SIM_PACKET_FOOT,
 }SIM_packet_type_t;
 
@@ -41,7 +47,9 @@ typedef union WS_SIM_packet_data
 {
 	SIM_packet_raw_t raw;
 	SIM_packet_header_t header;
+	SIM_packet_tag_t tag;
 	SIM_packet_value_t value;
+	SIM_packet_foot_t foot;
 }SIM_packet_data_t;
 
 

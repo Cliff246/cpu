@@ -5,9 +5,9 @@
 #include <assert.h>
 
 
-void SIM_channel_init(SIM_channel_t *channel, uint32_t oid, uint32_t cid, uint32_t wid)
+void SIM_channel_init(SIM_channel_t *channel, uint32_t wcid, uint32_t cid, uint32_t wid)
 {
-	channel->oid = oid;
+	channel->wcid = wcid;
 	channel->cid = cid;
 	channel->wid = wid;
 }

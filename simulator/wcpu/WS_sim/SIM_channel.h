@@ -20,9 +20,8 @@
 //designed to hold and manage merging and more
 typedef struct WS_SIM_channel
 {
-	//object id
-	SIM_object_global_t oid;
 	//channel id
+	SIM_wire_channel_t wcid;
 	SIM_channel_local_t cid;
 	//channel wire id
 	SIM_wire_global_t wid;
@@ -34,7 +33,7 @@ typedef struct WS_SIM_channel
 	SIM_packet_t packet;
 }SIM_channel_t;
 
-void SIM_channel_init(SIM_channel_t *channel, uint32_t oid, uint32_t cid, uint32_t wid);
+void SIM_channel_init(SIM_channel_t *channel, uint32_t wcid, uint32_t cid, uint32_t wid);
 
 
 bool SIM_channel_get_has_packet(SIM_channel_t *channel);

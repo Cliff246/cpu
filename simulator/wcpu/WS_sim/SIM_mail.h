@@ -8,12 +8,12 @@
 #include <stdbool.h>
 
 #define SIM_MAIL_PACKETS_BUFFER 16
-#define SIM_MAIL_PACKETS_MAX 11
+#define SIM_MAIL_PACKETS_MAX 12
 
 typedef struct WS_SIM_mail
 {
 	uint8_t current;
-
+	bool done;
 	SIM_packet_t packet[SIM_MAIL_PACKETS_BUFFER];
 }SIM_mail_t;
 
@@ -22,7 +22,10 @@ bool SIM_mail_write_packet(SIM_mail_t *mail, SIM_packet_t packet);
 
 OBJ_msg_t SIM_mail_pull_packets(SIM_mail_t *mail);
 
+bool SIM_mail_can_read_packet(SIM_mail_t *mail);
+bool SIM_mail_read_packet(SIM_mail_t *mail, SIM_packet_t *packet);
 
+void SIM_mail_put_packets(SIM_mail_t *mail, OBJ_msg_t *msg);
 
 
 #endif
