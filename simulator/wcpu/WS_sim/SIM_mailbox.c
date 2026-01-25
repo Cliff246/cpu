@@ -2,6 +2,7 @@
 #include "SIM_commons.h"
 #include "SIM_graph.h"
 #include "SIM_mailbox.h"
+#include "SIM_packet.h"
 #include "SIM_wire.h"
 #include <assert.h>
 
@@ -52,6 +53,23 @@ assert(graph);
 	if(input_channel == channel)
 		return true;
 	return false;
+
+}
+
+
+
+bool SIM_mailbox_import_channel(SIM_graph_t *graph, SIM_mailbox_t *mailbox)
+{
+	SIM_channel_t *channel = SIM_graph_get_channel(graph, mailbox->channel);
+	assert(channel);
+	SIM_packet_t packet = {0};
+	bool import = SIM_channel_get_packet(channel, &packet);
+	if(!import)
+		assert(0);
+}
+
+bool SIM_mailbox_export_channel(SIM_graph_t *graph, SIM_mailbox_t *mailbox)
+{
 
 }
 

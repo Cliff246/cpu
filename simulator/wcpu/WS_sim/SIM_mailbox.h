@@ -12,7 +12,7 @@ typedef struct WS_SIM_mailbox
 
 
 	bool has_mailout;
-
+	bool done_input;
 
 	SIM_mail_t mailin;
 	SIM_mail_t mailout;
@@ -24,6 +24,8 @@ typedef struct WS_SIM_graph SIM_graph_t;
 bool SIM_mailbox_recieving(SIM_graph_t *graph, SIM_mailbox_t *mailbox);
 bool SIM_mailbox_sending(SIM_graph_t *graph, SIM_mailbox_t *mailbox);
 
+bool SIM_mailbox_import_channel(SIM_graph_t *graph, SIM_mailbox_t *mailbox);
+bool SIM_mailbox_export_channel(SIM_graph_t *graph, SIM_mailbox_t *mailbox);
 
 
 SIM_packet_t SIM_mailbox_dispatch_out(SIM_mailbox_t *mailbox);

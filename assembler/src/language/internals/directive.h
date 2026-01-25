@@ -50,7 +50,7 @@ typedef struct dirarg
 
 }dirarg_t;
 //shit
-#define MAX_DIRECTIVE_CONTENTS 10
+#define MAX_DIRECTIVE_CONTENTS 20
 typedef struct directive
 {
 

@@ -104,7 +104,16 @@ strncpy:
 ;a0 = source
 ;a1 = index
 strindex:
-;TODO
+
+	alu.add t0, a0, zero
+	alu.add t1, a1, zero
+	alu.and t2, t1, #7
+	alu.srl t3, t1, #3
+	mem.ld a0, a0, t3
+	alu.sll t2, t2, #3
+	alu.srl a0, a0, t2
+	alu.and a0, a0, nil, 0xff
+	jmp.ret nil, nil, nil
 
 ;---------------------------------
 

@@ -2,11 +2,13 @@
 #define __SYMBOL__
 
 #include "reference.h"
+#include "constant.h"
 
 typedef enum symtype
 {
 	SYMBOL_INVAL,
 	SYMBOL_REFERENCE,
+	SYMBOL_CONSTANT,
 }symtype_t;
 
 
@@ -19,7 +21,7 @@ typedef struct symbol
 	union
 	{
 		ref_t *ref;
-
+		ASM_constant_t *constant;
 	}symbol;
 }symbol_t;
 

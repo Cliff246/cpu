@@ -1,6 +1,7 @@
 #include "symbol.h"
 #include "reference.h"
 #include "commons.h"
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -38,6 +39,10 @@ void print_symbol(symbol_t *sym)
 		case SYMBOL_REFERENCE:
 			print_ref(sym->symbol.ref);
 			break;
+		case SYMBOL_CONSTANT:
+			assert(0 && "constant print TODO");
+			break;
+
 		case SYMBOL_INVAL:
 			printf("symbol is invalid\n");
 			break;

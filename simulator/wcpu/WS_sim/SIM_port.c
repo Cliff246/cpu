@@ -26,7 +26,7 @@ bool SIM_port_produce_bundle(SIM_graph_t *graph, SIM_port_t *port, OBJ_bundle_t 
 		if(!SIM_mailbox_recieving(graph, mailbox))
 			continue;
 		SIM_channel_t *channel = SIM_graph_get_channel(graph, mailbox->channel);
-
+		
 	}
 }
 

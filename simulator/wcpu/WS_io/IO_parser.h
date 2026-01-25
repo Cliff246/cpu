@@ -11,22 +11,22 @@
 	X(MODULE)				\
 	X(CLASS)				\
 	X(FIELD)				\
-	
+
 
 
 //WS_IO_node
 //node of parse tree
-typedef struct WS_IO_node
+typedef struct WS_IO_pnode
 {
 	tok_t *tok;
 	size_t size;
-	struct WS_IO_node *nodes;
-}IO_node_t;
+	struct WS_IO_pnode *nodes;
+}IO_pnode_t;
 
 typedef struct WS_IO_ptree
 {
 	size_t tree;
-	IO_node_t *head;
+	IO_pnode_t *head;
 
 }IO_ptree_t;
 
