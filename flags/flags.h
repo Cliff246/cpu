@@ -149,6 +149,8 @@
 	X(MEM,mem,SFP		, sfp		, 0x07, sfp			, T0	, "sfp"		,	"dst = sfp, sfp = l1 + l2 + l3"			, "get/set sfp"				, 0)				\
 	X(MEM,mem,LDS		, lds		, 0x08, lds			, T0	, "ld[sp]"	,	"dst = mem[sp + l1]"					, "load stack"				, 0)				\
 	X(MEM,mem,STS		, sts		, 0x09, sts			, T0	, "st[sp]"	,	"dst = 0, mem[sp + l2 +] = l1"			, "store stack"				, 0)				\
+	X(MEM,mem,PUSHW		, pushw		, 0x0a, pushw		, T0	, "push[bn]",	"dst = 0, mem[sp+4] = {b[l1 + l2 + l3]}", "push wide"				, 0)				\
+	X(MEM,mem,POPW		, popw		, 0x0b, popw		, T0	, "pop[bn]"	,	"dst = 0, {b[l1 + l2 + l3] "			, "pop wide"				, 0)				\
 //	X(MEM,mem,LDI		, ldi		, 0x0a, ld			, T0	, "[]"		,	"dst = mem[l1 + l2 + l3]"				, "arithmetic add"						,"dst,lhs,rhs,oth,swap", 0)				\
 //	X(MEM,mem,LDI		, ldi		, 0x0b, ld			, T0	, "[]"		,	"dst = mem[l1 + l2 + l3]"				, "arithmetic add"						,"dst,lhs,rhs,oth,swap", 0)				\
 //	X(MEM,mem,LDI		, ldi		, 0x0c, ld			, T0	, "[]"		,	"dst = mem[l1 + l2 + l3]"				, "arithmetic add"						,"dst,lhs,rhs,oth,swap", 0)				\

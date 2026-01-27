@@ -95,5 +95,7 @@ bool SIM_mailbox_export_channel(SIM_graph_t *graph, SIM_mailbox_t *mailbox, OBJ_
 	//bool import = SIM_channel_set_packet(channel, packet);
 	//if(!import)
 	//	return false;
+	assert(0 && "TODO");
+	return false;
 }
 

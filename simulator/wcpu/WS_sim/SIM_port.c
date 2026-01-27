@@ -54,7 +54,7 @@ bool SIM_port_produce_bundle(SIM_graph_t *graph, SIM_port_t *port, OBJ_bundle_t 
 bool SIM_port_recieve_bundle(SIM_graph_t *graph, SIM_port_t *port, OBJ_bundle_t *bundle)
 {
 	assert(graph && port && bundle);
-
+	assert("todo");
 	for(int k = 0; k < 8; ++k)
 	{
 		OBJ_msg_t *msg = &bundle->msg[k];
@@ -96,11 +96,5 @@ bool SIM_port_recieve_bundle(SIM_graph_t *graph, SIM_port_t *port, OBJ_bundle_t 
 		}
 
 	}
-
-	for(int i = 0; i < port->mailboxes_size; ++i)
-	{
-
-
-
-	}
+	return true;
 }
