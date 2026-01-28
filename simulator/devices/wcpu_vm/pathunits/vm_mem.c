@@ -187,6 +187,17 @@ vm_op_status_t vm_MEM_POP_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 }
 
 
+
+vm_op_status_t vm_MEM_PUSHW_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+vm_op_status_t vm_MEM_POPW_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+
+}
+
+
 void vm_cpu_path_mem_init(vima_t *vm)
 {
 

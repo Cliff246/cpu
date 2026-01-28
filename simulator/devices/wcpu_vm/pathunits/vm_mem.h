@@ -17,6 +17,9 @@ vm_op_status_t vm_MEM_INCSP_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn);
 vm_op_status_t vm_MEM_DECSP_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn);
 vm_op_status_t vm_MEM_PUSH_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn);
 vm_op_status_t vm_MEM_POP_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn);
+vm_op_status_t vm_MEM_PUSHW_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn);
+vm_op_status_t vm_MEM_POPW_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn);
+
 
 
 #endif

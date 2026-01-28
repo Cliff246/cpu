@@ -4,8 +4,14 @@
  	SIZE 2000 .
 	FILENAME "a.bin" .
 	PRINT_CONTENT true .
-	};
+	}
+	{
+		START 2001 .
+		SIZE 2000 .
+		FILENAME "loader.bin"
+		PRINT_CONTENT false .
 
+	};
 "libsim_dev_fakeio" :
 	{
 		START 10000 .

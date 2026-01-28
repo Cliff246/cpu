@@ -1,7 +1,5 @@
 #include "SIM_graph.h"
 #include "OBJ_bundle.h"
-#include "OBJ_constants.h"
-#include "OBJ_message.h"
 #include "SIM_channel.h"
 #include "SIM_commons.h"
 #include "SIM_object.h"
@@ -10,7 +8,6 @@
 #include "SIM_transfer.h"
 #include "SIM_wire.h"
 #include "commons.h"
-#include "SIM_routemap.h"
 
 #include <stdlib.h>
 #include <stdint.h>

@@ -5,16 +5,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef struct WS_IO_leaf
-{
-
-}IO_leaf_t;
-
-typedef struct WS_IO_graph
-{
-
-
-}IO_graph_t;
 
 
 #endif

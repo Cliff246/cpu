@@ -539,3 +539,5 @@ vm_op_status_t vm_ALU_POPCNT_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 	return VM_OP_STATUS_DONE;
 
 }
+
+

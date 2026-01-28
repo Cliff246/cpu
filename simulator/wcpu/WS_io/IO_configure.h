@@ -4,7 +4,6 @@
 #include "loader.h"
 #include "dynamic_lib.h"
 #include "token.h"
-#include "MOD_description.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
