@@ -8,7 +8,7 @@
 
 IO_pnode_t *IO_pnode_create(tok_t *tok, IO_pnode_type_t type)
 {
-	//this should be done differently  
+	//this should be done differently
 	IO_pnode_t *pn = calloc(1, sizeof(IO_pnode_t));
 	assert(pn != 0 && "pnode failed to create");
 	pn->token = tok;
@@ -104,13 +104,13 @@ IO_ptree_t *IO_ptree_create(toklex_t *tl)
 
 static IO_pnode_t *IO_pnode_set(IO_ptree_t *tree)
 {
-	
+
 
 	IO_pnode_t *pnode = IO_pnode_create(&empty_tok, IO_PNODE_SET);
 	tok_t *keytok = IO_ptree_next_tok(tree);
 	assert(keytok);
 	IO_pnode_t *key  = IO_pnode_create(keytok, IO_PNODE_KEY);
-	
+
 	tok_t *valuetok = IO_ptree_next_tok(tree);
 	assert(valuetok);
 	IO_pnode_t *value = IO_pnode_create(valuetok, IO_PNODE_VALUE);
@@ -127,7 +127,7 @@ static IO_pnode_t *IO_pnode_body(IO_ptree_t *tree)
 	tok_t *tok = IO_ptree_next_tok(tree);
 	while(tok->type == TOK_NEWLINE)
 	{
-		
+
 		tok_t *next = IO_ptree_peek_tok(tree);
 
 		if(!next)
@@ -139,19 +139,19 @@ static IO_pnode_t *IO_pnode_body(IO_ptree_t *tree)
 			break;
 		}
 
-		IO_pnode_t *set =  IO_pnode_set(tree);		
+		IO_pnode_t *set =  IO_pnode_set(tree);
 		IO_pnode_append(body, set);
 		tok = IO_ptree_next_tok(tree);
 	}
 
 
 	return body;
-	
+
 }
 
 static IO_pnode_t *IO_pnode_header(IO_ptree_t *tree)
 {
-	assert(tree);	
+	assert(tree);
 	tok_t *header_name = IO_ptree_expect_tok(tree, TOK_STRING);
 	if(!header_name)
 	{
@@ -166,24 +166,24 @@ static IO_pnode_t *IO_pnode_header(IO_ptree_t *tree)
 		assert(0);
 		exit(1);
 	}
-	IO_pnode_t *header = IO_pnode_create(header_name, IO_PNODE_HEADER); 
-	
+	IO_pnode_t *header = IO_pnode_create(header_name, IO_PNODE_HEADER);
 
-	
-	tok_t *next = NULL;	
+
+
+	tok_t *next = NULL;
 	do
 	{
 		next = IO_ptree_next_tok(tree);
-		IO_pnode_t *body = IO_pnode_body(tree);			
+		IO_pnode_t *body = IO_pnode_body(tree);
 
 		//IO_pnode_print(body, 0);
 		IO_pnode_append(header, body);
-	
+
 	}while(next->type == TOK_BRACKET);
 
 
 
-	return header;	
+	return header;
 
 }
 
@@ -198,15 +198,15 @@ bool IO_ptree_parse(IO_ptree_t *tree)
 		if(peek->type == TOK_STRING)
 		{
 
-			IO_pnode_t *header =  IO_pnode_header(tree);	
-			
+			IO_pnode_t *header =  IO_pnode_header(tree);
+
 			IO_pnode_append(base, header);
 		}
 		else
 		{
 			IO_ptree_next_tok(tree);
 		}
-	}	
+	}
 
 	tree->head = base;
 	return false;

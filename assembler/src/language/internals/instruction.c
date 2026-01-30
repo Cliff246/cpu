@@ -53,8 +53,8 @@ inst_t decode_inst(uint32_t instr)
 	in.path = (instr >> 29) & 0x7;
 	in.subpath = (instr >> 22) & 0x7F;
 	in.rs1 = (instr >> 16) & 0x3F;
-	in.rs1 = (instr >> 10) & 0x3F;
-	in.rs2 = (instr >> 4) & 0x3F;
+	in.rs2 = (instr >> 10) & 0x3F;
+	in.rs3 = (instr >> 4) & 0x3F;
 	in.modeflag = (instr >> 2) & 0x02;
 	in.selflag = (instr >> 1) & 0x01;
 	in.immflag = instr & 0x01;
