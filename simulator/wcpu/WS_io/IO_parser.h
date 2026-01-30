@@ -11,6 +11,7 @@
 	X(START)				\
 	X(HEADER)				\
 	X(BODY)					\
+	X(SET)					\
 	X(KEY)					\
 	X(VALUE)				\
 	X(KEYWORD)				\
@@ -45,14 +46,14 @@ typedef struct WS_IO_ptree
 }IO_ptree_t;
 
 
-static IO_pnode_t *IO_pnode_key(IO_ptree_t *tree);
-static IO_pnode_t *IO_pnode_value(IO_ptree_t *tree);
+static IO_pnode_t *IO_pnode_set(IO_ptree_t *tree);
 static IO_pnode_t *IO_pnode_body(IO_ptree_t *tree);
 static IO_pnode_t *IO_pnode_header(IO_ptree_t *tree);
 
+void IO_pnode_print(IO_pnode_t *node, int depth);
+IO_ptree_t *IO_ptree_create(toklex_t *tl);
 bool IO_ptree_parse(IO_ptree_t *tree);
 IO_pnode_t *IO_pnode_create(tok_t *tok, IO_pnode_type_t type);
-void IO_pnode_print_tree(IO_pnode_t *tree, int depth);
 void IO_pnode_append(IO_pnode_t *parent, IO_pnode_t *child);
 tok_t *IO_ptree_next_tok(IO_ptree_t *ctx);
 

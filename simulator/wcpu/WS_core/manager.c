@@ -8,6 +8,8 @@
 #include "commons.h"
 #include "export.h"
 
+#include "IO_parser.h"
+
 #include "SIM_simulator.h"
 #include "IO_configure.h"
 #include <stdlib.h>
@@ -314,6 +316,13 @@ void init(int argc, char **argv)
 {
 
 
+	sourcefile_t *sf = create_sourcefile("configfiles/basic_config.txt");
+	toklex_t *lex= lex_string(read_all_sourcefile(sf));
+	print_toklex(lex);
+	IO_ptree_t *tree =IO_ptree_create(lex);
+	IO_ptree_parse(tree);
+	IO_pnode_print(tree->head, 0);
+	/*
 	logger_set = false;
 	globalstate.args.argc = argc;
 	globalstate.args.argv = argv;
@@ -337,7 +346,7 @@ void init(int argc, char **argv)
 	SIM_simulator_print_all_devices(sim);
 
 	//create_cli_context(&globalstate.ctx);
-
+	*/
 
 
 

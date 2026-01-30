@@ -358,3 +358,30 @@ void free_sourcefile(sourcefile_t *sf)
 	free(sf->path);
 	free(sf);
 }
+
+
+
+char *read_all_sourcefile(sourcefile_t *sf)
+{
+	if(!open_sourcefile(sf))
+	{
+		fprintf(stderr, "could not open srcfile %s", sf->path);
+		exit(EXIT_FAILURE);
+	}
+
+
+
+
+
+
+	int length = get_sourcefile_length(sf);
+	if(length <= 0)
+	{
+		fprintf(stderr, "could not get length of srcfile %s:%d\n", sf->path, length);
+		exit(EXIT_FAILURE);
+	}
+
+
+	char *fbuf = read_sourcefile(sf, length);
+	return fbuf;
+}
