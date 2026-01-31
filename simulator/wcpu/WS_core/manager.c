@@ -6,7 +6,10 @@
 //#include "coreutils.h"
 #include "SIM_device.h"
 #include "SIM_prototag.h"
+#include "TAG_bool.h"
+#include "TAG_list.h"
 #include "TAG_tag.h"
+#include "TAG_int.h"
 #include "cli.h"
 #include "commons.h"
 #include "export.h"
@@ -333,10 +336,19 @@ void init(int argc, char **argv)
 		"world",
 		"losers",
 	};
-	SIM_prototag_t *proto_bool = SIM_init_prototag_bool("char *key", 0);
+	int64_t nums[] =
+	{
+		0, 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19
+	};
+	SIM_prototag_t *proto_bool = SIM_init_prototag_bool("char *key", 2);
 	TAG_print(proto_bool->tag);
-	SIM_prototag_t *proto_list = SIM_init_prototag_list_string("key", (char **)test, 4);
+
+	SIM_prototag_t *proto_list = SIM_init_prototag_list_ints("key", nums,20);
 	SIM_prototag_t *proto_tag = SIM_init_prototag_int("hello", 203);
+	TAG_argptr_t fn = TAG_get_fn(TAG_LIST, TAG_FN_LIST_GET);
+	TAG_print(proto_list->tag);
+	//TAG_tag_t *tag =  fn.LIST->get(proto_list->tag, 1);
+	//TAG_print(tag);
 	SIM_prototag_t *tags[] =
 	{
 		proto_bool,

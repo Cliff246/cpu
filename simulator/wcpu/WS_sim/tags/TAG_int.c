@@ -21,12 +21,20 @@ static TAG_ptr_t TAG_init_int(int64_t integer)
 	return ret;
 }
 
+static int64_t TAG_get_int(TAG_tag_t *tag)
+{
+	return tag->ptr.INT->integer;
+}
 
 static TAG_int_arg_t init_int =
 {
 	.init = TAG_init_int
 };
 
+static TAG_int_arg_t get_int =
+{
+	.get = TAG_get_int
+};
 
 
 
@@ -35,9 +43,10 @@ TAG_prototype_vtable_t TAG_int_vtable =
 	.free = TAG_int_free,
 	.print = TAG_int_print,
 
-	.size = 1,
+	.size = 2,
 	.fn =
 	{
-		[TAG_FN_INT_INIT].INT = &init_int
+		[TAG_FN_INT_INIT].INT = &init_int,
+		[TAG_FN_INT_GET].INT = &get_int,
 	},
 };

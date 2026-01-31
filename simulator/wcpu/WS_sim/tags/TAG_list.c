@@ -1,4 +1,5 @@
 #include "TAG_list.h"
+#include "TAG_int.h"
 #include "TAG_string.h"
 #include "TAG_tag.h"
 #include <stdint.h>
@@ -53,7 +54,7 @@ static TAG_ptr_t TAG_init_list_bools(uint64_t size, bool *bools)
 static TAG_ptr_t TAG_init_list_strings(uint64_t size, char **strings)
 {
 	TAG_list_t *list = TAG_init_list(size);
-	TAG_argptr_t string_init = TAG_get_init(TAG_STRING, TAG_FN_STRING_INIT);
+	TAG_argptr_t string_init = TAG_get_fn(TAG_STRING, TAG_FN_STRING_INIT);
 	for(uint64_t i = 0; i < size; ++i)
 	{
 		TAG_ptr_t tptr = string_init.STRING->init(strings[i]);
@@ -64,11 +65,30 @@ static TAG_ptr_t TAG_init_list_strings(uint64_t size, char **strings)
 	ptr.LIST = list;
 	return ptr;
 }
+
 static TAG_ptr_t TAG_init_list_ints(uint64_t size, int64_t *integer)
 {
-	assert(0);
+	TAG_list_t *list = TAG_init_list(size);
+	TAG_argptr_t int_init = TAG_get_fn(TAG_INT, TAG_FN_INT_INIT);
+	for(uint64_t i = 0; i < size; ++i)
+	{
+		TAG_ptr_t tptr = int_init.INT->init(integer[i]);
+		TAG_tag_t *ttag = TAG_init(tptr, TAG_INT);
+		list->list[i] = ttag;
+	}
+	TAG_ptr_t ptr;
+	ptr.LIST = list;
+	return ptr;
 
 }
+
+static TAG_tag_t *TAG_get_list(TAG_tag_t *tag, uint64_t pos)
+{
+	if(tag->ptr.LIST->size < pos)
+		return NULL;
+	return tag->ptr.LIST->list[pos];
+}
+
 
 static TAG_list_arg_t init_list_bools =
 {
@@ -82,22 +102,29 @@ static TAG_list_arg_t init_list_strings =
 	.init_strings = TAG_init_list_strings
 };
 
-static TAG_list_arg_t init_list_int =
+static TAG_list_arg_t init_list_ints =
 {
 	.init_ints = TAG_init_list_ints
 };
+
+static TAG_list_arg_t get_list =
+{
+	.get = TAG_get_list
+};
+
 
 
 TAG_prototype_vtable_t TAG_list_vtable =
 {
 	.free = TAG_list_free,
 	.print = TAG_list_print,
-	.size = 3,
+	.size = 4,
 	.fn =
 	{
 		[TAG_FN_LIST_INIT_BOOLS].LIST = &init_list_bools,
 		[TAG_FN_LIST_INIT_STRINGS].LIST = &init_list_strings,
-		[TAG_FN_LIST_INIT_INTS].LIST = &init_list_int,
+		[TAG_FN_LIST_INIT_INTS].LIST = &init_list_ints,
+		[TAG_FN_LIST_GET].LIST = &get_list,
 	}
 
 };

@@ -31,7 +31,7 @@ void TAG_free(TAG_tag_t *tag)
 }
 
 
-TAG_argptr_t TAG_get_init(TAG_type_t type, uint64_t index)
+TAG_argptr_t TAG_get_fn(TAG_type_t type, uint64_t index)
 {
 	if(TAG_vtable_list[type]->size <= index)
 	{

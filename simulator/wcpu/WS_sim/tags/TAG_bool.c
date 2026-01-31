@@ -30,11 +30,20 @@ static TAG_ptr_t TAG_init_bool(bool boolean)
 	return ret;
 }
 
+static bool TAG_get_bool(TAG_tag_t *tag)
+{
+	return tag->ptr.BOOL->boolean;
+}
+
 static TAG_bool_arg_t init_bool =
 {
 	.init = TAG_init_bool
 };
 
+static TAG_bool_arg_t get_bool =
+{
+	.get = TAG_get_bool
+};
 
 
 TAG_prototype_vtable_t TAG_bool_vtable =
@@ -42,9 +51,10 @@ TAG_prototype_vtable_t TAG_bool_vtable =
 	.free = TAG_bool_free,
 	.print = TAG_bool_print,
 
-	.size = 1,
+	.size = 2,
 	.fn =
 	{
-		[TAG_FN_BOOL_INIT].BOOL = &init_bool
+		[TAG_FN_BOOL_INIT].BOOL = &init_bool,
+		[TAG_FN_BOOL_GET].BOOL = &get_bool,
 	},
 };

@@ -17,6 +17,7 @@ SIM_prototag_t *SIM_init_prototag_empty(char *key);
 SIM_prototag_t *SIM_init_prototag_string(char *key, char *value);
 SIM_prototag_t *SIM_init_prototag_int(char *key, int64_t integer);
 SIM_prototag_t *SIM_init_prototag_list_string(char *key, char **str, uint64_t count);
+SIM_prototag_t *SIM_init_prototag_list_ints(char *key, int64_t *integers, uint64_t count);
 
 SIM_prototag_t *SIM_init_prototag_list(char *key, TAG_tag_t *tags, uint64_t count);
 SIM_prototag_t *SIM_init_prototag_bool(char *key, bool boolean);
