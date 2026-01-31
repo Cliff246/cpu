@@ -225,7 +225,7 @@ int get_starting_tabs_count(char *str, int tabsize)
 
 	for(char* scroll = str; *str; scroll++)
 	{
-		if(*scroll = '\t')
+		if(*scroll == '\t')
 		{
 			count++;
 		}

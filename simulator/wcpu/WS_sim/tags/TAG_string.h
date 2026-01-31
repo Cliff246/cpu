@@ -1,7 +1,12 @@
 #ifndef __WS_SIM_TAG_STRING_HEADER__
 #define __WS_SIM_TAG_STRING_HEADER__
 
-#include "TAG_prototype.h"
+#include "TAG_tag.h"
+
+enum WS_SIM_TAG_STRING_fn_type
+{
+	WS_SIM_TAG_FN_TYPE(STRING, INIT)
+};
 
 
 struct WS_SIM_TAG_string
@@ -13,5 +18,12 @@ void TAG_string_free(TAG_ptr_t ptr);
 
 extern TAG_prototype_vtable_t TAG_string_vtable;
 
+static TAG_ptr_t TAG_init_string(char *string);
+
+
+union WS_SIM_TAG_string_arg
+{
+	TAG_ptr_t (*init)(char *string);
+};
 
 #endif
