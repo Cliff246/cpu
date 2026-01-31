@@ -17,6 +17,8 @@ typedef enum token_type
 
 	TOK_OP,
 	TOK_BRACKET,
+	TOK_SQUARE,
+	TOK_CURL,
 	TOK_STRING,
 	TOK_COMMA,
 	TOK_DOT,
@@ -53,7 +55,7 @@ void print_tok(tok_t *token);
 
 void reset_toklex(toklex_t *tl);
 tok_t *get_toklex(toklex_t *tl, int index);
-tok_t *peek_toklex(toklex_t *tl);
+tok_t *peak_toklex(toklex_t *tl);
 bool expect_toklex(toklex_t *tl, tok_type_t type);
 tok_t *copy_tok(tok_t *tok);
 

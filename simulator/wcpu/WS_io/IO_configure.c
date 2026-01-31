@@ -146,7 +146,7 @@ static void load_cfg_file(WS_cfg_file_t *file)
 
 
 
-		tok_t *tok = peek_toklex(tl);
+		tok_t *tok = peak_toklex(tl);
 		//printf("%d %s\n",cur_head_state, tok->token);
 		//printf("%p %p\n", cur_head, cur_body);
 		if(tok->type == TOK_END)

@@ -1,3 +1,6 @@
+
+add_subdirectory(tags)
+
 SET(WS_SIM_CFILES
 	${CMAKE_CURRENT_SOURCE_DIR}/SIM_simulator.c
 	${CMAKE_CURRENT_SOURCE_DIR}/SIM_transfer.c
@@ -17,6 +20,7 @@ SET(WS_SIM_CFILES
 	${CMAKE_CURRENT_SOURCE_DIR}/SIM_bus.c
 	${CMAKE_CURRENT_SOURCE_DIR}/SIM_mailbox.c
 	${CMAKE_CURRENT_SOURCE_DIR}/SIM_mail.c
+	${CMAKE_CURRENT_SOURCE_DIR}/SIM_tag.c
 
 
 )
@@ -31,10 +35,14 @@ target_include_directories(ws_sim
 	${CMAKE_CURRENT_SOURCE_DIR}/
 	${CMAKE_CURRENT_SOURCE_DIR}/entry
 	ws_io
-)
-target_link_libraries(ws_sim PUBLIC
-	ws_io
+	ws_sim_tag
 	wcpu_commons
 
+)
+target_link_libraries(ws_sim PUBLIC
+	ws_sim_tag
+
+	ws_io
+	wcpu_commons
 )
 

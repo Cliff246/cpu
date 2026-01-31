@@ -14,8 +14,7 @@
 	X(SET)					\
 	X(KEY)					\
 	X(VALUE)				\
-	X(KEYWORD)				\
-	X(EQUALS)				\
+	X(LIST)					\
 	X(BRACKET)				\
 
 #define IO_NODE_NAME(X) IO_PNODE_ ## X

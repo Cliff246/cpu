@@ -1,4 +1,5 @@
 #include "token.h"
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -44,7 +45,7 @@ static char *split(toklex_t *tl, size_t start, size_t stop)
 }
 
 
-static char peek(toklex_t *tl)
+static char peak(toklex_t *tl)
 {
 	if(tl->index >= tl->slen)
 		return 0;
@@ -53,11 +54,22 @@ static char peek(toklex_t *tl)
 
 }
 
+static char next(toklex_t *tl)
+{
+	if(tl->index + 1 >= tl->slen)
+	{
+		return -1;
+	}
+	else
+		return tl->string[tl->index + 1];
+}
+
 static char advance(toklex_t *tl)
 {
 
- 	char pk = peek(tl);
 	tl->index++;
+ 	char pk = peak(tl);
+
 	return pk;
 }
 
@@ -91,8 +103,8 @@ toklex_t *lex_string(const char *string)
 	{
 
 		size_t begin = position(tl);
-		char cur = advance(tl);
-		//printf("%d\n", cur);
+		char cur = peak(tl);
+		//printf("\'%c\'\n", cur);
 		if(cur == '\n')
 		{
 			emit(tl, TOK_NEWLINE, to_string('~'));
@@ -100,22 +112,23 @@ toklex_t *lex_string(const char *string)
 		}
 		else if(isblank(cur))
 		{
+
 		}
 		else if(isalpha(cur))
 		{
 
-			do
+			while(true)
 			{
-				char scroll = peek(tl);
+				char scroll = next(tl);
 				if(!isalnum(scroll) && scroll != '_')
 				{
 					break;
 				}
+				advance(tl);
 			}
-			while(advance(tl));
-			size_t end = position(tl);
 
-			//printf("done scroll\n");
+			size_t end = position(tl) + 1;
+
 
 			char *spl = split(tl, begin, end);
 
@@ -125,27 +138,26 @@ toklex_t *lex_string(const char *string)
 		}
 		else if(cur == '\"')
 		{
-			do
+			while(advance(tl))
 			{
-				char scroll = peek(tl);
+
+				char scroll = peak(tl);
 				if(scroll == 0 || scroll == 10)
 					break;
 				if(scroll == '\"')
 					break;
 			}
-			while(advance(tl));
+
 			size_t end = position(tl);
 			if(end == begin + 1)
 			{
 				emit(tl, TOK_STRING, strdup("\"\""));
-				advance(tl);
 			}
 			else
 			{
 				char *spl = split(tl, begin + 1, end);
 				emit(tl, TOK_STRING, spl);
 
-				advance(tl);
 			}
 		}
 		else if(isdigit(cur))
@@ -154,12 +166,14 @@ toklex_t *lex_string(const char *string)
 
 			if(cur == '0')
 			{
-				char next = advance(tl);
-				if(next == 'x' || next == 'X')
+				char after = next(tl);
+				//printf("after %c %c\n",cur, after);
+				if(after == 'x' || after == 'X')
 				{
+					assert(0 && "todo");
 
 					do {
-						char scroll = peek(tl);
+						char scroll = peak(tl);
 						if(!isdigit(scroll) && !(scroll > 'A' && scroll < 'F') && !(scroll > 'a' && scroll < 'f'))
 						{
 							break;
@@ -173,11 +187,13 @@ toklex_t *lex_string(const char *string)
 
 					//deal with hex
 				}
-				if(next == 'b' || next == 'B')
+				if(after == 'b' || after == 'B')
 				{
+					assert(0 && "todo");
+
 					do
 					{
-						char scroll = peek(tl);
+						char scroll = peak(tl);
 						if(scroll != '0' && scroll != '1')
 						{
 							break;
@@ -189,10 +205,12 @@ toklex_t *lex_string(const char *string)
 					emit(tl, TOK_BIN, split(tl, begin, end - 1));
 
 				}
-				else if(next < '8' && next >= '0')
+				else if(after < '8' && after > '0')
 				{
-					do 					{
-						char scroll = peek(tl);
+					assert(0 && "todo");
+
+					do {
+						char scroll = peak(tl);
 						if(scroll > '8' && scroll < '0')
 						{
 							break;
@@ -208,6 +226,7 @@ toklex_t *lex_string(const char *string)
 				}
 				else
 				{
+
 					size_t end = position(tl);
 					emit(tl, TOK_INT, split(tl, begin, end));
 				}
@@ -215,29 +234,28 @@ toklex_t *lex_string(const char *string)
 			}
 			else
 			{
-				do
+				while(true)
 				{
-					if(!isdigit(peek(tl)))
-					{
+					if(!isdigit(next(tl)))
 						break;
-					}
+					advance(tl);
 				}
-				while(advance(tl));
-				size_t end = position(tl);
+				size_t end = position(tl)+1;
 				emit(tl, TOK_INT, split(tl, begin, end));
 			}
 
 		}
 		else if(cur == '-')
 		{
+			assert(0 && "todo");
 
-			char next = peek(tl);
+			char next = peak(tl);
 			if(isdigit(next))
 			{
 				//negative number
 				do
 				{
-					if(!isdigit(peek(tl)))
+					if(!isdigit(peak(tl)))
 					{
 						break;
 					}
@@ -249,12 +267,14 @@ toklex_t *lex_string(const char *string)
 			}
 			else if(next == '=')
 			{
+
 				advance(tl);
 				size_t end = position(tl);
 				emit(tl, TOK_OP, split(tl, begin, end));
 			}
 			else if(next == '-')
 			{
+
 				advance(tl);
 				size_t end = position(tl);
 				emit(tl, TOK_OP, split(tl, begin, end));
@@ -264,7 +284,7 @@ toklex_t *lex_string(const char *string)
 			{
 				do
 				{
-					char scroll = peek(tl);
+					char scroll = peak(tl);
 					if(!isalnum(scroll) && scroll != '_')
 					{
 						break;
@@ -283,7 +303,9 @@ toklex_t *lex_string(const char *string)
 		}
 		else if(strchr("=<>+*%/!@$|%^&", cur))
 		{
-			char next = peek(tl);
+			//printf("neg number\n");
+
+			char next = peak(tl);
 			if(next == cur)
 			{
 
@@ -314,9 +336,18 @@ toklex_t *lex_string(const char *string)
 			}
 
 		}
-		else if(strchr("()[]{}", cur))
+		else if(strchr("[]", cur))
+		{
+			emit(tl, TOK_SQUARE, to_string(cur));
+
+		}
+		else if(strchr("()", cur))
 		{
 			emit(tl, TOK_BRACKET, to_string(cur));
+		}
+		else if(strchr("{}", cur))
+		{
+			emit(tl, TOK_CURL, to_string(cur));
 		}
 		else if(cur == ',')
 		{
@@ -336,7 +367,7 @@ toklex_t *lex_string(const char *string)
 		{
 			emit(tl, TOK_SEMICOLON, to_string(cur));
 		}
-
+		advance(tl);
 	}
 	emit(tl, TOK_END, to_string('%'));
 	tl->index = 0;
@@ -390,7 +421,7 @@ void reset_toklex(toklex_t *tl)
 tok_t *get_toklex(toklex_t *tl, int index)
 {
 
-	if(index >= tl->tcount || index < 0)
+	if(index > tl->tcount || index < 0)
 	{
 		return NULL;
 	}
@@ -403,9 +434,9 @@ tok_t *get_toklex(toklex_t *tl, int index)
 }
 
 
-tok_t *peek_toklex(toklex_t *tl)
+tok_t *peak_toklex(toklex_t *tl)
 {
-	if(tl->index >= tl->tcount)
+	if(tl->index > tl->tcount)
 	{
 		return NULL;
 	}
@@ -414,7 +445,7 @@ tok_t *peek_toklex(toklex_t *tl)
 
 bool expect_toklex(toklex_t *tl, tok_type_t type)
 {
-	tok_t *tok = peek_toklex(tl);
+	tok_t *tok = peak_toklex(tl);
 	if(tok == NULL)
 		return false;
 	else
