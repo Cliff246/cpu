@@ -57,7 +57,7 @@ typedef struct WS_SIM_TAG_prototype_vtable
 {
 
 	void (*free)(TAG_ptr_t ptr);
-
+	void (*print)(TAG_ptr_t ptr);
 
 	uint64_t size;
 	TAG_argptr_t fn[];
@@ -65,7 +65,7 @@ typedef struct WS_SIM_TAG_prototype_vtable
 }TAG_prototype_vtable_t;
 
 extern TAG_prototype_vtable_t *TAG_vtable_list[WS_SIM_TAG_LIST_COUNT];
-
+extern char *TAG_type_string_list[WS_SIM_TAG_LIST_COUNT];
 typedef struct WS_SIM_TAG_tag
 {
 	TAG_type_t type;
@@ -73,6 +73,7 @@ typedef struct WS_SIM_TAG_tag
 }TAG_tag_t;
 
 void TAG_free(TAG_tag_t *tag);
+void TAG_print(TAG_tag_t *tag);
 TAG_argptr_t TAG_get_init(TAG_type_t type, uint64_t index);
 TAG_tag_t *TAG_init(TAG_ptr_t ptr, TAG_type_t type);
 

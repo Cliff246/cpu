@@ -4,6 +4,7 @@
 #include "commons.h"
 
 #include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 
@@ -12,6 +13,12 @@ void TAG_bool_free(TAG_ptr_t ptr)
 	TAG_bool_t *boolean = ptr.BOOL;
 	free(boolean);
 
+}
+
+void TAG_bool_print(TAG_ptr_t ptr)
+{
+	char *str = (ptr.BOOL->boolean)? "true": "false";
+	printf("%s\n", str);
 }
 
 static TAG_ptr_t TAG_init_bool(bool boolean)
@@ -33,6 +40,8 @@ static TAG_bool_arg_t init_bool =
 TAG_prototype_vtable_t TAG_bool_vtable =
 {
 	.free = TAG_bool_free,
+	.print = TAG_bool_print,
+
 	.size = 1,
 	.fn =
 	{

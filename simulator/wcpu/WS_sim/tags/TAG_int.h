@@ -17,6 +17,7 @@ struct WS_SIM_TAG_int
 };
 
 void TAG_int_free(TAG_ptr_t ptr);
+void TAG_int_print(TAG_ptr_t ptr);
 
 static TAG_ptr_t TAG_init_int(int64_t integer);
 

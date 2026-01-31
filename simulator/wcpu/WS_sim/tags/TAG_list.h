@@ -23,6 +23,7 @@ struct WS_SIM_TAG_list
 };
 
 void TAG_list_free(TAG_ptr_t ptr);
+void TAG_list_print(TAG_ptr_t ptr);
 
 static TAG_ptr_t TAG_init_list_bools(uint64_t size, bool *bools);
 static TAG_ptr_t TAG_init_list_strings(uint64_t size, char **strings);

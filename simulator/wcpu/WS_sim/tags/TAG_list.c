@@ -1,8 +1,10 @@
 #include "TAG_list.h"
+#include "TAG_string.h"
 #include "TAG_tag.h"
 #include <stdint.h>
 #include <assert.h>
-
+#include <stdio.h>
+#include <stdlib.h>
 
 
 
@@ -22,6 +24,27 @@ void TAG_list_free(TAG_ptr_t ptr)
 }
 
 
+void TAG_list_print(TAG_ptr_t ptr)
+{
+	printf("list: %lu\n", ptr.LIST->size);
+	for(int i = 0; i < ptr.LIST->size; ++i)
+	{
+		TAG_print(ptr.LIST->list[i]);
+	}
+}
+
+static TAG_list_t *TAG_init_list(uint64_t count)
+{
+	TAG_list_t *list = calloc(1, sizeof(TAG_list_t));
+	assert(list);
+
+	TAG_tag_t **contents = calloc(count, sizeof(TAG_tag_t *));
+	assert(contents);
+	list->list = contents;
+	list->size = count;
+
+	return list;
+}
 
 static TAG_ptr_t TAG_init_list_bools(uint64_t size, bool *bools)
 {
@@ -29,8 +52,17 @@ static TAG_ptr_t TAG_init_list_bools(uint64_t size, bool *bools)
 }
 static TAG_ptr_t TAG_init_list_strings(uint64_t size, char **strings)
 {
-	assert(0);
-
+	TAG_list_t *list = TAG_init_list(size);
+	TAG_argptr_t string_init = TAG_get_init(TAG_STRING, TAG_FN_STRING_INIT);
+	for(uint64_t i = 0; i < size; ++i)
+	{
+		TAG_ptr_t tptr = string_init.STRING->init(strings[i]);
+		TAG_tag_t *ttag = TAG_init(tptr, TAG_STRING);
+		list->list[i] = ttag;
+	}
+	TAG_ptr_t ptr;
+	ptr.LIST = list;
+	return ptr;
 }
 static TAG_ptr_t TAG_init_list_ints(uint64_t size, int64_t *integer)
 {
@@ -59,6 +91,7 @@ static TAG_list_arg_t init_list_int =
 TAG_prototype_vtable_t TAG_list_vtable =
 {
 	.free = TAG_list_free,
+	.print = TAG_list_print,
 	.size = 3,
 	.fn =
 	{

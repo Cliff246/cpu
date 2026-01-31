@@ -1,9 +1,15 @@
 #include "TAG_int.h"
+#include <stdio.h>
 
 void TAG_int_free(TAG_ptr_t ptr)
 {
 	TAG_int_t *integer = ptr.INT;
 	free(integer);
+}
+
+void TAG_int_print(TAG_ptr_t ptr)
+{
+	printf("%ld\n", ptr.INT->integer);
 }
 
 static TAG_ptr_t TAG_init_int(int64_t integer)
@@ -27,6 +33,8 @@ static TAG_int_arg_t init_int =
 TAG_prototype_vtable_t TAG_int_vtable =
 {
 	.free = TAG_int_free,
+	.print = TAG_int_print,
+
 	.size = 1,
 	.fn =
 	{

@@ -4,6 +4,9 @@
 #include "manager.h"
 //#include "core.h"
 //#include "coreutils.h"
+#include "SIM_device.h"
+#include "SIM_prototag.h"
+#include "TAG_tag.h"
 #include "cli.h"
 #include "commons.h"
 #include "export.h"
@@ -12,6 +15,7 @@
 
 #include "SIM_simulator.h"
 #include "IO_configure.h"
+#include "hashmap.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -314,7 +318,7 @@ static void load_module(const char *module)
 
 void init(int argc, char **argv)
 {
-
+	/*
 
 	sourcefile_t *sf = create_sourcefile("configfiles/basic_config.txt");
 	toklex_t *lex= lex_string(read_all_sourcefile(sf));
@@ -322,6 +326,26 @@ void init(int argc, char **argv)
 	IO_ptree_t *tree =IO_ptree_create(lex);
 	IO_ptree_parse(tree);
 	IO_pnode_print(tree->head, 0);
+	*/
+	char *test[] = {
+		"hello",
+		"tiny",
+		"world",
+		"losers",
+	};
+	SIM_prototag_t *proto_bool = SIM_init_prototag_bool("char *key", 0);
+	TAG_print(proto_bool->tag);
+	SIM_prototag_t *proto_list = SIM_init_prototag_list_string("key", (char **)test, 4);
+	SIM_prototag_t *proto_tag = SIM_init_prototag_int("hello", 203);
+	SIM_prototag_t *tags[] =
+	{
+		proto_bool,
+		proto_list,
+		proto_tag,
+	};
+	SIM_device_t *device = SIM_init_device(tags, 3);
+	print_hash_table(device->tags);
+	free_hash_table(device->tags);
 	/*
 	logger_set = false;
 	globalstate.args.argc = argc;

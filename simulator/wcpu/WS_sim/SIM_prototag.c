@@ -1,10 +1,12 @@
 #include "SIM_prototag.h"
 #include "TAG_bool.h"
+#include "TAG_list.h"
 #include "TAG_tag.h"
 #include "TAG_int.h"
 #include "TAG_string.h"
 #include <assert.h>
 #include <string.h>
+#include <stdio.h>
 
 SIM_prototag_t *SIM_init_prototag_empty(char *key)
 {
@@ -46,8 +48,22 @@ SIM_prototag_t *SIM_init_prototag_int(char *key, int64_t integer)
 	return prototag;
 }
 
+SIM_prototag_t *SIM_init_prototag_list_string(char *key, char **str, uint64_t count)
+{
+	TAG_argptr_t argptr =	TAG_get_init(TAG_LIST, TAG_FN_LIST_INIT_STRINGS);
+
+	TAG_ptr_t ptr = argptr.LIST->init_strings(count, str);
+	TAG_tag_t *tag = TAG_init(ptr, TAG_LIST);
+	assert(tag);
+	SIM_prototag_t *prototag = SIM_init_prototag_empty(key);
+	assert(prototag);
+	prototag->tag = tag;
+	return prototag;
+}
+
 SIM_prototag_t *SIM_init_prototag_list(char *key, TAG_tag_t *tags, uint64_t count)
 {
+
 	assert(0);
 }
 
@@ -68,6 +84,8 @@ SIM_prototag_t *SIM_init_prototag_bool(char *key, bool boolean)
 
 void SIM_free_prototag(SIM_prototag_t *prototag)
 {
+	printf("freeing tag\n");
 	free(prototag->key);
 	free(prototag);
+
 }

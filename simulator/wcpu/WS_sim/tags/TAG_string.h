@@ -15,6 +15,7 @@ struct WS_SIM_TAG_string
 };
 
 void TAG_string_free(TAG_ptr_t ptr);
+void TAG_string_print(TAG_ptr_t ptr);
 
 extern TAG_prototype_vtable_t TAG_string_vtable;
 

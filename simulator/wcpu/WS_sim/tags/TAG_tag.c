@@ -7,15 +7,21 @@
 #include "TAG_list.h"
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 
 #define TAG_VTABLE_FILL(X, Y, Z) [WS_SIM_TAG_ENUM_NAME(Y)] = &X##_vtable ,
+#define TAG_TYPE_FILL(X, Y, Z) [WS_SIM_TAG_ENUM_NAME(Y)] = #Y,
 
 TAG_prototype_vtable_t *TAG_vtable_list[WS_SIM_TAG_LIST_COUNT] =
 {
 	WS_SIM_TAG_LIST(TAG_VTABLE_FILL)
 };
 
+char *TAG_type_string_list[WS_SIM_TAG_LIST_COUNT] =
+{
+	WS_SIM_TAG_LIST(TAG_TYPE_FILL)
+};
 
 void TAG_free(TAG_tag_t *tag)
 {
@@ -44,4 +50,10 @@ TAG_tag_t *TAG_init(TAG_ptr_t ptr, TAG_type_t type)
 	tag->ptr = ptr;
 	tag->type = type;
 	return tag;
+}
+
+void TAG_print(TAG_tag_t *tag)
+{
+	printf("TAG<%s>: ", TAG_type_string_list[tag->type]);
+	TAG_vtable_list[tag->type]->print(tag->ptr);
 }
