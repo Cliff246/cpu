@@ -1,6 +1,6 @@
 
 
-SET(WS_SIM_TAG_CFILES
+SET(WS_TAG_CFILES
 	${CMAKE_CURRENT_SOURCE_DIR}/TAG_tag.c
 	${CMAKE_CURRENT_SOURCE_DIR}/TAG_string.c
 	${CMAKE_CURRENT_SOURCE_DIR}/TAG_int.c
@@ -11,16 +11,16 @@ SET(WS_SIM_TAG_CFILES
 )
 
 
-add_library(ws_sim_tag STATIC ${WS_SIM_TAG_CFILES})
+add_library(ws_tag STATIC ${WS_TAG_CFILES})
 
 
 set(CMAKE_BUILD_TYPE Debug)
-target_include_directories(ws_sim_tag
+target_include_directories(ws_tag
 	PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(ws_sim_tag PUBLIC
+target_link_libraries(ws_tag PUBLIC
 	wcpu_commons
 
 )

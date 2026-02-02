@@ -18,6 +18,7 @@ target_include_directories(ws_core
 	wcpu_emu_inputs
 	ws_sim
 	sim_shared_interface
+	ws_cfg
 
 )
 target_link_libraries(ws_core PUBLIC
@@ -25,6 +26,6 @@ target_link_libraries(ws_core PUBLIC
 	wcpu_emu_inputs
 	ws_sim
 	sim_shared_interface
-
+	ws_cfg
 )
 

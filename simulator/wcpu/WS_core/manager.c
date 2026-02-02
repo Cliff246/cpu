@@ -5,7 +5,7 @@
 //#include "core.h"
 //#include "coreutils.h"
 #include "SIM_device.h"
-#include "SIM_prototag.h"
+#include "CFG_prototag.h"
 #include "TAG_bool.h"
 #include "TAG_list.h"
 #include "TAG_tag.h"
@@ -114,7 +114,7 @@ struct argstate
 };
 
 
-static enum arg_state_class
+enum arg_state_class
 {
 	__debug_state,
 	__export_state,
@@ -321,7 +321,6 @@ static void load_module(const char *module)
 
 void init(int argc, char **argv)
 {
-	/*
 
 	sourcefile_t *sf = create_sourcefile("configfiles/basic_config.txt");
 	toklex_t *lex= lex_string(read_all_sourcefile(sf));
@@ -329,7 +328,7 @@ void init(int argc, char **argv)
 	IO_ptree_t *tree =IO_ptree_create(lex);
 	IO_ptree_parse(tree);
 	IO_pnode_print(tree->head, 0);
-	*/
+
 	char *test[] = {
 		"hello",
 		"tiny",
@@ -340,16 +339,16 @@ void init(int argc, char **argv)
 	{
 		0, 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19
 	};
-	SIM_prototag_t *proto_bool = SIM_init_prototag_bool("char *key", 2);
+	CFG_prototag_t *proto_bool = CFG_init_prototag_bool("char *key", 2);
 	TAG_print(proto_bool->tag);
 
-	SIM_prototag_t *proto_list = SIM_init_prototag_list_ints("key", nums,20);
-	SIM_prototag_t *proto_tag = SIM_init_prototag_int("hello", 203);
+	CFG_prototag_t *proto_list = CFG_init_prototag_list_ints("key", nums,20);
+	CFG_prototag_t *proto_tag = CFG_init_prototag_int("hello", 203);
 	TAG_argptr_t fn = TAG_get_fn(TAG_LIST, TAG_FN_LIST_GET);
 	TAG_print(proto_list->tag);
 	//TAG_tag_t *tag =  fn.LIST->get(proto_list->tag, 1);
 	//TAG_print(tag);
-	SIM_prototag_t *tags[] =
+	CFG_prototag_t *tags[] =
 	{
 		proto_bool,
 		proto_list,

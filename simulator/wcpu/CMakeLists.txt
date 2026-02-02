@@ -19,6 +19,8 @@ set(WS_CONSOLE_CFILES
 add_subdirectory(WS_sim)
 add_subdirectory(WS_io)
 add_subdirectory(WS_core)
+add_subdirectory(WS_tags)
+add_subdirectory(WS_config)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 

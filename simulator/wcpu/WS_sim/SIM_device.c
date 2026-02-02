@@ -1,5 +1,5 @@
 #include "SIM_device.h"
-#include "SIM_prototag.h"
+#include "CFG_prototag.h"
 #include "hashmap.h"
 
 #include "TAG_tag.h"
@@ -14,15 +14,15 @@ void SIM_free_tag_table_elem(void *v)
 }
 
 
-bool SIM_prototag_add_to_device(SIM_device_t *device, SIM_prototag_t *tag)
+bool SIM_prototag_add_to_device(SIM_device_t *device, CFG_prototag_t *tag)
 {
 	//key should be coppied
 	addto_hash_table(device->tags, tag->key, tag->tag);
-	SIM_free_prototag(tag);
+	CFG_free_prototag(tag);
 	return true;
 }
 
-SIM_device_t *SIM_init_device(SIM_prototag_t **tags, uint64_t count)
+SIM_device_t *SIM_init_device(CFG_prototag_t **tags, uint64_t count)
 {
 
 
