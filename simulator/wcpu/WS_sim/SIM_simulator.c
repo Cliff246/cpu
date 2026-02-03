@@ -80,7 +80,7 @@ void SIM_simulator_print_all_devices(SIM_simulator_t *sim)
 		int32_t size = SIM_device_get_connectors(device, buf, sim->connectors_size);
 		for(int k = 0; k < size; ++k)
 		{
-			printf("%d\n", buf[k]);
+			printf("%ld\n", buf[k]);
 		}
 	}
 

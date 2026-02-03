@@ -4,6 +4,7 @@
 #include "IO_parser.h"
 #include <stdint.h>
 
+//temporary 
 typedef struct WS_CFG_setting
 {
 	uint64_t id;

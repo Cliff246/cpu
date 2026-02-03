@@ -165,7 +165,17 @@ reverse:
 	jmp.call nil, nil, nil, @strlen
 	alu.add t1, a0, zero
 	mem.pop t0, zero, zero
-	
+	;align end to ptr
+	;len >> 3 = words size
+	alu.srl t2, t1, #3
+	;remaining bytes masked &0x3
+	alu.and t3, t1, #7
+	;t4 = len(words) + address base
+	mem.ld t4, t0, t2
+
+	mem.ld t5, t1, zero
+
+
 
 	jmp.ret zero, zero, zero
 
