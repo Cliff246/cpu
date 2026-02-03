@@ -18,3 +18,7 @@
 		NAME = "vm"
 		WIRE [0, 1]
 	} ;
+
+
+(wire 0 = 20)
+(wire 1 = 30)

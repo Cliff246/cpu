@@ -16,6 +16,8 @@
 	X(VALUE)				\
 	X(LIST)					\
 	X(BRACKET)				\
+	X(SETTINGS)				\
+	X(WIRE)					\
 
 #define IO_NODE_NAME(X) IO_PNODE_ ## X
 #define IO_NODE_ENUM(X) IO_NODE_NAME(X),
@@ -41,13 +43,14 @@ typedef struct WS_IO_ptree
 	uint64_t index;
 	toklex_t *lex;
 	IO_pnode_t *head;
-
+	IO_pnode_t *settings;
 }IO_ptree_t;
 
 
 static IO_pnode_t *IO_pnode_set(IO_ptree_t *tree);
 static IO_pnode_t *IO_pnode_body(IO_ptree_t *tree);
 static IO_pnode_t *IO_pnode_header(IO_ptree_t *tree);
+static IO_pnode_t *IO_pnode_wire(IO_ptree_t *tree);
 
 void IO_pnode_print(IO_pnode_t *node, int depth);
 IO_ptree_t *IO_ptree_create(toklex_t *tl);

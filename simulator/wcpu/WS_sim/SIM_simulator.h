@@ -1,8 +1,12 @@
 #ifndef __SIMULATOR_HEADER__
 #define __SIMULATOR_HEADER__
 
+#include "CFG_manifest.h"
 #include "IO_configure.h"
 #include "MOD_description.h"
+#include "SIM_connector.h"
+#include "SIM_device.h"
+#include "SIM_mailbox.h"
 #include "SIM_transfer.h"
 #include <stdbool.h>
 #include <stdint.h>
@@ -13,11 +17,15 @@
 
 typedef struct WS_SIM_simulator
 {
-  int sid;
+	uint64_t devices_size;
+	SIM_device_t **devices;
+	SIM_graph_t *graph;
 
-  SIM_graph_t *graph;
+	uint64_t connectors_size;
+	SIM_connector_t *connectors;
 
-} SIM_simulator_t;
+
+}SIM_simulator_t;
 
 // WS_dev_t *SIM_simulator_t_get_device_from_id(SIM_simulator_t_t *sim,
 // WS_dev_id_t devid); bool
@@ -34,7 +42,7 @@ void SIM_simulator_rebuild_graph(SIM_simulator_t *sim);
 
 // advances a packet into from active forward
 // loads a group of devices from a config
-bool SIM_simulator_load_config(SIM_simulator_t *sim, WS_cfg_file_t *config);
+bool SIM_simulator_load_manifest(SIM_simulator_t *sim, CFG_manifest_t *manifest);
 
 void SIM_simulator_update(SIM_simulator_t *sim);
 void SIM_simulator_print_slots(SIM_simulator_t *sim);

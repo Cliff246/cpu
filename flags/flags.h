@@ -183,7 +183,7 @@
 	X(SYS,sys,BREAK			,break		, 0x0f, break		, T0	, "break"	,	"dst = 0, break"										, "break"										, 0)				\
 	X(SYS,sys,SET_CD_PTR	,set_cd_ptr	, 0x16, setcd		, T0	, "set_cd"	,	"dst = 0, set cd = l1 + l2 + l3 "						, "set code description"						, 0)				\
 	X(SYS,sys,CALL_CD_PTR	,call_cd_ptr, 0x17, callcd		, T0	, "call_cd"	,	"dst = 0, call cd = l1 + l2 + l3 "						, "call code description"						, 0)				\
-
+	X(SYS,sys,PAGE			,page		, 0x01, page		, T0	, "page"	, 	"dst = 0, page base = 11 + l2 + l3 "					, "set user page base"							, 0)				\
 //SYS
 
 //get timer

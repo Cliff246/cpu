@@ -74,6 +74,19 @@ CFG_prototag_t *CFG_init_prototag_list_ints(char *key, int64_t *integers, uint64
 	return prototag;
 }
 
+CFG_prototag_t *CFG_init_prototag_list_bools(char *key, bool *booleans, uint64_t count)
+{
+	TAG_argptr_t argptr =	TAG_get_fn(TAG_LIST, TAG_FN_LIST_INIT_BOOLS);
+
+	TAG_ptr_t ptr = argptr.LIST->init_bools(count, booleans);
+	TAG_tag_t *tag = TAG_init(ptr, TAG_LIST);
+	assert(tag);
+	CFG_prototag_t *prototag = CFG_init_prototag_empty(key);
+	assert(prototag);
+	prototag->tag = tag;
+	return prototag;
+}
+
 CFG_prototag_t *CFG_init_prototag_list(char *key, TAG_tag_t *tags, uint64_t count)
 {
 
@@ -100,4 +113,10 @@ void CFG_free_prototag(CFG_prototag_t *prototag)
 	free(prototag->key);
 	free(prototag);
 
+}
+
+void CFG_print_prototag(CFG_prototag_t *prototag)
+{
+	printf("prototag: %s\n", prototag->key);
+	TAG_print(prototag->tag);
 }

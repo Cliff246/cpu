@@ -4,6 +4,8 @@
 #include "manager.h"
 //#include "core.h"
 //#include "coreutils.h"
+#include "CFG_entry.h"
+#include "CFG_manifest.h"
 #include "SIM_device.h"
 #include "CFG_prototag.h"
 #include "TAG_bool.h"
@@ -305,19 +307,6 @@ void parse_args(void)
 
 }
 
-static void load_module(const char *module)
-{
-
-
-	WS_dynamic_lib_t **temp = (WS_dynamic_lib_t **)realloc(globalstate.loaded.dynamic_libs, (globalstate.loaded.count + 1) * sizeof(WS_dynamic_lib_t *));
-	assert(temp);
-	globalstate.loaded.dynamic_libs = temp;
-
-	globalstate.loaded.dynamic_libs[globalstate.loaded.count++] = WS_dynamic_lib_create(module);
-
-
-
-}
 
 void init(int argc, char **argv)
 {
@@ -328,35 +317,13 @@ void init(int argc, char **argv)
 	IO_ptree_t *tree =IO_ptree_create(lex);
 	IO_ptree_parse(tree);
 	IO_pnode_print(tree->head, 0);
+	IO_pnode_print(tree->settings, 0);
 
-	char *test[] = {
-		"hello",
-		"tiny",
-		"world",
-		"losers",
-	};
-	int64_t nums[] =
-	{
-		0, 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19
-	};
-	CFG_prototag_t *proto_bool = CFG_init_prototag_bool("char *key", 2);
-	TAG_print(proto_bool->tag);
+	CFG_manifest_t *manifest =  CFG_init_manifest(tree);
 
-	CFG_prototag_t *proto_list = CFG_init_prototag_list_ints("key", nums,20);
-	CFG_prototag_t *proto_tag = CFG_init_prototag_int("hello", 203);
-	TAG_argptr_t fn = TAG_get_fn(TAG_LIST, TAG_FN_LIST_GET);
-	TAG_print(proto_list->tag);
-	//TAG_tag_t *tag =  fn.LIST->get(proto_list->tag, 1);
-	//TAG_print(tag);
-	CFG_prototag_t *tags[] =
-	{
-		proto_bool,
-		proto_list,
-		proto_tag,
-	};
-	SIM_device_t *device = SIM_init_device(tags, 3);
-	print_hash_table(device->tags);
-	free_hash_table(device->tags);
+	SIM_simulator_t *sim = SIM_simulator_init();
+	SIM_simulator_load_manifest(sim, manifest);
+
 	/*
 	logger_set = false;
 	globalstate.args.argc = argc;

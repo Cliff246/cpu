@@ -97,6 +97,26 @@ void *realloc_safe(void *ptr, size_t count, size_t size)
 	}
 }
 
+
+
+
+int str_to_bool(char *str)
+{
+	if(!strcmp(str, "true"))
+	{
+		return true;
+	}
+	else if(!strcmp(str, "false"))
+	{
+		return false;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+
 typedef enum fmt_type
 {
 	FMT_NONE,

@@ -134,7 +134,7 @@ char *to_string(char ch);
 
 void *realloc_safe(void *ptr, size_t count, size_t size);
 
-
+int str_to_bool(char *str);
 
 void logit(char *fmt, size_t line, char *filename, ...);
 

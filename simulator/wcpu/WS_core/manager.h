@@ -62,7 +62,6 @@ typedef struct loaded_modules
 	size_t count;
 }loaded_modules_t;
 
-static void load_module(const char *module);
 
 
 typedef struct globalstate

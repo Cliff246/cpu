@@ -35,3 +35,9 @@ vm_op_status_t vm_SYS_BREAK_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
 	return VM_OP_STATUS_DONE;
 
 }
+
+
+vm_op_status_t vm_SYS_PAGE_fn(vima_t *vm, vm_op_t *op, vm_txn_t *txn)
+{
+	return VM_OP_STATUS_DONE;
+}

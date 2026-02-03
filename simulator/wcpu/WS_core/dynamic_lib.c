@@ -18,28 +18,11 @@
 #ifdef __APPLE__
 #include <mach-o/dyld.h>
 #endif
-WS_dynamic_lib_t *WS_global_dl_list[WS_GLOBAL_DL_LIST_MAX_SIZE] = {NULL};
+
+p_hashtable_t WS_dynamic_lib_table = NULL;
 
 
 
-
-void WS_add_default_flags_to_hashmap(WS_dynamic_lib_t *dl)
-{
-
-	/*if(dl->dev_desc->flag_table->tablesize < WS_DEV_FLAG_DEFAULT_COUNT)
-	{
-		fprintf(stderr, "%s does not have a properly sized hash table, expected > %d, got %d\n", dl->dev_desc->dev_name,WS_DEV_FLAG_DEFAULT_COUNT, dl->dev_desc->flag_table->tablesize );
-		exit(EXIT_FAILURE);
-	}
-	for(int i = 0; i < WS_DEV_FLAG_DEFAULT_COUNT; ++i)
-	{
-		//WS_cmd_producer_print(&WS_flag_default_producers[i]);
-
-		addto_hash_table(dl->dev_desc->flag_table, WS_flag_default_producers[i].id, &WS_flag_default_producers[i]);
-
-	}
-	*/
-}
 
 static int WS_get_executable_path(char out[PATH_MAX])
 {
@@ -105,56 +88,31 @@ static char *WS_dynamic_lib_resolve_path(const char *filename)
 }
 
 
-static void WS_dynamic_lib_list_fix(void)
+void WS_dynamic_lib_startup(void)
 {
-	WS_dynamic_lib_t *temp[WS_GLOBAL_DL_LIST_MAX_SIZE] = {0};
-	size_t count = 0;
-	for(int i = 0; i < WS_GLOBAL_DL_LIST_MAX_SIZE; ++i)
-	{
-		if(WS_global_dl_list[i] != NULL)
-		{
-			temp[count++] = WS_global_dl_list[i];
-		}
-	}
-
-	memcpy(WS_global_dl_list, temp, sizeof(WS_dynamic_lib_t*) * WS_GLOBAL_DL_LIST_MAX_SIZE);
+	static bool run = false;
+	if(run == true)
+		return;
+	WS_dynamic_lib_table = new_hash_table(WS_GLOBAL_DL_LIST_MAX_SIZE, WS_dynamic_lib_free);
+	run = true;
 }
 
-static bool WS_dynamic_lib_list_insert_free(WS_dynamic_lib_t *dl)
+void WS_dynamic_lib_free(void *ptr)
 {
-	for(int i = 0; i < WS_GLOBAL_DL_LIST_MAX_SIZE; ++i)
-	{
-		if(WS_global_dl_list[i] == NULL)
-		{
-			WS_global_dl_list[i] = dl;
-			return true;
-		}
-	}
-	return false;
-}
-void WS_dynamic_lib_free(WS_dynamic_lib_t *dl)
-{
-	assert(dl->dl_ptr != NULL);
-	for(int i = 0; i < WS_GLOBAL_DL_LIST_MAX_SIZE; ++i)
-	{
-		if(dl->dl_ptr == WS_global_dl_list[i]->dl_ptr)
-		{
-			WS_global_dl_list[i] = NULL;
-		}
-	}
-	WS_dynamic_lib_list_fix();
-
-	dlclose(dl->dl_ptr);
-	free(dl->filepath);
-
-	free(dl);
+	assert(0);
 }
 
-WS_dynamic_lib_t *WS_dynamic_lib_create(const char *filename)
+WS_dynamic_lib_t *WS_dynamic_lib_get(const char *filename)
 {
 
-
+	WS_dynamic_lib_startup();
 	const int flags = RTLD_NOW;
+
+	WS_dynamic_lib_t *try = (WS_dynamic_lib_t *) getdata_from_hash_table(WS_dynamic_lib_table, filename);
+	if(try != NULL)
+	{
+		return try;
+	}
 
 	char *filepath = WS_dynamic_lib_resolve_path(filename);
 	assert(filepath);
@@ -179,7 +137,6 @@ WS_dynamic_lib_t *WS_dynamic_lib_create(const char *filename)
 
 	WS_dynamic_lib_t *dl = calloc(1, sizeof(WS_dynamic_lib_t));
 	assert(dl);
-	assert(WS_dynamic_lib_list_insert_free(dl));
 
 	dl->filepath = strdup(filepath);
 	assert(dl->filepath);
@@ -189,8 +146,7 @@ WS_dynamic_lib_t *WS_dynamic_lib_create(const char *filename)
 	//this is not a safe reference to the device_description, but all device_descriptions should be static
 	dl->dev_desc = get_desc();
 	assert(dl->dev_desc);
-
-	WS_add_default_flags_to_hashmap(dl);
-
+	printf("added %s\n", dl->dev_desc->dev_name);
+	addto_hash_table(WS_dynamic_lib_table, filename, dl);
 	return dl;
 }
