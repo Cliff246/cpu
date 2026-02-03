@@ -13,6 +13,7 @@ enum WS_SIM_TAG_LIST_fn_type
 	WS_SIM_TAG_FN_TYPE(LIST, INIT_STRINGS)
 	WS_SIM_TAG_FN_TYPE(LIST, INIT_INTS)
 	WS_SIM_TAG_FN_TYPE(LIST, GET)
+	WS_SIM_TAG_FN_TYPE(LIST, GET_SIZE)
 };
 
 
@@ -29,7 +30,7 @@ static TAG_ptr_t TAG_init_list_bools(uint64_t size, bool *bools);
 static TAG_ptr_t TAG_init_list_strings(uint64_t size, char **strings);
 static TAG_ptr_t TAG_init_list_ints(uint64_t size, int64_t *integer);
 static TAG_tag_t *TAG_get_list(TAG_tag_t *tag, uint64_t pos);
-
+static uint64_t TAG_get_list_size(TAG_tag_t *tag);
 
 
 
@@ -42,6 +43,7 @@ union WS_SIM_TAG_list_arg
 	TAG_ptr_t (*init_strings)(uint64_t size, char **strings);
 	TAG_ptr_t (*init_ints)(uint64_t size, int64_t *integer);
 	TAG_tag_t *(*get)(TAG_tag_t *tag, uint64_t pos);
+	uint64_t (*get_size)(TAG_tag_t *tag);
 
 };
 

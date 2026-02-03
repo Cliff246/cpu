@@ -10,6 +10,18 @@
 #include <assert.h>
 
 
+SIM_object_t SIM_object_init(SIM_device_t *device)
+{
+	SIM_object_t obj =
+	{
+
+		.mod_handle = device->mod,
+	};
+
+
+	return obj;
+}
+
 void SIM_object_read(SIM_object_t *object, OBJ_bundle_t *bnd)
 {
 
@@ -19,7 +31,7 @@ void SIM_object_read(SIM_object_t *object, OBJ_bundle_t *bnd)
 
 	assert(object->pipeline.read != NULL && "object must have defined read");
 	object->pipeline.read(object->obj_handle, object->context, bnd);
-	
+
 }
 
 void SIM_object_update(SIM_object_t *object)

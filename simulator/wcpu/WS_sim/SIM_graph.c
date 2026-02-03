@@ -34,6 +34,18 @@ SIM_graph_t *SIM_graph_init_template(void)
 	return graph;
 }
 
+void SIM_graph_add_devices(SIM_graph_t *graph, SIM_device_t **devices, uint64_t size)
+{
+	graph->objects_size = size;
+	graph->objects = calloc(size, sizeof(SIM_object_t));
+
+
+	for(int i = 0; i < size; ++i)
+	{
+		graph->objects[i] = SIM_object_init(devices[i]);
+	}
+}
+
 /*
 void SIM_graph_add_object(SIM_graph_t *graph)
 {

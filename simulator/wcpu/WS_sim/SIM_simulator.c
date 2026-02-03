@@ -64,6 +64,8 @@ bool SIM_simulator_load_manifest(SIM_simulator_t *sim, CFG_manifest_t *manifest)
 	return true;
 }
 
+
+
 void SIM_simulator_print_slots(SIM_simulator_t *sim)
 {
 
@@ -71,7 +73,16 @@ void SIM_simulator_print_slots(SIM_simulator_t *sim)
 
 void SIM_simulator_print_all_devices(SIM_simulator_t *sim)
 {
-
+	for(uint64_t i = 0; i < sim->devices_size; ++i)
+	{
+		int64_t buf[sim->connectors_size];
+		SIM_device_t *device = sim->devices[i];
+		int32_t size = SIM_device_get_connectors(device, buf, sim->connectors_size);
+		for(int k = 0; k < size; ++k)
+		{
+			printf("%d\n", buf[k]);
+		}
+	}
 
 
 }

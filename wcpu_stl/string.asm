@@ -158,10 +158,14 @@ memset_loop:
 
 
 ;---------------------------------
-
+;[abcdef]
 ;a0 src
-;a1 length
 reverse:
+	mem.push nil, a0, nil
+	jmp.call nil, nil, nil, @strlen
+	alu.add t1, a0, zero
+	mem.pop t0, zero, zero
+	
 
 	jmp.ret zero, zero, zero
 

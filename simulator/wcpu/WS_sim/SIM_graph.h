@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 #include "SIM_commons.h"
+#include "SIM_device.h"
 #include "SIM_object.h"
 #include "SIM_port.h"
 #include "SIM_bus.h"
@@ -59,6 +60,7 @@ typedef struct WS_SIM_graph
 
 
 SIM_graph_t *SIM_graph_init(void);
+void SIM_graph_add_devices(SIM_graph_t *graph, SIM_device_t **devices, uint64_t size);
 //basioc template for graph
 SIM_graph_t *SIM_graph_init_template(void);
 

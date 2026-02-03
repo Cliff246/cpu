@@ -89,6 +89,11 @@ static TAG_tag_t *TAG_get_list(TAG_tag_t *tag, uint64_t pos)
 	return tag->ptr.LIST->list[pos];
 }
 
+static uint64_t TAG_get_list_size(TAG_tag_t *tag)
+{
+	return tag->ptr.LIST->size;
+}
+
 
 static TAG_list_arg_t init_list_bools =
 {
@@ -112,19 +117,26 @@ static TAG_list_arg_t get_list =
 	.get = TAG_get_list
 };
 
+static TAG_list_arg_t get_list_size =
+{
+	.get_size = TAG_get_list_size
+};
+
+	uint64_t (*get_size)(TAG_tag_t *tag);
 
 
 TAG_prototype_vtable_t TAG_list_vtable =
 {
 	.free = TAG_list_free,
 	.print = TAG_list_print,
-	.size = 4,
+	.size = 5,
 	.fn =
 	{
 		[TAG_FN_LIST_INIT_BOOLS].LIST = &init_list_bools,
 		[TAG_FN_LIST_INIT_STRINGS].LIST = &init_list_strings,
 		[TAG_FN_LIST_INIT_INTS].LIST = &init_list_ints,
 		[TAG_FN_LIST_GET].LIST = &get_list,
+		[TAG_FN_LIST_GET_SIZE].LIST = &get_list_size,
 	}
 
 };

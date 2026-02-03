@@ -25,6 +25,7 @@ typedef struct WS_SIM_port
 	SIM_routemap_t routemap;
 }SIM_port_t;
 
+SIM_port_t *SIM_port_init();
 
 typedef struct WS_SIM_graph SIM_graph_t;
 SIM_mailbox_t *SIM_port_get_mailbox(SIM_port_t *port, SIM_channel_local_t local);
