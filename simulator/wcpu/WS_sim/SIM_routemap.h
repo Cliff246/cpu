@@ -17,21 +17,23 @@ typedef struct WS_SIM_route
 
 	uint64_t address;
 	uint64_t length;
-	int8_t count;
-	int8_t bridges[OBJ_MAX_CHANNELS];
+	uint32_t overlap_start;
+	uint32_t overlap_stop;
 }SIM_route_t;
 
 typedef struct WS_SIM_routemap
 {
 	//number of
 	uint8_t rows;
+	uint32_t overlap_size;
 	//for all channels
-	SIM_route_t map[OBJ_MAX_CHANNELS];
+	SIM_route_t *map;
 	//this is a flat array of every channel that can address something on a wire
+	uint8_t *overlap;
 }SIM_routemap_t;
 
 //TODO generate an in order routetable for the object
-void SIM_routemap_init(SIM_routemap_t *map);
+SIM_routemap_t *SIM_routemap_init();
 int32_t SIM_routemap_search(SIM_routemap_t *map, uint64_t address);
 bool SIM_routemap_has_overlap(SIM_routemap_t *map, uint8_t index);
 

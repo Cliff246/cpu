@@ -7,6 +7,7 @@
 %pub memset
 %pub strncpy
 %pub strindex
+%pub setindex
 %pub reverse
 
 .text tag std
@@ -115,6 +116,20 @@ strindex:
 	alu.and a0, a0, nil, 0xff
 	jmp.ret nil, nil, nil
 
+;a0 = source
+;a1 = index
+;a2 = value
+setindex:
+	mem.push nil, s0, zero
+	mem.push nil, s1, zero
+	mem.push nil, s2, zero
+	mem.push nil, s3, zero
+	alu.srl s2, a0, #3
+	mem.ld s0, a0, s2
+	alu.and s1, a1, #7
+	alu.and a2, a2, nil, 0xff
+	alu.sll s3, s1, #3
+
 ;---------------------------------
 
 ;a0 = dest
@@ -157,6 +172,7 @@ memset_loop:
 
 
 
+
 ;---------------------------------
 ;[abcdef]
 ;a0 src
@@ -171,6 +187,9 @@ reverse:
 	;remaining bytes masked &0x3
 	alu.and t3, t1, #7
 	;t4 = len(words) + address base
+
+
+_reverse_step_down:
 	mem.ld t4, t0, t2
 
 	mem.ld t5, t1, zero

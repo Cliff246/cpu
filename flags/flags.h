@@ -137,7 +137,6 @@
 
 
 
-
 #define WCPU_SUBPATH_MEM_LIST(X)\
 	X(MEM,mem,LDI		, ldi		, 0x00, ld			, T0	, "ld"		,	"dst = mem[l1 + l2 + l3]"				, "load"					, 0)				\
 	X(MEM,mem,STI		, sti		, 0x01, st			, T0	, "st"		,	"dst = 0, mem[l1] = l2 + l3"			, "store"					, 0)				\

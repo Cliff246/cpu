@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <assert.h>
 
+/*
 void SIM_routemap_init(SIM_routemap_t *map)
 {
 	assert(0 && "TODO sim routetable init");
@@ -50,3 +51,5 @@ bool SIM_routemap_has_overlap(SIM_routemap_t *map, uint8_t index)
 	}
 	return false;
 }
+
+*/
