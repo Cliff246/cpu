@@ -43,6 +43,54 @@
 //path    subpath  rd      rs1     rs2     modeflag	selflag    immf
 
 
+//idea
+//64 bit op
+//42 + 12 = 54
+//
+// 8 bit subpath, 		6 bit rd, 6 bit ra1, 6 bit ra2, 6 bit rb1, 6 bit rb2 		6 bit rc1, immflag
+//[63:60] [59:52] 			[52:47] 	[46:41] 	[40:35] 	[34:29] [28:23] [6 bi
+
+//subop
+//ld
+//st
+//sl
+//sr
+//add
+//sub
+//
+
+
+//A op B
+//A ld B
+
+
+//10 bit opcode, 7 bit dst, 4 bit sub, 7 bit ra1, 7 bit ra2, 4 bit sub, 7 bit rb1, 7 bit rb2, 4 bit sub, 7 bit rc1
+
+
+//5*3 = 15 subop declares immediate used.
+// each subop is 5 bits
+// dst = (A OP B), (C OP D), IMM/E
+// op compresses form
+
+//7 bit
+
+
+//sub would be 3 bit
+//op would be 2 bit, 5 bits * 3 + 54
+
+//l1 = sub[A op B]
+//l2 = sub[C op D]
+//l3 = sub[E op imm]
+
+
+//dst = path[subpath] (l1, l2, l3)
+
+
+
+
+//dst = path[subpath](l1, l2, l3, l4)
+
+
 //realloc has the associated immediate turn into a key thats reallocable. so you can do dynamic code with constants
 //selflag turns rs2 into a number... as in, dont load rs2 convert it into a 6 bit number
 
@@ -138,18 +186,45 @@
 
 
 #define WCPU_SUBPATH_MEM_LIST(X)\
-	X(MEM,mem,LDI		, ldi		, 0x00, ld			, T0	, "ld"		,	"dst = mem[l1 + l2 + l3]"				, "load"					, 0)				\
-	X(MEM,mem,STI		, sti		, 0x01, st			, T0	, "st"		,	"dst = 0, mem[l1] = l2 + l3"			, "store"					, 0)				\
-	X(MEM,mem,SP		, sp		, 0x02, sp			, T0	, "sp"		,	"dst = sp, sp = l1 + l2 + l3"			, "get/set sp"				, 0)				\
-	X(MEM,mem,PUSH		, push		, 0x03, push		, T0	, "push"	,	"dst = 0, mem[sp+1] = l1 + l2 + l3"		, "push "					, 0)				\
-	X(MEM,mem,POP		, pop		, 0x04, pop			, T0	, "pop"		,	"dst = mem[sp-]"						, "pop"						, 0)				\
-	X(MEM,mem,INCSP		, incsp		, 0x05, incsp		, T0	, "sp+"		,	"dst = 0, sp+=l1 + l2 + l3"				, "increment sp"			, 0)				\
-	X(MEM,mem,DECSP		, descp		, 0x06, decsp		, T0	, "sp-"		,	"dst = 0, sp-=l1 + l2 + l3"				, "decrement sp"			, 0)				\
-	X(MEM,mem,SFP		, sfp		, 0x07, sfp			, T0	, "sfp"		,	"dst = sfp, sfp = l1 + l2 + l3"			, "get/set sfp"				, 0)				\
-	X(MEM,mem,LDS		, lds		, 0x08, lds			, T0	, "ld[sp]"	,	"dst = mem[sp + l1]"					, "load stack"				, 0)				\
-	X(MEM,mem,STS		, sts		, 0x09, sts			, T0	, "st[sp]"	,	"dst = 0, mem[sp + l2 +] = l1"			, "store stack"				, 0)				\
-	X(MEM,mem,PUSHW		, pushw		, 0x0a, pushw		, T0	, "push[bn]",	"dst = 0, mem[sp+4] = {b[l1 + l2 + l3]}", "push wide"				, 0)				\
-	X(MEM,mem,POPW		, popw		, 0x0b, popw		, T0	, "pop[bn]"	,	"dst = 0, {b[l1 + l2 + l3] "			, "pop wide"				, 0)				\
+	X(MEM,mem,LDB		, ldb		, 0x00, ldb			, T0	, "ldb"		,	"dst = mem[l1 + l2 + l3]"				, "load"					, 0)				\
+	X(MEM,mem,LDS		, lds		, 0x01, lds			, T0	, "lds"		,	"dst = mem[l1 + l2 + l3]"				, "load"					, 0)				\
+	X(MEM,mem,LDH		, ldh		, 0x02, ldh			, T0	, "ldh"		,	"dst = mem[l1 + l2 + l3]"				, "load"					, 0)				\
+	X(MEM,mem,LDW		, ldw		, 0x03, ldw			, T0	, "ldw"		,	"dst = mem[l1 + l2 + l3]"				, "load"					, 0)				\
+	X(MEM,mem,STB		, stb		, 0x04, stb			, T0	, "stb"		,	"dst = 0, mem[l1] = l2 + l3"			, "store"					, 0)				\
+	X(MEM,mem,STS		, sts		, 0x05, sts			, T0	, "sts"		,	"dst = 0, mem[l1] = l2 + l3"			, "store"					, 0)				\
+	X(MEM,mem,STH		, sth		, 0x06, sth			, T0	, "sth"		,	"dst = 0, mem[l1] = l2 + l3"			, "store"					, 0)				\
+	X(MEM,mem,STW		, stw		, 0x07, stw			, T0	, "stw"		,	"dst = 0, mem[l1] = l2 + l3"			, "store"					, 0)				\
+	X(MEM,mem,SP		, sp		, 0x08, sp			, T0	, "sp"		,	"dst = sp, sp = l1 + l2 + l3"			, "get/set sp"				, 0)				\
+	X(MEM,mem,PUSHB		, pushb		, 0x09, pushb		, T0	, "pushb"	,	"dst = 0, mem[sp+1] = l1 + l2 + l3"		, "push "					, 0)				\
+	X(MEM,mem,PUSHS		, pushs		, 0x0a, pushs		, T0	, "pushs"	,	"dst = 0, mem[sp+1] = l1 + l2 + l3"		, "push "					, 0)				\
+	X(MEM,mem,PUSHH		, pushh		, 0x0b, pushh		, T0	, "pushh"	,	"dst = 0, mem[sp+1] = l1 + l2 + l3"		, "push "					, 0)				\
+	X(MEM,mem,PUSHW		, pushw		, 0x0c, pushw		, T0	, "pushw"	,	"dst = 0, mem[sp+1] = l1 + l2 + l3"		, "push "					, 0)				\
+	X(MEM,mem,POPB		, popb		, 0x0d, popb		, T0	, "popb"	,	"dst = mem[sp-]"						, "pop"						, 0)				\
+	X(MEM,mem,POPS		, pops		, 0x0e, pops		, T0	, "pops"	,	"dst = mem[sp-]"						, "pop"						, 0)				\
+	X(MEM,mem,POPH		, poph		, 0x0f, poph		, T0	, "poph"	,	"dst = mem[sp-]"						, "pop"						, 0)				\
+	X(MEM,mem,POPW		, popw		, 0x10, popw		, T0	, "popw"	,	"dst = mem[sp-]"						, "pop"						, 0)				\
+	X(MEM,mem,INCSP		, incsp		, 0x11, incsp		, T0	, "sp+"		,	"dst = 0, sp+=l1 + l2 + l3"				, "increment sp"			, 0)				\
+	X(MEM,mem,DECSP		, descp		, 0x12, decsp		, T0	, "sp-"		,	"dst = 0, sp-=l1 + l2 + l3"				, "decrement sp"			, 0)				\
+	X(MEM,mem,SFP		, sfp		, 0x13, sfp			, T0	, "sfp"		,	"dst = sfp, sfp = l1 + l2 + l3"			, "get/set sfp"				, 0)				\
+	X(MEM,mem,LDS		, lds		, 0x14, lds			, T0	, "ld[sp]"	,	"dst = mem[sp + l1]"					, "load stack"				, 0)				\
+	X(MEM,mem,STS		, sts		, 0x15, sts			, T0	, "st[sp]"	,	"dst = 0, mem[sp + l2 +] = l1"			, "store stack"				, 0)				\
+	X(MEM,mem,LDBSL		, ldbsl		, 0x03, ldbsl		, T0	, "ldbwl"	,	"dst = mem[l1 + l2 << l3]"				, "load"					, 0)				\
+	X(MEM,mem,LDSSL		, ldssl		, 0x03, ldssl		, T0	, "ldssl"	,	"dst = mem[l1 + l2 << l3]"				, "load"					, 0)				\
+	X(MEM,mem,LDHSL		, ldhsl		, 0x03, ldhsl		, T0	, "ldhsl"	,	"dst = mem[l1 + l2 << l3]"				, "load"					, 0)				\
+	X(MEM,mem,LDWSL		, ldwsl		, 0x03, ldwsl		, T0	, "ldwsl"	,	"dst = mem[l1 + l2 << l3]"				, "load"					, 0)				\
+	X(MEM,mem,LDBSR		, ldbsr		, 0x03, ldbsr		, T0	, "ldbwl"	,	"dst = mem[l1 + l2 >> l3]"				, "load"					, 0)				\
+	X(MEM,mem,LDSSR		, ldssr		, 0x03, ldssr		, T0	, "ldssl"	,	"dst = mem[l1 + l2 >> l3]"				, "load"					, 0)				\
+	X(MEM,mem,LDHSR		, ldhsr		, 0x03, ldhsr		, T0	, "ldhsl"	,	"dst = mem[l1 + l2 >> l3]"				, "load"					, 0)				\
+	X(MEM,mem,LDWSR		, ldwsr		, 0x03, ldwsr		, T0	, "ldwsl"	,	"dst = mem[l1 + l2 >> l3]"				, "load"					, 0)				\
+	X(MEM,mem,STBSL		, stbsl		, 0x03, stbsl		, T0	, "stbwl"	,	"mem[l2 << l3]"				, "load"					, 0)				\
+	X(MEM,mem,STSSL		, stssl		, 0x03, stssl		, T0	, "stssl"	,	"mem[l2 << l3]"				, "load"					, 0)				\
+	X(MEM,mem,STHSL		, sthsl		, 0x03, sthsl		, T0	, "sthsl"	,	"mem[l2 << l3]"				, "load"					, 0)				\
+	X(MEM,mem,STWSL		, stwsl		, 0x03, stwsl		, T0	, "stwsl"	,	"mem[l2 << l3]"				, "load"					, 0)				\
+	X(MEM,mem,STBSR		, stbsr		, 0x03, stbsr		, T0	, "stbwl"	,	"mem[l2 >> l3]"				, "load"					, 0)				\
+	X(MEM,mem,STSSR		, stssr		, 0x03, stssr		, T0	, "stssl"	,	"mem[l2 >> l3]"				, "load"					, 0)				\
+	X(MEM,mem,STHSR		, sthsr		, 0x03, sthsr		, T0	, "sthsl"	,	"mem[l2 >> l3]"				, "load"					, 0)				\
+	X(MEM,mem,STWSR		, stwsr		, 0x03, stwsr		, T0	, "stwsl"	,	"mem[l2 >> l3]"				, "load"					, 0)				\
+
 //	X(MEM,mem,LDI		, ldi		, 0x0a, ld			, T0	, "[]"		,	"dst = mem[l1 + l2 + l3]"				, "arithmetic add"						,"dst,lhs,rhs,oth,swap", 0)				\
 //	X(MEM,mem,LDI		, ldi		, 0x0b, ld			, T0	, "[]"		,	"dst = mem[l1 + l2 + l3]"				, "arithmetic add"						,"dst,lhs,rhs,oth,swap", 0)				\
 //	X(MEM,mem,LDI		, ldi		, 0x0c, ld			, T0	, "[]"		,	"dst = mem[l1 + l2 + l3]"				, "arithmetic add"						,"dst,lhs,rhs,oth,swap", 0)				\
