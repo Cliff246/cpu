@@ -8,15 +8,5 @@
 #define SIM_PORT_SIZE 8
 #define SIM_TAGS_SIZE 1000
 
-typedef uint32_t SIM_channel_global_t;
-typedef uint8_t SIM_channel_local_t;
-typedef uint16_t SIM_wire_global_t;
-
-typedef uint8_t SIM_port_bridge_id_t;
-typedef int32_t SIM_transfer_global_t;
-typedef uint8_t SIM_wire_channel_t;
-typedef uint16_t SIM_object_global_t;
-typedef uint64_t SIM_port_global_t;
-typedef int16_t SIM_tag_t;
 
 #endif

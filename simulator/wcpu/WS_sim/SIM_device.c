@@ -1,6 +1,7 @@
 #include "SIM_device.h"
 #include "CFG_entry.h"
 #include "CFG_prototag.h"
+#include "SIM_channel.h"
 #include "TAG_int.h"
 #include "TAG_list.h"
 #include "dynamic_lib.h"
@@ -28,9 +29,38 @@ bool SIM_prototag_add_to_device(SIM_device_t *device, CFG_prototag_t *tag)
 	return true;
 }
 
-SIM_device_t *SIM_init_device(CFG_entry_t *entry)
+static void SIM_device_create_channels(SIM_device_t *device)
 {
+	TAG_tag_t *tag = getdata_from_hash_table(device->tags, "WIRE");
+	assert(tag && "device must contain a wire tag");
+	TAG_argptr_t get_size_arg =	TAG_get_fn(TAG_LIST, TAG_FN_LIST_GET_SIZE);
+	TAG_argptr_t get_arg = TAG_get_fn(TAG_LIST, TAG_FN_LIST_GET);
+	const uint64_t list_size = get_size_arg.LIST->get_size(tag);
 
+
+	TAG_argptr_t get_int = TAG_get_fn(TAG_INT, TAG_FN_INT_GET);
+
+	SIM_channel_t *channels = calloc(list_size, sizeof(SIM_channel_t));
+	assert(channels);
+
+	device->size = list_size;
+
+	for(uint64_t i = 0; i < list_size; ++i)
+	{
+
+		TAG_tag_t *tmp =  get_arg.LIST->get(tag, i);
+		assert(tmp->type == TAG_INT);
+		int64_t wire = get_int.INT->get(tmp);
+		channels[i].id = wire;
+		channels[i].device = device;
+		SIM_channel_print(&channels[i]);
+	}
+	device->channels = channels;
+
+}
+
+static void SIM_device_create_tags(SIM_device_t *device, CFG_entry_t *entry)
+{
 	const uint64_t count = entry->size;
 	const uint32_t standard = 100;
 	if(count >= standard)
@@ -40,8 +70,7 @@ SIM_device_t *SIM_init_device(CFG_entry_t *entry)
 	p_hashtable_t table = new_hash_table(standard, SIM_free_tag_table_elem);
 	assert(table);
 
-	SIM_device_t *device = calloc(1, sizeof(SIM_device_t));
-	assert(device);
+
 	device->tags = table;
 	WS_dynamic_lib_t *lib = WS_dynamic_lib_get(entry->module);
 	assert(lib);
@@ -52,7 +81,33 @@ SIM_device_t *SIM_init_device(CFG_entry_t *entry)
 		assert(SIM_prototag_add_to_device(device, proto) == true);
 	}
 	CFG_free_entry(entry);
-	return device;
+}
+
+void SIM_init_device(SIM_device_t *device, CFG_entry_t *entry)
+{
+	assert(device);
+
+
+	SIM_device_create_tags(device, entry);
+	SIM_device_create_channels(device);
+
+
+
+
+
+}
+
+
+SIM_channel_t *SIM_device_get_channel_by_wireid(SIM_device_t *device, uint64_t id)
+{
+	for(int i =0 ; i < device->size; ++i)
+	{
+		if(device->channels[i].id == id)
+		{
+			return &device->channels[i];
+		}
+	}
+	return NULL;
 }
 
 void SIM_device_contains_connector(SIM_device_t *device, int64_t *id, uint64_t size)
@@ -111,4 +166,10 @@ uint64_t SIM_device_get_connectors(SIM_device_t *device, int64_t *buf, uint64_t 
 		buf[i] = wire;
 	}
 	return list_size;
+}
+
+
+void SIM_device_print(SIM_device_t *device)
+{
+
 }

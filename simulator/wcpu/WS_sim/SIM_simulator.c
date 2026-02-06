@@ -1,7 +1,7 @@
 #include "SIM_simulator.h"
 #include "CFG_setting.h"
 #include "IO_configure.h"
-#include "SIM_connector.h"
+#include "SIM_context.h"
 #include "SIM_device.h"
 #include "SIM_graph.h"
 #include <stdlib.h>
@@ -24,7 +24,6 @@ SIM_simulator_t *SIM_simulator_init(void)
 
 void SIM_simulator_update(SIM_simulator_t *sim)
 {
-	SIM_graph_update(sim->graph);
 
 
 }
@@ -33,59 +32,30 @@ bool SIM_simulator_load_manifest(SIM_simulator_t *sim, CFG_manifest_t *manifest)
 {
 	assert(sim);
 	assert(manifest);
-	const uint64_t devices_count = manifest->size;
-	SIM_device_t **devices = calloc(devices_count, sizeof(SIM_device_t *));
-	assert(devices);
-	sim->devices_size = devices_count;
-	sim->devices = devices;
-	for(int i = 0; i < manifest->size; ++i)
+	SIM_context_t *context = SIM_init_context(manifest);
+	if(context == NULL)
 	{
-		CFG_entry_t *entry = manifest->entries[i];
-		SIM_device_t *device = SIM_init_device(entry);
-		devices[i] = device;
-	}
+	assert(context);
 
-	const uint64_t settings_size = manifest->settings_size;
-	assert(settings_size > 0);
-	SIM_connector_t *connectors = calloc(settings_size, sizeof(SIM_connector_t));
-	assert(connectors);
-	for(uint64_t k = 0; k < settings_size; ++k)
-	{
-		CFG_setting_t *setting = manifest->settings[k];
-		uint64_t id = setting->id;
-		assert(id < settings_size);
-		assert(connectors[id].used != true);
-		connectors[id].latency = setting->latency;
-		connectors[id].used = true;
+		return false;
 	}
-	sim->connectors = connectors;
-	sim->connectors_size = settings_size;
+	sim->ctx = context;
 
 	return true;
 }
 
-
+bool SIM_simulator_build_graph(SIM_simulator_t *sim)
+{
+	sim->graph = SIM_graph_init(sim->ctx);
+	return true;
+}
 
 void SIM_simulator_print_slots(SIM_simulator_t *sim)
 {
 
 }
 
-void SIM_simulator_print_all_devices(SIM_simulator_t *sim)
-{
-	for(uint64_t i = 0; i < sim->devices_size; ++i)
-	{
-		int64_t buf[sim->connectors_size];
-		SIM_device_t *device = sim->devices[i];
-		int32_t size = SIM_device_get_connectors(device, buf, sim->connectors_size);
-		for(int k = 0; k < size; ++k)
-		{
-			printf("%ld\n", buf[k]);
-		}
-	}
 
-
-}
 
 
 /*

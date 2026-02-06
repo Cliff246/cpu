@@ -2,11 +2,15 @@
 #include "OBJ_bundle.h"
 #include "SIM_channel.h"
 #include "SIM_commons.h"
-#include "SIM_object.h"
+#include "SIM_context.h"
+#include "SIM_device.h"
+#include "SIM_devicelist.h"
+#include "SIM_mailbox.h"
 #include "SIM_packet.h"
 #include "SIM_port.h"
 #include "SIM_transfer.h"
 #include "SIM_wire.h"
+#include "SIM_wireconfig.h"
 #include "commons.h"
 
 #include <stdlib.h>
@@ -15,24 +19,50 @@
 #include <string.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <sys/types.h>
 
-SIM_graph_t *SIM_graph_init(void)
+void SIM_graph_fill_wires(SIM_graph_t *graph)
+{
+
+
+	SIM_context_t *context = graph->context;
+	const uint64_t size = SIM_get_devicelist_size(context->devicelist);
+	for(uint64_t i = 0; i < context->wireconfigs_size; ++i)
+	{
+		//printf("%d\n", i);
+		SIM_wireconfig_t *wireconfig = &context->wireconfigs[i];
+		SIM_channel_t *channels[size];
+		uint64_t j = 0;
+
+		for(uint64_t k = 0; k < size; ++k)
+		{
+			SIM_device_t *device = SIM_get_device_devicelist(context->devicelist, k);
+			SIM_channel_t *channel = SIM_device_get_channel_by_wireid(device, wireconfig->id);
+			channels[j++] = channel;
+		}
+		//printf("J:%d\n", j);
+		SIM_wire_t *wire = SIM_init_wire(channels, j, *wireconfig);
+		SIM_print_wire(wire);
+	}
+
+
+
+}
+
+SIM_graph_t *SIM_graph_init(SIM_context_t *context)
 {
 
 	SIM_graph_t *graph = calloc(1, sizeof(SIM_graph_t));
 	assert(graph);
-	
+	graph->context = context;
+
+	const uint64_t size = SIM_get_devicelist_size(graph->context->devicelist);
+	SIM_graph_fill_wires(graph);
 
 	return graph;
 }
 
-//TODO fix this, make it spawn a template graph
-SIM_graph_t *SIM_graph_init_template(void)
-{
-	SIM_graph_t *graph = SIM_graph_init();
-	assert(0 && "TODO");
-	return graph;
-}
+/*
 
 void SIM_graph_add_devices(SIM_graph_t *graph, SIM_device_t **devices, uint64_t size)
 {
@@ -46,121 +76,7 @@ void SIM_graph_add_devices(SIM_graph_t *graph, SIM_device_t **devices, uint64_t 
 	}
 }
 
-/*
-void SIM_graph_add_object(SIM_graph_t *graph)
-{
-	assert(graph->flags.set != true );
 
-	graph->objects = realloc_safe(graph->objects, graph->objects_size, sizeof(SIM_object_t ));
-
-	graph->objects[graph->objects_size++] = object;
-	graph->flags.changed = true;
-	graph->flags.set = false;
-}
-*/
-
-void SIM_graph_set_changed(SIM_graph_t *graph)
-{
-	assert(graph && "graph cannot be null");
-
-	graph->flags.changed = true;
-	graph->flags.set = false;
-}
-
-void SIM_graph_add_wire(SIM_graph_t *graph, SIM_wire_config_t *wire)
-{
-	assert(graph->flags.set != true );
-	assert(wire->flags.set == true);
-	graph->config.wire_configs = realloc_safe(graph->config.wire_configs, graph->config.wire_configs_size + 1, sizeof(SIM_wire_config_t *));
-	graph->config.wire_configs[graph->config.wire_configs_size++] = wire;
-
-	SIM_graph_set_changed(graph);
-}
-
-
-bool SIM_graph_set(SIM_graph_t *graph)
-{
-
-	assert(0 && "bad");
-	assert(graph);
-	assert(graph->flags.set == false);
-
-
-	assert(graph->objects_size >= 2);
-	assert(graph->config.wire_configs_size >= 1);
-	assert(graph->objects);
-
-
-	uint64_t wireslot_size = 0;
-	uint64_t channel_size = 0;
-
-
-	//sum up the amount of wireslots needed and channel size
-	for(int id = 0; id < graph->config.wire_configs_size; ++id)
-	{
-		SIM_wire_config_t *cfg = graph->config.wire_configs[id];
-		wireslot_size += cfg->delay;
-		channel_size += cfg->ends_size;
-	}
-
-	//graph->wireslots_size = wireslot_size;
-	graph->wires_size = graph->config.wire_configs_size;
-	graph->channels_size = channel_size;
-	graph->channels = calloc(graph->channels_size, sizeof(SIM_channel_t));
-	assert(graph->channels && "graph channels alloc");
-	graph->wires = calloc(graph->wires_size, sizeof(SIM_wire_t));
-	assert(graph->wires && "graph wires alloc");
-	//graph->wireslots = calloc(graph->wireslots_size, sizeof(SIM_wireslot_t));
-	//assert(graph->wireslots && "graph wireslots alloc");
-
-	uint32_t channel_count = 0;
-	uint32_t wireslot_count = 0;
-	const uint32_t wires_size =  graph->wires_size;
-	for(int iw = 0; iw < wires_size; ++iw)
-	{
-		SIM_wire_config_t *cfg = graph->config.wire_configs[iw];
-		uint64_t tmpchannel_size =  cfg->ends_size;
-		uint64_t tmpchannel = channel_count;
-		for(int ie = 0; ie < cfg->ends_size; ++ie)
-		{
-			SIM_wire_config_end_t end =  cfg->ends[ie];
-			int64_t entry_postion = end.oid;
-			if(entry_postion == -1)
-			{
-				//this is crude and does not allow one wire to connect to multiple ports
-				assert(0 && "cannot miss entry found in wire end");
-			}
-
-			 SIM_channel_init(&graph->channels[channel_count++], ie, end.cid, iw);
-		}
-
-
-		graph->wires[iw] = SIM_wire_init(tmpchannel, tmpchannel_size, wireslot_count, cfg->delay, iw);
-		wireslot_count += cfg->delay;
-	}
-
-
-	graph->flags.changed = false;
-	graph->flags.set = true;
-	return true;
-}
-
-
-
-
-SIM_channel_t *SIM_graph_get_channel(SIM_graph_t *graph, SIM_channel_global_t global)
-{
-	assert(graph);
-	assert(global < graph->channels_size);
-	return &graph->channels[global];
-}
-
-SIM_wire_t *SIM_graph_get_wire(SIM_graph_t *graph, SIM_wire_global_t wire)
-{
-	assert(graph);
-	assert(wire < graph->wires_size);
-	return &graph->wires[wire];
-}
 
 void SIM_graph_object_update(SIM_graph_t *graph)
 {
@@ -335,3 +251,4 @@ SIM_transfer_t *SIM_graph_get_transfer(SIM_graph_t *graph, SIM_transfer_global_t
 	assert(global >= 0);
 	return &graph->transfers[global];
 }
+*/

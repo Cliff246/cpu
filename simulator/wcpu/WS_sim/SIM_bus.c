@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+/*
 
 SIM_bus_address_element_t *SIM_bus_address_search(SIM_bus_t *bus, uint64_t address)
 {
@@ -64,3 +65,5 @@ int16_t SIM_bus_find_local_channel(SIM_bus_t *bus, SIM_tag_t tag)
 		return bus->tag_table.tags[tag];
 	}
 }
+
+*/

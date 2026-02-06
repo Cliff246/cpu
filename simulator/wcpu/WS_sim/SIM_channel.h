@@ -13,19 +13,17 @@
 
 #define SIM_CHANNEL_STACK
 
-
-
+typedef struct WS_SIM_wire SIM_wire_t;
+typedef struct WS_SIM_device SIM_device_t;
 
 //control unit for each end port
 //designed to hold and manage merging and more
 typedef struct WS_SIM_channel
 {
-	//channel id
-	SIM_wire_channel_t wcid;
-	SIM_channel_local_t cid;
-	//channel wire id
-	SIM_wire_global_t wid;
-	//boolean for whether it has an output
+	SIM_device_t *device;
+	SIM_wire_t *wire;
+	uint64_t id;
+
 	bool output;
 	bool has_packet;
 	//cringe
@@ -49,5 +47,6 @@ bool SIM_channel_set_packet(SIM_channel_t *channel, SIM_packet_t packet);
 //sets has_packet = false
 bool SIM_channel_get_packet(SIM_channel_t *channel, SIM_packet_t *packet);
 
+void SIM_channel_print(SIM_channel_t *channel);
 
 #endif

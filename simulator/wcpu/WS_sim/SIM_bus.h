@@ -5,12 +5,14 @@
 #include "SIM_commons.h"
 #include <stdint.h>
 
+
+
 typedef struct WS_SIM_bus_address_elemenet
 {
 	uint64_t address;
 	uint64_t length;
 
-	SIM_tag_t tag;
+	//SIM_tag_t tag;
 }SIM_bus_address_element_t;
 
 typedef struct WS_SIM_bus_address_table
@@ -33,6 +35,7 @@ typedef struct WS_SIM_bus
 	bool finished;
 }SIM_bus_t;
 
+/*
 
 typedef struct WS_SIM_graph SIM_graph_t;
 
@@ -42,5 +45,7 @@ void SIM_bus_init(SIM_bus_t *bus, uint64_t wire_id);
 SIM_bus_address_element_t *SIM_bus_address_search(SIM_bus_t *bus, uint64_t address);
 SIM_tag_t SIM_bus_find_address(SIM_bus_t *bus, uint64_t address);
 int16_t SIM_bus_find_local_channel(SIM_bus_t *bus, SIM_tag_t tag);
+
+*/
 
 #endif

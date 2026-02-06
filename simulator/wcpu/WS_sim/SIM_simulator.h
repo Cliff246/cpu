@@ -4,7 +4,7 @@
 #include "CFG_manifest.h"
 #include "IO_configure.h"
 #include "MOD_description.h"
-#include "SIM_connector.h"
+#include "SIM_context.h"
 #include "SIM_device.h"
 #include "SIM_mailbox.h"
 #include "SIM_transfer.h"
@@ -17,14 +17,8 @@
 
 typedef struct WS_SIM_simulator
 {
-	uint64_t devices_size;
-	SIM_device_t **devices;
+	SIM_context_t *ctx;
 	SIM_graph_t *graph;
-
-	uint64_t connectors_size;
-	SIM_connector_t *connectors;
-
-
 }SIM_simulator_t;
 
 // WS_dev_t *SIM_simulator_t_get_device_from_id(SIM_simulator_t_t *sim,
@@ -36,7 +30,7 @@ typedef struct WS_SIM_simulator
 
 SIM_simulator_t *SIM_simulator_init(void);
 
-void SIM_simulator_rebuild_graph(SIM_simulator_t *sim);
+bool SIM_simulator_build_graph(SIM_simulator_t *sim);
 
 // add device to simulator
 

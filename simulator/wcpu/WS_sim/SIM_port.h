@@ -14,17 +14,14 @@
 
 typedef struct WS_SIM_port
 {
-	uint16_t object_id;
-	uint8_t mailboxes_size;
-	int8_t mailboxes_read_index, mailboxes_write_index;
-
 	OBJ_bundle_t bout;
 
+	uint32_t mailboxes_size;
 
-	SIM_mailbox_t mailboxes[OBJ_MAX_CHANNELS];
+	SIM_mailbox_t *mailboxes;
 	SIM_routemap_t routemap;
 }SIM_port_t;
-
+/*
 SIM_port_t *SIM_port_init();
 
 typedef struct WS_SIM_graph SIM_graph_t;
@@ -38,7 +35,7 @@ bool SIM_port_recieve_bundle(SIM_graph_t *graph, SIM_port_t *port, OBJ_bundle_t 
 
 
 
-
+*/
 
 
 

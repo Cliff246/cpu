@@ -6,10 +6,11 @@
 #include "SIM_commons.h"
 #include "SIM_packet.h"
 #include "SIM_mail.h"
+#include "SIM_channel.h"
 
 typedef struct WS_SIM_mailbox
 {
-	SIM_channel_global_t channel;
+	SIM_channel_t *channel;
 
 
 	bool has_mailout;

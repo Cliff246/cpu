@@ -3,66 +3,43 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <sys/types.h>
 
 #include "SIM_commons.h"
 #include "SIM_device.h"
-#include "SIM_object.h"
 #include "SIM_port.h"
 #include "SIM_bus.h"
 #include "SIM_wire.h"
 #include "SIM_transfer.h"
 #include "SIM_channel.h"
 #include "SIM_routemap.h"
+#include "SIM_context.h"
+
+
 
 typedef struct WS_SIM_graph
 {
 
-
-	uint16_t objects_size;
-	SIM_object_t *objects;
+	SIM_context_t *context;
 
 
-	//wire_size, total number of unique wires. each wire can connect to a channel
-	//each channel connects to a port
 	uint32_t wires_size;
 	SIM_wire_t *wires;
 
-	uint32_t buses_size;
-	SIM_bus_t *buses;
-
-	//each channel is a entry index and port index for each wire in the graph
-	uint32_t channels_size;
-	SIM_channel_t *channels;
-
-
-	//Wireslots in a straight array of the total size of wire slots
-	uint32_t transfer_size;
-	SIM_transfer_t *transfers;
-
-	struct
-	{
-		bool set;
-		bool changed;
-	}flags;
-
-	struct
-	{
-		//uses entreies_size as length
-		size_t wire_configs_size;
-
-		SIM_wire_config_t **wire_configs;
-		//should contain an alloca
-	}config;
 
 }SIM_graph_t;
 
 
+void SIM_graph_fill_wires(SIM_graph_t *graph);
+
+SIM_graph_t *SIM_graph_init(SIM_context_t *context);
 
 
-SIM_graph_t *SIM_graph_init(void);
+/*
+
+SIM_graph_t *SIM_graph_init(SIM_context_t *context);
+
 void SIM_graph_add_devices(SIM_graph_t *graph, SIM_device_t **devices, uint64_t size);
-//basioc template for graph
-SIM_graph_t *SIM_graph_init_template(void);
 
 SIM_channel_t *SIM_graph_get_channel(SIM_graph_t *graph, SIM_channel_global_t global);
 SIM_transfer_t *SIM_graph_get_transfer(SIM_graph_t *graph, SIM_transfer_global_t global);
@@ -84,7 +61,6 @@ int16_t SIM_graph_find_channel_open_routetable(SIM_graph_t *graph, SIM_object_gl
 //void SIM_graph_add_object(SIM_graph_t *graph, SIM_object_t *object);
 
 //
-void SIM_graph_add_wire(SIM_graph_t *graph, SIM_wire_config_t *wire);
 
 
 
@@ -94,4 +70,5 @@ bool SIM_graph_set(SIM_graph_t *graph);
 //main graph update loop
 void SIM_graph_update(SIM_graph_t *graph);
 
+*/
 #endif

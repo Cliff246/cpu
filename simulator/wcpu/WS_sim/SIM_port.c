@@ -10,13 +10,23 @@
 #include "SIM_wire.h"
 #include <assert.h>
 
+/*
+
+SIM_port_t *SIM_port_init()
+{
+	SIM_port_t *port = calloc(1, sizeof(SIM_port_t));
+
+	assert(port);
+
+	return port;
+}
 
 SIM_mailbox_t *SIM_port_get_mailbox(SIM_port_t *port, SIM_channel_local_t local)
 {
 	assert(port);
 	assert(local >= 0 && local < port->mailboxes_size);
-	SIM_mailbox_t *mailbox = &port->mailboxes[local];
-	return mailbox;
+	//SIM_mailbox_t *mailbox = &port->mailboxes[local];
+	//return mailbox;
 }
 
 //make a bundle
@@ -98,3 +108,5 @@ bool SIM_port_recieve_bundle(SIM_graph_t *graph, SIM_port_t *port, OBJ_bundle_t 
 	}
 	return true;
 }
+
+*/

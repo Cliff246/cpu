@@ -7,6 +7,7 @@
 #include "SIM_wire.h"
 #include <assert.h>
 
+/*
 
 bool SIM_mailbox_recieving(SIM_graph_t *graph, SIM_mailbox_t *mailbox)
 {
@@ -99,3 +100,4 @@ bool SIM_mailbox_export_channel(SIM_graph_t *graph, SIM_mailbox_t *mailbox, OBJ_
 	return false;
 }
 
+*/
