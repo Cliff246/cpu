@@ -168,9 +168,10 @@ static void load_cfg_file(WS_cfg_file_t *file)
 
 		else if(tok->type == TOK_STRING && cur_head_state == HEAD_STATE_EMPTY)
 		{
-			WS_dynamic_lib_t *dl = WS_dynamic_lib_create(tok->token);
-			cur_head = WS_cfg_create_header(dl);
-			cur_head_state = HEAD_STATE_STRING;
+			//
+			//WS_dynamic_lib_t *dl = WS_dynamic_lib_create(tok->token);
+			//cur_head = WS_cfg_create_header(dl);
+			//cur_head_state = HEAD_STATE_STRING;
 		}
 		else if(tok->type == TOK_COLON && cur_head_state == HEAD_STATE_STRING)
 		{

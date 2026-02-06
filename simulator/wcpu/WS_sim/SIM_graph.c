@@ -21,7 +21,7 @@ SIM_graph_t *SIM_graph_init(void)
 
 	SIM_graph_t *graph = calloc(1, sizeof(SIM_graph_t));
 	assert(graph);
-
+	
 
 	return graph;
 }

@@ -30,7 +30,7 @@ typedef struct WS_SIM_object
 	SIM_port_t *port;
 
 	OBJ_context_t *context;
-	OBJ_handle_t *obj_handle;
+	OBJ_handle_t obj_handle;
 	MOD_description_t *mod_handle;
 	OBJ_locals_t *locals;
 

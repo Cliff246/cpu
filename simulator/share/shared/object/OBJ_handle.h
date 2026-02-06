@@ -11,13 +11,13 @@
 typedef struct WS_OBJ_handle
 {
 	//simulator id
-	const int sid;
+	int sid;
 	//object id
-	const int oid;
+	int oid;
 	//handle id
-	const int hid;
+	int hid;
 	//context id;
-	const int cid;
+	int cid;
 }OBJ_handle_t;
 
 #endif
