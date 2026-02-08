@@ -12,7 +12,7 @@ CFG_setting_t *CFG_init_setting(IO_pnode_t *setting)
 	assert(setting);
 	CFG_setting_t *ptr = calloc(1, sizeof(CFG_setting_t));
 
-	assert(setting->size == 1);
+	assert(setting->size == 2);
 	assert(setting->type == IO_PNODE_KEY);
 	assert(setting->token->type == TOK_INT);
 	char *id_str = setting->token->token;
@@ -25,6 +25,14 @@ CFG_setting_t *CFG_init_setting(IO_pnode_t *setting)
 
 	char *latency_str = latency->token->token;
 	ptr->latency = atoi(latency_str);
+
+	IO_pnode_t *throughput = setting->nodes[1];
+
+
+	assert(throughput->type == IO_PNODE_VALUE);
+	assert(throughput->token->type == TOK_INT);
+	char *throughput_str = throughput->token->token;
+	ptr->throughput = atoi(throughput_str);
 	return ptr;
 }
 

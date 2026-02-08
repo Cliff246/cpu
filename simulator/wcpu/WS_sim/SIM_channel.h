@@ -26,9 +26,9 @@ typedef struct WS_SIM_channel
 
 	bool output;
 	bool has_packet;
-	//cringe
-	uint64_t address;
-	SIM_packet_t packet;
+
+
+
 }SIM_channel_t;
 
 void SIM_channel_init(SIM_channel_t *channel, uint32_t wcid, uint32_t cid, uint32_t wid);
@@ -36,16 +36,6 @@ void SIM_channel_init(SIM_channel_t *channel, uint32_t wcid, uint32_t cid, uint3
 
 bool SIM_channel_get_has_packet(SIM_channel_t *channel);
 bool SIM_channel_get_output(SIM_channel_t *channel);
-
-//sets a packet if there is no packet used
-//returns true on success and false on packet set
-//sets has_packet = true
-bool SIM_channel_set_packet(SIM_channel_t *channel, SIM_packet_t packet);
-
-
-//gets a packet if output is true and has_packet is true
-//sets has_packet = false
-bool SIM_channel_get_packet(SIM_channel_t *channel, SIM_packet_t *packet);
 
 void SIM_channel_print(SIM_channel_t *channel);
 

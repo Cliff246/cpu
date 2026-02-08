@@ -4,9 +4,14 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#define SIM_PACKET_SIZE 8
+#define SIM_PACKET_MAX_SIZE 62
+
 #define SIM_PORT_SIZE 8
 #define SIM_TAGS_SIZE 1000
+
+typedef int64_t SIM_dtag_t;
+
+void SIM_free_tag_table_elem(void *v);
 
 
 #endif

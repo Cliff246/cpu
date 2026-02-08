@@ -26,32 +26,7 @@ bool SIM_channel_get_output(SIM_channel_t *channel)
 	return channel->output;
 }
 
-bool SIM_channel_set_packet(SIM_channel_t *channel, SIM_packet_t packet)
-{
-	assert(channel);
 
-	if(SIM_channel_get_has_packet(channel))
-	{
-		return false;
-	}
-	channel->packet = packet;
-	channel->has_packet = true;
-	return true;
-}
-
-
-bool SIM_channel_get_packet(SIM_channel_t *channel, SIM_packet_t *packet)
-{
-	assert(channel);
-
-	if(!SIM_channel_get_has_packet(channel))
-	{
-		return false;
-	}
-	*packet = channel->packet;
-	channel->has_packet = false;
-	return true;
-}
 
 void SIM_channel_print(SIM_channel_t *channel)
 {

@@ -13,12 +13,12 @@
 		START = 2001
 		SIZE = 3000
 } ;
-"libsim_dev_wcpu_vm" :
+"libsim_dev_ram" :
 	{
 		NAME = "vm"
 		WIRE [0, 1]
 	} ;
 
 
-(wire 0 = 20)
-(wire 1 = 30)
+(wire 0 = 20 100)
+(wire 1 = 30 10)

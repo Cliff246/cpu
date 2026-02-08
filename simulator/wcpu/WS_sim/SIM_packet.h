@@ -6,57 +6,24 @@
 
 #include <stdint.h>
 #include <stdalign.h>
-
-typedef struct WS_SIM_packet_raw
-{
-	_Alignas(8) uint8_t bytes[SIM_PACKET_SIZE];
-
-}SIM_packet_raw_t;
-
-typedef struct WS_SIM_packet_header
-{
-	OBJ_msgtype_t msgtype;
-}SIM_packet_header_t;
-
-typedef struct WS_SIM_packet_value
-{
-	OBJ_msgval_t val;
-}SIM_packet_value_t;
-
-typedef struct WS_SIM_packet_tag
-{
-	OBJ_msgtag_t tag;
-}SIM_packet_tag_t;
-
-typedef struct WS_SIM_packet_foot
-{
-	uint8_t bytes_used;
-}SIM_packet_foot_t;
-
-typedef enum WS_SIM_packet_type
-{
-	SIM_PACKET_INVAL,
-	SIM_PACKET_RAW,
-	SIM_PACKET_HEADER,
-	SIM_PACKET_VALUE,
-	SIM_PACKET_TAG,
-	SIM_PACKET_FOOT,
-}SIM_packet_type_t;
-
-typedef union WS_SIM_packet_data
-{
-	SIM_packet_raw_t raw;
-	SIM_packet_header_t header;
-	SIM_packet_tag_t tag;
-	SIM_packet_value_t value;
-	SIM_packet_foot_t foot;
-}SIM_packet_data_t;
+#include <stdbool.h>
 
 
 typedef struct WS_SIM_packet
 {
-	_Alignas(8) SIM_packet_data_t data;
-	SIM_packet_type_t type;
+	_Alignas(64) uint8_t bytes[SIM_PACKET_MAX_SIZE];
+	uint8_t used;
+	uint8_t size;
+
+
 }SIM_packet_t;
+
+
+SIM_packet_t SIM_packet_set(const uint8_t size);
+bool SIM_packet_write(SIM_packet_t *packet, uint8_t used, uint8_t *bytes);
+
+uint8_t SIM_packet_read(SIM_packet_t *packet, uint8_t bytes[SIM_PACKET_MAX_SIZE]);
+
+
 
 #endif

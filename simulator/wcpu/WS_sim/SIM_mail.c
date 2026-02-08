@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <string.h>
 
+/*
+
 bool SIM_mail_can_write_packet(SIM_mail_t *mail)
 {
 	if(mail->current < SIM_MAIL_PACKETS_MAX && mail->done == false)
@@ -173,3 +175,6 @@ void SIM_mail_put_packets(SIM_mail_t *mail, OBJ_msg_t *msg)
 	mail->current = 0;
 	mail->done = false;
 }
+
+
+*/

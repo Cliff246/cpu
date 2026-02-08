@@ -4,11 +4,12 @@
 #include "IO_parser.h"
 #include <stdint.h>
 
-//temporary 
+//temporary
 typedef struct WS_CFG_setting
 {
 	uint64_t id;
 	uint64_t latency;
+	uint64_t throughput;
 }CFG_setting_t;
 
 

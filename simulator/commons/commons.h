@@ -123,6 +123,7 @@
 #define GETBIT(n, k) (1 & (n >> k))
 #define ARYSIZE(ary) sizeof(ary)/sizeof(*ary)
 
+#define MAX(a,b) ((a > b)?a:b)
 
 void print_bin(long bin, char len, bool newline);
 

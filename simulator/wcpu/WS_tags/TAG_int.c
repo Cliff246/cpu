@@ -1,4 +1,5 @@
 #include "TAG_int.h"
+#include "TAG_tag.h"
 #include <stdio.h>
 
 void TAG_int_free(TAG_ptr_t ptr)
@@ -10,6 +11,11 @@ void TAG_int_free(TAG_ptr_t ptr)
 void TAG_int_print(TAG_ptr_t ptr)
 {
 	printf("%ld\n", ptr.INT->integer);
+}
+
+TAG_ptr_t TAG_int_copy(TAG_ptr_t ptr)
+{
+	return TAG_init_int(ptr.INT->integer);
 }
 
 static TAG_ptr_t TAG_init_int(int64_t integer)
@@ -42,7 +48,7 @@ TAG_prototype_vtable_t TAG_int_vtable =
 {
 	.free = TAG_int_free,
 	.print = TAG_int_print,
-
+	.copy = TAG_int_copy,
 	.size = 2,
 	.fn =
 	{

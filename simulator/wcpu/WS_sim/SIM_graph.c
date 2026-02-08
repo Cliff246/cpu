@@ -1,16 +1,16 @@
 #include "SIM_graph.h"
 #include "OBJ_bundle.h"
 #include "SIM_channel.h"
+#include "SIM_chnlcfg.h"
 #include "SIM_commons.h"
 #include "SIM_context.h"
 #include "SIM_device.h"
-#include "SIM_devicelist.h"
 #include "SIM_mailbox.h"
 #include "SIM_packet.h"
 #include "SIM_port.h"
 #include "SIM_transfer.h"
 #include "SIM_wire.h"
-#include "SIM_wireconfig.h"
+#include "SIM_wirecfg.h"
 #include "commons.h"
 
 #include <stdlib.h>
@@ -21,33 +21,8 @@
 #include <assert.h>
 #include <sys/types.h>
 
-void SIM_graph_fill_wires(SIM_graph_t *graph)
-{
 
 
-	SIM_context_t *context = graph->context;
-	const uint64_t size = SIM_get_devicelist_size(context->devicelist);
-	for(uint64_t i = 0; i < context->wireconfigs_size; ++i)
-	{
-		//printf("%d\n", i);
-		SIM_wireconfig_t *wireconfig = &context->wireconfigs[i];
-		SIM_channel_t *channels[size];
-		uint64_t j = 0;
-
-		for(uint64_t k = 0; k < size; ++k)
-		{
-			SIM_device_t *device = SIM_get_device_devicelist(context->devicelist, k);
-			SIM_channel_t *channel = SIM_device_get_channel_by_wireid(device, wireconfig->id);
-			channels[j++] = channel;
-		}
-		//printf("J:%d\n", j);
-		SIM_wire_t *wire = SIM_init_wire(channels, j, *wireconfig);
-		SIM_print_wire(wire);
-	}
-
-
-
-}
 
 SIM_graph_t *SIM_graph_init(SIM_context_t *context)
 {
@@ -56,8 +31,24 @@ SIM_graph_t *SIM_graph_init(SIM_context_t *context)
 	assert(graph);
 	graph->context = context;
 
-	const uint64_t size = SIM_get_devicelist_size(graph->context->devicelist);
-	SIM_graph_fill_wires(graph);
+	uint64_t devices_count = context->deviceconfigs->count;
+	SIM_device_t *devices = calloc(devices_count, sizeof(SIM_device_t));
+	assert(devices);
+	graph->devices = devices;
+	graph->devices_count =devices_count;
+
+	uint64_t wires_count = context->wireconfigs->count;
+	SIM_wire_t *wires = calloc(wires_count, sizeof(SIM_wire_t));
+	assert(wires);
+	graph->wires = wires;
+	graph->wires_count = wires_count;
+
+	uint64_t channels_count = SIM_get_count_chnlcfg_buf(context->channelbuf);
+	SIM_channel_t *channels = calloc(channels_count, sizeof(SIM_channel_t));
+	assert(channels);
+
+	graph->channels = channels;
+	graph->channels_count = channels_count;
 
 	return graph;
 }

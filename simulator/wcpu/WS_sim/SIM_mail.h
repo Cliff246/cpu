@@ -2,6 +2,8 @@
 #define __WS_SIM_MAIL_HEADER__
 
 #include "OBJ_message.h"
+#include "SIM_message.h"
+#include "SIM_envelope.h"
 #include "SIM_packet.h"
 
 #include <stdint.h>
@@ -12,10 +14,12 @@
 
 typedef struct WS_SIM_mail
 {
-	uint8_t current;
-	bool done;
-	SIM_packet_t packet[SIM_MAIL_PACKETS_BUFFER];
+	SIM_envelope_t envelope;
+
+	SIM_message_t message;
 }SIM_mail_t;
+
+/*
 
 bool SIM_mail_can_write_packet(SIM_mail_t *mail);
 bool SIM_mail_write_packet(SIM_mail_t *mail, SIM_packet_t packet);
@@ -27,5 +31,6 @@ bool SIM_mail_read_packet(SIM_mail_t *mail, SIM_packet_t *packet);
 
 void SIM_mail_put_packets(SIM_mail_t *mail, OBJ_msg_t *msg);
 
+*/
 
 #endif

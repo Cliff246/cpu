@@ -21,6 +21,11 @@ void TAG_bool_print(TAG_ptr_t ptr)
 	printf("%s\n", str);
 }
 
+TAG_ptr_t TAG_bool_copy(TAG_ptr_t ptr)
+{
+	return TAG_init_bool(ptr.BOOL->boolean);
+}
+
 static TAG_ptr_t TAG_init_bool(bool boolean)
 {
 	TAG_bool_t *ptr = calloc(1, sizeof(TAG_bool_t));
@@ -50,7 +55,7 @@ TAG_prototype_vtable_t TAG_bool_vtable =
 {
 	.free = TAG_bool_free,
 	.print = TAG_bool_print,
-
+	.copy = TAG_bool_copy,
 	.size = 2,
 	.fn =
 	{

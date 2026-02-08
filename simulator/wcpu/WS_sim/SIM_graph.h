@@ -22,15 +22,21 @@ typedef struct WS_SIM_graph
 
 	SIM_context_t *context;
 
+	uint32_t channels_count;
+	uint32_t devices_count;
+	uint32_t wires_count;
 
-	uint32_t wires_size;
+	SIM_channel_t *channels;
+
+	SIM_device_t *devices;
+
 	SIM_wire_t *wires;
 
 
 }SIM_graph_t;
 
 
-void SIM_graph_fill_wires(SIM_graph_t *graph);
+
 
 SIM_graph_t *SIM_graph_init(SIM_context_t *context);
 

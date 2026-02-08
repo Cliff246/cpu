@@ -5,7 +5,7 @@
 #include "SIM_commons.h"
 #include "SIM_port.h"
 #include "SIM_router.h"
-#include "SIM_wireconfig.h"
+#include "SIM_wirecfg.h"
 #include "SIM_wirering.h"
 #include <SIM_channel.h>
 #include <SIM_bus.h>
@@ -24,14 +24,12 @@ typedef struct WS_SIM_wire
 {
 	SIM_router_t router;
 	SIM_wirering_t wirering;
-	uint32_t latency;
-	uint32_t size;
+	SIM_packetbuffer_t *buffer;
 	uint64_t id;
-	SIM_channel_t **channels;
 }SIM_wire_t;
 
 
-SIM_wire_t *SIM_init_wire(SIM_channel_t **channels, uint32_t size, SIM_wireconfig_t cfg);
+bool SIM_init_wire(SIM_wire_t *wire, SIM_wirecfg_t *cfg);
 void SIM_print_wire(SIM_wire_t *wire);
 
 //static_assert(OBJ_MAX_CHANNELS == sizeof(uint32_t) * 8, "object max channels must equal 32");

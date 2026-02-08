@@ -4,6 +4,8 @@
 #include "SIM_channel.h"
 #include "SIM_commons.h"
 #include "SIM_graph.h"
+#include "SIM_mail.h"
+#include "SIM_packetbuffer.h"
 #include "SIM_port.h"
 #include "SIM_router.h"
 #include "commons.h"
@@ -14,39 +16,28 @@
 #include <string.h>
 #include <assert.h>
 
-SIM_wire_t *SIM_init_wire(SIM_channel_t **channels, uint32_t size, SIM_wireconfig_t cfg)
+
+bool SIM_init_wire(SIM_wire_t *wire, SIM_wirecfg_t *cfg)
 {
-	SIM_wire_t *wire = calloc(1, sizeof(SIM_wire_t ));
-	assert(wire);
 
 
-	wire->size = size;
-	wire->latency = cfg.latency;
-	wire->id = cfg.id;
-	SIM_init_wirering(&wire->wirering, cfg.latency);
-	SIM_init_router(&wire->router, size);
-
-	SIM_channel_t **ptrs = calloc(size, sizeof(SIM_channel_t *));
-	assert(ptrs);
+	wire->id = cfg->id;
+	SIM_init_wirering(&wire->wirering, cfg->latency);
+	SIM_init_router(&wire->router, cfg->channels);
+	wire->buffer = SIM_init_packetbuffer(cfg->channels, SIM_PACKET_MAX_SIZE);
+	assert(wire->buffer);
 
 
-	for(uint64_t i = 0; i < size; ++i)
-	{
-		//printf("change around\n");
-		channels[i]->wire = wire;
-		ptrs[i] = channels[i];
-	}
-	wire->channels = ptrs;
 
 	return wire;
 }
 
 void SIM_print_wire(SIM_wire_t *wire)
 {
-	for(int i = 0; i < wire->size; ++i)
+	for(int i = 0; i < wire->router.size; ++i)
 	{
 		//printf("print: %d %d\n", i, wire->size);
-		SIM_channel_print(wire->channels[i]);
+
 	}
 }
 

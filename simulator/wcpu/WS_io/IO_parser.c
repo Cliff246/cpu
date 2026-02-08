@@ -262,13 +262,16 @@ static IO_pnode_t *IO_pnode_wire(IO_ptree_t *tree)
 	assert(wire_op);
 	tok_t *wire_latency = IO_ptree_expect_tok(tree, TOK_INT);
 	assert(wire_latency);
-
+	tok_t *wire_throughput = IO_ptree_expect_tok(tree, TOK_INT);
+	assert(wire_throughput);
 	tok_t *last_bracket = IO_ptree_expect_tok(tree, TOK_BRACKET);
 	assert(last_bracket);
 	IO_pnode_t *wire = IO_pnode_create(wire_name, IO_PNODE_KEY);
 	IO_pnode_t *latency = IO_pnode_create(wire_latency, IO_PNODE_VALUE);
+	IO_pnode_t *througput = IO_pnode_create(wire_throughput, IO_PNODE_VALUE);
 
 	IO_pnode_append(wire, latency);
+	IO_pnode_append(wire, througput);
 	return wire;
 }
 
