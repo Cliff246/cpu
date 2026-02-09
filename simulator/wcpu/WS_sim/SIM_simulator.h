@@ -7,6 +7,7 @@
 #include "SIM_context.h"
 #include "SIM_device.h"
 #include "SIM_mailbox.h"
+#include "SIM_stage.h"
 #include "SIM_transfer.h"
 #include <stdbool.h>
 #include <stdint.h>
@@ -18,6 +19,7 @@
 typedef struct WS_SIM_simulator
 {
 	SIM_context_t *ctx;
+	SIM_stage_t *stage;
 	SIM_graph_t *graph;
 }SIM_simulator_t;
 
@@ -31,6 +33,7 @@ typedef struct WS_SIM_simulator
 SIM_simulator_t *SIM_simulator_init(void);
 
 bool SIM_simulator_build_graph(SIM_simulator_t *sim);
+bool SIM_simulator_init_stage(SIM_simulator_t *sim);
 
 // add device to simulator
 

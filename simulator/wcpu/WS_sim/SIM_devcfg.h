@@ -16,8 +16,7 @@ typedef struct WS_SIM_devicecfg
 {
 	//deep copied over
 	p_hashtable_t initals;
-
-	SIM_handle_t *handle;
+	char *module;
 	uint64_t channels;
 	struct
 	{
@@ -35,5 +34,6 @@ bool SIM_init_devcfg_tags(SIM_devcfg_t *ptr, CFG_entry_t *entry);
 
 bool SIM_init_devcfg(SIM_devcfg_t *ptr, CFG_entry_t *entry, SIM_chnlcfg_buf_t *buf);
 
+void SIM_free_devcfg(SIM_devcfg_t *ptr);
 
 #endif

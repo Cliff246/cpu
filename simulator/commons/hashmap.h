@@ -25,6 +25,9 @@ typedef struct hash_table
 	p_hashelem_t *p_tablelist;
 	size_t tablesize;
 	free_hashtable_data_ptr freedata;
+	p_hashelem_t last;
+	uint64_t iter;
+
 } hashtable_t, *p_hashtable_t;
 
 int64_t hash(const char *key);
@@ -43,6 +46,10 @@ p_hashelem_t free_hash_element(p_hashelem_t element,
 
 p_hashelem_t get_from_hash_table(p_hashtable_t table, const char *key);
 p_hashelem_t remove_from_hash_table(p_hashtable_t table, const char *key);
+
+void reset_iter_hashtable(p_hashtable_t table);
+p_hashelem_t next_iter_hashtable(p_hashtable_t table);
+
 void *getdata_from_hash_table(p_hashtable_t table, const char *key);
 
 void print_hash_table(p_hashtable_t table);

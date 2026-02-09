@@ -9,6 +9,7 @@
 #include "SIM_device.h"
 #include "SIM_port.h"
 #include "SIM_bus.h"
+#include "SIM_stage.h"
 #include "SIM_wire.h"
 #include "SIM_transfer.h"
 #include "SIM_channel.h"
@@ -20,25 +21,12 @@
 typedef struct WS_SIM_graph
 {
 
-	SIM_context_t *context;
-
-	uint32_t channels_count;
-	uint32_t devices_count;
-	uint32_t wires_count;
-
-	SIM_channel_t *channels;
-
-	SIM_device_t *devices;
-
-	SIM_wire_t *wires;
-
 
 }SIM_graph_t;
 
 
 
-
-SIM_graph_t *SIM_graph_init(SIM_context_t *context);
+SIM_graph_t *SIM_init_graph(SIM_stage_t *stage);
 
 
 /*

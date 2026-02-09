@@ -55,8 +55,9 @@ static SIM_wirecfg_t *SIM_bsearch_wirecfg_ctx(SIM_wirecfg_ctx_t *ctx, uint64_t i
 static SIM_wirecfg_ctx_t *SIM_init_wirecfg_ctx(CFG_manifest_t *manifest, SIM_context_t *context);
 bool SIM_sort_wirecfg_ctx(SIM_wirecfg_ctx_t *wire);
 static SIM_devcfg_ctx_t *SIM_init_devcfg_ctx(CFG_manifest_t *manifest, SIM_context_t *context);
-
+static void SIM_free_devcfg_ctx(SIM_devcfg_ctx_t *cfg);
+static void SIM_free_wirecfg_ctx(SIM_wirecfg_ctx_t *cfg);
 SIM_context_t *SIM_init_context(CFG_manifest_t *manifest);
-
+void SIM_free_context(SIM_context_t *context);
 
 #endif

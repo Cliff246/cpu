@@ -169,6 +169,27 @@ SIM_context_t *SIM_init_context(CFG_manifest_t *manifest)
 	return ctx;
 }
 
+static void SIM_free_devcfg_ctx(SIM_devcfg_ctx_t *cfg)
+{
+	for(int i = 0; i < cfg->count; ++i)
+	{
+		SIM_free_devcfg(&cfg->cfgs[i]);
+	}
+	free(cfg->cfgs);
+	free(cfg);
+}
+
+static void SIM_free_wirecfg_ctx(SIM_wirecfg_ctx_t *cfg)
+{
+
+}
+
+void SIM_free_context(SIM_context_t *context)
+{
+	SIM_free_devcfg_ctx(context->deviceconfigs);
+
+}
+
 /*
 
 SIM_context_t *SIM_init_context(CFG_manifest_t *manifest)

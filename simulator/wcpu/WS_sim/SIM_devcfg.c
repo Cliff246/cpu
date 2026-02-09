@@ -7,6 +7,7 @@
 #include "TAG_list.h"
 #include "TAG_string.h"
 #include "TAG_bool.h"
+#include "hashmap.h"
 #include <stdbool.h>
 #include <stdalign.h>
 #include <stdint.h>
@@ -33,9 +34,9 @@ bool SIM_init_devcfg_tags(SIM_devcfg_t *ptr, CFG_entry_t *entry)
 
 
 	ptr->initals = table;
-	SIM_handle_t *handle = SIM_init_handle(entry->module);
-	assert(handle);
-	ptr->handle = handle;
+	ptr->module = strdup(entry->module);
+	assert(ptr->module);
+
 	for(uint32_t i = 0; i < count; ++i)
 	{
 		CFG_prototag_t *proto = entry->prototags[i];
@@ -81,4 +82,11 @@ bool SIM_init_devcfg(SIM_devcfg_t *ptr, CFG_entry_t *entry, SIM_chnlcfg_buf_t *b
 	SIM_devcfg_prep_chnlcfgs(ptr, buf);
 
 	return true;
+}
+
+void SIM_free_devcfg(SIM_devcfg_t *ptr)
+{
+	free_hash_table(ptr->initals);
+	free(ptr->module);
+	
 }

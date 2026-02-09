@@ -14,3 +14,8 @@ void SIM_wireconfig_print(SIM_wirecfg_t *wireconfig)
 {
 	printf("id: %ld latency: %ld throughput:%ld\n", wireconfig->id, wireconfig->latency, wireconfig->throughput);
 }
+
+void SIM_free_wirecfg(SIM_wirecfg_t *ptr)
+{
+
+}

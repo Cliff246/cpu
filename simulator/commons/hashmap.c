@@ -337,5 +337,39 @@ void print_hash_table(p_hashtable_t table)
 }
 
 
+void reset_iter_hashtable(p_hashtable_t table)
+{
+	table->iter = 0;
+	table->last = NULL;
+}
+
+p_hashelem_t next_iter_hashtable(p_hashtable_t table)
+{
+	p_hashelem_t cur = NULL;
+	if(table->last != NULL)
+	{
+		if(table->last->p_next != NULL)
+		{
+
+			cur	= table->last->p_next;
+			table->last = cur;
+			return cur;
+		}
+		table->iter++;
+	}
+
+	for(; table->iter < table->tablesize; table->iter++)
+	{
+		p_hashelem_t tmp = table->p_tablelist[table->iter];
+		if(tmp != NULL)
+		{
+			table->last = tmp;
+			cur = tmp;
+			return cur;
+		}
+	}
+
+	return cur;
+}
 
 

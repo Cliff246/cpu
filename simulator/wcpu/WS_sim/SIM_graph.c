@@ -1,56 +1,22 @@
-#include "SIM_graph.h"
-#include "OBJ_bundle.h"
-#include "SIM_channel.h"
-#include "SIM_chnlcfg.h"
-#include "SIM_commons.h"
-#include "SIM_context.h"
-#include "SIM_device.h"
-#include "SIM_mailbox.h"
-#include "SIM_packet.h"
-#include "SIM_port.h"
-#include "SIM_transfer.h"
-#include "SIM_wire.h"
-#include "SIM_wirecfg.h"
-#include "commons.h"
 
-#include <stdlib.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <string.h>
 #include <stdbool.h>
-#include <assert.h>
 #include <sys/types.h>
 
+#include "SIM_commons.h"
+#include "SIM_device.h"
+#include "SIM_port.h"
+#include "SIM_bus.h"
+#include "SIM_wire.h"
+#include "SIM_transfer.h"
+#include "SIM_channel.h"
+#include "SIM_routemap.h"
+#include "SIM_context.h"
+#include "SIM_stage.h"
 
-
-
-SIM_graph_t *SIM_graph_init(SIM_context_t *context)
+SIM_graph_t *SIM_init_graph(SIM_stage_t *stage)
 {
-
-	SIM_graph_t *graph = calloc(1, sizeof(SIM_graph_t));
-	assert(graph);
-	graph->context = context;
-
-	uint64_t devices_count = context->deviceconfigs->count;
-	SIM_device_t *devices = calloc(devices_count, sizeof(SIM_device_t));
-	assert(devices);
-	graph->devices = devices;
-	graph->devices_count =devices_count;
-
-	uint64_t wires_count = context->wireconfigs->count;
-	SIM_wire_t *wires = calloc(wires_count, sizeof(SIM_wire_t));
-	assert(wires);
-	graph->wires = wires;
-	graph->wires_count = wires_count;
-
-	uint64_t channels_count = SIM_get_count_chnlcfg_buf(context->channelbuf);
-	SIM_channel_t *channels = calloc(channels_count, sizeof(SIM_channel_t));
-	assert(channels);
-
-	graph->channels = channels;
-	graph->channels_count = channels_count;
-
-	return graph;
+	return NULL;
 }
 
 /*

@@ -316,14 +316,16 @@ void init(int argc, char **argv)
 //	print_toklex(lex);
 	IO_ptree_t *tree =IO_ptree_create(lex);
 	IO_ptree_parse(tree);
-	IO_pnode_print(tree->head, 0);
-	IO_pnode_print(tree->settings, 0);
+	//IO_pnode_print(tree->head, 0);
+	//IO_pnode_print(tree->settings, 0);
 
 	CFG_manifest_t *manifest =  CFG_init_manifest(tree);
 
 	SIM_simulator_t *sim = SIM_simulator_init();
 	SIM_simulator_load_manifest(sim, manifest);
+	SIM_simulator_init_stage(sim);
 	SIM_simulator_build_graph(sim);
+	
 	/*
 	logger_set = false;
 	globalstate.args.argc = argc;

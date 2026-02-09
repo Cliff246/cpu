@@ -17,17 +17,33 @@
 
 
 
+p_hashtable_t SIM_copy_hashtable(p_hashtable_t old)
+{
+ 	p_hashtable_t copy = new_hash_table(100, SIM_free_tag_table_elem);
 
+
+	reset_iter_hashtable(old);
+	p_hashelem_t elem = next_iter_hashtable(old);
+	while(elem != NULL)
+	{
+		TAG_tag_t *tagcopy = TAG_copy(elem->p_data);
+		TAG_print(tagcopy);
+		addto_hash_table(copy, elem->p_key, tagcopy);
+		elem = next_iter_hashtable(old);
+
+	}
+	return copy;
+}
 
 void SIM_init_device(SIM_device_t *device, SIM_devcfg_t *devctx)
 {
 	assert(device);
 
-	device->tags = NULL;
+	device->tags = SIM_copy_hashtable(devctx->initals);
 
 
-
-
+	print_hash_table(device->tags);
+	printf("\n");
 }
 
 

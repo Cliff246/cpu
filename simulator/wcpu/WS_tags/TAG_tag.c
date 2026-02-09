@@ -25,6 +25,7 @@ char *TAG_type_string_list[WS_SIM_TAG_LIST_COUNT] =
 
 void TAG_free(TAG_tag_t *tag)
 {
+
 	TAG_ptr_t ptr = tag->ptr;
 	TAG_vtable_list[tag->type]->free(ptr);
 	free(tag);
@@ -63,7 +64,6 @@ void TAG_print(TAG_tag_t *tag)
 TAG_tag_t *TAG_copy(TAG_tag_t *tag)
 {
 	TAG_ptr_t deepcpy = TAG_vtable_list[tag->type]->copy(tag->ptr);
-
 
 
 	TAG_tag_t *cpy = TAG_init(deepcpy, tag->type);

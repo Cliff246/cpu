@@ -22,6 +22,7 @@ TAG_string_arg_t get_string =
 void TAG_string_free(TAG_ptr_t ptr)
 {
 	TAG_string_t *string = ptr.STRING;
+
 	free(string->string);
 	free(string);
 }

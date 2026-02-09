@@ -4,6 +4,7 @@
 #include "SIM_context.h"
 #include "SIM_device.h"
 #include "SIM_graph.h"
+#include "SIM_stage.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -43,10 +44,15 @@ bool SIM_simulator_load_manifest(SIM_simulator_t *sim, CFG_manifest_t *manifest)
 
 	return true;
 }
+bool SIM_simulator_init_stage(SIM_simulator_t *sim)
+{
+	sim->stage = SIM_init_stage(sim->ctx);
+	return true;
+}
 
 bool SIM_simulator_build_graph(SIM_simulator_t *sim)
 {
-	sim->graph = SIM_graph_init(sim->ctx);
+	sim->graph = SIM_init_graph(sim->stage);
 	return true;
 }
 
