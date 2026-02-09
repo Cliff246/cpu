@@ -8,7 +8,7 @@
 	PRINT_CONTENT =  true
 }
 {
-		PRETAG = 2
+		PRETAG = 3
 
 		NAME = "ram2"
 		WIRE [0,1]

@@ -31,7 +31,9 @@ typedef struct WS_SIM_vistable
 	SIM_viselm_t **tagmap;
 
 }SIM_vistable_t;
-
+bool SIM_add_from_key_vistable(SIM_vistable_t *table, SIM_viselm_t *elm, SIM_dtag_t tag);
+SIM_viselm_t *SIM_get_from_key_vistable(SIM_vistable_t *table, SIM_dtag_t tag);
 SIM_vistable_t *SIM_init_vistable(SIM_context_t *ctx);
+void SIM_print_vistable(SIM_vistable_t *table);
 
 #endif

@@ -4,6 +4,7 @@
 #include "SIM_context.h"
 #include <assert.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 SIM_dtag_t SIM_init_viselm(SIM_viselm_t *elm, SIM_devcfg_t *device)
@@ -33,19 +34,7 @@ SIM_vistable_t *SIM_init_vistable(SIM_context_t *ctx)
 	for(uint64_t i = 0; i < table->count; ++i)
 	{
 		SIM_dtag_t tag = SIM_init_viselm(&table->table[i], &ctx->deviceconfigs->cfgs[i]);
-		if(tag >= 0)
-		{
-			if(table->tagmap[tag % table->count] == NULL)
-			{
-				table->tagmap[tag % table->count] = &table->table[i];
-			}
-			else
-			{
-				//this is overlap case of a map, this shouldnt happen but our method of keying is brittle
-				assert(0);
-			}
-
-		}
+		bool success =SIM_add_from_key_vistable(table, &table->table[i], tag);
 	}
 
 
@@ -53,19 +42,93 @@ SIM_vistable_t *SIM_init_vistable(SIM_context_t *ctx)
 	for(uint64_t k = 0; k < table->count; ++k)
 	{
 		SIM_viselm_t *elm = &table->table[k];
-		SIM_viselm_t *cmp = table->tagmap[elm->tag % table->count];
-		if(elm == cmp)
+		if(elm->pretag == false)
 		{
+			elm->tag = rand();
+			SIM_add_from_key_vistable(table, elm, elm->tag);
+			assert(SIM_get_from_key_vistable(table, elm->tag) == elm);
+			elm->pretag = true;
 
 		}
-		else
-		{
 
-		}
 	}
-
+	SIM_print_vistable(table);
 
 	return table;
 }
 
+bool SIM_add_from_key_vistable(SIM_vistable_t *table, SIM_viselm_t *elm, SIM_dtag_t tag)
+{
 
+	if(tag < 0)
+		return false;
+
+
+	uint64_t pos = tag % table->count;
+
+	if(table->tagmap[pos] == NULL)
+	{
+		table->tagmap[pos] = elm;
+		return true;
+	}
+	else
+	{
+		for(uint32_t i = 0, cur = pos; i < table->count; ++i, cur = (cur >= table->count)? 0: cur + 1)
+		{
+			if(table->tagmap[cur] == NULL)
+			{
+				table->tagmap[cur] = elm;
+				return true;
+			}
+			else if(table->tagmap[cur]->tag == tag)
+			{
+				return false;
+			}
+
+		}
+		return false;
+	}
+}
+
+SIM_viselm_t *SIM_get_from_key_vistable(SIM_vistable_t *table, SIM_dtag_t tag)
+{
+	if(tag >= 0)
+	{
+		uint64_t pos = tag % table->count;
+
+		if(table->tagmap[pos] == NULL)
+		{
+			return NULL;
+		}
+		else if (table->tagmap[pos]->tag != tag)
+		{
+			return table->tagmap[pos];
+		}
+		else
+		{
+			for(uint32_t i = 0, cur = pos; i < table->count; ++i, cur = (cur >= table->count)? 0: cur + 1)
+			{
+
+				SIM_viselm_t *ptr = table->tagmap[cur];
+				if(ptr == NULL)
+				{
+					return NULL;
+				}
+				else if(ptr->tag == tag)
+				{
+					return ptr;
+				}
+
+			}
+		}
+	}
+	return NULL;
+}
+
+void SIM_print_vistable(SIM_vistable_t *table)
+{
+	for(uint64_t i = 0; i < table->count; ++i)
+	{
+		printf("[%d]=%p\n",i, table->tagmap[i]);
+	}
+}
