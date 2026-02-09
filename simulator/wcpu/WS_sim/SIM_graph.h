@@ -10,6 +10,7 @@
 #include "SIM_port.h"
 #include "SIM_bus.h"
 #include "SIM_stage.h"
+#include "SIM_vistable.h"
 #include "SIM_wire.h"
 #include "SIM_transfer.h"
 #include "SIM_channel.h"
@@ -20,7 +21,6 @@
 
 typedef struct WS_SIM_graph
 {
-
 
 }SIM_graph_t;
 

@@ -3,6 +3,7 @@
 #include "CFG_prototag.h"
 #include "SIM_channel.h"
 #include "SIM_chnlcfg.h"
+#include "SIM_handle.h"
 #include "TAG_int.h"
 #include "TAG_list.h"
 #include "dynamic_lib.h"
@@ -40,10 +41,11 @@ void SIM_init_device(SIM_device_t *device, SIM_devcfg_t *devctx)
 	assert(device);
 
 	device->tags = SIM_copy_hashtable(devctx->initals);
+	device->handle = SIM_init_handle(devctx->module);
 
 
-	print_hash_table(device->tags);
-	printf("\n");
+
+
 }
 
 
@@ -106,61 +108,7 @@ uint64_t SIM_device_get_connectors(SIM_device_t *device, int64_t *buf, uint64_t 
 	return list_size;
 }
 
-
 void SIM_device_print(SIM_device_t *device)
 {
 
-}
-
-
-SIM_dtag_t SIM_device_get_dtag(SIM_device_t *device)
-{
-	return device->dtag;
-}
-
-bool SIM_device_has_address_range(SIM_device_t *device)
-{
-
-	TAG_tag_t *tag1 = getdata_from_hash_table(device->tags, "ADRRESS_BASE");
-	if(tag1 == NULL)
-		return false;
-	TAG_argptr_t get_base =	TAG_get_fn(TAG_INT, TAG_FN_INT_GET);
-
-	TAG_tag_t *tag2 = getdata_from_hash_table(device->tags, "ADDRESS_SIZE");
-	if(tag2 == NULL)
-		return false;
-	TAG_argptr_t get_size =	TAG_get_fn(TAG_INT, TAG_FN_INT_GET);
-
-	return true;
-}
-
-uint64_t SIM_device_get_address_base(SIM_device_t *device)
-{
-
-	TAG_tag_t *tag = getdata_from_hash_table(device->tags, "ADRRESS_BASE");
-	assert(tag != NULL && "did not find address base");
-
-	TAG_argptr_t get_base =	TAG_get_fn(TAG_INT, TAG_FN_INT_GET);
-
-
-	int64_t base = get_base.INT->get(tag);
-
-	assert(base > 0 && "device must have base > 0");
-
-	return (uint64_t)base;
-}
-
-uint64_t SIM_device_get_address_size(SIM_device_t *device)
-{
-
-
-	TAG_tag_t *tag = getdata_from_hash_table(device->tags, "ADDRESS_SIZE");
-	assert(tag != NULL && "did not find address size");
-	TAG_argptr_t get_size =	TAG_get_fn(TAG_INT, TAG_FN_INT_GET);
-
-	int64_t size = get_size.INT->get(tag);
-
-	assert(size > 0 && "device must have size > 0");
-
-	return (uint64_t)size;
 }

@@ -8,6 +8,8 @@
 	PRINT_CONTENT =  true
 }
 {
+		PRETAG = 2
+
 		NAME = "ram2"
 		WIRE [0,1]
 		START = 2001
@@ -16,6 +18,7 @@
 "libsim_dev_ram" :
 	{
 		NAME = "vm"
+		PRETAG = 2
 		WIRE [0, 1]
 	} ;
 

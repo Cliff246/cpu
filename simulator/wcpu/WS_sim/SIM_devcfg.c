@@ -81,6 +81,24 @@ bool SIM_init_devcfg(SIM_devcfg_t *ptr, CFG_entry_t *entry, SIM_chnlcfg_buf_t *b
 	SIM_init_devcfg_tags(ptr, entry);
 	SIM_devcfg_prep_chnlcfgs(ptr, buf);
 
+
+	if(SIM_devcfg_has_address_range(ptr))
+	{
+		ptr->has_address = true;
+		ptr->address = SIM_devcfg_get_address_base(ptr);
+		ptr->length = SIM_devcfg_get_address_size(ptr);
+	}
+	else
+	{
+		ptr->has_address = false;
+	}
+	SIM_dtag_t haspre = SIM_devcfg_has_pretag(ptr);
+	if(haspre >= 0)
+	{
+		ptr->has_pretag = true;
+		ptr->pretag = haspre;
+	}
+
 	return true;
 }
 
@@ -88,5 +106,64 @@ void SIM_free_devcfg(SIM_devcfg_t *ptr)
 {
 	free_hash_table(ptr->initals);
 	free(ptr->module);
-	
+
+}
+
+
+bool SIM_devcfg_has_address_range(SIM_devcfg_t *device)
+{
+
+	TAG_tag_t *tag1 = getdata_from_hash_table(device->initals, "ADRRESS_BASE");
+	if(tag1 == NULL)
+		return false;
+	TAG_argptr_t get_base =	TAG_get_fn(TAG_INT, TAG_FN_INT_GET);
+
+	TAG_tag_t *tag2 = getdata_from_hash_table(device->initals, "ADDRESS_SIZE");
+	if(tag2 == NULL)
+		return false;
+	TAG_argptr_t get_size =	TAG_get_fn(TAG_INT, TAG_FN_INT_GET);
+
+	return true;
+}
+
+uint64_t SIM_devcfg_get_address_base(SIM_devcfg_t *device)
+{
+
+	TAG_tag_t *tag = getdata_from_hash_table(device->initals, "ADRRESS_BASE");
+	assert(tag != NULL && "did not find address base");
+
+	TAG_argptr_t get_base =	TAG_get_fn(TAG_INT, TAG_FN_INT_GET);
+
+
+	int64_t base = get_base.INT->get(tag);
+
+	assert(base > 0 && "device must have base > 0");
+
+	return (uint64_t)base;
+}
+
+uint64_t SIM_devcfg_get_address_size(SIM_devcfg_t *device)
+{
+	TAG_tag_t *tag = getdata_from_hash_table(device->initals, "ADDRESS_SIZE");
+	assert(tag != NULL && "did not find address size");
+	TAG_argptr_t get_size =	TAG_get_fn(TAG_INT, TAG_FN_INT_GET);
+
+	int64_t size = get_size.INT->get(tag);
+
+	assert(size > 0 && "device must have size > 0");
+
+	return (uint64_t)size;
+}
+
+SIM_dtag_t SIM_devcfg_has_pretag(SIM_devcfg_t *device)
+{
+	TAG_tag_t *tag = getdata_from_hash_table(device->initals, "PRETAG");
+	if(tag == NULL)
+		return -1;
+	TAG_argptr_t get_tag =	TAG_get_fn(TAG_INT, TAG_FN_INT_GET);
+
+	int64_t dtag = get_tag.INT->get(tag);
+
+
+	return (uint64_t)dtag;
 }

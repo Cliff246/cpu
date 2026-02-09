@@ -14,16 +14,16 @@
 
 typedef struct WS_SIM_port
 {
-	OBJ_bundle_t bout;
+	//OBJ_bundle_t bout;
 
 	uint32_t mailboxes_size;
 
 	SIM_mailbox_t *mailboxes;
 	SIM_routemap_t routemap;
 }SIM_port_t;
-/*
-SIM_port_t *SIM_port_init();
 
+SIM_port_t *SIM_port_init();
+/*
 typedef struct WS_SIM_graph SIM_graph_t;
 SIM_mailbox_t *SIM_port_get_mailbox(SIM_port_t *port, SIM_channel_local_t local);
 

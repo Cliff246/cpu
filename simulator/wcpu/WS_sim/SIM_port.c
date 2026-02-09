@@ -10,7 +10,7 @@
 #include "SIM_wire.h"
 #include <assert.h>
 
-/*
+
 
 SIM_port_t *SIM_port_init()
 {
@@ -20,6 +20,7 @@ SIM_port_t *SIM_port_init()
 
 	return port;
 }
+/*
 
 SIM_mailbox_t *SIM_port_get_mailbox(SIM_port_t *port, SIM_channel_local_t local)
 {

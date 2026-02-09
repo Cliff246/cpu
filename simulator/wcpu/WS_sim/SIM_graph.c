@@ -1,12 +1,16 @@
 
+#include <assert.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include <sys/types.h>
-
+#include "SIM_graph.h"
 #include "SIM_commons.h"
 #include "SIM_device.h"
+#include "SIM_mailbox.h"
 #include "SIM_port.h"
 #include "SIM_bus.h"
+#include "SIM_vistable.h"
 #include "SIM_wire.h"
 #include "SIM_transfer.h"
 #include "SIM_channel.h"
@@ -16,7 +20,11 @@
 
 SIM_graph_t *SIM_init_graph(SIM_stage_t *stage)
 {
-	return NULL;
+	SIM_graph_t *graph =calloc(1, sizeof(SIM_graph_t));
+	assert(graph);
+
+
+	return graph;
 }
 
 /*

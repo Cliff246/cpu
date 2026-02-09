@@ -6,6 +6,7 @@
 #include "SIM_device.h"
 #include "SIM_wire.h"
 #include "SIM_context.h"
+#include "SIM_vistable.h"
 #include <stdint.h>
 
 

@@ -164,7 +164,7 @@ SIM_context_t *SIM_init_context(CFG_manifest_t *manifest)
 		SIM_print_chnlcfg(cfg);
 	}
 
-
+	ctx->table = SIM_init_vistable(ctx);
 
 	return ctx;
 }
@@ -187,7 +187,7 @@ static void SIM_free_wirecfg_ctx(SIM_wirecfg_ctx_t *cfg)
 void SIM_free_context(SIM_context_t *context)
 {
 	SIM_free_devcfg_ctx(context->deviceconfigs);
-
+	SIM_free_wirecfg_ctx(context->wireconfigs);
 }
 
 /*

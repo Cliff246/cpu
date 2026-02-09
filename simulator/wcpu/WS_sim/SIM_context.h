@@ -7,7 +7,7 @@
 #include "SIM_devcfg.h"
 #include "CFG_manifest.h"
 #include "SIM_wirecfg.h"
-
+#include "SIM_vistable.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <sys/types.h>
@@ -45,6 +45,8 @@ typedef struct WS_SIM_context
 	SIM_devcfg_ctx_t *deviceconfigs;
 	SIM_wirecfg_ctx_t *wireconfigs;
 	SIM_chnlcfg_buf_t *channelbuf;
+	SIM_vistable_t *table;
+
 }SIM_context_t;
 
 static void SIM_swap_wirecfg_ctx(SIM_wirecfg_ctx_t *ctx, size_t i, size_t j);
