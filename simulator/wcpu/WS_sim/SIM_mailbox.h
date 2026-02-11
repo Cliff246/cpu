@@ -12,6 +12,7 @@ typedef struct WS_SIM_mailbox
 {
 	SIM_channel_t *channel;
 
+	
 
 	bool has_mailout;
 	bool done_input;

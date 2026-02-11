@@ -8,13 +8,11 @@
 #include "SIM_commons.h"
 #include "SIM_device.h"
 #include "SIM_port.h"
-#include "SIM_bus.h"
 #include "SIM_stage.h"
 #include "SIM_vistable.h"
 #include "SIM_wire.h"
 #include "SIM_transfer.h"
 #include "SIM_channel.h"
-#include "SIM_routemap.h"
 #include "SIM_context.h"
 
 

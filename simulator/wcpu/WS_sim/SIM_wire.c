@@ -1,13 +1,11 @@
 #include "SIM_wire.h"
 #include "OBJ_constants.h"
-#include "SIM_bus.h"
 #include "SIM_channel.h"
 #include "SIM_commons.h"
 #include "SIM_graph.h"
 #include "SIM_mail.h"
-#include "SIM_packetbuffer.h"
 #include "SIM_port.h"
-#include "SIM_router.h"
+#include "SIM_wirerouter.h"
 #include "commons.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -23,9 +21,7 @@ bool SIM_init_wire(SIM_wire_t *wire, SIM_wirecfg_t *cfg)
 
 	wire->id = cfg->id;
 	SIM_init_wirering(&wire->wirering, cfg->latency);
-	SIM_init_router(&wire->router, cfg->channels);
-	wire->buffer = SIM_init_packetbuffer(cfg->channels, SIM_PACKET_MAX_SIZE);
-	assert(wire->buffer);
+	SIM_init_router(&wire->router, cfg->channels_count);
 
 
 

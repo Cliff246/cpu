@@ -10,6 +10,9 @@
 #define SIM_TAGS_SIZE 1000
 
 typedef int64_t SIM_dtag_t;
+typedef int64_t SIM_wireid_t;
+typedef int64_t SIM_chnlid_t;
+
 
 void SIM_free_tag_table_elem(void *v);
 

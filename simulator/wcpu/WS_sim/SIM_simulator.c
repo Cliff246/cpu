@@ -47,6 +47,7 @@ bool SIM_simulator_load_manifest(SIM_simulator_t *sim, CFG_manifest_t *manifest)
 bool SIM_simulator_init_stage(SIM_simulator_t *sim)
 {
 	sim->stage = SIM_init_stage(sim->ctx);
+
 	return true;
 }
 

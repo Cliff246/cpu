@@ -61,6 +61,5 @@ SIM_stage_t *SIM_init_stage(SIM_context_t *context)
 
 	stage->channels = channels;
 	stage->channels_count = channels_count;
-	SIM_free_context(context);
 	return stage;
 }

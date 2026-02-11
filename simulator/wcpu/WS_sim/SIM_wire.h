@@ -4,11 +4,10 @@
 #include "OBJ_constants.h"
 #include "SIM_commons.h"
 #include "SIM_port.h"
-#include "SIM_router.h"
+#include "SIM_wirerouter.h"
 #include "SIM_wirecfg.h"
 #include "SIM_wirering.h"
 #include <SIM_channel.h>
-#include <SIM_bus.h>
 
 #include <assert.h>
 #include <stdint.h>
@@ -22,10 +21,11 @@
 //contains wire information, number of slots, base state, etc
 typedef struct WS_SIM_wire
 {
-	SIM_router_t router;
+	SIM_wirerouter_t router;
 	SIM_wirering_t wirering;
-	SIM_packetbuffer_t *buffer;
-	uint64_t id;
+	SIM_channel_t **channels;
+	uint64_t size;
+	SIM_wireid_t id;
 }SIM_wire_t;
 
 

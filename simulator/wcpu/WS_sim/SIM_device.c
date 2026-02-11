@@ -28,7 +28,7 @@ p_hashtable_t SIM_copy_hashtable(p_hashtable_t old)
 	while(elem != NULL)
 	{
 		TAG_tag_t *tagcopy = TAG_copy(elem->p_data);
-		TAG_print(tagcopy);
+		//TAG_print(tagcopy);
 		addto_hash_table(copy, elem->p_key, tagcopy);
 		elem = next_iter_hashtable(old);
 

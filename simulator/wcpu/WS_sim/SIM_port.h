@@ -4,7 +4,6 @@
 #include "OBJ_bundle.h"
 #include "OBJ_constants.h"
 #include "SIM_mailbox.h"
-#include "SIM_routemap.h"
 #include "SIM_commons.h"
 
 
@@ -12,14 +11,17 @@
 #include <stdbool.h>
 
 
+
+
 typedef struct WS_SIM_port
 {
 	//OBJ_bundle_t bout;
 
+	
+
 	uint32_t mailboxes_size;
 
 	SIM_mailbox_t *mailboxes;
-	SIM_routemap_t routemap;
 }SIM_port_t;
 
 SIM_port_t *SIM_port_init();

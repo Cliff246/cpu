@@ -2,7 +2,6 @@
 #define __WS_SIM_WIRERING_HEADER__
 
 #include "SIM_channel.h"
-#include "SIM_packetbuffer.h"
 #include "SIM_transfer.h"
 #include <stdint.h>
 

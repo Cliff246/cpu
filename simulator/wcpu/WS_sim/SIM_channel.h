@@ -5,7 +5,6 @@
 #include "OBJ_message.h"
 #include "OBJ_bundle.h"
 #include "SIM_packet.h"
-#include "SIM_routemap.h"
 #include "SIM_commons.h"
 
 #include <stdint.h>
@@ -22,7 +21,7 @@ typedef struct WS_SIM_channel
 {
 	SIM_device_t *device;
 	SIM_wire_t *wire;
-	uint64_t id;
+	SIM_chnlid_t id;
 
 	bool output;
 	bool has_packet;

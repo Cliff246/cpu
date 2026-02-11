@@ -6,7 +6,6 @@
 #include "SIM_graph.h"
 #include "SIM_mail.h"
 #include "SIM_mailbox.h"
-#include "SIM_routemap.h"
 #include "SIM_wire.h"
 #include <assert.h>
 
