@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 
 
 static CFG_node_ctx_t *CFG_init_node_ctx(CFG_manifest_t *manifest, CFG_context_t *context)
@@ -249,13 +250,33 @@ static void CFG_init_stage4_context(CFG_context_t *ctx)
 	printf("\n");
 	for(int a = 0; a < devcfg_count; ++a)
 	{
-		printf("%d:\t", a);
+		printf("%c:\t", a + 'a');
 		for(uint64_t b = 0; b <wirecfg_count; ++b)
 		{
 			printf("%d ", dev_wire_seen[a][b]);
 		}
 		printf("\n");
 	}
+
+	printf("\n");
+
+
+	printf("devid:  ");
+	for(uint64_t head1 = 0; head1 < devcfg_count; ++head1)
+	{
+		printf("%c ", head1 + 'a');
+	}
+	printf("\n");
+	for(int a = 0; a < wirecfg_count; ++a)
+	{
+		printf("%d:\t", a);
+		for(uint64_t b = 0; b <devcfg_count; ++b)
+		{
+			printf("%d ", wire_dev_seen[a][b]);
+		}
+		printf("\n");
+	}
+	printf("\n");
 
 	//FOR EACH SOURCE
 	for(uint64_t s = 0; s < devcfg_count; ++s)
@@ -266,8 +287,9 @@ static void CFG_init_stage4_context(CFG_context_t *ctx)
 		memset(dev_dist, 0xffffffff, sizeof(dev_dist));
 		memset(wire_dist, 0xffffffff, sizeof(wire_dist));
 
-
+		//this needs to be 2d
 		int32_t first_wire_to_dev[devcfg_count];
+		//
 		int32_t first_wire_to_wire[wirecfg_count];
 
 		memset(first_wire_to_dev, 0xffff, sizeof(first_wire_to_dev));
@@ -288,6 +310,21 @@ static void CFG_init_stage4_context(CFG_context_t *ctx)
 		while(changed)
 		{
 			changed = false;
+			for(uint64_t w2 = 0; w2 < wirecfg_count; ++w2)
+			{
+				if(wire_dist[w2] > 100000) continue;
+				for(uint64_t d2 = 0; d2 < devcfg_count; ++d2)
+				{
+					if(!wire_dev_seen[w2][d2]) continue;
+					if(wire_dist[w2] < dev_dist[d2])
+					{
+						dev_dist[d2] = wire_dist[w2];
+            			first_wire_to_dev[d2] = first_wire_to_wire[w2];
+              			changed = true;
+					}
+				}
+			}
+
 			for(uint64_t d1 = 0; d1 < devcfg_count; ++d1)
 			{
 				if(dev_dist[d1] > 100000) continue;
@@ -304,22 +341,22 @@ static void CFG_init_stage4_context(CFG_context_t *ctx)
 					}
 				}
 			}
-			for(uint64_t w2 = 0; w2 < wirecfg_count; ++w2)
-			{
-				if(wire_dist[w2] > 100000) continue;
-				for(uint64_t d2 = 0; d2 < devcfg_count; ++d2)
-				{
-					if(!wire_dev_seen[w2][d2]) continue;
-					if(wire_dist[w2] < dev_dist[d2])
-					{
-						dev_dist[d2] = wire_dist[w2];
-            			first_wire_to_dev[d2] = first_wire_to_wire[w2];
-              			changed = true;
-					}
-				}
-			}
 		}
+
 		CFG_node_t *src = &ctx->deviceconfigs->cfgs[s];
+		printf("first wire to dev\n");
+		for(uint64_t pfwtd = 0; pfwtd < devcfg_count; ++pfwtd)
+		{
+			printf("%d ", first_wire_to_dev[pfwtd]);
+		}
+		printf("\n");
+
+		printf("first wire to wire\n");
+		for(uint64_t pfwtw = 0; pfwtw < wirecfg_count; ++pfwtw)
+		{
+			printf("%d ", first_wire_to_wire[pfwtw]);
+		}
+		printf("\n");
 
 		for (uint64_t d = 0; d < devcfg_count; ++d)
 		{
