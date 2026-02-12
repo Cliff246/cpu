@@ -1,7 +1,6 @@
 #ifndef _CFG_CONTEXT_HEADER__
 #define _CFG_CONTEXT_HEADER__
 
-#include "SIM_channel.h"
 #include "CFG_link.h"
 #include "CFG_node.h"
 #include "CFG_manifest.h"

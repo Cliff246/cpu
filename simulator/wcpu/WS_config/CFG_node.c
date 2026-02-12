@@ -61,14 +61,14 @@ bool CFG_prep_links_node(CFG_node_t *node,  CFG_link_buf_t *lbuf)
 	TAG_argptr_t get_int = TAG_get_fn(TAG_INT, TAG_FN_INT_GET);
 	node->chnlids_size = list_size;
 
-	SIM_wireid_t wid[list_size];
-	SIM_chnlid_t *cid = calloc(list_size, sizeof(SIM_chnlid_t));
+	CFG_edge_id_t wid[list_size];
+	CFG_link_id_t *cid = calloc(list_size, sizeof(CFG_link_id_t));
 	assert(cid);
 	for(uint64_t i = 0; i < list_size; ++i)
 	{
 		TAG_tag_t *tmp =  get_arg.LIST->get(tag, i);
 		assert(tmp->type == TAG_INT);
-		SIM_wireid_t wire = get_int.INT->get(tmp);
+		CFG_link_id_t wire = get_int.INT->get(tmp);
 		wid[i] = wire;
 	}
 	CFG_append_link_buf(lbuf, node, wid, list_size, cid);
@@ -163,6 +163,7 @@ uint64_t CFG_get_address_size_node(CFG_node_t *node)
 
 	return (uint64_t)size;
 }
+
 CFG_node_id_t CFG_has_pretag_node(CFG_node_t *node)
 {
 	TAG_tag_t *tag = getdata_from_hash_table(node->initals, "PRETAG");
@@ -205,7 +206,7 @@ void CFG_append_route_node(CFG_node_t *node, uint64_t index, CFG_node_route_t ro
 	assert(node->done.init_routetable == true);
 	CFG_node_route_row_t *tag = &node->routetable.tags[index];
 	assert(tag->tag != node->pretag && "don't append a route to the devcfg row");
-	printf("route[%d]: latency:%ld wireid:%ld\n",index, route.latency, route.wire);
+	printf("route[%ld]: latency:%ld wireid:%ld\n",index, route.latency, route.wire);
 	CFG_node_route_t *routes = realloc_safe(tag->routes, tag->size + 1, sizeof(CFG_node_route_t));
 	routes[tag->size++] = route;
 	tag->routes = routes;

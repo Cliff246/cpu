@@ -4,6 +4,7 @@
 #include "CFG_commons.h"
 #include "CFG_link.h"
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct CFG_edge
 {

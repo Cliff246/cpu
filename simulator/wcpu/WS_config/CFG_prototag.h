@@ -1,11 +1,11 @@
-#ifndef __WS_CFG_TAG_HEADER__
-#define __WS_CFG_TAG_HEADER__
+#ifndef __CFG_PROTOTAG_HEADER__
+#define __CFG_PROTOTAG_HEADER__
 
 #include "TAG_tag.h"
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef struct WS_CFG_prototag
+typedef struct CFG_prototag
 {
 	char *key;
 	TAG_tag_t *tag;

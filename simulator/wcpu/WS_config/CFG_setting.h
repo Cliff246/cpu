@@ -1,11 +1,11 @@
-#ifndef __WS_CFG_SETTING_HEADER__
-#define __WS_CFG_SETTING_HEADER__
+#ifndef __CFG_SETTING_HEADER__
+#define __CFG_SETTING_HEADER__
 
 #include "IO_parser.h"
 #include <stdint.h>
 
 //temporary
-typedef struct WS_CFG_setting
+typedef struct CFG_setting
 {
 	uint64_t id;
 	uint64_t latency;

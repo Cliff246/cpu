@@ -1,10 +1,9 @@
 #ifndef __WS_CFG_MAP_HEADER__
 #define __WS_CFG_MAP_HEADER__
 
-#include "SIM_channel.h"
 #include "CFG_link.h"
-#include "SIM_commons.h"
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct CFG_context CFG_context_t;
 
@@ -17,7 +16,7 @@ typedef struct CFG_mapelm
 	uint64_t address;
 	uint64_t length;
 	bool pretag;
-	SIM_dtag_t tag;
+	CFG_node_id_t tag;
 
 }CFG_mapelm_t;
 

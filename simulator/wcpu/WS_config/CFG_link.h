@@ -2,8 +2,6 @@
 #define __CFG_LINK_HEADER__
 
 #include "CFG_commons.h"
-#include "SIM_channel.h"
-#include "SIM_commons.h"
 #include <stdint.h>
 #include <sys/types.h>
 
@@ -17,9 +15,9 @@ typedef struct CFG_edge CFG_edge_t;
 typedef struct CFG_link
 {
 	//wire id
-	SIM_wireid_t wireid;
+	CFG_edge_id_t wireid;
 	//channel id
-	SIM_chnlid_t chnlid;
+	CFG_link_id_t chnlid;
 
 	//wirecfg
 	CFG_edge_t *edge;
@@ -31,7 +29,7 @@ typedef struct CFG_link
 
 typedef struct CFG_link_buf
 {
-	SIM_chnlid_t baseid;
+	CFG_link_id_t baseid;
 	uint64_t count;
 	uint64_t alloca;
 	CFG_link_t *cfgs;

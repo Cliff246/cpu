@@ -138,11 +138,7 @@ CFG_map_t *CFG_init_map(CFG_context_t *ctx)
 		exit(EXIT_FAILURE);
 	}
 
-	//SIM_viselm_t *elm =  SIM_get_from_addr_vistable(table, 100);
-	//SIM_print_viselm(elm);
-
 	CFG_print_table_map(table);
-	//SIM_print_vistable_addrmap(table);
 	return table;
 }
 static void CFG_init_tags_map(CFG_map_t *table, CFG_context_t *ctx)

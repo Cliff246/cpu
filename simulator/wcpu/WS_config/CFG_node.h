@@ -21,7 +21,7 @@ typedef struct CFG_node_route
 
 typedef struct CFG_node_route_row
 {
-	SIM_dtag_t tag; //target device identity
+	CFG_node_id_t tag; //target device identity
 	uint64_t size; //size of the valid routes
 	//per valid devconfig
 	CFG_node_route_t *routes; //the routes

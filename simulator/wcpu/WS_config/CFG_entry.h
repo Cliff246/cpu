@@ -9,7 +9,7 @@
 
 
 //this is temporary, and very britle. we can work towards a new config system... on rework
-typedef struct WS_CFG_entry
+typedef struct CFG_entry
 {
 	char *module;
 	uint64_t size;

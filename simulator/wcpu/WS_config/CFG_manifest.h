@@ -1,5 +1,5 @@
-#ifndef __WS_CFG_MANIFEST_HEADER__
-#define __WS_CFG_MANIFEST_HEADER__
+#ifndef __CFG_MANIFEST_HEADER__
+#define __CFG_MANIFEST_HEADER__
 
 #include "CFG_entry.h"
 #include "CFG_setting.h"
@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 
-typedef struct WS_CFG_manifest
+typedef struct CFG_manifest
 {
 	uint64_t size;
 	CFG_entry_t **entries;
