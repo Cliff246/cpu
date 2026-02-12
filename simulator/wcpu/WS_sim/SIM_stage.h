@@ -5,8 +5,7 @@
 #include "SIM_channel.h"
 #include "SIM_device.h"
 #include "SIM_wire.h"
-#include "SIM_context.h"
-#include "SIM_vistable.h"
+#include "CFG_context.h"
 #include <stdint.h>
 
 
@@ -24,7 +23,7 @@ typedef struct WS_SIM_stage
 
 }SIM_stage_t;
 
-SIM_stage_t *SIM_init_stage(SIM_context_t *context);
+SIM_stage_t *SIM_init_stage(CFG_context_t *context);
 
 
 #endif

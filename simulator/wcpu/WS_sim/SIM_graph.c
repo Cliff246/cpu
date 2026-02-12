@@ -9,11 +9,9 @@
 #include "SIM_device.h"
 #include "SIM_mailbox.h"
 #include "SIM_port.h"
-#include "SIM_vistable.h"
 #include "SIM_wire.h"
 #include "SIM_transfer.h"
 #include "SIM_channel.h"
-#include "SIM_context.h"
 #include "SIM_stage.h"
 
 SIM_graph_t *SIM_init_graph(SIM_stage_t *stage)

@@ -4,16 +4,16 @@
 #include "SIM_graph.h"
 #include "OBJ_bundle.h"
 #include "SIM_channel.h"
-#include "SIM_chnlcfg.h"
+#include "CFG_link.h"
 #include "SIM_commons.h"
-#include "SIM_context.h"
+#include "CFG_context.h"
 #include "SIM_device.h"
 #include "SIM_mailbox.h"
 #include "SIM_packet.h"
 #include "SIM_port.h"
 #include "SIM_transfer.h"
 #include "SIM_wire.h"
-#include "SIM_wirecfg.h"
+#include "CFG_edge.h"
 #include "commons.h"
 
 #include <stdlib.h>
@@ -25,7 +25,7 @@
 #include <sys/types.h>
 
 
-void SIM_init_stage_devices(SIM_stage_t *stage, SIM_context_t *context)
+void SIM_init_stage_devices(SIM_stage_t *stage, CFG_context_t *context)
 {
 
 	for(int i = 0; i < stage->devices_count; ++i)
@@ -34,8 +34,7 @@ void SIM_init_stage_devices(SIM_stage_t *stage, SIM_context_t *context)
 	}
 }
 
-
-SIM_stage_t *SIM_init_stage(SIM_context_t *context)
+SIM_stage_t *SIM_init_stage(CFG_context_t *context)
 {
 
 	SIM_stage_t *stage = calloc(1, sizeof(SIM_stage_t));
@@ -55,7 +54,7 @@ SIM_stage_t *SIM_init_stage(SIM_context_t *context)
 	stage->wires = wires;
 	stage->wires_count = wires_count;
 
-	uint64_t channels_count = SIM_get_count_chnlcfg_buf(context->channelbuf);
+	uint64_t channels_count = CFG_get_count_link_buf(context->channelbuf);
 	SIM_channel_t *channels = calloc(channels_count, sizeof(SIM_channel_t));
 	assert(channels);
 

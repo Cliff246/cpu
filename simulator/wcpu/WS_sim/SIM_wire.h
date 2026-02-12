@@ -5,7 +5,7 @@
 #include "SIM_commons.h"
 #include "SIM_port.h"
 #include "SIM_wirerouter.h"
-#include "SIM_wirecfg.h"
+#include "CFG_edge.h"
 #include "SIM_wirering.h"
 #include <SIM_channel.h>
 
@@ -29,7 +29,7 @@ typedef struct WS_SIM_wire
 }SIM_wire_t;
 
 
-bool SIM_init_wire(SIM_wire_t *wire, SIM_wirecfg_t *cfg);
+bool SIM_init_wire(SIM_wire_t *wire, CFG_edge_t *cfg);
 void SIM_print_wire(SIM_wire_t *wire);
 
 //static_assert(OBJ_MAX_CHANNELS == sizeof(uint32_t) * 8, "object max channels must equal 32");

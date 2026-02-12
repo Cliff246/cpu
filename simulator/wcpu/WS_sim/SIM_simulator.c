@@ -1,7 +1,7 @@
 #include "SIM_simulator.h"
 #include "CFG_setting.h"
 #include "IO_configure.h"
-#include "SIM_context.h"
+#include "CFG_context.h"
 #include "SIM_device.h"
 #include "SIM_graph.h"
 #include "SIM_stage.h"
@@ -33,7 +33,7 @@ bool SIM_simulator_load_manifest(SIM_simulator_t *sim, CFG_manifest_t *manifest)
 {
 	assert(sim);
 	assert(manifest);
-	SIM_context_t *context = SIM_init_context(manifest);
+	CFG_context_t *context = CFG_init_context(manifest);
 	if(context == NULL)
 	{
 	assert(context);

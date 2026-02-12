@@ -4,7 +4,7 @@
 #include "MOD_description.h"
 #include "SIM_channel.h"
 #include "SIM_commons.h"
-#include "SIM_devcfg.h"
+#include "CFG_node.h"
 #include "CFG_prototag.h"
 #include "CFG_entry.h"
 #include "SIM_handle.h"
@@ -27,7 +27,7 @@ typedef struct WS_SIM_device
 }SIM_device_t;
 
 
-void SIM_init_device(SIM_device_t *device, SIM_devcfg_t *devctx);
+void SIM_init_device(SIM_device_t *device, CFG_node_t *devctx);
 
 
 

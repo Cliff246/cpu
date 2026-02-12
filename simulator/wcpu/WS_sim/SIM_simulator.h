@@ -4,7 +4,7 @@
 #include "CFG_manifest.h"
 #include "IO_configure.h"
 #include "MOD_description.h"
-#include "SIM_context.h"
+#include "CFG_context.h"
 #include "SIM_device.h"
 #include "SIM_mailbox.h"
 #include "SIM_stage.h"
@@ -18,7 +18,7 @@
 
 typedef struct WS_SIM_simulator
 {
-	SIM_context_t *ctx;
+	CFG_context_t *ctx;
 	SIM_stage_t *stage;
 	SIM_graph_t *graph;
 }SIM_simulator_t;

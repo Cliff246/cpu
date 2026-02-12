@@ -14,8 +14,7 @@
 #include <string.h>
 #include <assert.h>
 
-
-bool SIM_init_wire(SIM_wire_t *wire, SIM_wirecfg_t *cfg)
+bool SIM_init_wire(SIM_wire_t *wire, CFG_edge_t *cfg)
 {
 
 

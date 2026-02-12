@@ -2,7 +2,7 @@
 #include "CFG_entry.h"
 #include "CFG_prototag.h"
 #include "SIM_channel.h"
-#include "SIM_chnlcfg.h"
+#include "CFG_link.h"
 #include "SIM_handle.h"
 #include "TAG_int.h"
 #include "TAG_list.h"
@@ -36,7 +36,7 @@ p_hashtable_t SIM_copy_hashtable(p_hashtable_t old)
 	return copy;
 }
 
-void SIM_init_device(SIM_device_t *device, SIM_devcfg_t *devctx)
+void SIM_init_device(SIM_device_t *device, CFG_node_t *devctx)
 {
 	assert(device);
 
