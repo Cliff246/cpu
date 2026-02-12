@@ -5,8 +5,8 @@
 
 
 start:
-	mem.sp null, null, null, 1000
-	mem.sfp null, null, null, 1000
+	mem.sp nil, nil, nil, 1000
+	mem.sfp nil, nil, nil, 1000
 
 	alu.add a0, zero, zero, mat1
 	alu.add a1, zero, zero, mat2
@@ -14,10 +14,10 @@ start:
 	alu.add a3, zero, zero, 3
 
 
-	jmp.call null, null, null, @mat_mul
+	jmp.call nil, nil, nil, @mat_mul
 
 end:
-	jmp.jmp null, null, null, @end
+	jmp.jmp nil, nil, nil, @end
 
 ;a0 ptr2
 ;a1 ptr1
@@ -25,78 +25,78 @@ end:
 ;a3 mat size
 mat_mul:
 	;push spots
-	mem.push! a0, zero, zero
-	mem.push! a1, zero, zero
-	mem.push! a2, zero, zero
-	mem.push! a3, zero, zero
+	mem.pushw! a0, zero, zero
+	mem.pushw! a1, zero, zero
+	mem.pushw! a2, zero, zero
+	mem.pushw! a3, zero, zero
 	alu.add t10, zero, zero
 
 
 
 	;tix = iterator x
-	alu.add tix, zero, zero
+	alu.add t17, zero, zero
 
 	;t0	= x * size
 	;rx -> t0
 	alu.add t0, zero, zero
 mat_x:
 	;tiy = iterator y
-	alu.add tiy, zero, zero
+	alu.add t18, zero, zero
 mat_y:
 	;tiz = iterator z
-	alu.add tiz, zero, zero
+	alu.add t19, zero, zero
 
 
 
 mat_z:
 
 	;t1 = rx + tiz
-	alu.add t1, t0, tiz
-	mem.ld t3, t1, a0
+	alu.add t1, t0, t19
+	mem.ldw t3, t1, a0
 
 
 	;b[(tiz * size) + tiy)
-	alu.mul t2, tiz, a3
-	alu.add t4, t2, tiy
-	mem.ld t5, t4, a1
+	alu.mul t2, t19, a3
+	alu.add t4, t2, t18
+	mem.ldw t5, t4, a1
 
-	sys.break null, null, null
+	sys.break nil, nil, nil
 
 
 	;dot product result
 	;dot = t5 * t3
 	alu.mul t7, t5, t3
 	;t8 = rx + y
-	alu.add t8, t0, tiy
+	alu.add t8, t0, t18
 
 	;t9 = a2[rx + tiy]
-	mem.ld t9, t8, a2
+	mem.ldw t9, t8, a2
 	;t9 = t9 + dot
 	alu.add t9, t9, t7
 	;a2[t0 + tiy]
-	mem.st! t9, t8, a2
+	mem.stw! t9, t8, a2
 
 
 	;tiz += 1
-	alu.add tiz, tiz, #1
+	alu.add t19, t19, #1
 
 	;loop 1
 	alu.add t10, t10, #1
-	sys.break null, null, null
-	jmp.blt zero, tiz, a3, @mat_z
+	sys.break nil, nil, nil
+	jmp.blt zero, t19, a3, @mat_z
 
 
 	;tiy += 1
-	alu.add tiy, tiy, #1
+	alu.add t18, t18, #1
 
 	;loop 2
-	jmp.blt zero, tiy, a3, @mat_y
+	jmp.blt zero, t18, a3, @mat_y
 	;rx += size
 	alu.add t0, t0, a3
 
-	alu.add tix, tix, #1
+	alu.add t17, t17, #1
 
-	jmp.blt zero, tix, a3, @mat_x
+	jmp.blt zero, t17, a3, @mat_x
 
 
 
@@ -108,10 +108,10 @@ mat_z:
 
 mat_ret:
 
-	mem.pop a3, zero, zero
-	mem.pop a2, zero, zero
-	mem.pop a1, zero, zero
-	mem.pop a0, zero, zero
+	mem.popw a3, zero, zero
+	mem.popw a2, zero, zero
+	mem.popw a1, zero, zero
+	mem.popw a0, zero, zero
 
 
 	jmp.ret zero, zero, zero
