@@ -137,10 +137,10 @@ void *realloc_safe(void *ptr, size_t count, size_t size);
 
 int str_to_bool(char *str);
 
-void logit(char *fmt, size_t line, char *filename, ...);
+void logit(char *fmt, size_t tabs, size_t line, char *filename, ...);
 
 #define DEFAULT_BUFFER 1024
-#define LOG(fmt, ...) logit(fmt, __LINE__, __FILE_NAME__, __VA_ARGS__)
+#define LOG(fmt, tabs, ...) logit(fmt, tabs,__LINE__, __FILE_NAME__, __VA_ARGS__)
 
 extern bool logger_set;
 

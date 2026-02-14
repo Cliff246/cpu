@@ -15,6 +15,8 @@
 #include <string.h>
 #include <sys/types.h>
 
+#define INDEX2(x,y,len) ((len * y) + x)
+
 
 static CFG_node_ctx_t *CFG_init_node_ctx(CFG_manifest_t *manifest, CFG_context_t *context)
 {
@@ -161,14 +163,14 @@ static void CFG_init_stage2_context(CFG_context_t *ctx)
 	assert(wctx_highid < 100 && wctx_highid > 0);
 
 	//map to each wire id
-	CFG_edge_t *map[wctx_count];
+	CFG_edge_t *map[wctx_highid];
 	memset(map, 0, sizeof(CFG_edge_t *) * wctx_count);
 
 
 	for(uint64_t k = 0; k < wctx_count; ++k)
 	{
 		CFG_edge_t *wirecfg = &ctx->wireconfigs->cfgs[k];
-	//	printf("id: %ld\n", wirecfg->id);
+		//printf("id: %ld\n", wirecfg->id);
 		map[wirecfg->id] = wirecfg;
 	}
 
@@ -176,6 +178,8 @@ static void CFG_init_stage2_context(CFG_context_t *ctx)
 	{
 		CFG_link_t *cfg =  CFG_get_index_link_buf(ctx->channelbuf, i);
 		assert(cfg->devcfg != NULL);
+		//printf("%d\n", cfg->wireid);
+		assert(map[cfg->wireid] != NULL && "node had attached wire that waas not initalized");
 		cfg->edge = map[cfg->wireid];
 		assert(cfg->edge->id == cfg->wireid);
 		CFG_edge_id_t cid = cfg->chnlid;
@@ -208,7 +212,7 @@ static void CFG_init_stage3_context(CFG_context_t *ctx)
 		//the current device
 		CFG_node_t *active = &ctx->deviceconfigs->cfgs[k];
 		//init the routetable
-		CFG_init_routetable_node(active, devcount, dtags);
+		CFG_init_routetable_node(active, devcount, dtags, wirecount);
 
 
 	}
@@ -242,58 +246,24 @@ static void CFG_init_stage4_context(CFG_context_t *ctx)
 	}
 
 
-	printf("wireid: ");
-	for(uint64_t head = 0; head < wirecfg_count; ++head)
-	{
-		printf("%ld ", head);
-	}
-	printf("\n");
-	for(int a = 0; a < devcfg_count; ++a)
-	{
-		printf("%c:\t", a + 'a');
-		for(uint64_t b = 0; b <wirecfg_count; ++b)
-		{
-			printf("%d ", dev_wire_seen[a][b]);
-		}
-		printf("\n");
-	}
-
-	printf("\n");
 
 
-	printf("devid:  ");
-	for(uint64_t head1 = 0; head1 < devcfg_count; ++head1)
-	{
-		printf("%c ", head1 + 'a');
-	}
-	printf("\n");
-	for(int a = 0; a < wirecfg_count; ++a)
-	{
-		printf("%d:\t", a);
-		for(uint64_t b = 0; b <devcfg_count; ++b)
-		{
-			printf("%d ", wire_dev_seen[a][b]);
-		}
-		printf("\n");
-	}
-	printf("\n");
 
+	uint64_t *distances = calloc(devcfg_count * devcfg_count, sizeof(uint64_t));
+	uint64_t *wire_dist = calloc(wirecfg_count, sizeof(uint64_t));
+
+	int32_t *first_wire_to_dev = calloc(devcfg_count, sizeof(int32_t));
+	int32_t *first_wire_to_wire = calloc(wirecfg_count, sizeof(int32_t));
 	//FOR EACH SOURCE
 	for(uint64_t s = 0; s < devcfg_count; ++s)
 	{
+		uint64_t *dev_dist = distances + (s * devcfg_count);
+		memset(dev_dist,  0xfffffff, sizeof(uint64_t) * devcfg_count);
+		memset(wire_dist, 0xffffffff, sizeof(uint64_t) * wirecfg_count);
 
-		uint64_t dev_dist[devcfg_count];
-		uint64_t wire_dist[wirecfg_count];
-		memset(dev_dist, 0xffffffff, sizeof(dev_dist));
-		memset(wire_dist, 0xffffffff, sizeof(wire_dist));
 
-		//this needs to be 2d
-		int32_t first_wire_to_dev[devcfg_count];
-		//
-		int32_t first_wire_to_wire[wirecfg_count];
-
-		memset(first_wire_to_dev, 0xffff, sizeof(first_wire_to_dev));
-		memset(first_wire_to_wire, 0xffff, sizeof(first_wire_to_wire));
+		memset(first_wire_to_dev, 0xffff, sizeof(int32_t) * devcfg_count);
+		memset(first_wire_to_wire, 0xffff, sizeof(int32_t) * wirecfg_count);
 
 		dev_dist[s] = 0;
 		//SET ANYTHING THAT'S IMMEDATELY SEEABLE AND MAKE IT WRITEABLE
@@ -306,24 +276,12 @@ static void CFG_init_stage4_context(CFG_context_t *ctx)
 				first_wire_to_wire[w] = w;
 			}
 		}
+
 		bool changed = true;
 		while(changed)
 		{
+
 			changed = false;
-			for(uint64_t w2 = 0; w2 < wirecfg_count; ++w2)
-			{
-				if(wire_dist[w2] > 100000) continue;
-				for(uint64_t d2 = 0; d2 < devcfg_count; ++d2)
-				{
-					if(!wire_dev_seen[w2][d2]) continue;
-					if(wire_dist[w2] < dev_dist[d2])
-					{
-						dev_dist[d2] = wire_dist[w2];
-            			first_wire_to_dev[d2] = first_wire_to_wire[w2];
-              			changed = true;
-					}
-				}
-			}
 
 			for(uint64_t d1 = 0; d1 < devcfg_count; ++d1)
 			{
@@ -336,45 +294,99 @@ static void CFG_init_stage4_context(CFG_context_t *ctx)
 					if(cost < wire_dist[w1])
 					{
 						wire_dist[w1] = cost;
-            			first_wire_to_wire[w1] = (d1 == s) ? w1 : first_wire_to_dev[d1];
+
+						uint64_t tmp = (d1 == s) ? w1 : first_wire_to_dev[d1];
+            			first_wire_to_wire[w1] = tmp;
               			changed = true;
 					}
 				}
 			}
-		}
+			//printf("\n");
 
-		CFG_node_t *src = &ctx->deviceconfigs->cfgs[s];
-		printf("first wire to dev\n");
-		for(uint64_t pfwtd = 0; pfwtd < devcfg_count; ++pfwtd)
-		{
-			printf("%d ", first_wire_to_dev[pfwtd]);
-		}
-		printf("\n");
-
-		printf("first wire to wire\n");
-		for(uint64_t pfwtw = 0; pfwtw < wirecfg_count; ++pfwtw)
-		{
-			printf("%d ", first_wire_to_wire[pfwtw]);
-		}
-		printf("\n");
-
-		for (uint64_t d = 0; d < devcfg_count; ++d)
-		{
-    		if (d == s) continue;
-    		if (first_wire_to_dev[d] < 0) continue; // unreachable
-
-    		CFG_node_route_t route =
+			//w2
+			for(uint64_t w2 = 0; w2 < wirecfg_count; ++w2)
 			{
-        		.latency = dev_dist[d],
-        		.wire    = (CFG_edge_id_t)first_wire_to_dev[d]
-    		};
 
-    		CFG_append_route_node(src, d, route);
+				if(wire_dist[w2] > 100000) continue;
+				for(uint64_t d2 = 0; d2 < devcfg_count; ++d2)
+				{
+					//check if the wire is seen by the device
+					if(!wire_dev_seen[w2][d2]) continue;
+					if(wire_dist[w2] < dev_dist[d2])
+					{
+						dev_dist[d2] = wire_dist[w2];
+            			first_wire_to_dev[d2] = first_wire_to_wire[w2];
+              			changed = true;
+					}
+				}
+			}
+
+
 		}
-		printf("\n");
+
+
 	}
 
+	for(uint64_t a = 0; a < devcfg_count; ++a)
+	{
 
+		CFG_node_t *src = &ctx->deviceconfigs->cfgs[a];
+
+		for(uint64_t b = 0; b < wirecfg_count; ++b)
+		{
+
+			if(!dev_wire_seen[a][b])
+			{
+				continue;
+			}
+			//for this wire
+			int32_t lowest_cost[devcfg_count];
+			memset(lowest_cost, 0xff, sizeof(lowest_cost));
+
+			//lowest cost distance on the wire
+
+			//check each device if it's distance is less than the lowest_cost
+			for(uint64_t c = 0; c < devcfg_count; ++c)
+			{
+				if(!wire_dev_seen[b][c]) continue;
+				if(c == a) continue;
+				uint64_t *row = distances + (c * devcfg_count);
+
+				for(uint64_t d = 0; d < devcfg_count; ++d)
+				{
+					if(d == a) continue;
+					if( row[d] < lowest_cost[d])
+						 lowest_cost[d] = row[d];
+				}
+
+
+			}
+
+			for(uint64_t e = 0; e < devcfg_count; ++e)
+			{
+				if(e == a) continue;
+				if(lowest_cost[e] > 100000) continue;
+				CFG_edge_t *wire = &ctx->wireconfigs->cfgs[b];
+
+				CFG_node_route_t route =
+				{
+        			.latency = lowest_cost[e] + wire->latency,
+        			.wire    = wire->id,
+					.index = b
+    			};
+	    		CFG_append_route_node(src, e, route);
+			}
+
+		}
+
+
+
+	}
+
+	free(distances);
+	free(wire_dist);
+	free(first_wire_to_dev);
+	free(first_wire_to_wire);
 
 
 

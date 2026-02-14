@@ -130,7 +130,7 @@ typedef enum fmt_type
 }fmt_type_t;
 bool logger_set = true;
 
-void logit(char *fmt, size_t line, char *filename, ...)
+void logit(char *fmt, size_t tabs, size_t line, char *filename, ...)
 {
 	if(logger_set == false)
 	{

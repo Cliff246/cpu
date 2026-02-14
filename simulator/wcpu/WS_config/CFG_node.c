@@ -12,6 +12,7 @@
 #include <stdalign.h>
 #include <stdint.h>
 #include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 
@@ -178,7 +179,7 @@ CFG_node_id_t CFG_has_pretag_node(CFG_node_t *node)
 }
 
 //init route table
-void CFG_init_routetable_node(CFG_node_t *node, uint64_t tags_size, CFG_node_id_t *ids)
+void CFG_init_routetable_node(CFG_node_t *node, uint64_t tags_size, CFG_node_id_t *ids, uint64_t edge_size)
 {
 	assert(tags_size > 1);
 	assert(ids);
@@ -191,7 +192,9 @@ void CFG_init_routetable_node(CFG_node_t *node, uint64_t tags_size, CFG_node_id_
 	for(uint64_t i = 0; i < tags_size; ++i)
 	{
 		rtags[i].size = 0;
-		rtags[i].routes = NULL;
+		CFG_node_route_t *routes = calloc(edge_size, sizeof(CFG_node_route_t));
+		assert(routes);
+		rtags[i].routes = routes;
 		rtags[i].tag = ids[i];
 	}
 
@@ -206,9 +209,27 @@ void CFG_append_route_node(CFG_node_t *node, uint64_t index, CFG_node_route_t ro
 	assert(node->done.init_routetable == true);
 	CFG_node_route_row_t *tag = &node->routetable.tags[index];
 	assert(tag->tag != node->pretag && "don't append a route to the devcfg row");
-	printf("route[%ld]: latency:%ld wireid:%ld\n",index, route.latency, route.wire);
-	CFG_node_route_t *routes = realloc_safe(tag->routes, tag->size + 1, sizeof(CFG_node_route_t));
-	routes[tag->size++] = route;
-	tag->routes = routes;
+	tag->routes[tag->size++] = route;
 
+}
+
+void CFG_print_node(CFG_node_t *node)
+{
+	printf("node: %s\n",node->module);
+
+
+	if(node->done.init_routetable)
+	{
+		for(uint64_t i = 0; i < node->routetable.tags_size; ++i)
+		{
+			CFG_node_route_row_t *row = &node->routetable.tags[i];
+
+			for(uint64_t k = 0; k < row->size; ++k)
+			{
+				CFG_node_route_t *route = &row->routes[k];
+				printf("route[%ld]: latency:%ld wireid:%ld index:%ld\n", k, route->latency, route->wire, route->latency);
+			}
+		}
+
+	}
 }

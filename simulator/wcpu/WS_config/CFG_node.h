@@ -11,11 +11,13 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdalign.h>
+#include <sys/types.h>
 
 
 typedef struct CFG_node_route
 {
 	uint64_t latency;
+	uint64_t index;
 	CFG_edge_id_t wire;
 }CFG_node_route_t;
 
@@ -72,9 +74,9 @@ bool CFG_has_address_range_node(CFG_node_t *node);
 
 uint64_t CFG_get_address_size_node(CFG_node_t *node);
 CFG_node_id_t CFG_has_pretag_node(CFG_node_t *node);
-void CFG_init_routetable_node(CFG_node_t *node, uint64_t tags_size, CFG_node_id_t *ids);
+void CFG_init_routetable_node(CFG_node_t *node, uint64_t tags_size, CFG_node_id_t *ids, uint64_t edge_size);
 void CFG_append_route_node(CFG_node_t *node, uint64_t index, CFG_node_route_t route);
-
+void CFG_print_node(CFG_node_t *node);
 
 
 

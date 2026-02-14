@@ -72,12 +72,9 @@ CFG_prototag_t *CFG_init_entry_tag(IO_pnode_t *head)
 		CFG_prototag_t *prototag = NULL;
 		if(n1_tok->type == TOK_INT)
 		{
-
 			int64_t integer = atoi(n1_tok->token);
 
 			prototag = CFG_init_prototag_int(key, integer);
-
-
 		}
 		else if(n1_tok->type == TOK_STRING)
 		{

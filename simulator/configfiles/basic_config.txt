@@ -1,7 +1,7 @@
 "libsim_dev_ram" :
 	{
 		NAME = "A"
-		WIRE [0, 1, 4]
+		WIRE [0, 10, 4, 5]
 		BASE = 0
 		SIZE = 2000
 		FILENAME = "a.bin"
@@ -10,7 +10,7 @@
 	{
 		PRETAG = 3
 		NAME = "B"
-		WIRE [0,1,2,3,5,6]
+		WIRE [0,10,2,3,5,6]
 		BASE = 2001
 		SIZE = 3000
 	}
@@ -32,10 +32,10 @@
 
 
 (wire 0 = 1 10)
-(wire 1 = 2 10)
-(wire 2 = 3 10)
-(wire 3 = 4 10)
-(wire 4 = 5 10)
-(wire 5 = 6 10)
-(wire 6 = 7 10)
-(wire 7 = 8 10)
+(wire 10 = 1 10)
+(wire 2 = 1 10)
+(wire 3 = 1 10)
+(wire 4 = 1 10)
+(wire 5 = 1 10)
+(wire 6 = 1 10)
+(wire 7 = 1 10)

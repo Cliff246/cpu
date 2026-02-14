@@ -23,8 +23,8 @@ typedef struct CFG_edge
 
 
 void CFG_init_edge(CFG_edge_t *edge, CFG_edge_id_t id, uint64_t latency, uint64_t throughput);
+void CFG_print_edge(CFG_edge_t *edge);
 
-void CFG_print_edge(CFG_edge_t *wireconfig);
 void CFG_append_edge(CFG_edge_t  *wireconfig, CFG_node_id_t cid);
 
 

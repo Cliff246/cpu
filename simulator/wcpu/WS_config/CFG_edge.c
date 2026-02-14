@@ -15,20 +15,21 @@ void CFG_init_edge(CFG_edge_t *edge, CFG_edge_id_t id, uint64_t latency, uint64_
 	edge->throughput = throughput;
 	edge->done.added_channels = false;
 }
-void CFG_print_edge(CFG_edge_t *wireconfig)
+void CFG_print_edge(CFG_edge_t *edge)
 {
 
 
-	printf("wirecfg <id: %ld latency: %ld throughput:%ld>\n", wireconfig->id, wireconfig->latency, wireconfig->throughput);
-	if(wireconfig->done.added_channels == true)
+	printf("edge: <id: %ld latency: %ld throughput:%ld>\n", edge->id, edge->latency, edge->throughput);
+	if(edge->done.added_channels == true)
 	{
-		for(uint64_t i = 0; i < wireconfig->channels_count; ++i)
+		for(uint64_t i = 0; i < edge->channels_count; ++i)
 		{
-			printf("cid: %ld\n", wireconfig->channels[i]);
+			printf("cid: %ld\n", edge->channels[i]);
 		}
 	}
 	printf("\n");
 }
+
 void CFG_append_edge(CFG_edge_t  *wireconfig, CFG_node_id_t cid)
 {
 	wireconfig->done.added_channels = true;
