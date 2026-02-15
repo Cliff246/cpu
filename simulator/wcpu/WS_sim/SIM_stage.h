@@ -9,6 +9,8 @@
 #include <stdint.h>
 
 
+
+
 typedef struct WS_SIM_stage
 {
 	uint32_t devices_count;

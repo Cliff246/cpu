@@ -7,9 +7,11 @@
 
 typedef struct RES_pool
 {
-	uint64_t size;
-	RES_resource_t **resources;
+	uint64_t pool_size;
+	RES_resrc_t **pool;
 
+	uint64_t id_map_size;
+	uint64_t *id_map;
 }RES_pool_t;
 
 #endif

@@ -79,8 +79,10 @@ void RUN_add_to_pool_rr(RUN_pool_t *pool, RUN_wireid_t wire_id, RUN_chnlid_t chn
 	own->stop = offset;
 }
 
+//round robin init to do
 void RUN_init_pool_rr(RUN_pool_t *pool, const SIM_stage_t *stage)
 {
+	assert(0 && "TODO");
 
 }
 
@@ -98,11 +100,13 @@ RUN_chnl_t *RUN_get_chnl_pool_chnl_wire(RUN_pool_t *pool, RUN_wireid_t id, uint1
 void RUN_init_pool_chnl(RUN_pool_t *pool, const SIM_stage_t *stage)
 {
 
+	assert(0 && "TODO");
 }
 
 
 void RUN_init_pool_obj(RUN_pool_t *pool, const SIM_stage_t *stage)
 {
+	assert(0 && "TODO");
 
 }
 

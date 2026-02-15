@@ -5,6 +5,7 @@
 #include "IO_configure.h"
 #include "MOD_description.h"
 #include "CFG_context.h"
+#include "RES_pool.h"
 #include "RUN_graph.h"
 #include "SIM_device.h"
 #include "SIM_stage.h"
@@ -18,6 +19,7 @@ typedef struct WS_SIM_simulator
 	CFG_context_t *ctx;
 	SIM_stage_t *stage;
 	RUN_graph_t *graph;
+	RES_pool_t *pool;
 }SIM_simulator_t;
 
 // WS_dev_t *SIM_simulator_t_get_device_from_id(SIM_simulator_t_t *sim,

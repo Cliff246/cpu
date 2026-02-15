@@ -16,6 +16,7 @@ void RUN_channel_init(RUN_chnl_t *channel, uint32_t wcid, uint32_t cid, uint32_t
 bool RUN_channel_get_has_packet(RUN_chnl_t *channel)
 {
 	assert(channel);
+	return NULL;
 
 }
 
@@ -23,7 +24,7 @@ bool RUN_channel_get_has_packet(RUN_chnl_t *channel)
 bool RUN_channel_get_output(RUN_chnl_t *channel)
 {
 	assert(channel);
-
+	return NULL;
 }
 
 

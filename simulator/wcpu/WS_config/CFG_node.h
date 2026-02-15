@@ -45,10 +45,8 @@ typedef struct CFG_node
 	char *module;
 	uint64_t chnlids_size;
 	CFG_link_id_t *chnlids;
-	bool has_address;
 	uint64_t address;
 	uint64_t length;
-	bool has_pretag;
 	CFG_node_id_t pretag;
 	CFG_node_route_table_t routetable;
 	struct
@@ -56,6 +54,8 @@ typedef struct CFG_node
 		bool init_routetable;
 		bool finished;
 	}done;
+	bool has_pretag;
+	bool has_address;
 
 }CFG_node_t;
 

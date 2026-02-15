@@ -5,11 +5,12 @@
 #include "RES_resource.h"
 #include "OBJ_vtable.h"
 #include "SIM_device.h"
+#include "RES_interface.h"
 
 typedef struct RUN_object
 {
 	OBJ_vtable_t vtable;
-	RES_pool_t *pool;
+	RES_itrfc_t *interface;
 	SIM_device_t *device;
 }RUN_obj_t;
 

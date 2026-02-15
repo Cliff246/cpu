@@ -2,6 +2,7 @@
 #define __WS_SIM_DEVICE_HEADER__
 
 #include "MOD_description.h"
+#include "RES_interface.h"
 #include "RES_pool.h"
 #include "SIM_commons.h"
 #include "CFG_node.h"
@@ -24,7 +25,7 @@ typedef struct WS_SIM_device
 	//the index of the device
 	SIM_did_t id;
 	SIM_handle_t *handle;
-	RES_pool_t *pool;
+	RES_itrfc_t *interface;
 }SIM_device_t;
 
 
