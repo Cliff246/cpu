@@ -5,6 +5,7 @@
 #include "RUN_commons.h"
 #include "RUN_object.h"
 #include "RUN_packet.h"
+#include "SIM_stage.h"
 #include <stdint.h>
 
 typedef struct RUN_pool RUN_pool_t;
@@ -33,7 +34,7 @@ typedef struct RUN_pool_ring
 //TODO
 
 //the packet ring's for wires pool
-void RUN_init_pool_ring(RUN_pool_t *pool_ring, uint64_t size);
+void RUN_init_pool_ring(RUN_pool_t *pool, const SIM_stage_t *stage);
 
 //getst the index of a packet raw
 RUN_pkt_t *RUN_get_pkt_pool_ring(RUN_pool_t *pool, RUN_wireid_t id, uint16_t index);
@@ -69,7 +70,7 @@ typedef struct RUN_pool_roundrobin
 }RUN_pool_rr_t;
 
 //TODO
-void RUN_init_pool_rr(RUN_pool_t *pool, uint64_t size);
+void RUN_init_pool_rr(RUN_pool_t *pool, const SIM_stage_t *stage);
 
 //returns -1 on nothing, advances the round robin up one and sets the start and stop correctly
 RUN_chnlid_t RUN_get_next_pool_rr(RUN_pool_t *pool, RUN_wireid_t wire_id);
@@ -115,7 +116,7 @@ typedef struct RUN_pool_channel
 	RUN_chnl_t *chnls;
 }RUN_pool_chnl_t;
 
-void RUN_init_pool_chnl(RUN_pool_t *pool, uint64_t size);
+void RUN_init_pool_chnl(RUN_pool_t *pool, const SIM_stage_t *stage);
 
 RUN_chnl_t *RUN_get_chnl_pool_chnl_obj(RUN_pool_t *pool, RUN_objid_t id, uint16_t index);
 RUN_chnl_t *RUN_get_chnl_pool_chnl_wire(RUN_pool_t *pool, RUN_wireid_t id, uint16_t index);
@@ -129,11 +130,12 @@ typedef struct RUN_pool_object
 }RUN_pool_obj_t;
 
 //TODO
-void RUN_init_pool_obj(RUN_pool_t *pool, uint64_t size);
+void RUN_init_pool_obj(RUN_pool_t *pool, const SIM_stage_t *stage);
 
 //the central pool for all runtime components
 typedef struct RUN_pool
 {
+	bool allocated;
     uint8_t *arena;
     uint64_t arena_size;
     uint64_t arena_offset;
@@ -145,8 +147,12 @@ typedef struct RUN_pool
 
 }RUN_pool_t;
 
+//pool section
+void RUN_alloc_pool(RUN_pool_t *pool);
+void RUN_build_pool(RUN_pool_t *pool, const SIM_stage_t *stage);
 
-void RUN_init_pool(RUN_pool_t *pool);
+void *RUN_alloc_arena_pool(RUN_pool_t *pool, uint64_t size);
+
 
 
 #endif

@@ -53,7 +53,13 @@ bool SIM_simulator_init_stage(SIM_simulator_t *sim)
 
 bool SIM_alloc_graph(SIM_simulator_t *sim)
 {
-	sim->graph = RUN_alloc_graph(sim->stage);
+	RUN_graph_t *graph = calloc(1, sizeof(RUN_graph_t));
+	assert(graph);
+
+	graph->stage = sim->stage;
+
+	RUN_alloc_graph(graph);
+	sim->graph = graph;
 	assert(sim->graph);
 	return true;
 }

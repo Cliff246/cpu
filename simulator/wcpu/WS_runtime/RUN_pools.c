@@ -1,11 +1,15 @@
 #include "RUN_pools.h"
 #include "RUN_packet.h"
 #include <assert.h>
+#include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 
-void RUN_init_pool_ring(RUN_pool_t *pool_ring, uint64_t size)
+
+void RUN_init_pool_ring(RUN_pool_t *pool, const SIM_stage_t *stage)
 {
+	RUN_pool_ring_t *ring = &pool->pool_ring;
+
 
 }
 
@@ -75,12 +79,69 @@ void RUN_add_to_pool_rr(RUN_pool_t *pool, RUN_wireid_t wire_id, RUN_chnlid_t chn
 	own->stop = offset;
 }
 
+void RUN_init_pool_rr(RUN_pool_t *pool, const SIM_stage_t *stage)
+{
+
+}
 
 RUN_chnl_t *RUN_get_chnl_pool_chnl_obj(RUN_pool_t *pool, RUN_objid_t id, uint16_t index)
 {
-	
+	assert(0 && "TODO");
 }
+
 RUN_chnl_t *RUN_get_chnl_pool_chnl_wire(RUN_pool_t *pool, RUN_wireid_t id, uint16_t index)
 {
+	assert(0 && "TODO");
 
+}
+
+void RUN_init_pool_chnl(RUN_pool_t *pool, const SIM_stage_t *stage)
+{
+
+}
+
+
+void RUN_init_pool_obj(RUN_pool_t *pool, const SIM_stage_t *stage)
+{
+
+}
+
+
+void RUN_alloc_pool(RUN_pool_t *pool)
+{
+	pool->arena_size = INT16_MAX * 1024;
+	pool->arena_size = (pool->arena_size + 63) & ~63ULL;
+
+	pool->arena_offset = 0;
+	pool->arena_offset = (pool->arena_offset + 63) & ~63ULL;
+
+	pool->arena = aligned_alloc(64, pool->arena_size);
+	pool->allocated = true;
+	printf("alloc pool\n");
+	assert(pool->arena != NULL);
+}
+
+void RUN_build_pool(RUN_pool_t *pool, const SIM_stage_t *stage)
+{
+	assert(pool->allocated && "pool must be allocated");
+	RUN_init_pool_obj(pool,stage);
+	RUN_init_pool_rr(pool, stage);
+	RUN_init_pool_ring(pool, stage);
+	RUN_init_pool_chnl(pool, stage);
+}
+
+void *RUN_alloc_arena_pool(RUN_pool_t *pool, uint64_t size)
+{
+	assert(pool->allocated && "pool must be allocated");
+    size_t off = (pool->arena_offset + 63) & ~((size_t)63);
+
+    if(off + size > pool->arena_size)
+	{
+		assert(0 && "arena alloic failed");
+        return NULL;
+	}
+    void *ptr = pool->arena + off;
+    pool->arena_offset = off + size;
+
+    return ptr;
 }

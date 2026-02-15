@@ -1,36 +1,59 @@
 #include "RUN_graph.h"
+#include "RUN_addrtbl.h"
+#include "RUN_idmap.h"
+#include "RUN_pools.h"
 #include "SIM_stage.h"
 #include <assert.h>
+#include <stdint.h>
 #include <stdlib.h>
 
-void RUN_generate_graph_idmap(RUN_graph_t *graph, SIM_stage_t *stage)
+
+//-------------------------------------------------------
+//
+//	ALLOC STAGE
+//
+//-------------------------------------------------------
+
+
+bool RUN_alloc_graph_idmap(RUN_graph_t *graph)
 {
-	SIM_dtag_t dtags[stage->devices_count];
-	SIM_did_t did[stage->devices_count];
-	for(uint64_t i = 0; i < stage->devices_count; ++i)
-	{
-		SIM_device_t *dev = &stage->devices[i];
-		dtags[i] = dev->tag;
-		did[i] = dev->id;
-	}
-	RUN_init_idmap(&graph->idmap ,dtags, did, stage->devices_count);
+	const SIM_stage_t *stage = graph->stage;
+
+	RUN_alloc_idmap(&graph->idmap ,stage->devices_count);
+
+
+	return true;
 
 }
 
-void RUN_generate_graph_pool(RUN_graph_t *graph, SIM_stage_t *stage)
+bool RUN_alloc_graph_pool(RUN_graph_t *graph)
 {
+	const SIM_stage_t *stage = graph->stage;
+
+	RUN_alloc_pool(&graph->pool);
+
+	return true;
 
 }
 
-RUN_graph_t *RUN_alloc_graph(SIM_stage_t *stage)
+bool  RUN_alloc_graph_addrtbl(RUN_graph_t *graph)
 {
-	RUN_graph_t *graph = calloc(1, sizeof(RUN_graph_t));
-	assert(graph);
+	const SIM_stage_t *stage = graph->stage;
+	uint64_t tmp = 0;
+	assert(tmp != 0);
+	RUN_alloc_addrtbl(&graph->addrtbl, tmp);
 
+	return true;
 
-	RUN_generate_graph_idmap(graph, stage);
+}
 
+bool  RUN_alloc_graph(RUN_graph_t *graph)
+{
+	const SIM_stage_t *stage = graph->stage;
 
+	RUN_alloc_graph_idmap(graph);
+	RUN_alloc_graph_pool(graph);
+	RUN_alloc_graph_addrtbl(graph);
 
 
 	/*
@@ -39,11 +62,67 @@ RUN_graph_t *RUN_alloc_graph(SIM_stage_t *stage)
 
 	printf("idmap[%lu]=%ld\n", stage->devices[1].tag, RUN_get_did_idmap(graph->idmap, stage->devices[1].tag));
 	*/
+	return true;
+
 }
+
+//-------------------------------------------------------
+//
+//	BUILD STAGE
+//
+//-------------------------------------------------------
+
+
+
+
+
+bool RUN_build_graph_idmap(RUN_graph_t *graph)
+{
+	const SIM_stage_t *stage = graph->stage;
+
+	SIM_dtag_t dtags[stage->devices_count];
+	SIM_did_t did[stage->devices_count];
+	for(uint64_t i = 0; i < stage->devices_count; ++i)
+	{
+		SIM_device_t *dev = &stage->devices[i];
+		dtags[i] = dev->tag;
+		did[i] = dev->id;
+	}
+	RUN_build_idmap(&graph->idmap, dtags, did, stage->devices_count);
+
+	return true;
+
+}
+
+bool RUN_build_graph_pool(RUN_graph_t *graph)
+{
+	const SIM_stage_t *stage = graph->stage;
+
+	RUN_build_pool(&graph->pool, graph->stage);
+
+	return true;
+
+}
+
+bool RUN_build_graph_addrtbl(RUN_graph_t *graph)
+{
+	const SIM_stage_t *stage = graph->stage;
+
+	RUN_build_addrtbl(&graph->addrtbl, graph->stage);
+
+	return true;
+
+}
+
 
 bool RUN_build_graph(RUN_graph_t *graph)
 {
 
+	RUN_build_graph_idmap(graph);
+	RUN_build_graph_pool(graph);
+	RUN_build_graph_addrtbl(graph);
+
+	return true;
 }
 
 

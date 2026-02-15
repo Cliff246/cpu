@@ -3,7 +3,7 @@
 
 typedef struct RES_resource
 {
-
+	int a;
 }RES_resource_t;
 
 #endif
