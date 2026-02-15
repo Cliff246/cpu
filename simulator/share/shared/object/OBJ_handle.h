@@ -8,16 +8,10 @@
 
 
 //ownns subhandles in the object
-typedef struct WS_OBJ_handle
+typedef struct WS_OBJ_hnd
 {
-	//simulator id
-	int sid;
-	//object id
-	int oid;
-	//handle id
-	int hid;
-	//context id;
-	int cid;
-}OBJ_handle_t;
+	uint16_t bundle_max_msgs;
+	uint16_t msgs_size;
+}OBJ_hnd_t;
 
 #endif

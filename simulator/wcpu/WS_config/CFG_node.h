@@ -77,7 +77,7 @@ CFG_node_id_t CFG_has_pretag_node(CFG_node_t *node);
 void CFG_init_routetable_node(CFG_node_t *node, uint64_t tags_size, CFG_node_id_t *ids, uint64_t edge_size);
 void CFG_append_route_node(CFG_node_t *node, uint64_t index, CFG_node_route_t route);
 void CFG_print_node(CFG_node_t *node);
-
+CFG_node_id_t CFG_generate_tag(CFG_node_t *node);
 
 
 #endif

@@ -1,27 +1,53 @@
-
-#include <assert.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include "SIM_graph.h"
-#include "SIM_commons.h"
-#include "SIM_device.h"
-#include "SIM_mailbox.h"
-#include "SIM_port.h"
-#include "SIM_wire.h"
-#include "SIM_transfer.h"
-#include "SIM_channel.h"
+#include "RUN_graph.h"
 #include "SIM_stage.h"
+#include <assert.h>
+#include <stdlib.h>
 
-SIM_graph_t *SIM_init_graph(SIM_stage_t *stage)
+void RUN_generate_graph_idmap(RUN_graph_t *graph, SIM_stage_t *stage)
 {
-	SIM_graph_t *graph =calloc(1, sizeof(SIM_graph_t));
+	SIM_dtag_t dtags[stage->devices_count];
+	SIM_did_t did[stage->devices_count];
+	for(uint64_t i = 0; i < stage->devices_count; ++i)
+	{
+		SIM_device_t *dev = &stage->devices[i];
+		dtags[i] = dev->tag;
+		did[i] = dev->id;
+	}
+	RUN_init_idmap(&graph->idmap ,dtags, did, stage->devices_count);
+
+}
+
+void RUN_generate_graph_pool(RUN_graph_t *graph, SIM_stage_t *stage)
+{
+
+}
+
+RUN_graph_t *RUN_alloc_graph(SIM_stage_t *stage)
+{
+	RUN_graph_t *graph = calloc(1, sizeof(RUN_graph_t));
 	assert(graph);
 
 
-	return graph;
+	RUN_generate_graph_idmap(graph, stage);
+
+
+
+
+	/*
+
+
+
+	printf("idmap[%lu]=%ld\n", stage->devices[1].tag, RUN_get_did_idmap(graph->idmap, stage->devices[1].tag));
+	*/
 }
+
+bool RUN_build_graph(RUN_graph_t *graph)
+{
+
+}
+
+
+
 
 /*
 

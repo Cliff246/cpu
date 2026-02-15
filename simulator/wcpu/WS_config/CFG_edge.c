@@ -27,7 +27,6 @@ void CFG_print_edge(CFG_edge_t *edge)
 			printf("cid: %ld\n", edge->channels[i]);
 		}
 	}
-	printf("\n");
 }
 
 void CFG_append_edge(CFG_edge_t  *wireconfig, CFG_node_id_t cid)

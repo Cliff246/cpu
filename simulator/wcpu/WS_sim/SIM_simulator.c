@@ -2,8 +2,8 @@
 #include "CFG_setting.h"
 #include "IO_configure.h"
 #include "CFG_context.h"
+#include "RUN_graph.h"
 #include "SIM_device.h"
-#include "SIM_graph.h"
 #include "SIM_stage.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -51,9 +51,16 @@ bool SIM_simulator_init_stage(SIM_simulator_t *sim)
 	return true;
 }
 
-bool SIM_simulator_build_graph(SIM_simulator_t *sim)
+bool SIM_alloc_graph(SIM_simulator_t *sim)
 {
-	sim->graph = SIM_init_graph(sim->stage);
+	sim->graph = RUN_alloc_graph(sim->stage);
+	assert(sim->graph);
+	return true;
+}
+
+bool SIM_build_graph(SIM_simulator_t *sim)
+{
+	RUN_build_graph(sim->graph);
 	return true;
 }
 

@@ -1,5 +1,6 @@
 set(WS_RES_CFILES
 	${CMAKE_CURRENT_SOURCE_DIR}/RES_commons.c
+	${CMAKE_CURRENT_SOURCE_DIR}/RES_resource.c
 
 )
 

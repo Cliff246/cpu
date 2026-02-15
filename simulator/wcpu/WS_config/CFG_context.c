@@ -63,7 +63,7 @@ static CFG_edge_ctx_t *CFG_init_edge_ctx(CFG_manifest_t *manifest, CFG_context_t
 
 		CFG_init_edge(&cfglist[i], setting->id, setting->latency,setting->throughput);
 		cfgctx->highestid = MAX(setting->id, cfgctx->highestid);
-		CFG_print_edge(&cfglist[i]);
+		//CFG_print_edge(&cfglist[i]);
 	}
 
 	cfgctx->count = size;
@@ -389,7 +389,6 @@ static void CFG_init_stage4_context(CFG_context_t *ctx)
 	free(first_wire_to_wire);
 
 
-
 }
 CFG_context_t *CFG_init_context(CFG_manifest_t *manifest)
 {
@@ -399,6 +398,10 @@ CFG_context_t *CFG_init_context(CFG_manifest_t *manifest)
 	CFG_init_stage2_context(ctx);
 	CFG_init_stage3_context(ctx);
 	CFG_init_stage4_context(ctx);
+	for(uint64_t k = 0; k < ctx->deviceconfigs->count; ++k)
+	{
+		CFG_print_node(&ctx->deviceconfigs->cfgs[k]);
+	}
 
 
 	return ctx;
@@ -433,3 +436,10 @@ void CFG_free_context(CFG_context_t *context)
 	free(context);
 }
 
+CFG_node_id_t CFG_generate_tag(CFG_node_t *node)
+{
+	CFG_node_id_t id = ((uint64_t)rand() << 32) + rand();
+	node->pretag = id;
+	node->has_pretag = true;
+	return id;
+}

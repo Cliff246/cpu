@@ -5,22 +5,19 @@
 #include "IO_configure.h"
 #include "MOD_description.h"
 #include "CFG_context.h"
+#include "RUN_graph.h"
 #include "SIM_device.h"
-#include "SIM_mailbox.h"
 #include "SIM_stage.h"
-#include "SIM_transfer.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "SIM_graph.h"
-#include "SIM_wire.h"
 
 typedef struct WS_SIM_simulator
 {
 	CFG_context_t *ctx;
 	SIM_stage_t *stage;
-	SIM_graph_t *graph;
+	RUN_graph_t *graph;
 }SIM_simulator_t;
 
 // WS_dev_t *SIM_simulator_t_get_device_from_id(SIM_simulator_t_t *sim,
@@ -31,8 +28,9 @@ typedef struct WS_SIM_simulator
 // static void SIM_simulator_sort_slots(SIM_simulator_t *sim);
 
 SIM_simulator_t *SIM_simulator_init(void);
+bool SIM_alloc_graph(SIM_simulator_t *sim);
+bool SIM_build_graph(SIM_simulator_t *sim);
 
-bool SIM_simulator_build_graph(SIM_simulator_t *sim);
 bool SIM_simulator_init_stage(SIM_simulator_t *sim);
 
 // add device to simulator

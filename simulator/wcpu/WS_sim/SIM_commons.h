@@ -9,7 +9,10 @@
 #define SIM_PORT_SIZE 8
 #define SIM_TAGS_SIZE 1000
 
+//device id
+typedef uint64_t SIM_did_t;
 typedef int64_t SIM_dtag_t;
+
 typedef int64_t SIM_wireid_t;
 typedef int64_t SIM_chnlid_t;
 

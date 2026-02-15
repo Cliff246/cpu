@@ -3,6 +3,8 @@
 		NAME = "A"
 		WIRE [0, 10, 4, 5]
 		BASE = 0
+		PRETAG = 2
+
 		SIZE = 2000
 		FILENAME = "a.bin"
 		PRINT_CONTENT =  true
@@ -36,6 +38,6 @@
 (wire 2 = 1 10)
 (wire 3 = 1 10)
 (wire 4 = 1 10)
-(wire 5 = 1 10)
+(wire 5 = 10 10)
 (wire 6 = 1 10)
 (wire 7 = 1 10)

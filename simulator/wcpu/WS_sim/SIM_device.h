@@ -2,13 +2,11 @@
 #define __WS_SIM_DEVICE_HEADER__
 
 #include "MOD_description.h"
-#include "SIM_channel.h"
 #include "SIM_commons.h"
 #include "CFG_node.h"
 #include "CFG_prototag.h"
 #include "CFG_entry.h"
 #include "SIM_handle.h"
-#include "SIM_port.h"
 #include "dynamic_lib.h"
 #include "hashmap.h"
 
@@ -20,8 +18,10 @@
 typedef struct WS_SIM_device
 {
 	p_hashtable_t tags;
-	SIM_port_t *port;
-	SIM_dtag_t dtag;
+	//the preset tag assigned
+	SIM_dtag_t tag;
+	//the index of the device
+	SIM_did_t id;
 	SIM_handle_t *handle;
 
 }SIM_device_t;
@@ -30,6 +30,7 @@ typedef struct WS_SIM_device
 void SIM_init_device(SIM_device_t *device, CFG_node_t *devctx);
 
 
+static p_hashtable_t SIM_copy_hashtable(p_hashtable_t old);
 
 
 

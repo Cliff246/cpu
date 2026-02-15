@@ -21,6 +21,7 @@ add_subdirectory(WS_io)
 add_subdirectory(WS_core)
 add_subdirectory(WS_tags)
 add_subdirectory(WS_config)
+add_subdirectory(WS_runtime)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
@@ -43,7 +44,7 @@ target_link_libraries(wcpu
 	ws_tag
 	ws_cfg
 	sim_shared_interface
-
+	ws_run
 )
 
 target_include_directories(wcpu PUBLIC
@@ -56,7 +57,7 @@ target_include_directories(wcpu PUBLIC
 	ws_tag
 	ws_cfg
 	sim_shared_interface
-
+	ws_run
 )
 
 include_directories(wcpu PUBLIC

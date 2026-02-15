@@ -324,8 +324,8 @@ void init(int argc, char **argv)
 	SIM_simulator_t *sim = SIM_simulator_init();
 	SIM_simulator_load_manifest(sim, manifest);
 	SIM_simulator_init_stage(sim);
-	SIM_simulator_build_graph(sim);
-	
+	SIM_build_graph(sim);
+
 	/*
 	logger_set = false;
 	globalstate.args.argc = argc;

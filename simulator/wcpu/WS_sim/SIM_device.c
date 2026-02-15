@@ -1,7 +1,6 @@
 #include "SIM_device.h"
 #include "CFG_entry.h"
 #include "CFG_prototag.h"
-#include "SIM_channel.h"
 #include "CFG_link.h"
 #include "SIM_handle.h"
 #include "TAG_int.h"
@@ -18,7 +17,7 @@
 
 
 
-p_hashtable_t SIM_copy_hashtable(p_hashtable_t old)
+static p_hashtable_t SIM_copy_hashtable(p_hashtable_t old)
 {
  	p_hashtable_t copy = new_hash_table(100, SIM_free_tag_table_elem);
 
@@ -42,8 +41,7 @@ void SIM_init_device(SIM_device_t *device, CFG_node_t *devctx)
 
 	device->tags = SIM_copy_hashtable(devctx->initals);
 	device->handle = SIM_init_handle(devctx->module);
-
-
+	device->tag = (int64_t)devctx->pretag;
 
 
 }

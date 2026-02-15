@@ -27,7 +27,7 @@ typedef enum WS_OBJ_util_type
 	OBJ_COMMON_UTILS_LIST(OBJ_COMMON_UTILS_ENUM)
 }OBJ_util_type_t;
 
-#define OBJ_COMMON_UTILS_FNPTR(A, B, C, D, ...) typedef D (*UTIL_ ## C ## _t)(OBJ_object_t *obj, OBJ_handle_t *hnd, __VA_ARGS__);
+#define OBJ_COMMON_UTILS_FNPTR(A, B, C, D, ...) typedef D (*UTIL_ ## C ## _t)(OBJ_object_t *obj, OBJ_hnd_t *hnd, __VA_ARGS__);
 OBJ_COMMON_UTILS_LIST(OBJ_COMMON_UTILS_FNPTR)
 #define OBJ_COMMON_UTILS_STRUCT(A, B, C, D, ...) UTIL_ ## C ## _t C;
 

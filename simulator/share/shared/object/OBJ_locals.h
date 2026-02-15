@@ -9,7 +9,7 @@
 typedef struct WS_OBJ_locals
 {
 	size_t size;
-	_Alignas(8) uint8_t bytes[];
-}OBJ_locals_t;
+	uint8_t bytes;
+}OBJ_lcl_t;
 
 #endif

@@ -138,7 +138,7 @@ CFG_map_t *CFG_init_map(CFG_context_t *ctx)
 		exit(EXIT_FAILURE);
 	}
 
-	CFG_print_table_map(table);
+	//CFG_print_table_map(table);
 	return table;
 }
 static void CFG_init_tags_map(CFG_map_t *table, CFG_context_t *ctx)
@@ -161,7 +161,7 @@ static void CFG_init_tagmap_map(CFG_map_t  *table, CFG_context_t *ctx)
 			int32_t count = 0;
 			do
 			{
-				elm->tag = elm->tag = ((uint64_t)rand() << 32) + rand();
+				elm->tag = CFG_generate_tag(elm->device);
 				bool success = CFG_add_from_key_map(table, elm, elm->tag);
 				if(success == true)
 				{

@@ -175,7 +175,7 @@ CFG_node_id_t CFG_has_pretag_node(CFG_node_t *node)
 	int64_t dtag = get_tag.INT->get(tag);
 
 
-	return (uint64_t)dtag;
+	return (int64_t)dtag;
 }
 
 //init route table
@@ -215,7 +215,7 @@ void CFG_append_route_node(CFG_node_t *node, uint64_t index, CFG_node_route_t ro
 
 void CFG_print_node(CFG_node_t *node)
 {
-	printf("node: %s\n",node->module);
+	printf("node: %s[%.19ld]\n",node->module, node->pretag);
 
 
 	if(node->done.init_routetable)
@@ -223,11 +223,10 @@ void CFG_print_node(CFG_node_t *node)
 		for(uint64_t i = 0; i < node->routetable.tags_size; ++i)
 		{
 			CFG_node_route_row_t *row = &node->routetable.tags[i];
-
 			for(uint64_t k = 0; k < row->size; ++k)
 			{
 				CFG_node_route_t *route = &row->routes[k];
-				printf("route[%ld]: latency:%ld wireid:%ld index:%ld\n", k, route->latency, route->wire, route->latency);
+				printf("row[%.19ld] route[%.4ld]: latency:%4ld wireid:%4ld index:%ld\n",row->tag, k, route->latency, route->wire, route->index);
 			}
 		}
 
