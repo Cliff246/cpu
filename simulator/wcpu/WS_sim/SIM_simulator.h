@@ -29,19 +29,18 @@ typedef struct WS_SIM_simulator
 
 // static void SIM_simulator_sort_slots(SIM_simulator_t *sim);
 
-SIM_simulator_t *SIM_simulator_init(void);
+SIM_simulator_t *SIM_init_simulator(void);
 bool SIM_alloc_graph(SIM_simulator_t *sim);
 bool SIM_build_graph(SIM_simulator_t *sim);
 
-bool SIM_simulator_init_stage(SIM_simulator_t *sim);
+bool SIM_init_stage_simulator(SIM_simulator_t *sim);
 
 // add device to simulator
 
 // advances a packet into from active forward
 // loads a group of devices from a config
-bool SIM_simulator_load_manifest(SIM_simulator_t *sim, CFG_manifest_t *manifest);
-
-void SIM_simulator_update(SIM_simulator_t *sim);
+bool SIM_load_manifest_simulator(SIM_simulator_t *sim, CFG_manifest_t *manifest);
+void SIM_update_simulator(SIM_simulator_t *sim);
 void SIM_simulator_print_slots(SIM_simulator_t *sim);
 void SIM_simulator_print_all_devices(SIM_simulator_t *sim);
 // todo

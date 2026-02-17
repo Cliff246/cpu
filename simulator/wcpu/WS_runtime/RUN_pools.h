@@ -96,7 +96,7 @@ typedef struct RUN_pool_channel_wire_element
 	uint16_t count;
 	//id to compare too
 	RUN_wireid_t id;
-}RUN_pool_chnl_wire_elm;
+}RUN_pool_chnl_wire_elm_t;
 
 
 //the central channel container
@@ -105,11 +105,11 @@ typedef struct RUN_pool_channel
 	//size of the obj_aliases should be == to everything else
 	uint64_t obj_aliases_size;
 	//a list of aliases of an object to the channel
-	RUN_chnlid_t *obj_aliases;
+	RUN_pool_chnl_obj_elm_t *obj_aliases;
 	//size of the wire_aliases should be == to everything else
 	uint64_t wire_aliases_size;
 	//a list of aliases of a wire to the channel
-	RUN_chnlid_t *wire_aliases;
+	RUN_pool_chnl_wire_elm_t *wire_aliases;
 	//total channels size
 	uint64_t chnls_size;
 	//a list of the channels
@@ -151,7 +151,7 @@ typedef struct RUN_pool
 void RUN_alloc_pool(RUN_pool_t *pool);
 void RUN_build_pool(RUN_pool_t *pool, const SIM_stage_t *stage);
 
-void *RUN_alloc_arena_pool(RUN_pool_t *pool, uint64_t size);
+void *RUN_alloc_arena_pool(RUN_pool_t *pool, uint64_t size, uint64_t align);
 
 
 

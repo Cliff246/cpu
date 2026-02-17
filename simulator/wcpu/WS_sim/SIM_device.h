@@ -4,6 +4,7 @@
 #include "MOD_description.h"
 #include "RES_interface.h"
 #include "RES_pool.h"
+#include "SIM_anchor.h"
 #include "SIM_commons.h"
 #include "CFG_node.h"
 #include "CFG_prototag.h"
@@ -17,32 +18,40 @@
 #include <stdbool.h>
 
 
-typedef struct WS_SIM_device
+typedef struct SIM_port
+{
+	uint64_t count;
+	SIM_anchor_t **anchors;
+}SIM_port_t;
+
+typedef struct SIM_device
 {
 	p_hashtable_t tags;
 	//the preset tag assigned
-	SIM_dtag_t tag;
+	SIM_dkey_t dkey;
 	//the index of the device
 	SIM_did_t id;
 	SIM_handle_t *handle;
 	RES_itrfc_t *interface;
+
+	SIM_port_t port;
+
 }SIM_device_t;
 
-
-void SIM_init_device(SIM_device_t *device, CFG_node_t *devctx);
-
-
+//locals to the device
 static p_hashtable_t SIM_copy_hashtable(p_hashtable_t old);
 
 
+//init stage
+
+SIM_device_t *SIM_alloc_device();
+void SIM_init_device(SIM_device_t *device, CFG_node_t *devctx);
+void SIM_resolve_device(SIM_device_t *device);
+void SIM_build_device(SIM_device_t *device);
 
 
-
-//takes the full list of wires in the simulator
-//changes the list with any connector being > 0 and no connector being 0
-void SIM_device_contains_connector(SIM_device_t *device, int64_t *id, uint64_t size);
-uint64_t SIM_device_get_connectors(SIM_device_t *device, int64_t *buf, uint64_t size);
-
+//free(not done yet)
+void SIM_free_device(SIM_device_t *device);
 
 
 

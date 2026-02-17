@@ -17,19 +17,20 @@
 
 //advance packet forward if retired return true
 //if not retired return false
-SIM_simulator_t *SIM_simulator_init(void)
+SIM_simulator_t *SIM_init_simulator(void)
 {
 	SIM_simulator_t *sim = calloc(1, sizeof(SIM_simulator_t));
+	sim->stage = SIM_init_stage();
 	return sim;
 }
 
-void SIM_simulator_update(SIM_simulator_t *sim)
+void SIM_update_simulator(SIM_simulator_t *sim)
 {
 
 
 }
 
-bool SIM_simulator_load_manifest(SIM_simulator_t *sim, CFG_manifest_t *manifest)
+bool SIM_load_manifest_simulator(SIM_simulator_t *sim, CFG_manifest_t *manifest)
 {
 	assert(sim);
 	assert(manifest);
@@ -44,11 +45,10 @@ bool SIM_simulator_load_manifest(SIM_simulator_t *sim, CFG_manifest_t *manifest)
 
 	return true;
 }
-bool SIM_simulator_init_stage(SIM_simulator_t *sim)
+bool SIM_init_stage_simulator(SIM_simulator_t *sim)
 {
-	sim->stage = SIM_init_stage(sim->ctx);
-
-	return true;
+	bool result = SIM_fill_stage(sim->stage, sim->ctx);
+	return result;
 }
 
 bool SIM_alloc_graph(SIM_simulator_t *sim)

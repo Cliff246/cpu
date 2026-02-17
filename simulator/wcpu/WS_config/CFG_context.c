@@ -436,6 +436,7 @@ void CFG_free_context(CFG_context_t *context)
 	free(context);
 }
 
+//TODO make this globally safe
 CFG_node_id_t CFG_generate_tag(CFG_node_t *node)
 {
 	CFG_node_id_t id = ((uint64_t)rand() << 32) + rand();

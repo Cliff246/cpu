@@ -7,7 +7,7 @@
 
 typedef struct RUN_idval
 {
-	SIM_dtag_t dtag;
+	SIM_dkey_t dtag;
 	SIM_did_t did;
 
 }RUN_idval_t;
@@ -22,9 +22,9 @@ typedef struct RUN_idmap
 }RUN_idmap_t;
 
 void RUN_alloc_idmap(RUN_idmap_t *map, uint64_t size);
-void RUN_build_idmap(RUN_idmap_t *map, SIM_dtag_t *tags, SIM_did_t *ids, uint64_t size);
+void RUN_build_idmap(RUN_idmap_t *map, SIM_dkey_t *keys, SIM_did_t *ids, uint64_t size);
 
 
 
-SIM_did_t RUN_get_did_idmap(RUN_idmap_t *map, SIM_dtag_t tag);
+SIM_did_t RUN_get_did_idmap(RUN_idmap_t *map, SIM_dkey_t key);
 #endif

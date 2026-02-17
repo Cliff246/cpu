@@ -11,9 +11,11 @@
 
 //device id
 typedef uint64_t SIM_did_t;
-typedef int64_t SIM_dtag_t;
+typedef int64_t SIM_dkey_t;
 
-typedef int64_t SIM_wireid_t;
+typedef uint64_t SIM_wid_t;
+typedef int64_t SIM_wkey_t;
+
 typedef int64_t SIM_chnlid_t;
 
 

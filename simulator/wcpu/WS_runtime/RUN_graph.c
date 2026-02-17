@@ -80,15 +80,15 @@ bool RUN_build_graph_idmap(RUN_graph_t *graph)
 {
 	const SIM_stage_t *stage = graph->stage;
 
-	SIM_dtag_t dtags[stage->devices_count];
+	SIM_dkey_t dkeys[stage->devices_count];
 	SIM_did_t did[stage->devices_count];
 	for(uint64_t i = 0; i < stage->devices_count; ++i)
 	{
-		SIM_device_t *dev = &stage->devices[i];
-		dtags[i] = dev->tag;
+		SIM_device_t *dev = stage->devices[i];
+		dkeys[i] = dev->dkey;
 		did[i] = dev->id;
 	}
-	RUN_build_idmap(&graph->idmap, dtags, did, stage->devices_count);
+	RUN_build_idmap(&graph->idmap, dkeys, did, stage->devices_count);
 
 	return true;
 

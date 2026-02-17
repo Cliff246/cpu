@@ -5,9 +5,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-static uint64_t idmap_index(SIM_dtag_t tag, uint64_t size)
+static uint64_t idmap_index(SIM_dkey_t key, uint64_t size)
 {
-	return (tag) % size;
+	return (key) % size;
 }
 
 void RUN_alloc_idmap(RUN_idmap_t *map, uint64_t size)
@@ -23,7 +23,7 @@ void RUN_alloc_idmap(RUN_idmap_t *map, uint64_t size)
 
 }
 
-void RUN_build_idmap(RUN_idmap_t *map, SIM_dtag_t *tags, SIM_did_t *ids, uint64_t size)
+void RUN_build_idmap(RUN_idmap_t *map, SIM_dkey_t *keys, SIM_did_t *ids, uint64_t size)
 {
 
 	assert(map->size == size);
@@ -31,10 +31,10 @@ void RUN_build_idmap(RUN_idmap_t *map, SIM_dtag_t *tags, SIM_did_t *ids, uint64_
 
 	for(uint64_t f = 0; f < size; ++f)
 	{
-		uint64_t pos = idmap_index(tags[f], map->allocd);
+		uint64_t pos = idmap_index(keys[f], map->allocd);
 		if(map->map[pos].dtag == -1)
 		{
-			map->map[pos].dtag = tags[f];
+			map->map[pos].dtag = keys[f];
 			map->map[pos].did = ids[f];
 		}
 		else
@@ -45,7 +45,7 @@ void RUN_build_idmap(RUN_idmap_t *map, SIM_dtag_t *tags, SIM_did_t *ids, uint64_
 				pos = (pos + 1) % map->allocd;
 				if(map->map[pos].dtag == -1)
 				{
-					map->map[pos].dtag = tags[f];
+					map->map[pos].dtag = keys[f];
 					map->map[pos].did = ids[f];
 					passed = true;
 					break;
@@ -61,14 +61,14 @@ void RUN_build_idmap(RUN_idmap_t *map, SIM_dtag_t *tags, SIM_did_t *ids, uint64_
 }
 
 
-SIM_did_t RUN_get_did_idmap(RUN_idmap_t *map, SIM_dtag_t tag)
+SIM_did_t RUN_get_did_idmap(RUN_idmap_t *map, SIM_dkey_t key)
 {
 
-	uint64_t start = idmap_index(tag, map->size);
+	uint64_t start = idmap_index(key, map->size);
 
 	for(uint64_t i = 0; i < map->size; ++i)
 	{
-		if(map->map[start].dtag == tag)
+		if(map->map[start].dtag == key)
 		{
 			return map->map[start].did;
 		}

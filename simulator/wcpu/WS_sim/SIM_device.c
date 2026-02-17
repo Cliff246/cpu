@@ -35,78 +35,49 @@ static p_hashtable_t SIM_copy_hashtable(p_hashtable_t old)
 	return copy;
 }
 
+//allocate device
+SIM_device_t *SIM_alloc_device()
+{
+
+	SIM_device_t *device = calloc(1, sizeof(SIM_device_t));
+	assert(device);
+
+	return device;
+
+}
+
+
+
+//init
 void SIM_init_device(SIM_device_t *device, CFG_node_t *devctx)
 {
-	assert(device);
 
 	device->tags = SIM_copy_hashtable(devctx->initals);
 	device->handle = SIM_init_handle(devctx->module);
-	device->tag = (int64_t)devctx->pretag;
-
+	device->dkey = (int64_t)devctx->pretag;
 
 }
 
 
-
-void SIM_device_contains_connector(SIM_device_t *device, int64_t *id, uint64_t size)
+void SIM_resolve_device(SIM_device_t *device)
 {
-	assert(device);
-	assert(device->tags);
-	TAG_tag_t *tag = getdata_from_hash_table(device->tags, "WIRE");
-	assert(tag && "device must contain a wire tag");
-	TAG_argptr_t get_size_arg =	TAG_get_fn(TAG_LIST, TAG_FN_LIST_GET_SIZE);
-	TAG_argptr_t get_arg = TAG_get_fn(TAG_LIST, TAG_FN_LIST_GET);
-	const uint64_t list_size = get_size_arg.LIST->get_size(tag);
-
-
-	TAG_argptr_t get_int = TAG_get_fn(TAG_INT, TAG_FN_INT_GET);
-
-	uint64_t has[list_size];
-
-	for(uint64_t i = 0; i < list_size; ++i)
-	{
-
-		TAG_tag_t *tmp =  get_arg.LIST->get(tag, i);
-		assert(tmp->type == TAG_INT);
-		int64_t wire = get_int.INT->get(tmp);
-		has[i] = wire;
-	}
-
-	memset(id, 0, sizeof(int64_t) * size);
-
-	for(uint64_t k = 0; k < list_size; ++k)
-	{
-		id[has[k]] = INT64_MAX;
-	}
-
-
+	assert(0 && "TODO");
 }
 
-uint64_t SIM_device_get_connectors(SIM_device_t *device, int64_t *buf, uint64_t size)
+void SIM_build_device(SIM_device_t *device)
 {
-	assert(device);
-	assert(device->tags);
-	TAG_tag_t *tag = getdata_from_hash_table(device->tags, "WIRE");
-	assert(tag && "device must contain a wire tag");
-	TAG_argptr_t get_size_arg =	TAG_get_fn(TAG_LIST, TAG_FN_LIST_GET_SIZE);
-	TAG_argptr_t get_arg = TAG_get_fn(TAG_LIST, TAG_FN_LIST_GET);
-	const uint64_t list_size = get_size_arg.LIST->get_size(tag);
-	//printf("%d %d\n", list_size, size);
-	assert(list_size <= size);
+	assert(0 && "TODO");
 
-	TAG_argptr_t get_int = TAG_get_fn(TAG_INT, TAG_FN_INT_GET);
-	for(uint64_t i = 0; i < list_size; ++i)
-	{
-
-		TAG_tag_t *tmp =  get_arg.LIST->get(tag, i);
-		assert(tmp->type == TAG_INT);
-		int64_t wire = get_int.INT->get(tmp);
-		buf[i] = wire;
-	}
-	return list_size;
 }
+
 
 void SIM_device_print(SIM_device_t *device)
 {
 
+}
+
+
+void SIM_free_device(SIM_device_t *device)
+{
+	assert(0 && "lol imagine freeing this ");
 }

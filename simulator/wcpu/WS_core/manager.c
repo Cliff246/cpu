@@ -321,19 +321,14 @@ void init(int argc, char **argv)
 
 	CFG_manifest_t *manifest =  CFG_init_manifest(tree);
 
-	SIM_simulator_t *sim = SIM_simulator_init();
-	SIM_simulator_load_manifest(sim, manifest);
-	SIM_simulator_init_stage(sim);
+	SIM_simulator_t *sim = SIM_init_simulator();
+	SIM_load_manifest_simulator(sim, manifest);
+	SIM_init_stage_simulator(sim);
 	SIM_alloc_graph(sim);
 	SIM_build_graph(sim);
 
-	/*
-	logger_set = false;
-	globalstate.args.argc = argc;
-	globalstate.args.argv = argv;
-	//after seting args
 	parse_args();
-
+	/*
 	WS_cfg_file_t *file = WS_cfg_create_file("configfiles/basic_config.txt");
 	//printf("try\n");
 	SIM_simulator_t *sim = SIM_simulator_init();

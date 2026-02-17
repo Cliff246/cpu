@@ -70,7 +70,10 @@ void RUN_add_to_pool_rr(RUN_pool_t *pool, RUN_wireid_t wire_id, RUN_chnlid_t chn
 	uint64_t offset = (own->stop + 1) % own->count;
 	uint64_t index = own->base + own->stop;
 	if(own->start == offset)
+	{
+		assert("todo t he channel fell off");
 		return;
+	}
 	rr->roundrobin[index] = chnl_id;
 
 
@@ -134,7 +137,7 @@ void RUN_build_pool(RUN_pool_t *pool, const SIM_stage_t *stage)
 	RUN_init_pool_chnl(pool, stage);
 }
 
-void *RUN_alloc_arena_pool(RUN_pool_t *pool, uint64_t size)
+void *RUN_alloc_arena_pool(RUN_pool_t *pool, uint64_t size, uint64_t align)
 {
 	assert(pool->allocated && "pool must be allocated");
     size_t off = (pool->arena_offset + 63) & ~((size_t)63);
