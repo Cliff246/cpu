@@ -13,7 +13,7 @@ CFG_setting_t *CFG_init_setting(IO_pnode_t *setting)
 	CFG_setting_t *ptr = calloc(1, sizeof(CFG_setting_t));
 
 	assert(setting->size == 2);
-	assert(setting->type == IO_PNODE_KEY);
+	assert(setting->type == IO_PNODE_KEYWORD);
 	assert(setting->token->type == TOK_INT);
 	char *id_str = setting->token->token;
 	ptr->id = atoi(id_str);

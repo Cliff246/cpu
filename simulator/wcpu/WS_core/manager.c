@@ -311,21 +311,21 @@ void parse_args(void)
 void init(int argc, char **argv)
 {
 
-	sourcefile_t *sf = create_sourcefile("configfiles/basic_config.txt");
+	sourcefile_t *sf = create_sourcefile("configfiles/basic_new_config.txt");
 	toklex_t *lex= lex_string(read_all_sourcefile(sf));
 //	print_toklex(lex);
 	IO_ptree_t *tree =IO_ptree_create(lex);
 	IO_ptree_parse(tree);
-	//IO_pnode_print(tree->head, 0);
+	IO_pnode_print(tree->head, 0);
 	//IO_pnode_print(tree->settings, 0);
 
-	CFG_manifest_t *manifest =  CFG_init_manifest(tree);
+	//CFG_manifest_t *manifest =  CFG_init_manifest(tree);
 
-	SIM_simulator_t *sim = SIM_init_simulator();
-	SIM_load_manifest_simulator(sim, manifest);
-	SIM_init_stage_simulator(sim);
-	SIM_alloc_graph(sim);
-	SIM_build_graph(sim);
+	//SIM_simulator_t *sim = SIM_init_simulator();
+	//SIM_load_manifest_simulator(sim, manifest);
+	//SIM_init_stage_simulator(sim);
+	//SIM_alloc_graph(sim);
+	//SIM_build_graph(sim);
 
 	parse_args();
 	/*

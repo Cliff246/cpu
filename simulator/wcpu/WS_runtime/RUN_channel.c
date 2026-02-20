@@ -1,4 +1,3 @@
-#include "OBJ_message.h"
 #include "RUN_channel.h"
 #include <stdint.h>
 #include <stdio.h>

@@ -24,6 +24,7 @@ uint64_t CFG_size_manifest(IO_ptree_t *tree)
 
 CFG_manifest_t *CFG_init_manifest(IO_ptree_t *tree)
 {
+	/*
 	assert(tree);
 	assert(tree->head != NULL);
 	CFG_manifest_t *manifest = calloc(1, sizeof(CFG_manifest_t));
@@ -67,6 +68,7 @@ CFG_manifest_t *CFG_init_manifest(IO_ptree_t *tree)
 	manifest->settings_size = settings_size;
 
 	return manifest;
+	*/
 }
 
 void CFG_free_manifest(CFG_manifest_t *manifest)

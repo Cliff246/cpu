@@ -1,8 +1,11 @@
 #ifndef __MODULE_DESCRIPTION_HEADER__
 #define __MODULE_DESCRIPTION_HEADER__
 
+#include "hashmap.h"
+#include "MOD_symmap.h"
 #include <stdbool.h>
 #include <stdint.h>
+
 
 #ifdef _WIN32
 #  define DEVICE_EXPORT __declspec(dllexport)
@@ -22,13 +25,13 @@ typedef struct WS_MOD_description
 	const char *dev_typeclass;
 	const char *dl_name;
 
-
+	MOD_symmap_t *symmap;
 
 
 	//contains elements of WS_dev_cmd_flag_producer_t
 }MOD_description_t;
 
 
-
 DEVICE_EXPORT const MOD_description_t *MOD_get_dev_desc(void);
+
 #endif

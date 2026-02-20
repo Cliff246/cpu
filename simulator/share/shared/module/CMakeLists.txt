@@ -1,5 +1,6 @@
 set (WS_MODULE_SHARED
 	${CMAKE_CURRENT_SOURCE_DIR}/MOD_description.h
+	${CMAKE_CURRENT_SOURCE_DIR}/MOD_symmap.h
 
 )
 

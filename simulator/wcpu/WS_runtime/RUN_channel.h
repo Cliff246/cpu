@@ -2,8 +2,6 @@
 #define __WS_RUN_CHANNEL_HEADER__
 
 
-#include "OBJ_message.h"
-#include "OBJ_bundle.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -16,7 +14,7 @@
 typedef struct RUN_channel
 {
 
-	
+
 
 
 }RUN_chnl_t;

@@ -6,18 +6,24 @@
 #include <stdbool.h>
 #include "token.h"
 
+/*
+
+
+	KEYWORD = (tok, device, resource, name, hnd)
+	NAME = (keyword(name))
+	INIT = MONO | LIST | MAP
+*/
 #define IO_NODE_TYPE_LIST(X)\
 	X(NONE)					\
-	X(START)				\
-	X(HEADER)				\
-	X(BODY)					\
-	X(SET)					\
-	X(KEY)					\
-	X(VALUE)				\
+	X(ENTRY)				\
+	X(KEYWORD)				\
+	X(NAME)					\
+	X(NONAME)				\
+	X(MONO)					\
 	X(LIST)					\
-	X(BRACKET)				\
-	X(SETTINGS)				\
-	X(WIRE)					\
+	X(MAP)					\
+	X(VALUE)				\
+
 
 #define IO_NODE_NAME(X) IO_PNODE_ ## X
 #define IO_NODE_ENUM(X) IO_NODE_NAME(X),
@@ -43,22 +49,26 @@ typedef struct WS_IO_ptree
 	uint64_t index;
 	toklex_t *lex;
 	IO_pnode_t *head;
-	IO_pnode_t *settings;
 }IO_ptree_t;
 
 
-static IO_pnode_t *IO_pnode_set(IO_ptree_t *tree);
-static IO_pnode_t *IO_pnode_body(IO_ptree_t *tree);
-static IO_pnode_t *IO_pnode_header(IO_ptree_t *tree);
-static IO_pnode_t *IO_pnode_wire(IO_ptree_t *tree);
+static IO_pnode_t *IO_ptree_value(IO_ptree_t *tree);
+static IO_pnode_t *IO_ptree_mono(IO_ptree_t *tree);
+static IO_pnode_t *IO_ptree_list(IO_ptree_t *tree);
+static IO_pnode_t *IO_ptree_map(IO_ptree_t *tree);
+static IO_pnode_t *IO_ptree_init(IO_ptree_t *tree);
+static IO_pnode_t *IO_ptree_name(IO_ptree_t *tree);
+static IO_pnode_t *IO_ptree_noname(IO_ptree_t *tree);
+static IO_pnode_t *IO_ptree_keyword(IO_ptree_t *tree);
+static IO_pnode_t *IO_ptree_entry(IO_ptree_t *tree);
+
 
 void IO_pnode_print(IO_pnode_t *node, int depth);
 IO_ptree_t *IO_ptree_create(toklex_t *tl);
 bool IO_ptree_parse(IO_ptree_t *tree);
 IO_pnode_t *IO_pnode_create(tok_t *tok, IO_pnode_type_t type);
 void IO_pnode_append(IO_pnode_t *parent, IO_pnode_t *child);
-tok_t *IO_ptree_next_tok(IO_ptree_t *ctx);
-
+void IO_ptree_next_tok(IO_ptree_t *ctx);
 tok_t *IO_ptree_peek_tok(IO_ptree_t *tree);
 
 tok_t *IO_ptree_expect_tok(IO_ptree_t *tree, tok_type_t type);

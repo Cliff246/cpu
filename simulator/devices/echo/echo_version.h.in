@@ -1,0 +1,8 @@
+#ifndef __ECHO_VERSION_HEADER__
+#define __ECHO_VERSION_HEADER__
+
+
+#define SIM_DEV_ECHO_VERSION @SIM_DEV_ECHO_VERSION@
+
+
+#endif

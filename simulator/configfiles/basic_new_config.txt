@@ -1,0 +1,25 @@
+device =
+{
+	name = "echo"
+	pretag = 3
+	module = "libdev_echo"
+	tag(t1) = "hello world"
+	resources = ["echo_resource", "busin", "busout"]
+	handle =
+	{
+		START = ["echo_input"]
+		END = ["echo_output"]
+	}
+
+	fn(echo_input) =
+	{
+		input = ["echo_resource", "busin"]
+		output = ["basic_tester"]
+		calls = ["echo_output"]
+	}
+	fn(echo_output) =
+	{
+		input = ["echo_resource", "busout"]
+		output  = ["busout"]
+	}
+}

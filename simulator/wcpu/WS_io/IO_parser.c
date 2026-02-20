@@ -8,6 +8,13 @@
 #include <string.h>
 #include <assert.h>
 
+
+//----------------------------------
+//
+//		PARSER COMMONS
+//
+//----------------------------------
+
 IO_pnode_t *IO_pnode_create(tok_t *tok, IO_pnode_type_t type)
 {
 	//this should be done differently
@@ -36,7 +43,7 @@ void IO_pnode_print(IO_pnode_t *tree, int depth)
 	if(tree->token != NULL)
 	{
 
-		printf("token %s %d\n", tree->token->token, tree->token->type);
+		printf("token %s %d\n", tree->token->token, tree->type);
 	}
 	for(int i = 0; i < tree->size; ++i)
 	{
@@ -59,7 +66,8 @@ void IO_pnode_append(IO_pnode_t *parent, IO_pnode_t *child)
 tok_t *IO_ptree_peek_tok(IO_ptree_t *tree)
 {
 	toklex_t *tl= tree->lex;
-	return (tree->index < tl->tcount)? &tree->lex->tokens[tree->index] : NULL;
+	tok_t *tok = &tree->lex->tokens[tree->index];
+	return (tree->index < tl->tcount)? tok : NULL;
 
 }
 
@@ -70,9 +78,10 @@ tok_t *IO_ptree_peek1_tok(IO_ptree_t *tree)
 	return (tree->index + 1 < tl->tcount)? &tree->lex->tokens[tree->index + 1] : NULL;
 }
 
-tok_t *IO_ptree_next_tok(IO_ptree_t *ctx)
+void IO_ptree_next_tok(IO_ptree_t *ctx)
 {
-	return &ctx->lex->tokens[++ctx->index];
+
+	ctx->index++;
 }
 
 
@@ -102,208 +111,236 @@ IO_ptree_t *IO_ptree_create(toklex_t *tl)
 	return tree;
 }
 
+//----------------------------------
+//
+//		PARSER TREE
+//
+//----------------------------------
 
+static IO_pnode_t *IO_ptree_value(IO_ptree_t *tree)
+{
+	printf("value\n");
 
-static IO_pnode_t *IO_pnode_set(IO_ptree_t *tree)
+	tok_t *tok = IO_ptree_peek_tok(tree);
+	assert(tok->type != TOK_NEWLINE);
+	print_tok(tok);
+	IO_pnode_t *node = IO_pnode_create(tok, IO_PNODE_VALUE);
+
+	return node;
+
+}
+
+static IO_pnode_t *IO_ptree_mono(IO_ptree_t *tree)
 {
 
+	printf("mono\n");
 
-	IO_pnode_t *pnode = IO_pnode_create(&empty_tok, IO_PNODE_SET);
-	tok_t *keytok = IO_ptree_peek_tok(tree);
-	assert(keytok);
-	IO_pnode_t *key  = IO_pnode_create(keytok, IO_PNODE_KEY);
+	IO_pnode_t *mono = IO_pnode_create(&empty_tok, IO_PNODE_MONO);
 
-	IO_pnode_t *first = NULL;
-	tok_t *first_tok = IO_ptree_next_tok(tree);
-	if(first_tok->type == TOK_OP)
+
+	IO_pnode_t *value = IO_ptree_value(tree);
+
+	IO_pnode_append(mono, value);
+
+	return mono;
+}
+
+static IO_pnode_t *IO_ptree_list(IO_ptree_t *tree)
+{
+	printf("\nlist\n");
+
+	IO_pnode_t *list = IO_pnode_create(&empty_tok, IO_PNODE_LIST);
+	while(true)
 	{
-		tok_t *next = IO_ptree_next_tok(tree);
-		if(next->type == TOK_NEWLINE || next->type == TOK_END)
+		IO_ptree_next_tok(tree);
+
+		IO_pnode_t *value = IO_ptree_value(tree);
+
+		IO_pnode_append(list, value);
+		IO_ptree_next_tok(tree);
+
+		tok_t *sep = IO_ptree_peek_tok(tree);
+		if(sep->type == TOK_NEWLINE)
 		{
 			assert(0);
 		}
-		first = IO_pnode_create(next, IO_PNODE_VALUE);
-
-	}
-	else if(first_tok->type == TOK_SQUARE)
-	{
-		first = IO_pnode_create(&empty_tok, IO_PNODE_LIST);
-		while(true)
-		{
-			tok_t *iter = IO_ptree_next_tok(tree);
-			IO_pnode_t *elem = IO_pnode_create(iter,  IO_PNODE_VALUE);
-			IO_pnode_append(first, elem);
-			tok_t *sep = IO_ptree_next_tok(tree);
-			if(sep->type == TOK_NEWLINE)
-			{
-				assert(0);
-			}
-			if(sep->type == TOK_SQUARE)
-			{
-				break;
-			}
-			else if(sep->type != TOK_COMMA)
-			{
-				assert(0);
-			}
-
-		}
-	}
-	else
-	{
-		fprintf(stderr, "cannot use: %s", first_tok->token);
-		exit(EXIT_FAILURE);
-	}
-
-
-
-
-
-
-	IO_pnode_append(pnode, key);
-	IO_pnode_append(pnode, first);
-
-
-	return pnode;
-}
-
-static IO_pnode_t *IO_pnode_body(IO_ptree_t *tree)
-{
-	IO_pnode_t *body = IO_pnode_create(&empty_tok, IO_PNODE_BODY);
-	while(true)
-	{
-		tok_t *tok = IO_ptree_next_tok(tree);
-		if(!tok)
-			break;
-		if(tok->type == TOK_CURL || tok->type == TOK_END)
+		if(sep->type == TOK_SQUARE)
 		{
 			break;
 		}
-		if(tok->type == TOK_NEWLINE)
+		else if(sep->type != TOK_COMMA)
 		{
-			continue;
+			assert(0 && "does not equal comma or eol");
 		}
 
-
-
-		IO_pnode_t *set =  IO_pnode_set(tree);
-		IO_pnode_append(body, set);
-
 	}
-
-
-	return body;
-
+	return list;
 }
 
-static IO_pnode_t *IO_pnode_header(IO_ptree_t *tree)
+static IO_pnode_t *IO_ptree_map(IO_ptree_t *tree)
 {
-	assert(tree);
-	tok_t *header_name = IO_ptree_expect_tok(tree, TOK_STRING);
-	if(!header_name)
-	{
-		fprintf(stderr, "header colon failed\n");
-		assert(0);
-		exit(1);
-	}
-	tok_t *colon = IO_ptree_expect_tok(tree, TOK_COLON);
-	if(!colon)
-	{
-		fprintf(stderr, "header colon failed %s\n", header_name->token);
-		assert(0);
-		exit(1);
-	}
-	IO_pnode_t *header = IO_pnode_create(header_name, IO_PNODE_HEADER);
+	printf("map\n");
+
+	IO_pnode_t *map = IO_pnode_create(&empty_tok, IO_PNODE_MAP);
 
 
 
 	while(true)
 	{
-		tok_t *next = IO_ptree_next_tok(tree);
 
-		if(next->type == TOK_SEMICOLON)
-		{
-			break;
-		}
-		else if(next->type == TOK_CURL)
-		{
-			IO_pnode_t *body = IO_pnode_body(tree);
+		IO_ptree_next_tok(tree);
+		tok_t *cur = IO_ptree_peek_tok(tree);
+		printf("map: %s\n", cur->token);
 
-			//IO_pnode_print(body, 0);
-			IO_pnode_append(header, body);
-
-		}
-		else if(next->type == TOK_NEWLINE)
+		if(cur->type == TOK_NEWLINE)
 		{
 			continue;
+		}
+		else if(cur->type == TOK_CURL)
+		{
+			break;
 		}
 		else
 		{
-			break;
+			IO_pnode_t *entry = IO_ptree_entry(tree);
+			IO_pnode_append(map, entry);
+
 		}
 
+
+
 	}
+	IO_ptree_next_tok(tree);
 
-
-
-	return header;
-
+	printf("end map\n");
+	return map;
 }
 
-static IO_pnode_t *IO_pnode_wire(IO_ptree_t *tree)
+static IO_pnode_t *IO_ptree_init(IO_ptree_t *tree)
 {
-	tok_t *first_bracket = IO_ptree_expect_tok(tree, TOK_BRACKET);
-	assert(first_bracket);
-	tok_t *wire_keyword = IO_ptree_expect_tok(tree, TOK_WORD);
-	assert(wire_keyword);
-	tok_t *wire_name = IO_ptree_expect_tok(tree, TOK_INT);
-	assert(wire_name);
-	tok_t *wire_op = IO_ptree_expect_tok(tree, TOK_OP);
-	assert(wire_op);
-	tok_t *wire_latency = IO_ptree_expect_tok(tree, TOK_INT);
-	assert(wire_latency);
-	tok_t *wire_throughput = IO_ptree_expect_tok(tree, TOK_INT);
-	assert(wire_throughput);
-	tok_t *last_bracket = IO_ptree_expect_tok(tree, TOK_BRACKET);
-	assert(last_bracket);
-	IO_pnode_t *wire = IO_pnode_create(wire_name, IO_PNODE_KEY);
-	IO_pnode_t *latency = IO_pnode_create(wire_latency, IO_PNODE_VALUE);
-	IO_pnode_t *througput = IO_pnode_create(wire_throughput, IO_PNODE_VALUE);
+	printf("init\n");
+	IO_pnode_t *init = NULL;
 
-	IO_pnode_append(wire, latency);
-	IO_pnode_append(wire, througput);
-	return wire;
+
+	tok_t *check = IO_ptree_peek_tok(tree);
+
+	printf("init: %s\n", check->token );
+
+	if(check->type == TOK_CURL)
+	{
+		//this is deathly wrong
+		init = IO_ptree_map(tree);
+	}
+	else if(check->type == TOK_SQUARE)
+	{
+		init = IO_ptree_list(tree);
+	}
+	else if(check->type != TOK_NEWLINE && check->type != TOK_END)
+	{
+		init = IO_ptree_mono(tree);
+	}
+	else
+	{
+		assert(0);
+	}
+	return init;
+}
+
+static IO_pnode_t *IO_ptree_name(IO_ptree_t *tree)
+{
+	tok_t *open_tok = IO_ptree_peek_tok(tree);
+	assert(open_tok->type== TOK_BRACKET && "bracket one of name failed");
+	IO_ptree_next_tok(tree);
+
+	tok_t *name_tok = IO_ptree_peek_tok(tree);
+	assert(name_tok->type == TOK_WORD && "name failed");
+	IO_ptree_next_tok(tree);
+
+	tok_t *closed_tok = IO_ptree_peek_tok(tree);
+	assert(closed_tok->type == TOK_BRACKET && "bracket two of name failed");
+	IO_ptree_next_tok(tree);
+
+
+	IO_pnode_t *name = IO_pnode_create(name_tok, IO_PNODE_NAME);
+	return name;
+}
+
+static IO_pnode_t *IO_ptree_noname(IO_ptree_t *tree)
+{
+	IO_pnode_t *name = IO_pnode_create( &empty_tok, IO_PNODE_NONAME);
+	return name;
+}
+
+static IO_pnode_t *IO_ptree_keyword(IO_ptree_t *tree)
+{
+	printf("keyword\n");
+	tok_t *keyword_tok  = IO_ptree_peek_tok(tree);
+	print_tok(keyword_tok);
+
+	assert(keyword_tok->type == TOK_WORD && "keyword is wrong");
+	IO_pnode_t *keyword = IO_pnode_create(keyword_tok, IO_PNODE_KEYWORD);
+
+	IO_ptree_next_tok(tree);
+	return keyword;
+}
+
+static IO_pnode_t *IO_ptree_entry(IO_ptree_t *tree)
+{
+	printf("\n");
+	IO_pnode_t *entry = IO_pnode_create(&empty_tok, IO_PNODE_ENTRY);
+	IO_pnode_t *keyword = IO_ptree_keyword(tree);
+	tok_t *name_test_tok = IO_ptree_peek_tok(tree);
+	//print_tok(name_test_tok);
+	IO_pnode_t *name;
+	if(name_test_tok->type == TOK_BRACKET)
+	{
+		printf("name\n");
+		name = IO_ptree_name(tree);
+	}
+	else
+	{
+		printf("noname\n");
+
+		name = IO_ptree_noname(tree);
+	}
+
+	tok_t *equals_tok = IO_ptree_peek_tok(tree);
+	assert(equals_tok->type == TOK_OP && "no equals");
+	IO_ptree_next_tok(tree);
+
+	IO_pnode_t *init = IO_ptree_init(tree);
+
+
+	IO_pnode_append(entry, keyword);
+	IO_pnode_append(entry, name);
+	IO_pnode_append(entry, init);
+	printf("end entry\n");
+	return entry;
+
 }
 
 bool IO_ptree_parse(IO_ptree_t *tree)
 {
 	assert(tree);
 	toklex_t *tl = tree->lex;
-	IO_pnode_t *base =  IO_pnode_create(&empty_tok, IO_PNODE_START);
-	IO_pnode_t *settings = IO_pnode_create(&empty_tok, IO_PNODE_SETTINGS);
+	IO_pnode_t *start = IO_pnode_create(&empty_tok, IO_PNODE_NONE);
+	print_toklex(tree->lex);
 	while(tree->index < tl->tcount)
 	{
 		tok_t *peek = IO_ptree_peek_tok(tree);
-		if(peek->type == TOK_STRING)
+		if(peek->type != TOK_NEWLINE && peek->type != TOK_END)
 		{
 
-			IO_pnode_t *header =  IO_pnode_header(tree);
-
-			IO_pnode_append(base, header);
+			IO_pnode_t *entry = IO_ptree_entry(tree);
+			IO_pnode_append(start, entry);
 		}
-		else if(peek->type == TOK_BRACKET)
-		{
-			IO_pnode_t *wire = IO_pnode_wire(tree);
 
-			IO_pnode_append(settings, wire);
-		}
 		else
 		{
 			IO_ptree_next_tok(tree);
 		}
 	}
-	tree->settings=  settings;
-	tree->head = base;
+	tree->head = start;
 	return false;
 }
 

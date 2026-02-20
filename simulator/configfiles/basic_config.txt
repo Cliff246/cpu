@@ -23,7 +23,8 @@
 	{
 		NAME = "D"
 		WIRE [4]
-	}
+	};
+"libmodule_tester" :
 	{
 		NAME = "E"
 		WIRE [5,6,7]

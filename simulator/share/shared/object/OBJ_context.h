@@ -1,25 +1,29 @@
-#ifndef __WS_OBJ_CONTEXT_HEADER__
-#define __WS_OBJ_CONTEXT_HEADER__
+#ifndef __OBJ_CONTEXT_HEADER__
+#define __OBJ_CONTEXT_HEADER__
 
 #include <stdint.h>
-#include <stdlib.h>
 #include <stdbool.h>
 #include <stdalign.h>
 #include "OBJ_handle.h"
+#include "OBJ_resource.h"
 
 
 
-
+typedef struct OBJ_silo
+{
+	OBJ_resrc_type_t type;
+	uint64_t size;
+	OBJ_resource_t *resrc;
+}OBJ_silo_t;
 
 
 //local context of data traveling between parts
-typedef struct WS_OBJ_context
+typedef struct OBJ_context
 {
-
-	//must be aligned with and / 2
-	const size_t size;
-	_Alignas(8) uint8_t bytes[];
-
+	uint64_t inputs_size;
+	uint64_t outputs_size;
+	OBJ_silo_t *inputs;
+	OBJ_silo_t *outputs;
 }OBJ_context_t;
 
 #endif

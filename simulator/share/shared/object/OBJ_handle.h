@@ -10,8 +10,7 @@
 //ownns subhandles in the object
 typedef struct WS_OBJ_hnd
 {
-	uint16_t bundle_max_msgs;
-	uint16_t msgs_size;
+	
 }OBJ_hnd_t;
 
 #endif
