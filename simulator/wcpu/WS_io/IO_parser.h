@@ -40,6 +40,7 @@ typedef struct WS_IO_pnode
 {
 	IO_pnode_type_t type;
 	uint32_t size;
+	uint32_t alloc;
 	tok_t *token;
 	struct WS_IO_pnode **nodes;
 }IO_pnode_t;
@@ -72,6 +73,8 @@ void IO_ptree_next_tok(IO_ptree_t *ctx);
 tok_t *IO_ptree_peek_tok(IO_ptree_t *tree);
 
 tok_t *IO_ptree_expect_tok(IO_ptree_t *tree, tok_type_t type);
+void IO_pnode_free(IO_pnode_t *node);
 
+void IO_ptree_free(IO_ptree_t *tree);
 
 #endif

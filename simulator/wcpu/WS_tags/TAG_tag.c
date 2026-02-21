@@ -5,8 +5,6 @@
 #include "TAG_int.h"
 #include "TAG_bool.h"
 #include "TAG_list.h"
-#include "TAG_hook.h"
-#include "TAG_resource.h"
 #include "TAG_map.h"
 #include <assert.h>
 #include <stdlib.h>

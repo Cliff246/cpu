@@ -23,7 +23,10 @@ IO_pnode_t *IO_pnode_create(tok_t *tok, IO_pnode_type_t type)
 	pn->token = tok;
 	pn->type = type;
 	pn->size = 0;
-	pn->nodes = NULL;
+	pn->alloc = 5;
+	IO_pnode_t **nodes = calloc(pn->alloc, sizeof(IO_pnode_t *));
+	assert(nodes);
+	pn->nodes = nodes;
 	return pn;
 }
 
@@ -58,7 +61,16 @@ void IO_pnode_append(IO_pnode_t *parent, IO_pnode_t *child)
 	{
 		return;
 	}
-	parent->nodes = realloc_safe(parent->nodes, parent->size + 1, sizeof(IO_pnode_t *));
+	//printf("append\n");
+	if(parent->size >= parent->alloc)
+	{
+		//printf("allocate more size\n");
+		parent->alloc *= 2 + 1;
+		parent->nodes = realloc_safe(parent->nodes, parent->alloc, sizeof(IO_pnode_t *));
+
+	}
+
+
 
 	parent->nodes[parent->size++] = child;
 }
@@ -119,11 +131,11 @@ IO_ptree_t *IO_ptree_create(toklex_t *tl)
 
 static IO_pnode_t *IO_ptree_value(IO_ptree_t *tree)
 {
-	printf("value\n");
+	//printf("value\n");
 
 	tok_t *tok = IO_ptree_peek_tok(tree);
 	assert(tok->type != TOK_NEWLINE);
-	print_tok(tok);
+	//print_tok(tok);
 	IO_pnode_t *node = IO_pnode_create(tok, IO_PNODE_VALUE);
 
 	return node;
@@ -133,7 +145,7 @@ static IO_pnode_t *IO_ptree_value(IO_ptree_t *tree)
 static IO_pnode_t *IO_ptree_mono(IO_ptree_t *tree)
 {
 
-	printf("mono\n");
+	//printf("mono\n");
 
 	IO_pnode_t *mono = IO_pnode_create(&empty_tok, IO_PNODE_MONO);
 
@@ -147,7 +159,7 @@ static IO_pnode_t *IO_ptree_mono(IO_ptree_t *tree)
 
 static IO_pnode_t *IO_ptree_list(IO_ptree_t *tree)
 {
-	printf("\nlist\n");
+	//printf("\nlist\n");
 
 	IO_pnode_t *list = IO_pnode_create(&empty_tok, IO_PNODE_LIST);
 	while(true)
@@ -179,7 +191,7 @@ static IO_pnode_t *IO_ptree_list(IO_ptree_t *tree)
 
 static IO_pnode_t *IO_ptree_map(IO_ptree_t *tree)
 {
-	printf("map\n");
+	//printf("map\n");
 
 	IO_pnode_t *map = IO_pnode_create(&empty_tok, IO_PNODE_MAP);
 
@@ -190,7 +202,7 @@ static IO_pnode_t *IO_ptree_map(IO_ptree_t *tree)
 
 		IO_ptree_next_tok(tree);
 		tok_t *cur = IO_ptree_peek_tok(tree);
-		printf("map: %s\n", cur->token);
+		//printf("map: %s\n", cur->token);
 
 		if(cur->type == TOK_NEWLINE)
 		{
@@ -212,19 +224,19 @@ static IO_pnode_t *IO_ptree_map(IO_ptree_t *tree)
 	}
 	IO_ptree_next_tok(tree);
 
-	printf("end map\n");
+	//printf("end map\n");
 	return map;
 }
 
 static IO_pnode_t *IO_ptree_init(IO_ptree_t *tree)
 {
-	printf("init\n");
+	//printf("init\n");
 	IO_pnode_t *init = NULL;
 
 
 	tok_t *check = IO_ptree_peek_tok(tree);
 
-	printf("init: %s\n", check->token );
+	//printf("init: %s\n", check->token );
 
 	if(check->type == TOK_CURL)
 	{
@@ -273,9 +285,9 @@ static IO_pnode_t *IO_ptree_noname(IO_ptree_t *tree)
 
 static IO_pnode_t *IO_ptree_keyword(IO_ptree_t *tree)
 {
-	printf("keyword\n");
+	//printf("keyword\n");
 	tok_t *keyword_tok  = IO_ptree_peek_tok(tree);
-	print_tok(keyword_tok);
+	//print_tok(keyword_tok);
 
 	assert(keyword_tok->type == TOK_WORD && "keyword is wrong");
 	IO_pnode_t *keyword = IO_pnode_create(keyword_tok, IO_PNODE_KEYWORD);
@@ -286,7 +298,7 @@ static IO_pnode_t *IO_ptree_keyword(IO_ptree_t *tree)
 
 static IO_pnode_t *IO_ptree_entry(IO_ptree_t *tree)
 {
-	printf("\n");
+//	printf("\n");
 	IO_pnode_t *entry = IO_pnode_create(&empty_tok, IO_PNODE_ENTRY);
 	IO_pnode_t *keyword = IO_ptree_keyword(tree);
 	tok_t *name_test_tok = IO_ptree_peek_tok(tree);
@@ -294,12 +306,12 @@ static IO_pnode_t *IO_ptree_entry(IO_ptree_t *tree)
 	IO_pnode_t *name;
 	if(name_test_tok->type == TOK_BRACKET)
 	{
-		printf("name\n");
+		//printf("name\n");
 		name = IO_ptree_name(tree);
 	}
 	else
 	{
-		printf("noname\n");
+	//	printf("noname\n");
 
 		name = IO_ptree_noname(tree);
 	}
@@ -314,7 +326,7 @@ static IO_pnode_t *IO_ptree_entry(IO_ptree_t *tree)
 	IO_pnode_append(entry, keyword);
 	IO_pnode_append(entry, name);
 	IO_pnode_append(entry, init);
-	printf("end entry\n");
+	//printf("end entry\n");
 	return entry;
 
 }
@@ -324,7 +336,7 @@ bool IO_ptree_parse(IO_ptree_t *tree)
 	assert(tree);
 	toklex_t *tl = tree->lex;
 	IO_pnode_t *start = IO_pnode_create(&empty_tok, IO_PNODE_NONE);
-	print_toklex(tree->lex);
+	//print_toklex(tree->lex);
 	while(tree->index < tl->tcount)
 	{
 		tok_t *peek = IO_ptree_peek_tok(tree);
@@ -344,3 +356,28 @@ bool IO_ptree_parse(IO_ptree_t *tree)
 	return false;
 }
 
+
+void IO_pnode_free(IO_pnode_t *node)
+{
+	if(!node)
+		return;
+
+
+
+
+	for(int i = 0; i < node->size; ++i)
+	{
+		IO_pnode_free(node->nodes[i]);
+	}
+
+	free(node->nodes);
+	free(node);
+}
+
+void IO_ptree_free(IO_ptree_t *tree)
+{
+	IO_pnode_free(tree->head);
+	free_toklex(tree->lex);
+	free(tree);
+
+}

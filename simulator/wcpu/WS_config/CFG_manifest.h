@@ -9,12 +9,15 @@
 
 typedef struct CFG_manifest
 {
-	uint64_t size;
+	uint64_t entries_size;
 	CFG_entry_t **entries;
 
 	uint64_t settings_size;
 	CFG_setting_t **settings;
+	IO_ptree_t *tree;
 }CFG_manifest_t;
+
+
 
 
 uint64_t CFG_size_manifest(IO_ptree_t *tree);

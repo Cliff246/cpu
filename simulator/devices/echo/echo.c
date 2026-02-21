@@ -66,7 +66,7 @@ void echo_hook_input_fn(OBJ_hnd_t *hnd, OBJ_context_t *context, OBJ_local_t *loc
 
 char *echo_input_hook_inputs[] =
 {
-	"busin"
+	"busin",
 	"echo_resource"
 };
 

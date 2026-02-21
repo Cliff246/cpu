@@ -10,8 +10,6 @@
 	X(TAG_bool, BOOL, 		B)		\
 	X(TAG_list, LIST, 		L)		\
 	X(TAG_map, 	MAP, 		M)		\
-	X(TAG_resource, RESOURCE, 		R)		\
-	X(TAG_hook, HOOK, 		H)		\
 
 #define WS_SIM_TAG_ENUM_NAME(X) TAG_ ## X
 #define WS_SIM_TAG_ENUM(X, Y, Z) WS_SIM_TAG_ENUM_NAME(Y),

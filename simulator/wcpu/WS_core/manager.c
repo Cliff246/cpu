@@ -316,9 +316,8 @@ void init(int argc, char **argv)
 //	print_toklex(lex);
 	IO_ptree_t *tree =IO_ptree_create(lex);
 	IO_ptree_parse(tree);
-	IO_pnode_print(tree->head, 0);
+	//IO_pnode_print(tree->head, 0);
 	//IO_pnode_print(tree->settings, 0);
-
 	//CFG_manifest_t *manifest =  CFG_init_manifest(tree);
 
 	//SIM_simulator_t *sim = SIM_init_simulator();
@@ -326,7 +325,6 @@ void init(int argc, char **argv)
 	//SIM_init_stage_simulator(sim);
 	//SIM_alloc_graph(sim);
 	//SIM_build_graph(sim);
-
 	parse_args();
 	/*
 	WS_cfg_file_t *file = WS_cfg_create_file("configfiles/basic_config.txt");

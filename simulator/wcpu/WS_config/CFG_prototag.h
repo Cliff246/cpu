@@ -8,6 +8,7 @@
 typedef struct CFG_prototag
 {
 	char *key;
+	char *name;
 	TAG_tag_t *tag;
 }CFG_prototag_t;
 

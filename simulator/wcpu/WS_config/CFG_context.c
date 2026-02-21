@@ -22,7 +22,7 @@ static CFG_node_ctx_t *CFG_init_node_ctx(CFG_manifest_t *manifest, CFG_context_t
 {
 	CFG_node_ctx_t *cfgctx = calloc(1, sizeof(CFG_node_ctx_t));
 	assert(cfgctx);
-	const uint64_t size = manifest->size;
+	const uint64_t size = manifest->entries_size;
 	assert(size > 0);
 
 	CFG_node_t *cfglist = calloc(size, sizeof(CFG_node_t));

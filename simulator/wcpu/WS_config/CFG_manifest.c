@@ -14,7 +14,7 @@ uint64_t CFG_size_manifest(IO_ptree_t *tree)
 	uint64_t count = 0;
 	for(uint64_t i = 0; i < tree->head->size; ++i)
 	{
-		IO_pnode_t *entry =  tree->head->nodes[i];
+		IO_pnode_t *entry = tree->head->nodes[i];
 		count += entry->size;
 
 	}
