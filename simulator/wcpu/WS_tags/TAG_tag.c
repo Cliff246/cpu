@@ -26,7 +26,6 @@ char *TAG_type_string_list[WS_SIM_TAG_LIST_COUNT] =
 
 void TAG_free(TAG_tag_t *tag)
 {
-
 	TAG_ptr_t ptr = tag->ptr;
 	TAG_vtable_list[tag->type]->free(ptr);
 	free(tag);

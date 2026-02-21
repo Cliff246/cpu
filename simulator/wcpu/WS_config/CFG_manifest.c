@@ -24,6 +24,7 @@ uint64_t CFG_size_manifest(IO_ptree_t *tree)
 
 CFG_manifest_t *CFG_init_manifest(IO_ptree_t *tree)
 {
+	assert(0);
 	/*
 	assert(tree);
 	assert(tree->head != NULL);

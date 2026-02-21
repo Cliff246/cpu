@@ -1,6 +1,8 @@
 #ifndef __TOKEN__
 #define __TOKEN__
 
+#include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -38,6 +40,8 @@ typedef struct token_lexer
 {
 	tok_t *tokens;
 	size_t tcount;
+	size_t allocd;
+
 	char *string;
 	int index;
 	size_t slen;

@@ -10,9 +10,13 @@ tok_t empty_tok = {.token = "/", .type = TOK_NONE};
 //string should be it a valid ptr to take, this is a move
 static void emit(toklex_t *tl, tok_type_t type, char *string)
 {
+	if(tl->tcount == tl->allocd)
+	{
+		//printf("realloc %d\n",tl->allocd );
 
-	tl->tokens = realloc_safe(tl->tokens, tl->tcount + 1, sizeof(tok_t));
-
+		tl->allocd = (tl->allocd * 2) + 1;
+		tl->tokens = realloc_safe(tl->tokens, tl->allocd, sizeof(tok_t));
+	}
 	tl->tokens[tl->tcount].token = string;
 	tl->tokens[tl->tcount].type = type;
 	tl->tcount++;
@@ -94,7 +98,8 @@ toklex_t *lex_string(const char *string)
 
 	tl->string = dup;
 	tl->index = 0;
-	tl->tokens = calloc(1, sizeof(tok_t));
+	tl->allocd = 10;
+	tl->tokens = calloc(tl->allocd, sizeof(tok_t));
 	tl->tcount = 0;
 	tl->slen = len;
 
@@ -398,11 +403,14 @@ void free_tok(tok_t *tok)
 
 void free_tokstring(tok_t *token)
 {
+	//printf("free tok\n");
 	free(token->token);
 
 }
 void free_toklex(toklex_t *toklex)
 {
+	printf("free toklex\n");
+
 	for(int i = 0; i < toklex->tcount; ++i)
 	{
 		free_tokstring(&toklex->tokens[i]);

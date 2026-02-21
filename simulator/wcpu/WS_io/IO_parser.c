@@ -65,7 +65,7 @@ void IO_pnode_append(IO_pnode_t *parent, IO_pnode_t *child)
 	if(parent->size >= parent->alloc)
 	{
 		//printf("allocate more size\n");
-		parent->alloc *= 2 + 1;
+		parent->alloc = (2 * parent->alloc) + 1;
 		parent->nodes = realloc_safe(parent->nodes, parent->alloc, sizeof(IO_pnode_t *));
 
 	}

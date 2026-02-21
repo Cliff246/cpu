@@ -8,6 +8,7 @@
 #include "TAG_bool.h"
 #include "commons.h"
 #include "hashmap.h"
+
 #include <stdbool.h>
 #include <stdalign.h>
 #include <stdint.h>
@@ -26,7 +27,7 @@ bool CFG_add_prototag_node(CFG_node_t *node, CFG_prototag_t *tag)
 
 bool CFG_init_tags_node(CFG_node_t *node, CFG_entry_t *entry)
 {
-	const uint64_t count = entry->size;
+	const uint64_t count = entry->namespaces_size;
 
 	const uint32_t standard = 100;
 	if(count >= standard)
@@ -37,8 +38,10 @@ bool CFG_init_tags_node(CFG_node_t *node, CFG_entry_t *entry)
 	assert(table);
 
 
+
 	node->initals = table;
-	node->module = strdup(entry->module);
+	assert(0 && "node->module must be finished");
+	//node->module = strdup(entry->module);
 	assert(node->module);
 
 	for(uint32_t i = 0; i < count; ++i)

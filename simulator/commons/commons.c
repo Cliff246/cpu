@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <ctype.h>
 
 void print_bin(long bin, char len, bool newline)
 {
@@ -73,6 +74,7 @@ void reverse(char *ary)
 
 char *to_string(char ch)
 {
+	//this is so fucking cringe
 	char *str = calloc(2, sizeof(char));
 	if(!str)
 		return NULL;
@@ -102,6 +104,10 @@ void *realloc_safe(void *ptr, size_t count, size_t size)
 
 int str_to_bool(char *str)
 {
+	for(char *c = str; *c; c++)
+	{
+		*c = tolower(*c);
+	}
 	if(!strcmp(str, "true"))
 	{
 		return true;
