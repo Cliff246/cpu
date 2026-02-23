@@ -1,0 +1,14 @@
+
+
+context -> stage
+
+stage holds all the logical data
+
+stage should be inspectable and 
+
+scene is built to validate and first stage compile the stage
+
+
+
+
+runtime graph is then built frome scene

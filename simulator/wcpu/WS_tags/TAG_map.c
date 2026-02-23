@@ -207,7 +207,6 @@ void TAG_map_free(TAG_ptr_t ptr)
 void TAG_map_print(TAG_ptr_t ptr)
 {
 	assert(0);
-
 }
 
 TAG_ptr_t TAG_map_copy(TAG_ptr_t ptr)

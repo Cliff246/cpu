@@ -1,6 +1,6 @@
 #include "SIM_device.h"
-#include "CFG_entry.h"
-#include "CFG_prototag.h"
+#include "MANFST_entry.h"
+#include "MANFST_prototag.h"
 #include "CFG_link.h"
 #include "SIM_handle.h"
 #include "TAG_int.h"

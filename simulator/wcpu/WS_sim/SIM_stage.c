@@ -21,6 +21,9 @@
 #include <sys/types.h>
 
 
+//move all of this to scene
+
+
 //stage helpers
 uint64_t SIM_get_stage_map(SIM_stage_map_t *map, int64_t key);
 void SIM_free_stage_map(SIM_stage_map_t *map);
@@ -45,6 +48,7 @@ void SIM_init_stage_gen_wires(SIM_stage_gen_t *generator);
 //fill with globals
 void SIM_resolve_stage_gen_devices(SIM_stage_gen_t *generator);
 void SIM_resolve_stage_gen_wires(SIM_stage_gen_t *generator);
+
 //stage 4
 //ugh... 4 is better than 3?
 void SIM_build_stage_gen_devices(SIM_stage_gen_t *generator);

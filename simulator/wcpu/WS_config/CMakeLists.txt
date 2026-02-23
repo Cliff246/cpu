@@ -1,8 +1,5 @@
 set(WS_CFG_CFILES
-	${CMAKE_CURRENT_SOURCE_DIR}/CFG_manifest.c
-	${CMAKE_CURRENT_SOURCE_DIR}/CFG_prototag.c
-	${CMAKE_CURRENT_SOURCE_DIR}/CFG_entry.c
-	${CMAKE_CURRENT_SOURCE_DIR}/CFG_setting.c
+
 	${CMAKE_CURRENT_SOURCE_DIR}/CFG_link.c
 	${CMAKE_CURRENT_SOURCE_DIR}/CFG_map.c
 	${CMAKE_CURRENT_SOURCE_DIR}/CFG_context.c
@@ -27,7 +24,9 @@ target_include_directories(ws_cfg
 	ws_io
 	ws_sim
 	ws_tag
+	ws_manfst
 	sim_shared_interface
+	ws_syntax
 
 )
 target_link_libraries(ws_cfg PUBLIC
@@ -36,7 +35,8 @@ target_link_libraries(ws_cfg PUBLIC
 	ws_io
 	ws_sim
 	ws_tag
+	ws_manfst
 	sim_shared_interface
-
+	ws_syntax
 )
 

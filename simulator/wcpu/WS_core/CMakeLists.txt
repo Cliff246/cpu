@@ -19,6 +19,7 @@ target_include_directories(ws_core
 	ws_sim
 	sim_shared_interface
 	ws_cfg
+	ws_manfst
 
 )
 target_link_libraries(ws_core PUBLIC
@@ -27,5 +28,6 @@ target_link_libraries(ws_core PUBLIC
 	ws_sim
 	sim_shared_interface
 	ws_cfg
+	ws_manfst
 )
 

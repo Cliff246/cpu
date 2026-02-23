@@ -2,7 +2,6 @@ SET(WS_IO_CFILES
 
 	${CMAKE_CURRENT_SOURCE_DIR}/export.c
 	${CMAKE_CURRENT_SOURCE_DIR}/IO_configure.c
-	${CMAKE_CURRENT_SOURCE_DIR}/IO_parser.c
 
 )
 

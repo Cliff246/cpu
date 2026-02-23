@@ -1,7 +1,7 @@
 #ifndef __SIMULATOR_HEADER__
 #define __SIMULATOR_HEADER__
 
-#include "CFG_manifest.h"
+#include "MANFST_manifest.h"
 #include "IO_configure.h"
 #include "MOD_description.h"
 #include "CFG_context.h"
@@ -39,7 +39,7 @@ bool SIM_init_stage_simulator(SIM_simulator_t *sim);
 
 // advances a packet into from active forward
 // loads a group of devices from a config
-bool SIM_load_manifest_simulator(SIM_simulator_t *sim, CFG_manifest_t *manifest);
+bool SIM_load_manifest_simulator(SIM_simulator_t *sim, MANFST_manifest_t *manifest);
 void SIM_update_simulator(SIM_simulator_t *sim);
 void SIM_simulator_print_slots(SIM_simulator_t *sim);
 void SIM_simulator_print_all_devices(SIM_simulator_t *sim);

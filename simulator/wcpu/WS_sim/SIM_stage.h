@@ -12,17 +12,21 @@
 
 typedef struct SIM_stage_map_element
 {
+	//the key of the device or wire
 	int64_t key;
+	//index in the device list
 	uint64_t index;
 }SIM_stage_map_elm_t;
 
 typedef struct SIM_stage_map
 {
+
 	SIM_stage_map_elm_t *elms;
 	uint64_t count;
 }SIM_stage_map_t;
 
-
+//stage needs to be redisgned to be a major holder
+//stage -> scene -> graph
 typedef struct SIM_stage
 {
 	//this is temporary and should be more complex
@@ -30,8 +34,8 @@ typedef struct SIM_stage
 	uint32_t devices_count;
 	uint32_t wires_count;
 	uint32_t anchors_count;
+	
 	SIM_device_t **devices;
-
 	SIM_wire_t **wires;
 
 	SIM_anchor_t **anchors;

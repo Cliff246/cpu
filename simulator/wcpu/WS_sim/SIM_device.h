@@ -7,22 +7,17 @@
 #include "SIM_anchor.h"
 #include "SIM_commons.h"
 #include "CFG_node.h"
-#include "CFG_prototag.h"
-#include "CFG_entry.h"
+#include "MANFST_prototag.h"
+#include "MANFST_entry.h"
 #include "SIM_handle.h"
 #include "dynamic_lib.h"
 #include "hashmap.h"
-
+#include "SIM_port.h"
 
 #include <stdint.h>
 #include <stdbool.h>
 
 
-typedef struct SIM_port
-{
-	uint64_t count;
-	SIM_anchor_t **anchors;
-}SIM_port_t;
 
 typedef struct SIM_device
 {

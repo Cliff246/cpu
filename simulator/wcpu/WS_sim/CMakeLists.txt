@@ -12,6 +12,8 @@ SET(WS_SIM_CFILES
 	${CMAKE_CURRENT_SOURCE_DIR}/SIM_anchor.c
 
 	${CMAKE_CURRENT_SOURCE_DIR}/SIM_wire.c
+	${CMAKE_CURRENT_SOURCE_DIR}/SIM_scene.c
+	${CMAKE_CURRENT_SOURCE_DIR}/SIM_port.c
 
 
 
@@ -38,6 +40,8 @@ target_include_directories(ws_sim
 	ws_tag
 	wcpu_commons
 	ws_run
+	ws_manfst
+
 )
 target_link_libraries(ws_sim PUBLIC
 	ws_tag
@@ -45,5 +49,6 @@ target_link_libraries(ws_sim PUBLIC
 	ws_io
 	wcpu_commons
 	ws_run
+	ws_manfst
 )
 

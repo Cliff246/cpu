@@ -1,6 +1,7 @@
 #include "CFG_node.h"
 #include "CFG_link.h"
 #include "CFG_commons.h"
+#include "MANFST_prototag.h"
 #include "TAG_tag.h"
 #include "TAG_int.h"
 #include "TAG_list.h"
@@ -17,17 +18,21 @@
 #include <stdlib.h>
 
 
-bool CFG_add_prototag_node(CFG_node_t *node, CFG_prototag_t *tag)
+bool CFG_add_prototag_node(CFG_node_t *node, MANFST_prototag_t *tag)
 {
+
+
+	char key[tag->key_size + 1];
+	MANFST_get_prototag_key(tag, key, tag->key_size + 1);
 	//key should be coppied
-	addto_hash_table(node->initals, tag->key, tag->tag);
-	CFG_free_prototag(tag);
+	addto_hash_table(node->initals, key, tag->tag);
+	MANFST_free_prototag(tag);
 	return true;
 }
 
-bool CFG_init_tags_node(CFG_node_t *node, CFG_entry_t *entry)
+bool CFG_init_tags_node(CFG_node_t *node, MANFST_entry_t *entry)
 {
-	const uint64_t count = entry->namespaces_size;
+	const uint64_t count = entry->entryscope_size;
 
 	const uint32_t standard = 100;
 	if(count >= standard)
@@ -46,10 +51,10 @@ bool CFG_init_tags_node(CFG_node_t *node, CFG_entry_t *entry)
 
 	for(uint32_t i = 0; i < count; ++i)
 	{
-		CFG_prototag_t *proto = entry->prototags[i];
+		MANFST_prototag_t *proto = entry->entryscope[i].prototag;
 		assert(CFG_add_prototag_node(node, proto) == true);
 	}
-	CFG_free_entry(entry);
+	MANFST_free_entry(entry);
 	return true;
 }
 
@@ -81,7 +86,7 @@ bool CFG_prep_links_node(CFG_node_t *node,  CFG_link_buf_t *lbuf)
 	return true;
 }
 
-bool CFG_init_node(CFG_node_t *node, CFG_entry_t *entry, CFG_link_buf_t *lbuf)
+bool CFG_init_node(CFG_node_t *node, MANFST_entry_t *entry, CFG_link_buf_t *lbuf)
 {
 
 	CFG_init_tags_node(node, entry);

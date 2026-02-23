@@ -16,6 +16,8 @@ set(WS_CONSOLE_CFILES
 
 
 add_subdirectory(WS_resource)
+add_subdirectory(WS_manifest)
+add_subdirectory(WS_syntax)
 add_subdirectory(WS_sim)
 add_subdirectory(WS_io)
 add_subdirectory(WS_core)
@@ -45,6 +47,9 @@ target_link_libraries(wcpu
 	ws_cfg
 	sim_shared_interface
 	ws_run
+	ws_manfst
+	ws_syntax
+
 )
 
 target_include_directories(wcpu PUBLIC
@@ -58,6 +63,9 @@ target_include_directories(wcpu PUBLIC
 	ws_cfg
 	sim_shared_interface
 	ws_run
+	ws_manfst
+	ws_syntax
+
 )
 
 include_directories(wcpu PUBLIC

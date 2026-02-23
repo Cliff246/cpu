@@ -4,10 +4,10 @@
 #include "manager.h"
 //#include "core.h"
 //#include "coreutils.h"
-#include "CFG_entry.h"
-#include "CFG_manifest.h"
+#include "MANFST_entry.h"
+#include "MANFST_manifest.h"
 #include "SIM_device.h"
-#include "CFG_prototag.h"
+#include "MANFST_prototag.h"
 #include "TAG_bool.h"
 #include "TAG_list.h"
 #include "TAG_tag.h"
@@ -16,10 +16,9 @@
 #include "commons.h"
 #include "export.h"
 
-#include "IO_parser.h"
+#include "SYNTAX_parser.h"
 
 #include "SIM_simulator.h"
-#include "IO_configure.h"
 #include "hashmap.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -314,12 +313,12 @@ void init(int argc, char **argv)
 	sourcefile_t *sf = create_sourcefile("configfiles/basic_new_config.txt");
 	toklex_t *lex= lex_string(read_all_sourcefile(sf));
 //	print_toklex(lex);
-	IO_ptree_t *tree =IO_ptree_create(lex);
-	IO_ptree_parse(tree);
-	IO_pnode_print(tree->head, 0);
-	IO_ptree_free(tree);
-	//IO_pnode_print(tree->settings, 0);
-	CFG_manifest_t *manifest =  CFG_init_manifest(tree);
+	SYNTAX_ptree_t *tree = SYNTAX_ptree_create(lex);
+	SYNTAX_ptree_parse(tree);
+	SYNTAX_pnode_print(tree->head, 0);
+	SYNTAX_ptree_free(tree);
+	//SYNTAX_pnode_print(tree->settings, 0);
+	MANFST_manifest_t *manifest =  MANFST_init_manifest(tree);
 
 	//SIM_simulator_t *sim = SIM_init_simulator();
 	//SIM_load_manifest_simulator(sim, manifest);

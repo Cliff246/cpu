@@ -1,5 +1,5 @@
 #include "SIM_simulator.h"
-#include "CFG_setting.h"
+#include "MANFST_setting.h"
 #include "IO_configure.h"
 #include "CFG_context.h"
 #include "RUN_graph.h"
@@ -30,7 +30,7 @@ void SIM_update_simulator(SIM_simulator_t *sim)
 
 }
 
-bool SIM_load_manifest_simulator(SIM_simulator_t *sim, CFG_manifest_t *manifest)
+bool SIM_load_manifest_simulator(SIM_simulator_t *sim, MANFST_manifest_t *manifest)
 {
 	assert(sim);
 	assert(manifest);

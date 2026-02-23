@@ -1,5 +1,5 @@
 #include "CFG_context.h"
-#include "CFG_manifest.h"
+#include "MANFST_manifest.h"
 
 #include "CFG_link.h"
 #include "CFG_commons.h"
@@ -18,7 +18,7 @@
 #define INDEX2(x,y,len) ((len * y) + x)
 
 
-static CFG_node_ctx_t *CFG_init_node_ctx(CFG_manifest_t *manifest, CFG_context_t *context)
+static CFG_node_ctx_t *CFG_init_node_ctx(MANFST_manifest_t *manifest, CFG_context_t *context)
 {
 	CFG_node_ctx_t *cfgctx = calloc(1, sizeof(CFG_node_ctx_t));
 	assert(cfgctx);
@@ -30,7 +30,7 @@ static CFG_node_ctx_t *CFG_init_node_ctx(CFG_manifest_t *manifest, CFG_context_t
 
 	for(int i = 0; i < size; ++i)
 	{
-		CFG_entry_t *entry = manifest->entries[i];
+		MANFST_entry_t *entry = manifest->entries[i];
 		CFG_node_t *cfg = &cfglist[i];
 		bool passed = CFG_init_node(cfg, entry, context->channelbuf);
 
@@ -44,7 +44,7 @@ static CFG_node_ctx_t *CFG_init_node_ctx(CFG_manifest_t *manifest, CFG_context_t
 }
 
 
-static CFG_edge_ctx_t *CFG_init_edge_ctx(CFG_manifest_t *manifest, CFG_context_t *context)
+static CFG_edge_ctx_t *CFG_init_edge_ctx(MANFST_manifest_t *manifest, CFG_context_t *context)
 {
 	CFG_edge_ctx_t *cfgctx = calloc(1, sizeof(CFG_edge_ctx_t));
 	assert(cfgctx);
@@ -58,7 +58,7 @@ static CFG_edge_ctx_t *CFG_init_edge_ctx(CFG_manifest_t *manifest, CFG_context_t
 
 	for(uint64_t i = 0; i < size; ++i)
 	{
-		CFG_setting_t *setting = manifest->settings[i];
+		MANFST_setting_t *setting = manifest->settings[i];
 
 
 		CFG_init_edge(&cfglist[i], setting->id, setting->latency,setting->throughput);
@@ -129,7 +129,7 @@ static CFG_edge_t *CFG_bsearch_edge_ctx(CFG_edge_ctx_t *ctx, uint64_t i)
 	return NULL;
 }
 
-static void CFG_init_stage1_context(CFG_context_t *ctx, CFG_manifest_t *manifest)
+static void CFG_init_stage1_context(CFG_context_t *ctx, MANFST_manifest_t *manifest)
 {
 
 
@@ -390,7 +390,7 @@ static void CFG_init_stage4_context(CFG_context_t *ctx)
 
 
 }
-CFG_context_t *CFG_init_context(CFG_manifest_t *manifest)
+CFG_context_t *CFG_init_context(MANFST_manifest_t *manifest)
 {
 	CFG_context_t *ctx = calloc(1, sizeof(CFG_context_t));
 	assert(ctx);
