@@ -149,7 +149,7 @@ static void CFG_init_stage1_context(CFG_context_t *ctx, MANFST_manifest_t *manif
 	CFG_qsort_edge_ctx(ctx->wireconfigs, 0, wctx_count - 1);
 
 	//free the manifest
-	CFG_free_manifest(manifest);
+	MANFST_free_manifest(manifest);
 
 
 }

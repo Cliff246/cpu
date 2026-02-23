@@ -19,6 +19,7 @@ add_subdirectory(WS_resource)
 add_subdirectory(WS_manifest)
 add_subdirectory(WS_syntax)
 add_subdirectory(WS_sim)
+add_subdirectory(WS_logger)
 add_subdirectory(WS_io)
 add_subdirectory(WS_core)
 add_subdirectory(WS_tags)
@@ -27,7 +28,7 @@ add_subdirectory(WS_runtime)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
-add_executable(wcpu
+add_executable(ws
 	${WS_HELPERS_CFILES}
 	${WS_CONSOLE_CFILES}
 )
@@ -36,7 +37,7 @@ add_executable(wcpu
 
 
 set(CMAKE_BUILD_TYPE Debug)
-target_link_libraries(wcpu
+target_link_libraries(ws
 	wcpu_commons
 	wcpu_emu_inputs
 	ws_io
@@ -49,10 +50,11 @@ target_link_libraries(wcpu
 	ws_run
 	ws_manfst
 	ws_syntax
+	ws_logger
 
 )
 
-target_include_directories(wcpu PUBLIC
+target_include_directories(ws PUBLIC
 	wcpu_commons
 	wcpu_emu_inputs
 	ws_io
@@ -65,10 +67,11 @@ target_include_directories(wcpu PUBLIC
 	ws_run
 	ws_manfst
 	ws_syntax
+	ws_logger
 
 )
 
-include_directories(wcpu PUBLIC
+include_directories(ws PUBLIC
 	${CMAKE_SOURCE_DIR}/flags/
 
 	${CMAKE_CURRENT_SOURCE_DIR}/WS_console
