@@ -106,11 +106,11 @@ TAG_ptr_t TAG_map_copy(TAG_ptr_t ptr);
 
 static TAG_ptr_t TAG_init_map(void);
 
-static bool TAG_set_key_string_map(TAG_ptr_t ptr, char *key, TAG_tag_t *tag);
-static TAG_tag_t *TAG_get_key_string_map(TAG_ptr_t ptr, char *key);
+static bool TAG_set_key_string_map(TAG_tag_t *ptr, char *key, TAG_tag_t *tag);
+static TAG_tag_t *TAG_get_key_string_map(TAG_tag_t *ptr, char *key);
 
-static bool TAG_set_key_int_map(TAG_ptr_t ptr, int64_t key, TAG_tag_t *tag);
-static TAG_tag_t *TAG_get_key_int_map(TAG_ptr_t ptr, int64_t key);
+static bool TAG_set_key_int_map(TAG_tag_t *ptr, int64_t key, TAG_tag_t *tag);
+static TAG_tag_t *TAG_get_key_int_map(TAG_tag_t *ptr, int64_t key);
 
 
 
@@ -122,11 +122,11 @@ union WS_SIM_TAG_map_arg
 {
 	TAG_ptr_t (*init)(void);
 
-	bool (*set_key_string)(TAG_ptr_t ptr, char *key, TAG_tag_t *tag);
-	TAG_tag_t *(*get_key_string)(TAG_ptr_t ptr, char *key);
+	bool (*set_key_string)(TAG_tag_t *ptr, char *key, TAG_tag_t *tag);
+	TAG_tag_t *(*get_key_string)(TAG_tag_t *ptr, char *key);
 
-	bool (*set_key_int)(TAG_ptr_t ptr, int64_t key, TAG_tag_t *tag);
-	TAG_tag_t *(*get_key_int)(TAG_ptr_t ptr, int64_t key);
+	bool (*set_key_int)(TAG_tag_t *ptr, int64_t key, TAG_tag_t *tag);
+	TAG_tag_t *(*get_key_int)(TAG_tag_t *ptr, int64_t key);
 
 };
 

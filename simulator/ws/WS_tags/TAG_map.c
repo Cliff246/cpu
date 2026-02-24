@@ -3,6 +3,8 @@
 #include "TAG_tag.h"
 #include <assert.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define TAG_MAPKEY_VTABLE_LIST_FILL(X, Y)		\
@@ -27,7 +29,7 @@ TAG_map_arg_t init_map =
 
 TAG_map_arg_t set_key_string_map =
 {
-	.get_key_string = TAG_get_key_string_map
+	.set_key_string = TAG_set_key_string_map
 };
 
 TAG_map_arg_t set_key_int_map =
@@ -35,15 +37,16 @@ TAG_map_arg_t set_key_int_map =
 	.set_key_int = TAG_set_key_int_map
 };
 
+TAG_map_arg_t get_key_string_map =
+{
+	.get_key_string = TAG_get_key_string_map
+};
+
 TAG_map_arg_t get_key_int_map =
 {
 	.get_key_int =  TAG_get_key_int_map
 };
 
-TAG_map_arg_t get_key_string_map =
-{
-	.get_key_int = TAG_get_key_int_map
-};
 
 //mapkey types functions
 //mapkey hash
@@ -206,7 +209,26 @@ void TAG_map_free(TAG_ptr_t ptr)
 }
 void TAG_map_print(TAG_ptr_t ptr)
 {
-	assert(0);
+	TAG_map_t *map = ptr.MAP;
+	printf("map %ld\n", map->count);
+	for(uint64_t i = 0; i < map->allocated; ++i)
+	{
+		struct TAG_mapelm *elm = &map->map[i];
+		if(elm->hash != -1)
+		{
+
+			if(elm->type == TAG_MAPKEY_STR)
+			{
+				TAG_print_index_str(elm->tag, elm->key.STR);
+
+			}
+			else
+			{
+				TAG_print_index_int(elm->tag,elm->key.INT);
+
+			}
+		}
+	}
 }
 
 TAG_ptr_t TAG_map_copy(TAG_ptr_t ptr)
@@ -225,8 +247,21 @@ TAG_ptr_t TAG_map_copy(TAG_ptr_t ptr)
 
 static TAG_ptr_t TAG_init_map(void)
 {
-	assert(0);
+	TAG_map_t *map = calloc(1, sizeof(TAG_map_t));
+	assert(map);
+	map->allocated = 10;
+	map->map = calloc(map->allocated, sizeof(struct TAG_mapelm));
+
+	for(uint64_t i = 0; i < map->allocated; ++i)
+	{
+		struct TAG_mapelm *elm = &map->map[i];
+		elm->hash = -1;
+	}
+
+	map->count = 0;
+
 	TAG_ptr_t ptr;
+	ptr.MAP = map;
 	return ptr;
 }
 
@@ -249,10 +284,6 @@ bool TAG_set_key_map(TAG_ptr_t ptr, union TAG_mapkey key, enum TAG_mapkey_type t
 		struct TAG_mapelm *mapelm = &map->map[start];
 
 
-		if(mapelm->hash < 0 )
-		{
-			mapelm->hash = TAG_mapkey_hash(mapelm->key, mapelm->type);
-		}
 		int64_t tmp_hash = mapelm->hash;
 		if(tmp_hash == -1)
 		{
@@ -261,6 +292,7 @@ bool TAG_set_key_map(TAG_ptr_t ptr, union TAG_mapkey key, enum TAG_mapkey_type t
 			mapelm->tag = tag;
 			mapelm->type = type;
 			map->count++;
+			//TAG_print(mapelm->tag);
 			return true;
 		}
 		else if(tmp_hash == hash)
@@ -294,17 +326,11 @@ TAG_tag_t *TAG_get_key_map(TAG_ptr_t ptr, union TAG_mapkey key, enum TAG_mapkey_
 	{
 		struct TAG_mapelm *mapelm = &map->map[start];
 
-		if(mapelm->hash < 0)
-		{
-			mapelm->hash = TAG_mapkey_hash(mapelm->key, mapelm->type);
-		}
-		int64_t tmp_hash = mapelm->hash;
-		if(tmp_hash == -1)
-		{
 
-			return NULL;
-		}
-		else if(tmp_hash == hash)
+		int64_t tmp_hash = mapelm->hash;
+
+
+		if(tmp_hash == hash)
 		{
 			if(mapelm->type == type)
 			{
@@ -316,44 +342,51 @@ TAG_tag_t *TAG_get_key_map(TAG_ptr_t ptr, union TAG_mapkey key, enum TAG_mapkey_
 			}
 			start = (start + 1) %  map->allocated;
 		}
+		else if(tmp_hash == -1)
+		{
+			return NULL;
+		}
 		else
 		{
 			start = (start + 1) %  map->allocated;
 		}
 	}
+
 	return NULL;
 
 }
 
 
-static bool TAG_set_key_string_map(TAG_ptr_t ptr, char *key, TAG_tag_t *tag)
+
+static bool TAG_set_key_string_map(TAG_tag_t *ptr, char *key, TAG_tag_t *tag)
 {
 	union TAG_mapkey mapkey;
 	mapkey.STR = key;
-	return TAG_set_key_map(ptr, mapkey, TAG_MAPKEY_STR, tag);
+	//printf("mapkey: <%s>\n", mapkey);
+	return TAG_set_key_map(ptr->ptr, mapkey, TAG_MAPKEY_STR, tag);
 }
 
-static TAG_tag_t *TAG_get_key_string_map(TAG_ptr_t ptr, char *key)
+static TAG_tag_t *TAG_get_key_string_map(TAG_tag_t *ptr, char *key)
 {
 	union TAG_mapkey mapkey;
 	mapkey.STR = key;
-	return TAG_get_key_map(ptr, mapkey, TAG_MAPKEY_STR);
+	return TAG_get_key_map(ptr->ptr, mapkey, TAG_MAPKEY_STR);
 }
 
-static bool TAG_set_key_int_map(TAG_ptr_t ptr, int64_t key, TAG_tag_t *tag)
+static bool TAG_set_key_int_map(TAG_tag_t *ptr, int64_t key, TAG_tag_t *tag)
 {
 	union TAG_mapkey mapkey;
 	mapkey.INT = key;
-	return TAG_set_key_map(ptr, mapkey, TAG_MAPKEY_INT, tag);
+	return TAG_set_key_map(ptr->ptr, mapkey, TAG_MAPKEY_INT, tag);
 }
 
-static TAG_tag_t *TAG_get_key_int_map(TAG_ptr_t ptr, int64_t key)
+static TAG_tag_t *TAG_get_key_int_map(TAG_tag_t *ptr, int64_t key)
 {
 	union TAG_mapkey mapkey;
 
 	mapkey.INT = key;
 
-	return TAG_get_key_map(ptr, mapkey, TAG_MAPKEY_INT);
+	return TAG_get_key_map(ptr->ptr, mapkey, TAG_MAPKEY_INT);
 
 }
 

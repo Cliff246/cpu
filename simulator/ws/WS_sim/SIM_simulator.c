@@ -1,5 +1,4 @@
 #include "SIM_simulator.h"
-#include "MANFST_setting.h"
 #include "IO_configure.h"
 #include "CFG_context.h"
 #include "RUN_graph.h"

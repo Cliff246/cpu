@@ -75,6 +75,9 @@ typedef struct WS_SIM_TAG_tag
 
 void TAG_free(TAG_tag_t *tag);
 void TAG_print(TAG_tag_t *tag);
+void TAG_print_empty(TAG_tag_t *tag);
+void TAG_print_index_str(TAG_tag_t *tag, char *index);
+void TAG_print_index_int(TAG_tag_t *tag, uint64_t i);
 TAG_tag_t *TAG_copy(TAG_tag_t *tag);
 
 

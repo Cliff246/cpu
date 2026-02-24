@@ -316,7 +316,7 @@ void init(int argc, char **argv)
 	SYNTAX_ptree_t *tree = SYNTAX_ptree_create(lex);
 	SYNTAX_ptree_parse(tree);
 	SYNTAX_pnode_print(tree->head, 0);
-	SYNTAX_ptree_free(tree);
+	//SYNTAX_ptree_free(tree);
 	//SYNTAX_pnode_print(tree->settings, 0);
 	MANFST_manifest_t *manifest =  MANFST_init_manifest(tree);
 

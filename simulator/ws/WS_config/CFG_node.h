@@ -41,7 +41,7 @@ typedef struct CFG_node_route_table
 typedef struct CFG_node
 {
 	//deep copied over
-	_Alignas(128) p_hashtable_t initals;
+	p_hashtable_t initals;
 	char *module;
 	uint64_t chnlids_size;
 	CFG_link_id_t *chnlids;
@@ -56,7 +56,7 @@ typedef struct CFG_node
 	}done;
 	bool has_pretag;
 	bool has_address;
-
+	
 }CFG_node_t;
 
 bool CFG_add_prototag_node(CFG_node_t *node, MANFST_prototag_t *tag);

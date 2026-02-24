@@ -22,7 +22,7 @@ static CFG_node_ctx_t *CFG_init_node_ctx(MANFST_manifest_t *manifest, CFG_contex
 {
 	CFG_node_ctx_t *cfgctx = calloc(1, sizeof(CFG_node_ctx_t));
 	assert(cfgctx);
-	const uint64_t size = manifest->entries_size;
+	const uint64_t size = 1;// manifest->entries_size;
 	assert(size > 0);
 
 	CFG_node_t *cfglist = calloc(size, sizeof(CFG_node_t));
@@ -30,11 +30,13 @@ static CFG_node_ctx_t *CFG_init_node_ctx(MANFST_manifest_t *manifest, CFG_contex
 
 	for(int i = 0; i < size; ++i)
 	{
-		MANFST_entry_t *entry = manifest->entries[i];
-		CFG_node_t *cfg = &cfglist[i];
-		bool passed = CFG_init_node(cfg, entry, context->channelbuf);
 
-		assert(passed);
+		//TODO
+		//MANFST_entry_t *entry = manifest->entries[i];
+		//CFG_node_t *cfg = &cfglist[i];
+		//bool passed = CFG_init_node(cfg, entry, context->channelbuf);
+
+		//assert(passed);
 
 	}
 	cfgctx->cfgs = cfglist;
@@ -49,7 +51,7 @@ static CFG_edge_ctx_t *CFG_init_edge_ctx(MANFST_manifest_t *manifest, CFG_contex
 	CFG_edge_ctx_t *cfgctx = calloc(1, sizeof(CFG_edge_ctx_t));
 	assert(cfgctx);
 
-	const uint64_t size = manifest->settings_size;
+	const uint64_t size = 1;//manifest->settings_size;
 	assert(size > 0);
 	//printf("size: %d\n", size);
 
@@ -58,11 +60,11 @@ static CFG_edge_ctx_t *CFG_init_edge_ctx(MANFST_manifest_t *manifest, CFG_contex
 
 	for(uint64_t i = 0; i < size; ++i)
 	{
-		MANFST_setting_t *setting = manifest->settings[i];
+		//MANFST_setting_t *setting = manifest->settings[i];
 
 
-		CFG_init_edge(&cfglist[i], setting->id, setting->latency,setting->throughput);
-		cfgctx->highestid = MAX(setting->id, cfgctx->highestid);
+		//CFG_init_edge(&cfglist[i], setting->id, setting->latency,setting->throughput);
+		//cfgctx->highestid = MAX(setting->id, cfgctx->highestid);
 		//CFG_print_edge(&cfglist[i]);
 	}
 

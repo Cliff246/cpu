@@ -59,7 +59,29 @@ void TAG_print(TAG_tag_t *tag)
 	TAG_vtable_list[tag->type]->print(tag->ptr);
 }
 
+void TAG_print_empty(TAG_tag_t *tag)
+{
+	TAG_vtable_list[tag->type]->print(tag->ptr);
 
+}
+void TAG_print_index_str(TAG_tag_t *tag, char *index)
+{
+	printf("[%19s]=",index);
+	printf("TAG<%s>: ", TAG_type_string_list[tag->type]);
+
+	TAG_vtable_list[tag->type]->print(tag->ptr);
+
+
+}
+
+void TAG_print_index_int(TAG_tag_t *tag, uint64_t i)
+{
+	printf("[%19ld]=",i);
+	printf("TAG<%s>: ", TAG_type_string_list[tag->type]);
+
+	TAG_vtable_list[tag->type]->print(tag->ptr);
+
+}
 
 TAG_tag_t *TAG_copy(TAG_tag_t *tag)
 {

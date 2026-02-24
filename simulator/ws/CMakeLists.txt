@@ -40,13 +40,14 @@ set(CMAKE_BUILD_TYPE Debug)
 target_link_libraries(ws
 	wcpu_commons
 	wcpu_emu_inputs
+	sim_shared_interface
+
 	ws_io
 	ws_sim
 	ws_core
 	ws_res
 	ws_tag
 	ws_cfg
-	sim_shared_interface
 	ws_run
 	ws_manfst
 	ws_syntax
@@ -57,13 +58,14 @@ target_link_libraries(ws
 target_include_directories(ws PUBLIC
 	wcpu_commons
 	wcpu_emu_inputs
+	sim_shared_interface
+
 	ws_io
 	ws_sim
 	ws_core
 	ws_res
 	ws_tag
 	ws_cfg
-	sim_shared_interface
 	ws_run
 	ws_manfst
 	ws_syntax
