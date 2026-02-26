@@ -2,13 +2,15 @@
 #define __MANFST_MANIFEST_HEADER__
 
 #include "SYNTAX_parser.h"
+#include "MANFST_scope.h"
 #include "TAG_tag.h"
 #include <stdint.h>
 
 
 typedef struct MANFST_manifest
 {
-	TAG_tag_t *head;
+	uint64_t scopes_size;
+	MANFST_scope_t *scopes;
 	SYNTAX_ptree_t *tree;
 }MANFST_manifest_t;
 

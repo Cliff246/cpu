@@ -4,10 +4,7 @@
 #include "manager.h"
 //#include "core.h"
 //#include "coreutils.h"
-#include "MANFST_entry.h"
 #include "MANFST_manifest.h"
-#include "SIM_device.h"
-#include "MANFST_prototag.h"
 #include "TAG_bool.h"
 #include "TAG_list.h"
 #include "TAG_tag.h"
@@ -315,13 +312,13 @@ void init(int argc, char **argv)
 //	print_toklex(lex);
 	SYNTAX_ptree_t *tree = SYNTAX_ptree_create(lex);
 	SYNTAX_ptree_parse(tree);
-	SYNTAX_pnode_print(tree->head, 0);
+	//SYNTAX_pnode_print(tree->head, 0);
 	//SYNTAX_ptree_free(tree);
 	//SYNTAX_pnode_print(tree->settings, 0);
 	MANFST_manifest_t *manifest =  MANFST_init_manifest(tree);
 
-	//SIM_simulator_t *sim = SIM_init_simulator();
-	//SIM_load_manifest_simulator(sim, manifest);
+	SIM_simulator_t *sim = SIM_init_simulator();
+	SIM_load_manifest_simulator(sim, manifest);
 	//SIM_init_stage_simulator(sim);
 	//SIM_alloc_graph(sim);
 	//SIM_build_graph(sim);

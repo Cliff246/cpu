@@ -201,7 +201,37 @@ void TAG_map_realloc(TAG_ptr_t ptr)
 
 }
 
+void TAG_map_print_entries(TAG_ptr_t ptr)
+{
+	TAG_map_t *map = ptr.MAP;
+	uint64_t old_max = map->allocated;
+	for(uint64_t k = 0; k < old_max; ++k)
+	{
+		struct TAG_mapelm *elm = &map->map[k];
+		if(elm->hash != -1)
+		{
+
+			if(elm->type == TAG_MAPKEY_STR)
+			{
+				printf("[%ld] = %s\n", k, elm->key.STR);
+			}
+			else
+			{
+				printf("[%ld] = %ld\n", k, elm->key.INT);
+
+			}
+		}
+		else
+		{
+			printf("[%ld] = empty\n", k );
+		}
+	}
+
+
+}
+
 //default functions
+
 
 void TAG_map_free(TAG_ptr_t ptr)
 {
@@ -344,6 +374,7 @@ TAG_tag_t *TAG_get_key_map(TAG_ptr_t ptr, union TAG_mapkey key, enum TAG_mapkey_
 		}
 		else if(tmp_hash == -1)
 		{
+			printf("tmp hash == -1 \n");
 			return NULL;
 		}
 		else
@@ -351,7 +382,7 @@ TAG_tag_t *TAG_get_key_map(TAG_ptr_t ptr, union TAG_mapkey key, enum TAG_mapkey_
 			start = (start + 1) %  map->allocated;
 		}
 	}
-
+	printf("got nothing\n");
 	return NULL;
 
 }
@@ -370,6 +401,7 @@ static TAG_tag_t *TAG_get_key_string_map(TAG_tag_t *ptr, char *key)
 {
 	union TAG_mapkey mapkey;
 	mapkey.STR = key;
+	printf("%s\n", key);
 	return TAG_get_key_map(ptr->ptr, mapkey, TAG_MAPKEY_STR);
 }
 

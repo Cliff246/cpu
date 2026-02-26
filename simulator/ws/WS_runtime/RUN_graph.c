@@ -2,7 +2,7 @@
 #include "RUN_addrtbl.h"
 #include "RUN_idmap.h"
 #include "RUN_pools.h"
-#include "SIM_stage.h"
+#include "SCENE_scene.h"
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -10,16 +10,16 @@
 
 //-------------------------------------------------------
 //
-//	ALLOC STAGE
+//	ALLOC scene
 //
 //-------------------------------------------------------
 
 
 bool RUN_alloc_graph_idmap(RUN_graph_t *graph)
 {
-	const SIM_stage_t *stage = graph->stage;
+	const SCENE_scene_t *scene = graph->scene;
 
-	RUN_alloc_idmap(&graph->idmap ,stage->devices_count);
+	RUN_alloc_idmap(&graph->idmap ,scene->devices_count);
 
 
 	return true;
@@ -28,7 +28,7 @@ bool RUN_alloc_graph_idmap(RUN_graph_t *graph)
 
 bool RUN_alloc_graph_pool(RUN_graph_t *graph)
 {
-	const SIM_stage_t *stage = graph->stage;
+	const SCENE_scene_t *scene = graph->scene;
 
 	RUN_alloc_pool(&graph->pool);
 
@@ -38,7 +38,7 @@ bool RUN_alloc_graph_pool(RUN_graph_t *graph)
 
 bool  RUN_alloc_graph_addrtbl(RUN_graph_t *graph)
 {
-	const SIM_stage_t *stage = graph->stage;
+	const SCENE_scene_t *scene = graph->scene;
 	uint64_t tmp = 0;
 	assert(tmp != 0);
 	RUN_alloc_addrtbl(&graph->addrtbl, tmp);
@@ -49,7 +49,7 @@ bool  RUN_alloc_graph_addrtbl(RUN_graph_t *graph)
 
 bool  RUN_alloc_graph(RUN_graph_t *graph)
 {
-	const SIM_stage_t *stage = graph->stage;
+	const SCENE_scene_t *scene = graph->scene;
 
 	RUN_alloc_graph_idmap(graph);
 	RUN_alloc_graph_pool(graph);
@@ -60,7 +60,7 @@ bool  RUN_alloc_graph(RUN_graph_t *graph)
 
 
 
-	printf("idmap[%lu]=%ld\n", stage->devices[1].tag, RUN_get_did_idmap(graph->idmap, stage->devices[1].tag));
+	printf("idmap[%lu]=%ld\n", scene->devices[1].tag, RUN_get_did_idmap(graph->idmap, scene->devices[1].tag));
 	*/
 	return true;
 
@@ -68,7 +68,7 @@ bool  RUN_alloc_graph(RUN_graph_t *graph)
 
 //-------------------------------------------------------
 //
-//	BUILD STAGE
+//	BUILD scene
 //
 //-------------------------------------------------------
 
@@ -78,17 +78,17 @@ bool  RUN_alloc_graph(RUN_graph_t *graph)
 
 bool RUN_build_graph_idmap(RUN_graph_t *graph)
 {
-	const SIM_stage_t *stage = graph->stage;
+	const SCENE_scene_t *scene = graph->scene;
 
-	SIM_dkey_t dkeys[stage->devices_count];
-	SIM_did_t did[stage->devices_count];
-	for(uint64_t i = 0; i < stage->devices_count; ++i)
+	SIM_dkey_t dkeys[scene->devices_count];
+	SIM_did_t did[scene->devices_count];
+	for(uint64_t i = 0; i < scene->devices_count; ++i)
 	{
-		SIM_device_t *dev = stage->devices[i];
+		SCENE_device_t *dev = scene->devices[i];
 		dkeys[i] = dev->dkey;
 		did[i] = dev->id;
 	}
-	RUN_build_idmap(&graph->idmap, dkeys, did, stage->devices_count);
+	RUN_build_idmap(&graph->idmap, dkeys, did, scene->devices_count);
 
 	return true;
 
@@ -96,9 +96,9 @@ bool RUN_build_graph_idmap(RUN_graph_t *graph)
 
 bool RUN_build_graph_pool(RUN_graph_t *graph)
 {
-	const SIM_stage_t *stage = graph->stage;
+	const SCENE_scene_t *scene = graph->scene;
 
-	RUN_build_pool(&graph->pool, graph->stage);
+	RUN_build_pool(&graph->pool, graph->scene);
 
 	return true;
 
@@ -106,9 +106,9 @@ bool RUN_build_graph_pool(RUN_graph_t *graph)
 
 bool RUN_build_graph_addrtbl(RUN_graph_t *graph)
 {
-	const SIM_stage_t *stage = graph->stage;
+	const SCENE_scene_t *scene = graph->scene;
 
-	RUN_build_addrtbl(&graph->addrtbl, graph->stage);
+	RUN_build_addrtbl(&graph->addrtbl, graph->scene);
 
 	return true;
 
@@ -130,58 +130,58 @@ bool RUN_build_graph(RUN_graph_t *graph)
 
 /*
 
-void SIM_graph_add_devices(SIM_graph_t *graph, SIM_device_t **devices, uint64_t size)
+void SCENE_graph_add_devices(SCENE_graph_t *graph, SCENE_device_t **devices, uint64_t size)
 {
 	graph->objects_size = size;
-	graph->objects = calloc(size, sizeof(SIM_object_t));
+	graph->objects = calloc(size, sizeof(SCENE_object_t));
 
 
 	for(int i = 0; i < size; ++i)
 	{
-		graph->objects[i] = SIM_object_init(devices[i]);
+		graph->objects[i] = SCENE_object_init(devices[i]);
 	}
 }
 
 
 
-void SIM_graph_object_update(SIM_graph_t *graph)
+void SCENE_graph_object_update(SCENE_graph_t *graph)
 {
 
-	const SIM_object_global_t objects_size = graph->objects_size;
+	const SCENE_object_global_t objects_size = graph->objects_size;
 
 	for(uint32_t i = 0; i < objects_size; ++i)
 	{
 
-		SIM_object_t *object = &graph->objects[i];
+		SCENE_object_t *object = &graph->objects[i];
 
-		SIM_object_update(object);
+		SCENE_object_update(object);
 
 	}
 }
 
-void SIM_graph_object_read(SIM_graph_t *graph)
+void SCENE_graph_object_read(SCENE_graph_t *graph)
 {
-	const SIM_object_global_t objects_size = graph->objects_size;
+	const SCENE_object_global_t objects_size = graph->objects_size;
 
 	for(uint32_t i = 0; i < objects_size; ++i)
 	{
 
-		SIM_object_t *object = &graph->objects[i];
+		SCENE_object_t *object = &graph->objects[i];
 		assert(object);
-		SIM_port_t *port = object->port;
+		SCENE_port_t *port = object->port;
 		assert(port);
 
 		OBJ_bundle_t bnd = {0};
 		assert(0 && "TODO");
 
-		bool produced = SIM_port_produce_bundle(graph, port,&bnd);
+		bool produced = SCENE_port_produce_bundle(graph, port,&bnd);
 
 		if(!produced)
 		{
 			assert(0 && "production of bundle and reading of channels failed");
 		}
 
-		SIM_object_read(object, &bnd);
+		SCENE_object_read(object, &bnd);
 
 
 
@@ -189,17 +189,17 @@ void SIM_graph_object_read(SIM_graph_t *graph)
 	}
 }
 
-void SIM_graph_object_write(SIM_graph_t *graph)
+void SCENE_graph_object_write(SCENE_graph_t *graph)
 {
-	const SIM_object_global_t objects_size = graph->objects_size;
+	const SCENE_object_global_t objects_size = graph->objects_size;
 
 	for(uint32_t i = 0; i < objects_size; ++i)
 	{
 
-		SIM_object_t *object = &graph->objects[i];
+		SCENE_object_t *object = &graph->objects[i];
 		assert(object);
 
-		SIM_port_t *port = object->port;
+		SCENE_port_t *port = object->port;
 		assert(port);
 		OBJ_bundle_t bnd = {0};
 
@@ -207,10 +207,10 @@ void SIM_graph_object_write(SIM_graph_t *graph)
 
 		assert(0 && "TODO");
 
-		SIM_object_write(object, &bnd);
+		SCENE_object_write(object, &bnd);
 		//todo gather bundle information send to port
 		//collect and distrubute out
-		bool recieved = SIM_port_recieve_bundle(graph, port, &bnd);
+		bool recieved = SCENE_port_recieve_bundle(graph, port, &bnd);
 
 		if(!recieved)
 		{
@@ -221,33 +221,33 @@ void SIM_graph_object_write(SIM_graph_t *graph)
 	}
 }
 
-void SIM_graph_wire_read(SIM_graph_t *graph)
+void SCENE_graph_wire_read(SCENE_graph_t *graph)
 {
 	const uint32_t wire_size = graph->wires_size;
 
 	for(uint32_t iwr = 0; iwr < wire_size; ++iwr)
 	{
-		SIM_wire_t *wire = &graph->wires[iwr];
+		SCENE_wire_t *wire = &graph->wires[iwr];
 		if(wire->transfering)
 		{
-			SIM_wire_channel_t output =  SIM_wire_bus_get_output(wire);
-			SIM_channel_global_t global_output =  SIM_wire_channel_convert(wire, output);
-			SIM_channel_t *channel = SIM_graph_get_channel(graph, global_output);
-			SIM_transfer_global_t global_transfer = SIM_wire_get_current_transfer_global(wire);
+			SCENE_wire_channel_t output =  SCENE_wire_bus_get_output(wire);
+			SCENE_channel_global_t global_output =  SCENE_wire_channel_convert(wire, output);
+			SCENE_channel_t *channel = SCENE_graph_get_channel(graph, global_output);
+			SCENE_transfer_global_t global_transfer = SCENE_wire_get_current_transfer_global(wire);
 
 			//wire read from the graph and get packet via a copy
 
-			SIM_transfer_t *transfer = SIM_graph_get_transfer(graph, global_transfer);
-			SIM_packet_t packet = {0};
+			SCENE_transfer_t *transfer = SCENE_graph_get_transfer(graph, global_transfer);
+			SCENE_packet_t packet = {0};
 
-			bool transfer_success = SIM_transfer_read(transfer, &packet);
+			bool transfer_success = SCENE_transfer_read(transfer, &packet);
 			if(!transfer_success)
 			{
 				assert(0 && "TODO transfer failed");
 			}
 
 
-			bool channel_set_success = SIM_channel_set_packet(channel, packet);
+			bool channel_set_success = SCENE_channel_set_packet(channel, packet);
 
 			if(!channel_set_success)
 			{
@@ -262,55 +262,55 @@ void SIM_graph_wire_read(SIM_graph_t *graph)
 
 }
 
-void SIM_graph_wire_write(SIM_graph_t *graph)
+void SCENE_graph_wire_write(SCENE_graph_t *graph)
 {
 	const uint32_t wire_size = graph->wires_size;
 
 	for(uint32_t iww = 0; iww < wire_size; ++iww)
 	{
-		SIM_wire_t *wire = &graph->wires[iww];
-		SIM_wire_channel_t output =  SIM_wire_bus_get_output(wire);
-		SIM_channel_global_t global_output =  SIM_wire_channel_convert(wire, output);
-		SIM_channel_t *channel = SIM_graph_get_channel(graph, global_output);
+		SCENE_wire_t *wire = &graph->wires[iww];
+		SCENE_wire_channel_t output =  SCENE_wire_bus_get_output(wire);
+		SCENE_channel_global_t global_output =  SCENE_wire_channel_convert(wire, output);
+		SCENE_channel_t *channel = SCENE_graph_get_channel(graph, global_output);
 
-		SIM_transfer_global_t global_transfer = SIM_wire_get_current_transfer_global(wire);
-		SIM_transfer_t *transfer = SIM_graph_get_transfer(graph, global_transfer);
+		SCENE_transfer_global_t global_transfer = SCENE_wire_get_current_transfer_global(wire);
+		SCENE_transfer_t *transfer = SCENE_graph_get_transfer(graph, global_transfer);
 
-		SIM_packet_t packet = {0};
+		SCENE_packet_t packet = {0};
 
 
-		bool channel_get_success = SIM_channel_get_packet(channel, &packet);
+		bool channel_get_success = SCENE_channel_get_packet(channel, &packet);
 		if(!channel_get_success)
 		{
 			assert(0 && "TODO get failed");
 		}
 
-		bool transfer_success = SIM_transfer_send(transfer, packet);
+		bool transfer_success = SCENE_transfer_send(transfer, packet);
 		if(!transfer_success)
 		{
 			assert(0 && "TODO transfer send failed");
 		}
-		SIM_wire_update_scroll(wire);
+		SCENE_wire_update_scroll(wire);
 	}
 }
 
 
 
 
-void SIM_graph_update(SIM_graph_t *graph)
+void SCENE_graph_update(SCENE_graph_t *graph)
 {
 
 	assert(graph->flags.changed == false);
-	SIM_graph_wire_read(graph);
+	SCENE_graph_wire_read(graph);
 	//a waste for now but i am so lazy
-	SIM_graph_object_read(graph);
-	SIM_graph_object_update(graph);
-	SIM_graph_object_write(graph);
+	SCENE_graph_object_read(graph);
+	SCENE_graph_object_update(graph);
+	SCENE_graph_object_write(graph);
 	//another waste for now but i am soooooooo lazy
-	SIM_graph_wire_write(graph);
+	SCENE_graph_wire_write(graph);
 }
 
-SIM_transfer_t *SIM_graph_get_transfer(SIM_graph_t *graph, SIM_transfer_global_t global)
+SCENE_transfer_t *SCENE_graph_get_transfer(SCENE_graph_t *graph, SCENE_transfer_global_t global)
 {
 	assert(global);
 	assert(global < graph->transfer_size);

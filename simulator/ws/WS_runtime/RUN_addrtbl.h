@@ -2,7 +2,8 @@
 #define __RUN_ADDRESSTABLE_HEADER__
 
 #include "RUN_commons.h"
-#include "SIM_stage.h"
+#include "SCENE_scene.h"
+
 #include <stdint.h>
 
 typedef struct RUN_address_elment
@@ -22,7 +23,7 @@ typedef struct RUN_address_table
 void RUN_alloc_addrtbl(RUN_addrtbl_t *tbl, uint64_t size);
 
 //builds address table
-void RUN_build_addrtbl(RUN_addrtbl_t *tbl, const SIM_stage_t *stage);
+void RUN_build_addrtbl(RUN_addrtbl_t *tbl, const SCENE_scene_t *scene);
 
 
 #endif

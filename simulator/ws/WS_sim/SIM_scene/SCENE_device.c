@@ -1,6 +1,4 @@
-#include "SIM_device.h"
-#include "MANFST_entry.h"
-#include "MANFST_prototag.h"
+#include "SCENE_device.h"
 #include "CFG_link.h"
 #include "SIM_handle.h"
 #include "TAG_int.h"
@@ -17,7 +15,7 @@
 
 
 
-static p_hashtable_t SIM_copy_hashtable(p_hashtable_t old)
+static p_hashtable_t SCENE_copy_hashtable(p_hashtable_t old)
 {
  	p_hashtable_t copy = new_hash_table(100, SIM_free_tag_table_elem);
 
@@ -36,10 +34,10 @@ static p_hashtable_t SIM_copy_hashtable(p_hashtable_t old)
 }
 
 //allocate device
-SIM_device_t *SIM_alloc_device()
+SCENE_device_t *SCENE_alloc_device()
 {
 
-	SIM_device_t *device = calloc(1, sizeof(SIM_device_t));
+	SCENE_device_t *device = calloc(1, sizeof(SCENE_device_t));
 	assert(device);
 
 	return device;
@@ -49,35 +47,35 @@ SIM_device_t *SIM_alloc_device()
 
 
 //init
-void SIM_init_device(SIM_device_t *device, CFG_node_t *devctx)
+void SCENE_init_device(SCENE_device_t *device, CFG_node_t *devctx)
 {
 
-	device->tags = SIM_copy_hashtable(devctx->initals);
+	device->tags = SCENE_copy_hashtable(devctx->initals);
 	device->handle = SIM_init_handle(devctx->module);
 	device->dkey = (int64_t)devctx->pretag;
 
 }
 
 
-void SIM_resolve_device(SIM_device_t *device)
+void SCENE_resolve_device(SCENE_device_t *device)
 {
 	assert(0 && "TODO");
 }
 
-void SIM_build_device(SIM_device_t *device)
+void SCENE_build_device(SCENE_device_t *device)
 {
 	assert(0 && "TODO");
 
 }
 
 
-void SIM_device_print(SIM_device_t *device)
+void SCENE_device_print(SCENE_device_t *device)
 {
 
 }
 
 
-void SIM_free_device(SIM_device_t *device)
+void SCENE_free_device(SCENE_device_t *device)
 {
 	assert(0 && "lol imagine freeing this ");
 }

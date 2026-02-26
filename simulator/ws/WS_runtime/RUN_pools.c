@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 
-void RUN_init_pool_ring(RUN_pool_t *pool, const SIM_stage_t *stage)
+void RUN_init_pool_ring(RUN_pool_t *pool, const SCENE_scene_t *scene)
 {
 	RUN_pool_ring_t *ring = &pool->pool_ring;
 
@@ -83,7 +83,7 @@ void RUN_add_to_pool_rr(RUN_pool_t *pool, RUN_wireid_t wire_id, RUN_chnlid_t chn
 }
 
 //round robin init to do
-void RUN_init_pool_rr(RUN_pool_t *pool, const SIM_stage_t *stage)
+void RUN_init_pool_rr(RUN_pool_t *pool, const SCENE_scene_t *scene)
 {
 	assert(0 && "TODO");
 
@@ -100,14 +100,14 @@ RUN_chnl_t *RUN_get_chnl_pool_chnl_wire(RUN_pool_t *pool, RUN_wireid_t id, uint1
 
 }
 
-void RUN_init_pool_chnl(RUN_pool_t *pool, const SIM_stage_t *stage)
+void RUN_init_pool_chnl(RUN_pool_t *pool, const SCENE_scene_t *scene)
 {
 
 	assert(0 && "TODO");
 }
 
 
-void RUN_init_pool_obj(RUN_pool_t *pool, const SIM_stage_t *stage)
+void RUN_init_pool_obj(RUN_pool_t *pool, const SCENE_scene_t *scene)
 {
 	assert(0 && "TODO");
 
@@ -128,13 +128,13 @@ void RUN_alloc_pool(RUN_pool_t *pool)
 	assert(pool->arena != NULL);
 }
 
-void RUN_build_pool(RUN_pool_t *pool, const SIM_stage_t *stage)
+void RUN_build_pool(RUN_pool_t *pool, const SCENE_scene_t *scene)
 {
 	assert(pool->allocated && "pool must be allocated");
-	RUN_init_pool_obj(pool,stage);
-	RUN_init_pool_rr(pool, stage);
-	RUN_init_pool_ring(pool, stage);
-	RUN_init_pool_chnl(pool, stage);
+	RUN_init_pool_obj(pool,scene);
+	RUN_init_pool_rr(pool, scene);
+	RUN_init_pool_ring(pool, scene);
+	RUN_init_pool_chnl(pool, scene);
 }
 
 void *RUN_alloc_arena_pool(RUN_pool_t *pool, uint64_t size, uint64_t align)

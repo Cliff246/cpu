@@ -95,6 +95,7 @@ bool TAG_mapkey_cmp(union TAG_mapkey key1, union TAG_mapkey key2, enum TAG_mapke
 //helpers
 void TAG_map_realloc(TAG_ptr_t ptr);
 
+void TAG_map_print_entries(TAG_ptr_t ptr);
 
 //generic map functions required by tag
 void TAG_map_free(TAG_ptr_t ptr);

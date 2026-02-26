@@ -1,7 +1,7 @@
 #ifndef __SIM_GRAPHMAP_HEADER__
 #define __SIM_GRAPHMAP_HEADER__
 
-#include "SIM_device.h"
+#include "SCENE_device.h"
 #include "SIM_commons.h"
 #include <stdint.h>
 

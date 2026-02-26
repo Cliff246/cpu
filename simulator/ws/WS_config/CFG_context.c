@@ -7,6 +7,8 @@
 #include "CFG_edge.h"
 
 #include "CFG_map.h"
+#include "TAG_map.h"
+
 #include "commons.h"
 #include <assert.h>
 #include <stdint.h>
@@ -22,22 +24,36 @@ static CFG_node_ctx_t *CFG_init_node_ctx(MANFST_manifest_t *manifest, CFG_contex
 {
 	CFG_node_ctx_t *cfgctx = calloc(1, sizeof(CFG_node_ctx_t));
 	assert(cfgctx);
-	const uint64_t size = 1;// manifest->entries_size;
+	const uint64_t size = manifest->scopes_size;// manifest->entries_size;
 	assert(size > 0);
 
 	CFG_node_t *cfglist = calloc(size, sizeof(CFG_node_t));
 	assert(cfglist);
+	printf("try to get\n");
+	TAG_argptr_t get_key =	TAG_get_fn(TAG_MAP, TAG_FN_MAP_GET_KEY_STRING);
+	
+	
 
+
+
+
+	printf("do this\n");
 	for(int i = 0; i < size; ++i)
 	{
-
 		//TODO
 		//MANFST_entry_t *entry = manifest->entries[i];
-		//CFG_node_t *cfg = &cfglist[i];
+		CFG_node_t *cfg = &cfglist[i];
+		TAG_tag_t *tag = manifest->scopes[i].scope;
+		TAG_print(tag);
+
 		//bool passed = CFG_init_node(cfg, entry, context->channelbuf);
 
 		//assert(passed);
-
+		//
+	;
+		//bool passed = CFG_init_node(cfg, entry, context->channelbuf);	
+		bool passed = CFG_init_node(cfg, NULL, context->channelbuf);
+		
 	}
 	cfgctx->cfgs = cfglist;
 	cfgctx->count = size;

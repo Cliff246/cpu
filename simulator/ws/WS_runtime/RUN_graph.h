@@ -6,13 +6,13 @@
 #include "RUN_object.h"
 #include "RUN_pools.h"
 #include "RUN_idmap.h"
-#include "SIM_stage.h"
+#include "SCENE_scene.h"
 #include <stdint.h>
 
 typedef struct RUN_graph
 {
 
-	const SIM_stage_t *stage;
+	const SCENE_scene_t *scene;
 	RUN_idmap_t idmap;
 	RUN_addrtbl_t addrtbl;
 	RUN_pool_t pool;

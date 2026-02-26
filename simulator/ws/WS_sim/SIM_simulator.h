@@ -7,8 +7,8 @@
 #include "CFG_context.h"
 #include "RES_pool.h"
 #include "RUN_graph.h"
-#include "SIM_device.h"
-#include "SIM_stage.h"
+#include "STAGE_stage.h"
+#include "SCENE_scene.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -17,7 +17,9 @@
 typedef struct WS_SIM_simulator
 {
 	CFG_context_t *ctx;
-	SIM_stage_t *stage;
+	STAGE_stage_t *stage;
+	SCENE_scene_t *scene;
+	
 	RUN_graph_t *graph;
 	RES_pool_t *pool;
 }SIM_simulator_t;

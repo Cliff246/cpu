@@ -1,15 +1,16 @@
-#include "SIM_stage.h"
+
+
+#include "SCENE_scene.h"
 
 
 #include "CFG_map.h"
 #include "CFG_link.h"
-#include "RUN_graph.h"
-#include "SIM_anchor.h"
 #include "SIM_commons.h"
 #include "CFG_context.h"
-#include "SIM_device.h"
+#include "SCENE_anchor.h"
+#include "SCENE_device.h"
+#include "SCENE_wire.h"
 #include "CFG_edge.h"
-#include "SIM_wire.h"
 #include "commons.h"
 
 #include <stdlib.h>
@@ -25,34 +26,34 @@
 
 
 //stage helpers
-uint64_t SIM_get_stage_map(SIM_stage_map_t *map, int64_t key);
-void SIM_free_stage_map(SIM_stage_map_t *map);
-bool SIM_append_stage_map(SIM_stage_map_t *map, int64_t key, uint64_t index);
-void SIM_build_stage_map(SIM_stage_map_t *map, int64_t *keys, uint64_t *indexs, uint64_t size);
+uint64_t SCENE_get_stage_map(SCENE_scene_map_t *map, int64_t key);
+void SCENE_free_stage_map(SCENE_scene_map_t *map);
+bool SCENE_append_stage_map(SCENE_scene_map_t *map, int64_t key, uint64_t index);
+void SCENE_build_stage_map(SCENE_scene_map_t *map, int64_t *keys, uint64_t *indexs, uint64_t size);
 
 
 //generation helpers
-void SIM_define_stage_gen_anchors(SIM_stage_gen_t *generator);
-void SIM_link_stage_gen_anchors(SIM_stage_gen_t *generator);
+void SCENE_define_stage_gen_anchors(SCENE_scene_gen_t *generator);
+void SCENE_link_stage_gen_anchors(SCENE_scene_gen_t *generator);
 
 //stage 1
 //allocate the devices
-void SIM_alloc_stage_gen_devices(SIM_stage_gen_t *generator);
-void SIM_alloc_stage_gen_wires(SIM_stage_gen_t *generator);
+void SCENE_alloc_stage_gen_devices(SCENE_scene_gen_t *generator);
+void SCENE_alloc_stage_gen_wires(SCENE_scene_gen_t *generator);
 //stage 2
 //fill with locals
-void SIM_init_stage_gen_devices(SIM_stage_gen_t *generator);
-void SIM_init_stage_gen_wires(SIM_stage_gen_t *generator);
+void SCENE_init_stage_gen_devices(SCENE_scene_gen_t *generator);
+void SCENE_init_stage_gen_wires(SCENE_scene_gen_t *generator);
 
 //stage 3
 //fill with globals
-void SIM_resolve_stage_gen_devices(SIM_stage_gen_t *generator);
-void SIM_resolve_stage_gen_wires(SIM_stage_gen_t *generator);
+void SCENE_resolve_stage_gen_devices(SCENE_scene_gen_t *generator);
+void SCENE_resolve_stage_gen_wires(SCENE_scene_gen_t *generator);
 
 //stage 4
 //ugh... 4 is better than 3?
-void SIM_build_stage_gen_devices(SIM_stage_gen_t *generator);
-void SIM_build_stage_gen_wire(SIM_stage_gen_t *generator);
+void SCENE_build_stage_gen_devices(SCENE_scene_gen_t *generator);
+void SCENE_build_stage_gen_wire(SCENE_scene_gen_t *generator);
 
 struct mapelm
 {
@@ -62,29 +63,29 @@ struct mapelm
 struct mapelm *make_map(uint64_t size);
 void append_map(struct mapelm *map, uint64_t size, int64_t key);
 //generator stage
-bool SIM_check_conflicts_stage_gen(SIM_stage_gen_t *gen);
-void SIM_rebuild_stage_gen(SIM_stage_gen_t *gen);
-void SIM_alloc_stage_gen(SIM_stage_gen_t *gen);
-void SIM_init_stage_gen(SIM_stage_gen_t *gen);
-void SIM_resolve_stage_gen(SIM_stage_gen_t *gen);
-void SIM_build_stage_gen(SIM_stage_gen_t *gen);
+bool SCENE_check_conflicts_stage_gen(SCENE_scene_gen_t *gen);
+void SCENE_rebuild_stage_gen(SCENE_scene_gen_t *gen);
+void SCENE_alloc_stage_gen(SCENE_scene_gen_t *gen);
+void SCENE_init_stage_gen(SCENE_scene_gen_t *gen);
+void SCENE_resolve_stage_gen(SCENE_scene_gen_t *gen);
+void SCENE_build_stage_gen(SCENE_scene_gen_t *gen);
 
 //----------------------------------------
 //
-//				SIM
+//				SCENE
 //
 //----------------------------------------
 
-SIM_stage_t *SIM_init_stage(void)
+SCENE_scene_t *SCENE_init_stage(void)
 {
 
-	SIM_stage_t *stage = calloc(1, sizeof(SIM_stage_t));
+	SCENE_scene_t *stage = calloc(1, sizeof(SCENE_scene_t));
 	assert(stage);
 	stage->has_generated = false;
 	return stage;
 }
 
-uint64_t SIM_get_stage_map(SIM_stage_map_t *map, int64_t key)
+uint64_t SCENE_get_stage_map(SCENE_scene_map_t *map, int64_t key)
 {
 	uint64_t ukey = (uint64_t)key;
 	uint64_t pos = ukey % map->count;
@@ -105,14 +106,14 @@ uint64_t SIM_get_stage_map(SIM_stage_map_t *map, int64_t key)
 	return 0;
 }
 
-void SIM_free_stage_map(SIM_stage_map_t *map)
+void SCENE_free_stage_map(SCENE_scene_map_t *map)
 {
 	free(map->elms);
 	map->elms = NULL;
 	map->count = 0;
 }
 
-bool SIM_append_stage_map(SIM_stage_map_t *map, int64_t key, uint64_t index)
+bool SCENE_append_stage_map(SCENE_scene_map_t *map, int64_t key, uint64_t index)
 {
 
 	uint64_t ukey = (uint64_t)key;
@@ -142,13 +143,13 @@ bool SIM_append_stage_map(SIM_stage_map_t *map, int64_t key, uint64_t index)
 	return false;
 }
 
-void SIM_build_stage_map(SIM_stage_map_t *map, int64_t *keys, uint64_t *indexs, uint64_t size)
+void SCENE_build_stage_map(SCENE_scene_map_t *map, int64_t *keys, uint64_t *indexs, uint64_t size)
 {
-	SIM_free_stage_map(map);
+	SCENE_free_stage_map(map);
 	assert(size > 0);
 	assert(keys);
 	assert(indexs);
-	SIM_stage_map_elm_t *elms =  calloc(size, sizeof(SIM_stage_map_elm_t));
+	SCENE_scene_map_elm_t *elms =  calloc(size, sizeof(SCENE_scene_map_elm_t));
 	assert(elms);
 	map->elms = elms;
 	map->count = size;
@@ -162,21 +163,21 @@ void SIM_build_stage_map(SIM_stage_map_t *map, int64_t *keys, uint64_t *indexs, 
 
 	for(uint64_t j = 0; j < size; ++j)
 	{
-		bool passes = SIM_append_stage_map(map, keys[j], indexs[j]);
+		bool passes = SCENE_append_stage_map(map, keys[j], indexs[j]);
 		assert(passes == true);
 	}
 
 }
 
 //stage helpers
-uint64_t SIM_get_stage_device_map(SIM_stage_t *stage, int64_t key)
+uint64_t SCENE_get_stage_device_map(SCENE_scene_t *stage, int64_t key)
 {
-	return SIM_get_stage_map(&stage->device_map, key);
+	return SCENE_get_stage_map(&stage->device_map, key);
 }
 
-uint64_t SIM_get_stage_wire_map(SIM_stage_t *stage, int64_t key)
+uint64_t SCENE_get_stage_wire_map(SCENE_scene_t *stage, int64_t key)
 {
-	return SIM_get_stage_map(&stage->wire_map, key);
+	return SCENE_get_stage_map(&stage->wire_map, key);
 
 }
 
@@ -186,19 +187,19 @@ uint64_t SIM_get_stage_wire_map(SIM_stage_t *stage, int64_t key)
 //				ANCHORS AND LINKING
 //
 //----------------------------------------
-void SIM_define_stage_gen_anchors(SIM_stage_gen_t *generator)
+void SCENE_define_stage_gen_anchors(SCENE_scene_gen_t *generator)
 {
 
-	SIM_stage_t *stage = generator->stage;
+	SCENE_scene_t *stage = generator->stage;
 	CFG_context_t *context = generator->context;
 
 	uint64_t count = context->wireconfigs->count;
-	SIM_anchor_t **anchors = calloc(count, sizeof(SIM_anchor_t *));
+	SCENE_anchor_t **anchors = calloc(count, sizeof(SCENE_anchor_t *));
 	assert(anchors);
 	for(uint64_t i = 0; i < count; ++i)
 	{
 		CFG_link_t *link = CFG_get_index_link_buf(context->channelbuf, i);
-		SIM_anchor_t *anc = SIM_alloc_anchor(count);
+		SCENE_anchor_t *anc = SCENE_alloc_anchor(count);
 		anchors[i] = anc;
 	}
 	stage->anchors = anchors;
@@ -206,7 +207,7 @@ void SIM_define_stage_gen_anchors(SIM_stage_gen_t *generator)
 }
 
 
-void SIM_link_stage_gen_anchors(SIM_stage_gen_t *generator)
+void SCENE_link_stage_gen_anchors(SCENE_scene_gen_t *generator)
 {
 	assert(0 && "link anchors");
 
@@ -220,12 +221,12 @@ void SIM_link_stage_gen_anchors(SIM_stage_gen_t *generator)
 //----------------------------------------
 
 
-void SIM_alloc_stage_gen_devices(SIM_stage_gen_t *generator)
+void SCENE_alloc_stage_gen_devices(SCENE_scene_gen_t *generator)
 {
 
 	//asssuming check passed
 
-	SIM_stage_t *stage = generator->stage;
+	SCENE_scene_t *stage = generator->stage;
 	CFG_context_t *context = generator->context;
 	uint64_t new_count = context->deviceconfigs->count;
 	assert(new_count > 1 && "devices must be greater than 1");
@@ -233,7 +234,7 @@ void SIM_alloc_stage_gen_devices(SIM_stage_gen_t *generator)
 
 	uint64_t total_count = last_count + new_count;
 
-	SIM_device_t **devices = realloc_safe(stage->devices, total_count, sizeof(SIM_device_t *));
+	SCENE_device_t **devices = realloc_safe(stage->devices, total_count, sizeof(SCENE_device_t *));
 	assert(devices);
 	stage->devices = devices;
 	stage->devices_count = total_count;
@@ -241,7 +242,7 @@ void SIM_alloc_stage_gen_devices(SIM_stage_gen_t *generator)
 
 	for(uint64_t i = last_count; i < total_count; ++i)
 	{
-		SIM_device_t *dev = SIM_alloc_device( );
+		SCENE_device_t *dev = SCENE_alloc_device( );
 		assert(dev != NULL && "device was null");
 
 		stage->devices[i] = dev;
@@ -251,9 +252,9 @@ void SIM_alloc_stage_gen_devices(SIM_stage_gen_t *generator)
 
 }
 
-void SIM_alloc_stage_gen_wires(SIM_stage_gen_t *generator)
+void SCENE_alloc_stage_gen_wires(SCENE_scene_gen_t *generator)
 {
-	SIM_stage_t *stage = generator->stage;
+	SCENE_scene_t *stage = generator->stage;
 	CFG_context_t *context = generator->context;
 
 
@@ -263,7 +264,7 @@ void SIM_alloc_stage_gen_wires(SIM_stage_gen_t *generator)
 	uint64_t total_count = last_count + new_count;
 
 
-	SIM_wire_t **wires = realloc_safe(stage->wires, total_count, sizeof(SIM_wire_t *));
+	SCENE_wire_t **wires = realloc_safe(stage->wires, total_count, sizeof(SCENE_wire_t *));
 
 	assert(wires);
 	stage->wires = wires;
@@ -271,7 +272,7 @@ void SIM_alloc_stage_gen_wires(SIM_stage_gen_t *generator)
 	generator->last_wire_size = last_count;
 	for(uint64_t i = last_count; i <  total_count; ++i)
 	{
-		SIM_wire_t *wire = SIM_alloc_wire();
+		SCENE_wire_t *wire = SCENE_alloc_wire();
 		stage->wires[i] = wire;
 	}
 
@@ -286,36 +287,36 @@ void SIM_alloc_stage_gen_wires(SIM_stage_gen_t *generator)
 //----------------------------------------
 
 //TODO fix this later to be better
-void SIM_init_stage_gen_devices(SIM_stage_gen_t *generator)
+void SCENE_init_stage_gen_devices(SCENE_scene_gen_t *generator)
 {
-	SIM_stage_t *stage = generator->stage;
+	SCENE_scene_t *stage = generator->stage;
 	CFG_context_t *context = generator->context;
 
 	for(uint64_t i = generator->last_device_size, j = 0; i < stage->devices_count; ++i, ++j)
 	{
-		SIM_device_t *dev = stage->devices[i];
-		SIM_init_device(dev, &context->deviceconfigs->cfgs[j]);
+		SCENE_device_t *dev = stage->devices[i];
+		SCENE_init_device(dev, &context->deviceconfigs->cfgs[j]);
 
 
 	}
 
 	for(uint64_t k = 0; k < stage->devices_count; ++k)
 	{
-		SIM_device_t *dev = stage->devices[k];
+		SCENE_device_t *dev = stage->devices[k];
 		dev->id = k;
 	}
 
 }
 
 //TODO fix this later to be better
-void SIM_init_stage_gen_wires(SIM_stage_gen_t *generator)
+void SCENE_init_stage_gen_wires(SCENE_scene_gen_t *generator)
 {
-	SIM_stage_t *stage = generator->stage;
+	SCENE_scene_t *stage = generator->stage;
 	CFG_context_t *context = generator->context;
 	for(uint64_t i = generator->last_wire_size, j = 0; i <  stage->wires_count; ++i, ++j)
 	{
-		SIM_wire_t *wire = stage->wires[i];
-		SIM_init_wire(wire, &context->wireconfigs->cfgs[j]);
+		SCENE_wire_t *wire = stage->wires[i];
+		SCENE_init_wire(wire, &context->wireconfigs->cfgs[j]);
 	}
 }
 
@@ -328,15 +329,15 @@ void SIM_init_stage_gen_wires(SIM_stage_gen_t *generator)
 //----------------------------------------
 
 //stage 3
-void SIM_resolve_stage_gen_devices(SIM_stage_gen_t *generator)
+void SCENE_resolve_stage_gen_devices(SCENE_scene_gen_t *generator)
 {
-	SIM_stage_t *stage = generator->stage;
+	SCENE_scene_t *stage = generator->stage;
 	CFG_context_t *context = generator->context;
 }
 
-void SIM_resolve_stage_gen_wires(SIM_stage_gen_t *generator)
+void SCENE_resolve_stage_gen_wires(SCENE_scene_gen_t *generator)
 {
-	SIM_stage_t *stage = generator->stage;
+	SCENE_scene_t *stage = generator->stage;
 	CFG_context_t *context = generator->context;
 }
 
@@ -348,15 +349,15 @@ void SIM_resolve_stage_gen_wires(SIM_stage_gen_t *generator)
 //
 //----------------------------------------
 
-void SIM_build_stage_gen_devices(SIM_stage_gen_t *generator)
+void SCENE_build_stage_gen_devices(SCENE_scene_gen_t *generator)
 {
-	SIM_stage_t *stage = generator->stage;
+	SCENE_scene_t *stage = generator->stage;
 	CFG_context_t *context = generator->context;
 }
 
-void SIM_build_stage_gen_wire(SIM_stage_gen_t *generator)
+void SCENE_build_stage_gen_wire(SCENE_scene_gen_t *generator)
 {
-	SIM_stage_t *stage = generator->stage;
+	SCENE_scene_t *stage = generator->stage;
 	CFG_context_t *context = generator->context;
 }
 
@@ -367,34 +368,34 @@ void SIM_build_stage_gen_wire(SIM_stage_gen_t *generator)
 //----------------------------------------
 
 
-bool SIM_fill_stage(SIM_stage_t *stage, CFG_context_t *context)
+bool SCENE_fill_stage(SCENE_scene_t *stage, CFG_context_t *context)
 {
 	if(stage->has_generated)
 	{
-		assert(0 && "simulator has generated");
+		assert(0 && "SCENEulator has generated");
 		return false;
 	}
 
-	SIM_stage_gen_t gen =
+	SCENE_scene_gen_t gen =
 	{
 		.stage = stage,
 		.context = context
 	};
 
-	bool passed = SIM_check_conflicts_stage_gen(&gen);
+	bool passed = SCENE_check_conflicts_stage_gen(&gen);
 	if(passed == false)
 	{
 		assert("could not fill stage");
 	}
 	//allocate all the parts
-	SIM_alloc_stage_gen(&gen);
+	SCENE_alloc_stage_gen(&gen);
 	//preset anchors space
 	//fill all inits
-	SIM_init_stage_gen(&gen);
-	SIM_resolve_stage_gen(&gen);
-	SIM_build_stage_gen(&gen);
-	//SIM generator should support transitions this is not done yet
-	printf("SIM generator should support transitions\nthis is not done yet\n");
+	SCENE_init_stage_gen(&gen);
+	SCENE_resolve_stage_gen(&gen);
+	SCENE_build_stage_gen(&gen);
+	//SCENE generator should support transitions this is not done yet
+	printf("SCENE generator should support transitions\nthis is not done yet\n");
 	stage->has_generated = true;
 	return true;
 }
@@ -438,9 +439,9 @@ void append_map(struct mapelm *map, uint64_t size, int64_t key)
 	assert(0 && "some how failed");
 }
 
-bool SIM_check_conflicts_stage_gen(SIM_stage_gen_t *gen)
+bool SCENE_check_conflicts_stage_gen(SCENE_scene_gen_t *gen)
 {
-	SIM_stage_t *stage = gen->stage;
+	SCENE_scene_t *stage = gen->stage;
 	CFG_context_t *context = gen->context;
 
 	const uint64_t cur_dev_count = stage->devices_count;
@@ -510,36 +511,36 @@ bool SIM_check_conflicts_stage_gen(SIM_stage_gen_t *gen)
 
 }
 
-void SIM_alloc_stage_gen(SIM_stage_gen_t *gen)
+void SCENE_alloc_stage_gen(SCENE_scene_gen_t *gen)
 {
-	SIM_alloc_stage_gen_devices(gen);
-	SIM_alloc_stage_gen_wires(gen);
-	SIM_define_stage_gen_anchors(gen);
+	SCENE_alloc_stage_gen_devices(gen);
+	SCENE_alloc_stage_gen_wires(gen);
+	SCENE_define_stage_gen_anchors(gen);
 
 }
 
-void SIM_init_stage_gen(SIM_stage_gen_t *gen)
+void SCENE_init_stage_gen(SCENE_scene_gen_t *gen)
 {
-	SIM_init_stage_gen_devices(gen);
-	SIM_init_stage_gen_wires(gen);
+	SCENE_init_stage_gen_devices(gen);
+	SCENE_init_stage_gen_wires(gen);
 }
 
-void SIM_resolve_stage_gen(SIM_stage_gen_t *gen)
+void SCENE_resolve_stage_gen(SCENE_scene_gen_t *gen)
 {
-	SIM_rebuild_stage_gen(gen);
-	SIM_link_stage_gen_anchors(gen);
+	SCENE_rebuild_stage_gen(gen);
+	SCENE_link_stage_gen_anchors(gen);
 
-
-}
-
-void SIM_build_stage_gen(SIM_stage_gen_t *gen)
-{
 
 }
 
-void SIM_rebuild_stage_gen(SIM_stage_gen_t *gen)
+void SCENE_build_stage_gen(SCENE_scene_gen_t *gen)
 {
-    SIM_stage_t *stage = gen->stage;
+
+}
+
+void SCENE_rebuild_stage_gen(SCENE_scene_gen_t *gen)
+{
+    SCENE_scene_t *stage = gen->stage;
 
     uint64_t ndev = stage->devices_count;
     uint64_t nwire = stage->wires_count;
@@ -553,7 +554,7 @@ void SIM_rebuild_stage_gen(SIM_stage_gen_t *gen)
         didx[i]  = i;
     }
 
-    SIM_build_stage_map(&stage->device_map, dkeys, didx, ndev);
+    SCENE_build_stage_map(&stage->device_map, dkeys, didx, ndev);
 
     free(dkeys);
     free(didx);
@@ -567,7 +568,7 @@ void SIM_rebuild_stage_gen(SIM_stage_gen_t *gen)
         widx[i]  = i;
     }
 
-    SIM_build_stage_map(&stage->wire_map, wkeys, widx, nwire);
+    SCENE_build_stage_map(&stage->wire_map, wkeys, widx, nwire);
 
     free(wkeys);
     free(widx);

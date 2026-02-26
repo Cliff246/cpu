@@ -3,9 +3,9 @@
 
 
 #include "CFG_commons.h"
-#include "MANFST_entry.h"
 #include "CFG_link.h"
 #include "CFG_commons.h"
+#include "TAG_tag.h"
 #include "hashmap.h"
 
 #include <stdbool.h>
@@ -59,13 +59,13 @@ typedef struct CFG_node
 	
 }CFG_node_t;
 
-bool CFG_add_prototag_node(CFG_node_t *node, MANFST_prototag_t *tag);
+bool CFG_add_prototag_node(CFG_node_t *node, TAG_tag_t *tag);
 
 bool CFG_prep_links_node(CFG_node_t *node,  CFG_link_buf_t *lbuf);
 
-bool CFG_init_tags_node(CFG_node_t *node, MANFST_entry_t *entry);
+bool CFG_init_tags_node(CFG_node_t *node, TAG_tag_t *head );
 
-bool CFG_init_node(CFG_node_t *node, MANFST_entry_t *entry, CFG_link_buf_t *lbuf);
+bool CFG_init_node(CFG_node_t *node, TAG_tag_t *ptr, CFG_link_buf_t *lbuf);
 void CFG_free_node(CFG_node_t *node);
 uint64_t CFG_get_address_base_node(CFG_node_t *node);
 
