@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
+/*
+
 CFG_node_id_t CFG_init_mapelm(CFG_mapelm_t *elm, CFG_node_t *node)
 {
 	elm->device = node;
@@ -19,6 +21,7 @@ CFG_node_id_t CFG_init_mapelm(CFG_mapelm_t *elm, CFG_node_t *node)
 	elm->tag = node->pretag;
 	return (elm->pretag)? elm->tag : -1;
 }
+
 bool CFG_init_mapkey(CFG_mapkey_t *key, CFG_mapelm_t *elm)
 {
 	if(elm->has_address == true)
@@ -320,3 +323,5 @@ void CFG_print_addrmap_map(CFG_map_t *table)
 		printf("[%ld]=(%ld, %ld)\n", i, table->addrmap[i].base, table->addrmap[i].size);
 	}
 }
+
+*/

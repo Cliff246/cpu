@@ -1,9 +1,9 @@
 #include "SCENE_wire.h"
-#include "CFG_edge.h"
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
 
+/*
 
 SCENE_wire_t *SCENE_alloc_wire()
 {
@@ -30,3 +30,4 @@ void SCENE_build_wire(SCENE_wire_t *wire)
 {
 
 }
+*/

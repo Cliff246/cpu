@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 
 #define TAG_MAPKEY_VTABLE_LIST_FILL(X, Y)		\
 	[TAG_MAPKEY_TYPE_NAME(X)] =					\
@@ -235,7 +236,20 @@ void TAG_map_print_entries(TAG_ptr_t ptr)
 
 void TAG_map_free(TAG_ptr_t ptr)
 {
-	assert(0);
+	TAG_map_t *map = ptr.MAP;
+
+	for(uint64_t i = 0; i < map->allocated; ++i)
+	{
+		struct TAG_mapelm *elm = &map->map[i];
+		if(elm->hash != -1)
+		{
+			mapkey_vtable_list[elm->type].free(elm->key);
+			TAG_free(elm->tag);
+
+		}
+	}
+	free(map->map);
+	free(map);
 }
 void TAG_map_print(TAG_ptr_t ptr)
 {
@@ -263,9 +277,42 @@ void TAG_map_print(TAG_ptr_t ptr)
 
 TAG_ptr_t TAG_map_copy(TAG_ptr_t ptr)
 {
-	assert(0);
-	TAG_ptr_t copy;
-	return copy;
+	TAG_map_t *map = ptr.MAP;
+	uint64_t size = map->allocated;
+	struct TAG_mapelm elms[size];
+	memset(elms, 0, sizeof(elms));
+	for(uint64_t i = 0; i < size; ++i)
+	{
+		struct TAG_mapelm tmp = map->map[i];
+		if(tmp.hash == -1)
+		{
+			elms[i].hash = -1;
+			continue;
+		}
+		struct TAG_mapelm elm_copy = tmp;
+
+		elm_copy.tag = TAG_copy(elm_copy.tag);
+		//TAG_print(elm_copy.tag);
+		elms[i] = elm_copy;
+	}
+	TAG_map_t *new = calloc(1, sizeof(TAG_map_t));
+	assert(map);
+	new->allocated = map->allocated;
+	new->count = map->count;
+	new->map = calloc(map->allocated, sizeof(struct TAG_mapelm));
+
+	for(uint64_t j = 0; j < size; ++j)
+	{
+
+		new->map[j] = elms[j];
+	}
+
+	TAG_ptr_t rptr;
+	rptr.MAP = new;
+
+
+
+	return rptr;
 }
 
 
@@ -374,7 +421,7 @@ TAG_tag_t *TAG_get_key_map(TAG_ptr_t ptr, union TAG_mapkey key, enum TAG_mapkey_
 		}
 		else if(tmp_hash == -1)
 		{
-			printf("tmp hash == -1 \n");
+			//printf("tmp hash == -1 \n");
 			return NULL;
 		}
 		else
@@ -382,7 +429,7 @@ TAG_tag_t *TAG_get_key_map(TAG_ptr_t ptr, union TAG_mapkey key, enum TAG_mapkey_
 			start = (start + 1) %  map->allocated;
 		}
 	}
-	printf("got nothing\n");
+	//printf("got nothing\n");
 	return NULL;
 
 }
@@ -401,7 +448,7 @@ static TAG_tag_t *TAG_get_key_string_map(TAG_tag_t *ptr, char *key)
 {
 	union TAG_mapkey mapkey;
 	mapkey.STR = key;
-	printf("%s\n", key);
+	//printf("%s\n", key);
 	return TAG_get_key_map(ptr->ptr, mapkey, TAG_MAPKEY_STR);
 }
 

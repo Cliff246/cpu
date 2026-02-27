@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+
 void CFG_print_link(CFG_link_t *plink)
 {
 	printf("devcfg:%p edge:%p, wireid: %ld, chnlid: %ld\n", plink->devcfg, plink->edge, plink->wireid, plink->chnlid);
@@ -77,3 +79,5 @@ void CFG_free_link_buf(CFG_link_buf_t *lbuf)
 	free(lbuf->cfgs);
 	free(lbuf);
 }
+
+*/

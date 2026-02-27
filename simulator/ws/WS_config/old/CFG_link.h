@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+/*
+
 typedef struct CFG_node CFG_node_t;
 typedef struct CFG_edge CFG_edge_t;
 
@@ -48,5 +50,7 @@ CFG_link_t *CFG_get_index_link_buf(CFG_link_buf_t *lbuf, uint64_t i);
 CFG_link_buf_t *CFG_init_link_buf(uint64_t alloca);
 
 void CFG_free_link_buf(CFG_link_buf_t *lbuf);
+
+*/
 
 #endif

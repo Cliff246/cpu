@@ -4,7 +4,6 @@
 #include "MANFST_manifest.h"
 #include "IO_configure.h"
 #include "MOD_description.h"
-#include "CFG_context.h"
 #include "RES_pool.h"
 #include "RUN_graph.h"
 #include "STAGE_stage.h"
@@ -16,10 +15,9 @@
 
 typedef struct WS_SIM_simulator
 {
-	CFG_context_t *ctx;
 	STAGE_stage_t *stage;
 	SCENE_scene_t *scene;
-	
+
 	RUN_graph_t *graph;
 	RES_pool_t *pool;
 }SIM_simulator_t;

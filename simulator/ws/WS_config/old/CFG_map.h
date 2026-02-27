@@ -1,6 +1,8 @@
 #ifndef __WS_CFG_MAP_HEADER__
 #define __WS_CFG_MAP_HEADER__
 
+/*
+
 #include "CFG_link.h"
 #include <stdint.h>
 #include <stdbool.h>
@@ -69,4 +71,7 @@ void CFG_free_map(CFG_map_t *table);
 void CFG_print_table_map(CFG_map_t *table);
 void CFG_print_tagmap_map(CFG_map_t *table);
 void CFG_print_addrmap_map(CFG_map_t *table);
+
+*/
+
 #endif

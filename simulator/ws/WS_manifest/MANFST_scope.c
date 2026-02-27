@@ -125,9 +125,16 @@ TAG_tag_t *MANFST_init_scope_map(SYNTAX_pnode_t *head)
 void MANFST_init_scope(MANFST_scope_t *scope, SYNTAX_pnode_t *head)
 {
 	scope->scope = MANFST_init_scope_map(head);
+	scope->code = strdup(head->nodes[0]->token->token);
 
-	
 }
 
 
 
+void MANFST_free_scope(MANFST_scope_t *scope)
+{
+	//printf("free \n");
+	//TAG_print(scope->scope);
+	TAG_free(scope->scope);
+	free(scope->code);
+}

@@ -27,6 +27,7 @@ char *TAG_type_string_list[WS_SIM_TAG_LIST_COUNT] =
 void TAG_free(TAG_tag_t *tag)
 {
 	TAG_ptr_t ptr = tag->ptr;
+	assert(TAG_vtable_list[tag->type]->free);
 	TAG_vtable_list[tag->type]->free(ptr);
 	free(tag);
 }
@@ -85,6 +86,7 @@ void TAG_print_index_int(TAG_tag_t *tag, uint64_t i)
 
 TAG_tag_t *TAG_copy(TAG_tag_t *tag)
 {
+	assert(TAG_vtable_list[tag->type]->copy && "copy not defined");
 	TAG_ptr_t deepcpy = TAG_vtable_list[tag->type]->copy(tag->ptr);
 
 

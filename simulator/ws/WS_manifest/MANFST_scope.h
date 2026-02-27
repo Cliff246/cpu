@@ -8,11 +8,11 @@
 
 typedef struct MANFST_scope
 {
-	TAG_tag_t *scope;	
+	TAG_tag_t *scope;
 	char *code;
 }MANFST_scope_t;
 
-void MANFST_init_scope(MANFST_scope_t *scope, SYNTAX_pnode_t *head); 
-
+void MANFST_init_scope(MANFST_scope_t *scope, SYNTAX_pnode_t *head);
+void MANFST_free_scope(MANFST_scope_t *scope);
 
 #endif

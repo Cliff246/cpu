@@ -1,6 +1,5 @@
 #include "SIM_simulator.h"
 #include "IO_configure.h"
-#include "CFG_context.h"
 #include "RUN_graph.h"
 #include "SCENE_scene.h"
 #include "STAGE_stage.h"
@@ -19,7 +18,7 @@
 SIM_simulator_t *SIM_init_simulator(void)
 {
 	SIM_simulator_t *sim = calloc(1, sizeof(SIM_simulator_t));
-	sim->stage = STAGE_init_stage();
+	sim->stage = STAGE_init_stage(NULL);
 	return sim;
 }
 
@@ -33,14 +32,8 @@ bool SIM_load_manifest_simulator(SIM_simulator_t *sim, MANFST_manifest_t *manife
 {
 	assert(sim);
 	assert(manifest);
-	CFG_context_t *context = CFG_init_context(manifest);
-	if(context == NULL)
-	{
-	assert(context);
-
-		return false;
-	}
-	sim->ctx = context;
+	printf("load manifest\n");
+	STAGE_fill_stage(sim->stage, manifest);
 
 	return true;
 }
@@ -55,7 +48,7 @@ bool SIM_alloc_graph(SIM_simulator_t *sim)
 	RUN_graph_t *graph = calloc(1, sizeof(RUN_graph_t));
 	assert(graph);
 
-	graph->scene = sim->stage;
+	graph->scene = sim->scene;
 
 	RUN_alloc_graph(graph);
 	sim->graph = graph;

@@ -1,5 +1,4 @@
 #include "SCENE_device.h"
-#include "CFG_link.h"
 #include "SIM_handle.h"
 #include "TAG_int.h"
 #include "TAG_list.h"
@@ -13,7 +12,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
-
+/*
 
 static p_hashtable_t SCENE_copy_hashtable(p_hashtable_t old)
 {
@@ -79,3 +78,6 @@ void SCENE_free_device(SCENE_device_t *device)
 {
 	assert(0 && "lol imagine freeing this ");
 }
+
+
+*/

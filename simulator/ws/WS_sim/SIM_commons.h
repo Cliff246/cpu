@@ -18,6 +18,7 @@ typedef int64_t SIM_wkey_t;
 
 typedef int64_t SIM_chnlid_t;
 
+typedef int64_t SIM_plugin_id_t;
 
 void SIM_free_tag_table_elem(void *v);
 

@@ -85,8 +85,8 @@ bool RUN_build_graph_idmap(RUN_graph_t *graph)
 	for(uint64_t i = 0; i < scene->devices_count; ++i)
 	{
 		SCENE_device_t *dev = scene->devices[i];
-		dkeys[i] = dev->dkey;
-		did[i] = dev->id;
+		//dkeys[i] = dev->dkey;
+		//did[i] = dev->id;
 	}
 	RUN_build_idmap(&graph->idmap, dkeys, did, scene->devices_count);
 

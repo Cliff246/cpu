@@ -6,11 +6,12 @@
 
 #define STAGE_AID_INVAL -1
 
-//actor id 
+//actor id
 typedef int64_t STAGE_aid_t;
 
 
-//costume id's 
-typedef int64_t STAGE_cid_t;
+
+//role id
+typedef int64_t STAGE_rid_t;
 
 #endif

@@ -16,21 +16,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+
 bool CFG_add_prototag_node(CFG_node_t *node, TAG_tag_t *tag)
 {
-/*
 
 	char key[tag->key_size + 1];
 	//key should be coppied
 	addto_hash_table(node->initals, key, tag->tag);
 	return true;
 
-*/
 }
 bool CFG_init_tags_node(CFG_node_t *node, TAG_tag_t *head )
 {
 	//const uint64_t count = entry->entryscope_size;
-	/*
 
 	const uint32_t standard = 100;
 	if(count >= standard)
@@ -55,7 +54,6 @@ bool CFG_init_tags_node(CFG_node_t *node, TAG_tag_t *head )
 	}
 	MANFST_free_entry(entry);
 	return true;
-	*/
 }
 
 bool CFG_prep_links_node(CFG_node_t *node,  CFG_link_buf_t *lbuf)
@@ -88,7 +86,7 @@ bool CFG_prep_links_node(CFG_node_t *node,  CFG_link_buf_t *lbuf)
 
 bool CFG_init_node(CFG_node_t *node, TAG_tag_t *ptr, CFG_link_buf_t *lbuf)
 {
-	
+
 	CFG_init_tags_node(node, ptr);
 	CFG_prep_links_node(node, lbuf);
 
@@ -240,3 +238,5 @@ void CFG_print_node(CFG_node_t *node)
 
 	}
 }
+
+*/

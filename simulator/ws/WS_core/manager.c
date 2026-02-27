@@ -319,6 +319,7 @@ void init(int argc, char **argv)
 
 	SIM_simulator_t *sim = SIM_init_simulator();
 	SIM_load_manifest_simulator(sim, manifest);
+	MANFST_free_manifest(manifest);
 	//SIM_init_stage_simulator(sim);
 	//SIM_alloc_graph(sim);
 	//SIM_build_graph(sim);

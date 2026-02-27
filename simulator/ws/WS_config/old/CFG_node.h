@@ -14,6 +14,8 @@
 #include <sys/types.h>
 
 
+/*
+
 typedef struct CFG_node_route
 {
 	uint64_t latency;
@@ -56,7 +58,7 @@ typedef struct CFG_node
 	}done;
 	bool has_pretag;
 	bool has_address;
-	
+
 }CFG_node_t;
 
 bool CFG_add_prototag_node(CFG_node_t *node, TAG_tag_t *tag);
@@ -79,5 +81,6 @@ void CFG_append_route_node(CFG_node_t *node, uint64_t index, CFG_node_route_t ro
 void CFG_print_node(CFG_node_t *node);
 CFG_node_id_t CFG_generate_tag(CFG_node_t *node);
 
+*/
 
 #endif

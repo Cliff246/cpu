@@ -6,7 +6,6 @@
 #include "RES_pool.h"
 #include "SCENE_anchor.h"
 #include "SIM_commons.h"
-#include "CFG_node.h"
 #include "SIM_handle.h"
 #include "dynamic_lib.h"
 #include "hashmap.h"
@@ -31,6 +30,7 @@ typedef struct SCENE_device
 
 }SCENE_device_t;
 
+/*
 //locals to the device
 static p_hashtable_t SCENE_copy_hashtable(p_hashtable_t old);
 
@@ -49,5 +49,7 @@ void SCENE_free_device(SCENE_device_t *device);
 
 
 void SCENE_device_print(SCENE_device_t *device);
+
+*/
 
 #endif

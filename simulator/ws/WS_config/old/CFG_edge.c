@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 
+/*
 
 void CFG_init_edge(CFG_edge_t *edge, CFG_edge_id_t id, uint64_t latency, uint64_t throughput)
 {
@@ -45,3 +46,5 @@ void CFG_free_edge(CFG_edge_t *ptr)
 	free(ptr->channels);
 
 }
+
+*/
