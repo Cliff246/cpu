@@ -6,6 +6,7 @@ SET(WS_SIM_STAGE_CFILES
 	${CMAKE_CURRENT_SOURCE_DIR}/STAGE_prop.c	# resources and handles
 	${CMAKE_CURRENT_SOURCE_DIR}/STAGE_commons.c	# commons
 	${CMAKE_CURRENT_SOURCE_DIR}/STAGE_troupe.c	# troupe
+	${CMAKE_CURRENT_SOURCE_DIR}/STAGE_costume.c	# troupe
 
 )
 

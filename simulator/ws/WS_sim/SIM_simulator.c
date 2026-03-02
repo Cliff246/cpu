@@ -34,7 +34,6 @@ bool SIM_load_manifest_simulator(SIM_simulator_t *sim, MANFST_manifest_t *manife
 	assert(manifest);
 	printf("load manifest\n");
 	STAGE_fill_stage(sim->stage, manifest);
-
 	return true;
 }
 bool SIM_init_stage_simulator(SIM_simulator_t *sim)

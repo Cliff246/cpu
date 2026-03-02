@@ -16,6 +16,6 @@ typedef struct STAGE_stage
 
 STAGE_stage_t *STAGE_init_stage(STAGE_troupe_t *troupe);
 void STAGE_fill_stage(STAGE_stage_t *stage, MANFST_manifest_t *manifest);
-
+void STAGE_print_stage(STAGE_stage_t *stage);
 
 #endif

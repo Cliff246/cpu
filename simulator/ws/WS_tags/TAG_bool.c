@@ -14,8 +14,7 @@ void TAG_bool_free(TAG_ptr_t ptr)
 	free(boolean);
 
 }
-
-void TAG_bool_print(TAG_ptr_t ptr)
+void TAG_bool_print(TAG_ptr_t ptr, uint64_t tab)
 {
 	char *str = (ptr.BOOL->boolean)? "true": "false";
 	printf("%s\n", str);

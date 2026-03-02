@@ -27,8 +27,7 @@ void TAG_string_free(TAG_ptr_t ptr)
 	free(string);
 }
 
-
-void TAG_string_print(TAG_ptr_t ptr)
+void TAG_string_print(TAG_ptr_t ptr, uint64_t tab)
 {
 	printf("%s\n", ptr.STRING->string);
 }

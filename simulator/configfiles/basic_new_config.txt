@@ -1,110 +1,279 @@
 device =
 {
-	name = "echo"
+	name = "alpha"
 	key = 3
 	module = "libdev_echo"
 	tag(t1) = "hello world"
 	resources = ["echo_resource", "busin", "busout"]
-	handle =
+	monolith =
 	{
-		START = ["echo_input"]
-		END = ["echo_output"]
+		handle =
+		{
+			START = ["echo_input"]
+			END = ["echo_output"]
+		}
+
+		fn(echo_input) =
+		{
+			input = ["echo_resource", "busin"]
+			output = ["echo_resource"]
+			calls = ["echo_output"]
+		}
+		fn(echo_output) =
+		{
+			input = ["echo_resource", "busout"]
+			output  = ["busout"]
+		}
 	}
 
-	fn(echo_input) =
+
+	port =
 	{
-		input = ["echo_resource", "busin"]
-		output = ["echo_resource"]
-		calls = ["echo_output"]
+		class = "mem"
+		lanes = 2
+		channels = 4
+		channels_positive = ["cpa0", "cpa1", "cpa2", "cpa3"]
+		channels_negative = ["cna0", "cna1", "cna2", "cna3"]
+		connects =
+		{
+			link = ["cpa0", "cnI0_0"]
+			link = ["cpa1", "cnI0_1"]
+			link = ["cpa2", "cnI2_0"]
+			link = ["cpa3", "cnI5_0"]
+		}
 	}
-	fn(echo_output) =
-	{
-		input = ["echo_resource", "busout"]
-		output  = ["busout"]
-	}
-	wires = [5,6,7]
 }
 
 device = {
-	name = "alpha"
-	wires = [0, 10, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+	name = "beta"
 	module = "libsim_dev_ram"
 	tag(print_content) = true
 	tag(file_name) = "a.bin"
 	key = 2
 	mbase = 0
 	msize = 2000
+
+	port =
+	{
+		class = "mem"
+		lanes = 2
+		channels = 7
+		channels_positive = ["cpb0", "cpb1", "cpb2", "cpb3", "cpb4", "cpb5", "cpb6"]
+		channels_negative = ["cnb0", "cnb1", "cnb2", "cnb3", "cnb4", "cnb5", "cnb6"]
+		connects =
+		{
+			link = ["cpb0", "cnI0_2"]
+			link = ["cpb1", "cnI0_3"]
+			link = ["cpb2", "cnI3_0"]
+			link = ["cpb3", "cnI3_1"]
+			link = ["cpb4", "cnI1_0"]
+			link = ["cpb5", "cnI1_1"]
+			link = ["cpb6", "cnI5_1"]
+		}
+	}
 }
 
 device = {
-	name = "bravo"
+	name = "charlie"
 	module = "libsim_dev_ram"
-	wires = [0,10,2,3,5,6]
 	mbase = 2001
 	msize = 2000
+
+	port =
+	{
+		class = "mem"
+		lanes = 2
+		channels = 3
+		channels_positive = ["cpc0", "cpc1", "cpc2"]
+		channels_negative = ["cnc0", "cnc1", "cnbc"]
+		connects =
+		{
+			link = ["cpc0", "cnI1_2"]
+			link = ["cpc1", "cnI1_3"]
+			link = ["cpc2", "cnI4_0"]
+
+		}
+	}
 }
 
 device = {
-	name = "Charlie"
+	name = "delta"
 	module = "libsim_dev_ram"
-	wires = [2,3,7]
+	port =
+	{
+		class = "mem"
+		lanes = 1
+		channels = 1
+		channels_positive = ["cpd0"]
+		channels_negative = ["cnd0"]
+		connects =
+		{
+			link = ["cpd0", "cnI2_1"]
+
+		}
+	}
 }
 
 device = {
-	name = "Delta"
+	name = "echo"
 	module = "libsim_dev_ram"
-	wires = [4]
+
+	port =
+	{
+		class = "mem"
+		lanes = 2
+		channels = 4
+		channels_positive = ["cpe0", "cpe1", "cpe2", "cpe3"]
+		channels_negative = ["cne0", "cne1", "cne2", "cne3"]
+		connects =
+		{
+			link = ["cpe0", "cnI3_2"]
+			link = ["cpe1", "cnI3_3"]
+			link = ["cpe2", "cnI5_2"]
+			link = ["cpe3", "cnI4_1"]
+
+		}
+	}
 }
 
 
 
 
-wire = {
-	id = 0
-	latency = 10
-	throughput = 10
+bus = {
+    id = 0
+    latency = 10
+    throughput = 10
+    name = "I0"
+    port =
+	{
+        class = "mem"
+        lanes = 2
+        channels = 4
+        channels_positive = ["cpI0_0", "cpI0_1", "cpI0_2", "cpI0_3"]
+        channels_negative = ["cnI0_0", "cnI0_1", "cnI0_2", "cnI0_3"]
+		connects =
+		{
+			link = ["cpI0_0", "cnb0"]
+			link = ["cpI0_1", "cnb1"]
+			link = ["cpI0_2", "cna0"]
+			link = ["cpI0_3", "cna1"]
+		}
+    }
 }
 
-
-wire = {
-	id = 10
+bus = {
+	name = "I1"
+	id = 1
 	latency = 1
 	throughput = 10
+	port =
+	{
+		class = "mem"
+		lanes = 2
+		channels = 4
+		channels_positive = ["cpI1_0", "cnI1_1", "cpI1_2", "cpI1_3"]
+		channels_negative = ["cnI1_0", "cnI1_1", "cnI1_2", "cnI1_3"]
+		connects =
+		{
+			link = ["cpI1_0", "cnb2"]
+			link = ["cpI1_1", "cnb3"]
+			link = ["cpI1_2", "cnc0"]
+			link = ["cpI1_3", "cnc1"]
+		}
+	}
 }
 
-wire = {
+bus = {
+	name = "I2"
+
 	id = 2
 	latency = 1
 	throughput = 10
+	port =
+	{
+		channels = 2
+		channels_positive = ["cpI2_0", "cpI2_1"]
+		channels_negative = ["cnI2_0", "cnI2_1"]
+		class = "mem"
+		lanes = 1
+
+		connects =
+		{
+			link = ["cpI2_0", "cna2"]
+			link = ["cpI2_1", "cnd0"]
+
+		}
+	}
+
 }
 
-wire = {
+bus = {
+	name = "I3"
+
 	id = 3
 	latency = 1
 	throughput = 10
+	port =
+	{
+		class = "mem"
+		lanes = 2
+
+		channels = 4
+		channels_positive = ["cpI3_0", "cnI3_1", "cpI3_2", "cpI3_3"]
+		channels_negative = ["cnI3_0", "cnI3_1", "cnI3_2", "cnI3_3"]
+		connects =
+		{
+			link = ["cpI3_0", "cnb4"]
+			link = ["cpI3_1", "cnb5"]
+			link = ["cpI3_2", "cne0"]
+			link = ["cpI3_3", "cne1"]
+
+		}
+	}
 }
 
-wire = {
+bus = {
+	name = "I4"
+
 	id = 4
 	latency = 1
 	throughput = 10
+	port =
+	{
+		class = "mem"
+		lanes = 1
+		channels = 2
+		channels_positive = ["cpI4_0", "cpI4_1"]
+		channels_negative = ["cnI4_0", "cnI4_1"]
+		connects =
+		{
+			link = ["cpI4_0", "cnc0"]
+			link = ["cpI4_1", "cne0"]
+
+		}
+	}
 }
 
-wire = {
+bus = {
 	id = 5
+	name = "I5"
+
 	latency = 1
 	throughput = 10
-}
+	port =
+	{
+		class = "mem"
+		lanes = 2
+		channels = 3
+		channels_positive = ["cpI5_0", "cpI5_1", "cpI5_2"]
+		channels_negative = ["cnI5_0", "cnI5_1", "cnI5_2"]
+		connects =
+		{
+			link = ["cpI5_0", "cna3"]
+			link = ["cpI5_1", "cnb6"]
+			link = ["cpI5_2", "cne3"]
 
-wire = {
-	id = 6
-	latency = 1
-	throughput = 10
-}
 
-
-wire = {
-	id = 7
-	latency = 1
-	throughput = 10
+		}
+	}
 }

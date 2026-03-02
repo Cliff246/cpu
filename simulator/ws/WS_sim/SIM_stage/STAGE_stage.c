@@ -25,3 +25,11 @@ void STAGE_fill_stage(STAGE_stage_t *stage, MANFST_manifest_t *manifest)
 
 	}
 }
+
+void STAGE_print_stage(STAGE_stage_t *stage)
+{
+	for(uint64_t i = 0; i < stage->actors_size; ++i)
+	{
+		STAGE_print_actor(stage->actors[i]);
+	}
+}

@@ -7,6 +7,7 @@
 #include "TAG_list.h"
 #include "TAG_map.h"
 #include <assert.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -57,12 +58,12 @@ TAG_tag_t *TAG_init(TAG_ptr_t ptr, TAG_type_t type)
 void TAG_print(TAG_tag_t *tag)
 {
 	printf("TAG<%s>: ", TAG_type_string_list[tag->type]);
-	TAG_vtable_list[tag->type]->print(tag->ptr);
+	TAG_vtable_list[tag->type]->print(tag->ptr, 0);
 }
 
 void TAG_print_empty(TAG_tag_t *tag)
 {
-	TAG_vtable_list[tag->type]->print(tag->ptr);
+	TAG_vtable_list[tag->type]->print(tag->ptr, 0);
 
 }
 void TAG_print_index_str(TAG_tag_t *tag, char *index)
@@ -70,7 +71,7 @@ void TAG_print_index_str(TAG_tag_t *tag, char *index)
 	printf("[%19s]=",index);
 	printf("TAG<%s>: ", TAG_type_string_list[tag->type]);
 
-	TAG_vtable_list[tag->type]->print(tag->ptr);
+	TAG_vtable_list[tag->type]->print(tag->ptr, 0);
 
 
 }
@@ -80,9 +81,35 @@ void TAG_print_index_int(TAG_tag_t *tag, uint64_t i)
 	printf("[%19ld]=",i);
 	printf("TAG<%s>: ", TAG_type_string_list[tag->type]);
 
-	TAG_vtable_list[tag->type]->print(tag->ptr);
+	TAG_vtable_list[tag->type]->print(tag->ptr, 0);
 
 }
+
+void TAG_print_tab_index_str(TAG_tag_t *tag, uint64_t tab,char *index)
+{
+	for(uint64_t i = 0; i < tab; ++i)
+	{
+		printf("\t");
+	}
+
+	printf("[%s]=",index);
+	printf("TAG<%s>: ", TAG_type_string_list[tag->type]);
+
+	TAG_vtable_list[tag->type]->print(tag->ptr, tab);
+
+}
+void TAG_print_tab_index_int(TAG_tag_t *tag, uint64_t tab,uint64_t i)
+{
+	for(uint64_t i = 0; i < tab; ++i)
+	{
+		printf("\t");
+	}
+	printf("[%ld]=", i);
+	printf("TAG<%s>: ", TAG_type_string_list[tag->type]);
+
+	TAG_vtable_list[tag->type]->print(tag->ptr, tab);
+}
+
 
 TAG_tag_t *TAG_copy(TAG_tag_t *tag)
 {

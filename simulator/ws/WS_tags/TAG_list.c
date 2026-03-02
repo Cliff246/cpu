@@ -35,13 +35,12 @@ void TAG_list_free(TAG_ptr_t ptr)
 	free(list);
 }
 
-
-void TAG_list_print(TAG_ptr_t ptr)
+void TAG_list_print(TAG_ptr_t ptr, uint64_t tab)
 {
 	printf("list: %lu\n", ptr.LIST->size);
 	for(int i = 0; i < ptr.LIST->size; ++i)
 	{
-		TAG_print_index_int(ptr.LIST->list[i], i);
+		TAG_print_tab_index_int(ptr.LIST->list[i], tab + 1, i);
 	}
 }
 

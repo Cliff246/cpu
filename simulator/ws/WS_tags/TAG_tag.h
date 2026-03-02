@@ -58,7 +58,7 @@ typedef struct WS_SIM_TAG_prototype_vtable
 {
 
 	void (*free)(TAG_ptr_t ptr);
-	void (*print)(TAG_ptr_t ptr);
+	void (*print)(TAG_ptr_t ptr, uint64_t tab);
 	TAG_ptr_t (*copy)(TAG_ptr_t ptr);
 	uint64_t size;
 	TAG_argptr_t fn[];
@@ -78,6 +78,10 @@ void TAG_print(TAG_tag_t *tag);
 void TAG_print_empty(TAG_tag_t *tag);
 void TAG_print_index_str(TAG_tag_t *tag, char *index);
 void TAG_print_index_int(TAG_tag_t *tag, uint64_t i);
+void TAG_print_tab_index_str(TAG_tag_t *tag, uint64_t tab,char *index);
+void TAG_print_tab_index_int(TAG_tag_t *tag, uint64_t tab,uint64_t i);
+
+
 TAG_tag_t *TAG_copy(TAG_tag_t *tag);
 
 

@@ -48,6 +48,57 @@ TAG_map_arg_t get_key_int_map =
 	.get_key_int =  TAG_get_key_int_map
 };
 
+TAG_map_arg_t iter_reset_map =
+{
+	.iter_reset = TAG_iter_reset_map
+};
+
+TAG_map_arg_t iter_up_map =
+{
+	.iter_up = TAG_iter_up_map,
+};
+
+TAG_map_arg_t iter_down_map =
+{
+	.iter_down = TAG_iter_down_map,
+};
+TAG_map_arg_t iter_is_end_map =
+{
+	.iter_is_end = TAG_iter_is_end_map
+};
+
+TAG_map_arg_t is_key_str_map =
+{
+	.iter_is_key_str = TAG_iter_is_key_str_map,
+};
+
+
+TAG_map_arg_t is_key_int_map =
+{
+	.iter_is_key_int =  TAG_iter_is_key_int_map,
+};
+
+
+TAG_map_arg_t get_iter_str_map =
+{
+	.iter_get_key_str =  TAG_iter_get_key_str_map,
+};
+
+
+TAG_map_arg_t get_iter_int_map =
+{
+	.iter_get_key_int =  TAG_iter_get_key_int_map
+};
+
+TAG_map_arg_t get_iter_value_map =
+{
+	.iter_get_value = TAG_iter_get_value
+};
+
+TAG_map_arg_t get_size_map =
+{
+	.get_size = TAG_get_size
+};
 
 //mapkey types functions
 //mapkey hash
@@ -231,6 +282,24 @@ void TAG_map_print_entries(TAG_ptr_t ptr)
 
 }
 
+struct TAG_mapelm *TAG_map_get_element(TAG_tag_t *tag, uint64_t i)
+{
+	TAG_map_t *map = tag->ptr.MAP;
+	uint64_t c = 0;
+	for(uint64_t j = 0; j < map->allocated; ++j)
+	{
+		if(map->map[j].hash != -1)
+		{
+			if(c == i)
+			{
+				return &map->map[j];
+			}
+			c++;
+		}
+	}
+	return  NULL;
+}
+
 //default functions
 
 
@@ -251,7 +320,8 @@ void TAG_map_free(TAG_ptr_t ptr)
 	free(map->map);
 	free(map);
 }
-void TAG_map_print(TAG_ptr_t ptr)
+
+void TAG_map_print(TAG_ptr_t ptr, uint64_t tab)
 {
 	TAG_map_t *map = ptr.MAP;
 	printf("map %ld\n", map->count);
@@ -263,12 +333,12 @@ void TAG_map_print(TAG_ptr_t ptr)
 
 			if(elm->type == TAG_MAPKEY_STR)
 			{
-				TAG_print_index_str(elm->tag, elm->key.STR);
+				TAG_print_tab_index_str(elm->tag, tab + 1, elm->key.STR);
 
 			}
 			else
 			{
-				TAG_print_index_int(elm->tag,elm->key.INT);
+				TAG_print_tab_index_int(elm->tag, tab + 1, elm->key.INT);
 
 			}
 		}
@@ -290,7 +360,7 @@ TAG_ptr_t TAG_map_copy(TAG_ptr_t ptr)
 			continue;
 		}
 		struct TAG_mapelm elm_copy = tmp;
-
+		elm_copy.key = TAG_mapkey_init(tmp.key, tmp.type);
 		elm_copy.tag = TAG_copy(elm_copy.tag);
 		//TAG_print(elm_copy.tag);
 		elms[i] = elm_copy;
@@ -436,6 +506,7 @@ TAG_tag_t *TAG_get_key_map(TAG_ptr_t ptr, union TAG_mapkey key, enum TAG_mapkey_
 
 
 
+
 static bool TAG_set_key_string_map(TAG_tag_t *ptr, char *key, TAG_tag_t *tag)
 {
 	union TAG_mapkey mapkey;
@@ -469,8 +540,103 @@ static TAG_tag_t *TAG_get_key_int_map(TAG_tag_t *ptr, int64_t key)
 
 }
 
+static bool TAG_iter_reset_map(TAG_tag_t *tag)
+{
+	TAG_map_t *map = tag->ptr.MAP;
+	map->iter = 0;
+	return true;
+}
 
+static bool TAG_iter_up_map(TAG_tag_t *tag)
+{
+	TAG_map_t *map = tag->ptr.MAP;
+	map->iter = (map->iter < map->count)? map->iter + 1: map->iter;
 
+	return true;
+}
+
+static bool TAG_iter_down_map(TAG_tag_t *tag)
+{
+	TAG_map_t *map = tag->ptr.MAP;
+	map->iter = (map->iter > 0)? map->iter - 1: 0;
+	return true;
+}
+
+static bool TAG_iter_is_end_map(TAG_tag_t *tag)
+{
+	TAG_map_t *map = tag->ptr.MAP;
+
+	return (map->iter == map->count)? true : false;
+
+}
+
+static bool TAG_iter_is_key_str_map(TAG_tag_t *tag)
+{
+	TAG_map_t *map = tag->ptr.MAP;
+	struct TAG_mapelm *elm = TAG_map_get_element(tag, map->iter);
+	if(elm == NULL)
+		return false;
+	if(elm->type == TAG_MAPKEY_STR)
+	{
+		return true;
+	}
+	return false;
+}
+
+static bool TAG_iter_is_key_int_map(TAG_tag_t *tag)
+{
+	TAG_map_t *map = tag->ptr.MAP;
+	struct TAG_mapelm *elm = TAG_map_get_element(tag, map->iter);
+	if(elm == NULL)
+		return false;
+	if(elm->type == TAG_MAPKEY_INT)
+	{
+		return true;
+	}
+	return false;
+}
+
+static char *TAG_iter_get_key_str_map(TAG_tag_t *tag)
+{
+	TAG_map_t *map = tag->ptr.MAP;
+	struct TAG_mapelm *elm = TAG_map_get_element(tag, map->iter);
+	if(elm == NULL)
+		return NULL;
+	if(elm->type == TAG_MAPKEY_STR)
+	{
+		//dangerous let's trust the user
+		return elm->key.STR;
+	}
+	return NULL;
+}
+
+static int64_t TAG_iter_get_key_int_map(TAG_tag_t *tag)
+{
+	TAG_map_t *map = tag->ptr.MAP;
+	struct TAG_mapelm *elm = TAG_map_get_element(tag, map->iter);
+	if(elm == NULL)
+		return INT64_MIN;
+	if(elm->type == TAG_MAPKEY_INT)
+	{
+		return elm->key.INT;
+	}
+	return INT64_MIN;
+}
+
+static TAG_tag_t *TAG_iter_get_value(TAG_tag_t *tag)
+{
+	TAG_map_t *map = tag->ptr.MAP;
+	struct TAG_mapelm *elm = TAG_map_get_element(tag, map->iter);
+	if(elm == NULL)
+		return NULL;
+	return elm->tag;
+}
+
+static uint64_t TAG_get_size(TAG_tag_t *tag)
+{
+	TAG_map_t *map = tag->ptr.MAP;
+	return map->count;
+}
 
 
 
@@ -482,7 +648,7 @@ TAG_prototype_vtable_t TAG_map_vtable =
 	.free = TAG_map_free,
 	.print = TAG_map_print,
 	.copy = TAG_map_copy,
-	.size = 5,
+	.size = 15,
 	.fn =
 	{
 		[TAG_FN_MAP_INIT].MAP = &init_map,
@@ -490,5 +656,15 @@ TAG_prototype_vtable_t TAG_map_vtable =
 		[TAG_FN_MAP_GET_KEY_STRING].MAP = &get_key_string_map,
 		[TAG_FN_MAP_SET_KEY_INT].MAP = &set_key_int_map,
 		[TAG_FN_MAP_GET_KEY_INT].MAP = &get_key_int_map,
+		[TAG_FN_MAP_ITER_RESET].MAP = &iter_reset_map,
+		[TAG_FN_MAP_ITER_UP].MAP = &iter_up_map,
+		[TAG_FN_MAP_ITER_DOWN].MAP = &iter_down_map,
+		[TAG_FN_MAP_ITER_END].MAP = &iter_is_end_map,
+		[TAG_FN_MAP_ITER_IS_KEY_INT].MAP = &is_key_int_map,
+		[TAG_FN_MAP_ITER_IS_KEY_STR].MAP = &is_key_str_map,
+		[TAG_FN_MAP_ITER_GET_KEY_STR].MAP = &get_iter_str_map,
+		[TAG_FN_MAP_ITER_GET_KEY_INT].MAP = &get_iter_int_map,
+		[TAG_FN_MAP_ITER_GET_VALUE].MAP = &get_iter_value_map,
+		[TAG_FN_MAP_GET_SIZE].MAP = &get_size_map,
 	}
 };
