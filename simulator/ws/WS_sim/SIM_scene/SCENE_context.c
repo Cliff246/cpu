@@ -1,137 +1,126 @@
 #include "SCENE_context.h"
+#include "SCENE_anchor.h"
+#include "SCENE_device.h"
+#include "SCENE_scene.h"
+#include "SCENE_scope.h"
+#include "STAGE_stage.h"
 
 
-/*
 
-//stage helpers
-uint64_t SCENE_get_stage_map(SCENE_scene_map_t *map, int64_t key);
-void SCENE_free_stage_map(SCENE_scene_map_t *map);
-bool SCENE_append_stage_map(SCENE_scene_map_t *map, int64_t key, uint64_t index);
-void SCENE_build_stage_map(SCENE_scene_map_t *map, int64_t *keys, uint64_t *indexs, uint64_t size);
+#include <stdbool.h>
+#include <assert.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 
-//generation helpers
-void SCENE_define_stage_gen_anchors(SCENE_scene_gen_t *generator);
-void SCENE_link_stage_gen_anchors(SCENE_scene_gen_t *generator);
 
-//stage 1
+//step 0
+//scene allocate all devices and copy over basics
+bool SCENE_alloc_step_context(SCENE_context_t *context);
+
+//step 1
+
+
+//step 2
+//scene validate structures
+bool SCENE_validate_step_context(SCENE_context_t *context);
+
+
+//step 3
+//scene assign
+bool SCENE_assign_step_context(SCENE_context_t *context);
+
+
 //allocate the devices
-void SCENE_alloc_stage_gen_devices(SCENE_scene_gen_t *generator);
-void SCENE_alloc_stage_gen_wires(SCENE_scene_gen_t *generator);
+
 //stage 2
 //fill with locals
-void SCENE_init_stage_gen_devices(SCENE_scene_gen_t *generator);
-void SCENE_init_stage_gen_wires(SCENE_scene_gen_t *generator);
+
 
 //stage 3
 //fill with globals
-void SCENE_resolve_stage_gen_devices(SCENE_scene_gen_t *generator);
-void SCENE_resolve_stage_gen_wires(SCENE_scene_gen_t *generator);
+
 
 //stage 4
 //ugh... 4 is better than 3?
-void SCENE_build_stage_gen_devices(SCENE_scene_gen_t *generator);
-void SCENE_build_stage_gen_wire(SCENE_scene_gen_t *generator);
 
-
-
-
-//----------------------------------------
-//
-//				ANCHORS AND LINKING
-//
-//----------------------------------------
-void SCENE_define_stage_gen_anchors(SCENE_scene_gen_t *generator)
+bool (*scene_steps[])(SCENE_context_t *context) =
 {
+	[SCENE_CONTEXT_STEP_START] = NULL,
+	[SCENE_CONTEXT_STEP_ALLOC] = SCENE_alloc_step_context,
+	[SCENE_CONTEXT_STEP_VALIDATE] = SCENE_validate_step_context,
+	[SCENE_CONTEXT_STEP_ASSIGN] = SCENE_assign_step_context,
+};
 
-	SCENE_scene_t *stage = generator->stage;
-	CFG_context_t *context = generator->context;
+#define SCENE_CONTEXT_STEP_LIST_STRING(X) [SCENE_CONTEXT_STEP_LIST_NAME(X)] = #X,
+//context step strings
+char *scene_steps_names[] =
+{
+	SCENE_CONTEXT_STEP_LIST(SCENE_CONTEXT_STEP_LIST_STRING)
+};
 
-	uint64_t count = context->wireconfigs->count;
-	SCENE_anchor_t **anchors = calloc(count, sizeof(SCENE_anchor_t *));
-	assert(anchors);
-	for(uint64_t i = 0; i < count; ++i)
+//----------------------------------------
+//
+//				SCENE ALLOC
+//
+//----------------------------------------
+
+bool SCENE_alloc_step_context(SCENE_context_t *context)
+{
+	STAGE_stage_t *stage = context->scene->stage;
+	uint64_t size = stage->actors_size;
+
+	SCENE_device_t *devices[size];
+	//allocate devices
+	for(uint64_t i = 0; i < size; ++i)
 	{
-		CFG_link_t *link = CFG_get_index_link_buf(context->channelbuf, i);
-		SCENE_anchor_t *anc = SCENE_alloc_anchor(count);
-		anchors[i] = anc;
+		devices[i] = SCENE_alloc_device(stage->actors[i]);
 	}
-	stage->anchors = anchors;
-	stage->anchors_count = count;
+
+	SCENE_scope_t *scope = SCENE_init_scope(size);
+	SCENE_fill_scope(scope, devices, size);
+	context->scope = scope;
+	//SCENE_print_scope(context->scope);
+
+	return true;
 }
-
-
-void SCENE_link_stage_gen_anchors(SCENE_scene_gen_t *generator)
-{
-	assert(0 && "link anchors");
-
-}
-
 
 //----------------------------------------
 //
-//				ALLOC STAGE
+//				SCENE VALIDATE
 //
 //----------------------------------------
 
 
-void SCENE_alloc_stage_gen_devices(SCENE_scene_gen_t *generator)
+bool SCENE_validate_step_context(SCENE_context_t *context)
 {
+	uint64_t size = SCENE_get_count_scope(context->scope);
 
-	//asssuming check passed
-
-	SCENE_scene_t *stage = generator->stage;
-	CFG_context_t *context = generator->context;
-	uint64_t new_count = context->deviceconfigs->count;
-	assert(new_count > 1 && "devices must be greater than 1");
-	uint64_t last_count = stage->devices_count;
-
-	uint64_t total_count = last_count + new_count;
-
-	SCENE_device_t **devices = realloc_safe(stage->devices, total_count, sizeof(SCENE_device_t *));
-	assert(devices);
-	stage->devices = devices;
-	stage->devices_count = total_count;
-	generator->last_device_size = last_count;
-
-	for(uint64_t i = last_count; i < total_count; ++i)
+	for(uint64_t i = 0; i < size; ++i)
 	{
-		SCENE_device_t *dev = SCENE_alloc_device( );
-		assert(dev != NULL && "device was null");
+		SCENE_device_t *device = SCENE_get_scope(context->scope, i);
 
-		stage->devices[i] = dev;
+		SCENE_validate_device(device);
 
 	}
 
-
+	return true;
 }
 
-void SCENE_alloc_stage_gen_wires(SCENE_scene_gen_t *generator)
+
+//----------------------------------------
+//
+//				SCENE ASSIGN
+//
+//----------------------------------------
+
+
+
+bool SCENE_assign_step_context(SCENE_context_t *context)
 {
-	SCENE_scene_t *stage = generator->stage;
-	CFG_context_t *context = generator->context;
-
-
-	uint64_t new_count =  context->wireconfigs->count;
-	uint64_t last_count = stage->wires_count;
-
-	uint64_t total_count = last_count + new_count;
-
-
-	SCENE_wire_t **wires = realloc_safe(stage->wires, total_count, sizeof(SCENE_wire_t *));
-
-	assert(wires);
-	stage->wires = wires;
-	stage->wires_count = total_count;
-	generator->last_wire_size = last_count;
-	for(uint64_t i = last_count; i <  total_count; ++i)
-	{
-		SCENE_wire_t *wire = SCENE_alloc_wire();
-		stage->wires[i] = wire;
-	}
-
+	return true;
 }
-
 
 
 //----------------------------------------
@@ -139,40 +128,6 @@ void SCENE_alloc_stage_gen_wires(SCENE_scene_gen_t *generator)
 //				INIT STAGE
 //
 //----------------------------------------
-
-//TODO fix this later to be better
-void SCENE_init_stage_gen_devices(SCENE_scene_gen_t *generator)
-{
-	SCENE_scene_t *stage = generator->stage;
-	CFG_context_t *context = generator->context;
-
-	for(uint64_t i = generator->last_device_size, j = 0; i < stage->devices_count; ++i, ++j)
-	{
-		SCENE_device_t *dev = stage->devices[i];
-		SCENE_init_device(dev, &context->deviceconfigs->cfgs[j]);
-
-
-	}
-
-	for(uint64_t k = 0; k < stage->devices_count; ++k)
-	{
-		SCENE_device_t *dev = stage->devices[k];
-		dev->id = k;
-	}
-
-}
-
-//TODO fix this later to be better
-void SCENE_init_stage_gen_wires(SCENE_scene_gen_t *generator)
-{
-	SCENE_scene_t *stage = generator->stage;
-	CFG_context_t *context = generator->context;
-	for(uint64_t i = generator->last_wire_size, j = 0; i <  stage->wires_count; ++i, ++j)
-	{
-		SCENE_wire_t *wire = stage->wires[i];
-		SCENE_init_wire(wire, &context->wireconfigs->cfgs[j]);
-	}
-}
 
 
 
@@ -182,19 +137,6 @@ void SCENE_init_stage_gen_wires(SCENE_scene_gen_t *generator)
 //
 //----------------------------------------
 
-//stage 3
-void SCENE_resolve_stage_gen_devices(SCENE_scene_gen_t *generator)
-{
-	SCENE_scene_t *stage = generator->stage;
-	CFG_context_t *context = generator->context;
-}
-
-void SCENE_resolve_stage_gen_wires(SCENE_scene_gen_t *generator)
-{
-	SCENE_scene_t *stage = generator->stage;
-	CFG_context_t *context = generator->context;
-}
-
 
 
 //----------------------------------------
@@ -203,16 +145,74 @@ void SCENE_resolve_stage_gen_wires(SCENE_scene_gen_t *generator)
 //
 //----------------------------------------
 
-void SCENE_build_stage_gen_devices(SCENE_scene_gen_t *generator)
+
+
+
+SCENE_context_t *SCENE_alloc_context(SCENE_scene_t *scene)
 {
-	SCENE_scene_t *stage = generator->stage;
-	CFG_context_t *context = generator->context;
+	assert(scene->filled == true && "scene must be filled to init a context");
+	if(scene->filled == false)
+	{
+		return NULL;
+	}
+	SCENE_context_t *context = calloc(1, sizeof(SCENE_context_t));
+	context->scene = scene;
+	context->step = SCENE_CONTEXT_STEP_START;
+	return context;
 }
 
-void SCENE_build_stage_gen_wire(SCENE_scene_gen_t *generator)
+bool SCENE_step_context(SCENE_context_t *context, SCENE_ctx_step_t step)
 {
-	SCENE_scene_t *stage = generator->stage;
-	CFG_context_t *context = generator->context;
+	assert(step > 0 && step < sizeof(scene_steps)/sizeof(scene_steps[0]) && "must be a valid step defined to ste content");
+
+	bool passes = scene_steps[step](context);
+	context->step = step;
+
+	if(passes == false)
+	{
+		SCENE_print_context(context);
+	}
+	assert(passes == true && "must pass all ");
+	return passes;
 }
 
-*/
+void SCENE_init_context(SCENE_context_t *context)
+{
+	assert(context);
+	if(context->step != SCENE_CONTEXT_STEP_START)
+	{
+		assert(0 && "cannot init context that's not at start step");
+	}
+	bool pass1 = SCENE_step_context(context, SCENE_CONTEXT_STEP_ALLOC);
+	assert(pass1);
+	bool pass2 = SCENE_step_context(context, SCENE_CONTEXT_STEP_VALIDATE);
+	assert(pass2);
+	bool pass3 = SCENE_step_context(context, SCENE_CONTEXT_STEP_ASSIGN);
+	assert(pass3);
+}
+
+
+
+void SCENE_print_context(SCENE_context_t *context)
+{
+	printf("context at step: %s\n", scene_steps_names[context->step]);
+	if(context->step == 0)
+	{
+		return;
+	}
+	printf("context last valid at: %s\n", scene_steps_names[context->step - 1]);
+	switch(context->step)
+	{
+		default:
+
+		case SCENE_CONTEXT_STEP_ALLOC:
+			SCENE_print_scope(context->scope);
+
+		case SCENE_CONTEXT_STEP_START:
+			break;
+
+
+
+	}
+
+}

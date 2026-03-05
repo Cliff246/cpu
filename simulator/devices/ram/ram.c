@@ -12,11 +12,18 @@
 #include <errno.h>
 #include <assert.h>
 
+
+static MOD_symmap_t ram_map =
+{
+	.size = 0,
+	.symbols = {}
+};
+
 static MOD_description_t ram_desc =
 {
 	.id = 0,
 	.version = STR(SIM_RAM_DEV_VERSION),
-
+	.symmap = &ram_map,
 	.dev_name = "ram",
 	.dev_typeclass = "mmio",
 	.dl_name = "sim_dev_ram",

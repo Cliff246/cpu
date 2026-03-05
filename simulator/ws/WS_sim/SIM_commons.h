@@ -9,6 +9,14 @@
 #define SIM_PORT_SIZE 8
 #define SIM_TAGS_SIZE 1000
 
+//actor id
+typedef int64_t SIM_aid_t;
+//role id
+typedef int64_t SIM_rid_t;
+
+//unique id
+typedef int64_t SIM_uid_t;
+
 //device id
 typedef uint64_t SIM_did_t;
 typedef int64_t SIM_dkey_t;

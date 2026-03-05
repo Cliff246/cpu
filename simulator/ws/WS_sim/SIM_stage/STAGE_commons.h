@@ -4,14 +4,8 @@
 #include <stdint.h>
 
 
-#define STAGE_AID_INVAL -1
-
-//actor id
-typedef int64_t STAGE_aid_t;
 
 
 
-//role id
-typedef int64_t STAGE_rid_t;
 
 #endif

@@ -3,10 +3,7 @@ SET(WS_SIM_STAGE_CFILES
 	${CMAKE_CURRENT_SOURCE_DIR}/STAGE_stage.c	# main stage
 	${CMAKE_CURRENT_SOURCE_DIR}/STAGE_actor.c	# actor
 	${CMAKE_CURRENT_SOURCE_DIR}/STAGE_role.c	# format of actor, costume's must be implemented (similar to components)
-	${CMAKE_CURRENT_SOURCE_DIR}/STAGE_prop.c	# resources and handles
 	${CMAKE_CURRENT_SOURCE_DIR}/STAGE_commons.c	# commons
-	${CMAKE_CURRENT_SOURCE_DIR}/STAGE_troupe.c	# troupe
-	${CMAKE_CURRENT_SOURCE_DIR}/STAGE_costume.c	# troupe
 
 )
 

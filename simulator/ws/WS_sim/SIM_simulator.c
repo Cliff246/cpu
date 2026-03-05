@@ -1,6 +1,7 @@
 #include "SIM_simulator.h"
-#include "IO_configure.h"
+
 #include "RUN_graph.h"
+#include "SCENE_context.h"
 #include "SCENE_scene.h"
 #include "STAGE_stage.h"
 #include <stdlib.h>
@@ -18,7 +19,8 @@
 SIM_simulator_t *SIM_init_simulator(void)
 {
 	SIM_simulator_t *sim = calloc(1, sizeof(SIM_simulator_t));
-	sim->stage = STAGE_init_stage(NULL);
+	SIM_init_stage_simulator(sim);
+	SIM_init_scene_simulator(sim);
 	return sim;
 }
 
@@ -32,34 +34,45 @@ bool SIM_load_manifest_simulator(SIM_simulator_t *sim, MANFST_manifest_t *manife
 {
 	assert(sim);
 	assert(manifest);
-	printf("load manifest\n");
 	STAGE_fill_stage(sim->stage, manifest);
+	sim->loaded = true;
+
 	return true;
 }
+
 bool SIM_init_stage_simulator(SIM_simulator_t *sim)
 {
-	assert(0);
-	return 0;
+	sim->stage = STAGE_init_stage(NULL);
+	return true;
 }
-
-bool SIM_alloc_graph(SIM_simulator_t *sim)
+//inits a scene
+bool SIM_init_scene_simulator(SIM_simulator_t *sim)
 {
-	RUN_graph_t *graph = calloc(1, sizeof(RUN_graph_t));
-	assert(graph);
+	SCENE_scene_t *scene = SCENE_init_scene();
+	sim->scene = scene;
 
-	graph->scene = sim->scene;
 
-	RUN_alloc_graph(graph);
-	sim->graph = graph;
-	assert(sim->graph);
+
 	return true;
 }
 
-bool SIM_build_graph(SIM_simulator_t *sim)
+bool SIM_assign_scene_to_stage_simulator(SIM_simulator_t *sim)
 {
-	RUN_build_graph(sim->graph);
+	assert(sim->loaded == true);
+	//should validate both stage and scene exitst
+	STAGE_lock_stage(sim->stage);
+	SCENE_fill_scene(sim->scene,sim->stage);
+	sim->assigned = true;
 	return true;
 }
+
+bool SIM_start_simulator(SIM_simulator_t *sim)
+{
+	SCENE_generate_scene(sim->scene);
+	return true;
+}
+
+
 
 void SIM_simulator_print_slots(SIM_simulator_t *sim)
 {

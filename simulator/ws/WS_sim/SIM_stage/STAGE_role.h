@@ -2,19 +2,14 @@
 #define __STAGE_ROLE_HEADER__
 
 #include "STAGE_commons.h"
+
+//sim
+#include "SIM_commons.h"
+
 #include <stdint.h>
 
-
-typedef struct STAGE_role
-{
-	STAGE_rid_t rid;
-	char *name;
-}STAGE_role_t;
-
-
-
-
-
+SIM_rid_t STAGE_get_rid(char *role);
+char *STAGE_get_str_rid(SIM_rid_t rid);
 
 #endif
 

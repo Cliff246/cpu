@@ -94,6 +94,7 @@ struct WS_SIM_TAG_map
 	uint64_t allocated;
 	uint64_t count;
 	uint64_t iter;
+	uint64_t scroll_iter;
 	struct TAG_mapelm *map;
 };
 

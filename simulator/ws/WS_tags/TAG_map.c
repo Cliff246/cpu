@@ -300,6 +300,61 @@ struct TAG_mapelm *TAG_map_get_element(TAG_tag_t *tag, uint64_t i)
 	return  NULL;
 }
 
+struct TAG_mapelm *TAG_map_get_element_scroll(TAG_tag_t *tag)
+{
+	TAG_map_t *map = tag->ptr.MAP;
+	if (map->scroll_iter >= map->allocated)
+    	return NULL;
+	//printf("scroll iter %ld\n", map->scroll_iter);
+	struct TAG_mapelm *elm = &map->map[map->scroll_iter];
+	if(elm->hash == -1)
+	{
+		//printf("get elment scroll\n");
+		for(uint64_t j = map->scroll_iter; j < map->allocated; ++j)
+		{
+			if(map->map[j].hash != -1)
+			{
+				map->scroll_iter = j;
+				elm = &map->map[map->scroll_iter];
+			}
+		}
+
+	}
+	return elm;
+}
+
+
+void TAG_map_scroll_up(TAG_tag_t *tag)
+{
+	TAG_map_t *map = tag->ptr.MAP;
+ 	map->scroll_iter = (map->scroll_iter >= map->allocated)? map->scroll_iter: map->scroll_iter + 1;
+	for(uint64_t j = map->scroll_iter; j < map->allocated; ++j)
+	{
+		if(map->map[j].hash != -1)
+		{
+			map->scroll_iter = j;
+			return;
+		}
+	}
+
+}
+
+void TAG_map_scroll_down(TAG_tag_t *tag)
+{
+	TAG_map_t *map = tag->ptr.MAP;
+ 	map->scroll_iter = (map->scroll_iter >= map->allocated)? map->scroll_iter: map->scroll_iter - 1;
+
+	for(int64_t j = map->scroll_iter; j >= 0; --j)
+	{
+		if(map->map[j].hash != -1)
+		{
+			map->scroll_iter = j;
+			return;
+
+		}
+	}
+}
+
 //default functions
 
 
@@ -544,6 +599,8 @@ static bool TAG_iter_reset_map(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
 	map->iter = 0;
+	map->scroll_iter = 0;
+	TAG_map_print_entries(tag->ptr);
 	return true;
 }
 
@@ -551,7 +608,7 @@ static bool TAG_iter_up_map(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
 	map->iter = (map->iter < map->count)? map->iter + 1: map->iter;
-
+	TAG_map_scroll_up(tag);
 	return true;
 }
 
@@ -559,6 +616,8 @@ static bool TAG_iter_down_map(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
 	map->iter = (map->iter > 0)? map->iter - 1: 0;
+	TAG_map_scroll_down(tag);
+
 	return true;
 }
 
@@ -573,7 +632,7 @@ static bool TAG_iter_is_end_map(TAG_tag_t *tag)
 static bool TAG_iter_is_key_str_map(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
-	struct TAG_mapelm *elm = TAG_map_get_element(tag, map->iter);
+	struct TAG_mapelm *elm = TAG_map_get_element_scroll(tag);
 	if(elm == NULL)
 		return false;
 	if(elm->type == TAG_MAPKEY_STR)
@@ -586,7 +645,8 @@ static bool TAG_iter_is_key_str_map(TAG_tag_t *tag)
 static bool TAG_iter_is_key_int_map(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
-	struct TAG_mapelm *elm = TAG_map_get_element(tag, map->iter);
+	struct TAG_mapelm *elm = TAG_map_get_element_scroll(tag);
+
 	if(elm == NULL)
 		return false;
 	if(elm->type == TAG_MAPKEY_INT)
@@ -599,7 +659,8 @@ static bool TAG_iter_is_key_int_map(TAG_tag_t *tag)
 static char *TAG_iter_get_key_str_map(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
-	struct TAG_mapelm *elm = TAG_map_get_element(tag, map->iter);
+		struct TAG_mapelm *elm = TAG_map_get_element_scroll(tag);
+
 	if(elm == NULL)
 		return NULL;
 	if(elm->type == TAG_MAPKEY_STR)
@@ -613,7 +674,8 @@ static char *TAG_iter_get_key_str_map(TAG_tag_t *tag)
 static int64_t TAG_iter_get_key_int_map(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
-	struct TAG_mapelm *elm = TAG_map_get_element(tag, map->iter);
+	struct TAG_mapelm *elm = TAG_map_get_element_scroll(tag);
+
 	if(elm == NULL)
 		return INT64_MIN;
 	if(elm->type == TAG_MAPKEY_INT)
@@ -626,7 +688,8 @@ static int64_t TAG_iter_get_key_int_map(TAG_tag_t *tag)
 static TAG_tag_t *TAG_iter_get_value(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
-	struct TAG_mapelm *elm = TAG_map_get_element(tag, map->iter);
+	struct TAG_mapelm *elm = TAG_map_get_element_scroll(tag);
+
 	if(elm == NULL)
 		return NULL;
 	return elm->tag;

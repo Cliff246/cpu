@@ -1,5 +1,5 @@
 #include "STAGE_actor.h"
-#include "STAGE_costume.h"
+#include "SIM_commons.h"
 #include "TAG_map.h"
 #include "TAG_tag.h"
 #include <assert.h>
@@ -27,13 +27,6 @@ void STAGE_init_actor_costumes(STAGE_actor_t *actor)
 	arg_reset_iter.MAP->iter_reset(actor->tags);
 
 
-	actor->costumes_alloc = 10;
-	STAGE_costume_t **costumes = calloc(actor->costumes_alloc, sizeof(STAGE_costume_t *));
-
-	STAGE_costume_t *commons = STAGE_init_costume("commons");
-	costumes[0] = commons;
-	actor->costumes_size = 1;
-
 	for(uint64_t i = 0; i < size; ++i)
 	{
 		if(arg_end_iter.MAP->iter_is_end(actor->tags) == true)
@@ -54,7 +47,7 @@ void STAGE_init_actor_costumes(STAGE_actor_t *actor)
 		{
 			//printf("is int\n");
 			char *key = arg_get_str_iter.MAP->iter_get_key_str(actor->tags);
-			printf("key: %s\n", key);
+			//printf("key: %s\n", key);
 			//STAGE_append_costume(commons, )
 
 		}
@@ -72,22 +65,28 @@ void STAGE_init_actor_costumes(STAGE_actor_t *actor)
 
 }
 
-STAGE_actor_t *STAGE_init_actor(TAG_tag_t *tag, char *name)
+STAGE_actor_t *STAGE_alloc_actor(SIM_aid_t aid)
 {
 	STAGE_actor_t *actor = calloc(1, sizeof(STAGE_actor_t));
-	assert(name);
-	actor->name = strdup(name);
+	assert(actor);
+	actor->actor_id = aid;
+	return actor;
 
+}
+void STAGE_init_actor(STAGE_actor_t *actor, TAG_tag_t *tag, SIM_rid_t rid)
+{
+
+	actor->role_id = rid;
 	TAG_tag_t *actor_tags = TAG_copy(tag);
-
 	actor->tags = actor_tags;
 	STAGE_init_actor_costumes(actor);
-	return actor;
+
 }
 
 void STAGE_print_actor(STAGE_actor_t *actor)
 {
-	printf("%s\n", actor->name);
+	char *role_id_str = STAGE_get_str_rid(actor->role_id);
+	printf("[%ld] %s\n",actor->actor_id, role_id_str);
 	//
 	TAG_print(actor->tags);
 }

@@ -19,7 +19,7 @@ bool RUN_alloc_graph_idmap(RUN_graph_t *graph)
 {
 	const SCENE_scene_t *scene = graph->scene;
 
-	RUN_alloc_idmap(&graph->idmap ,scene->devices_count);
+	//RUN_alloc_idmap(&graph->idmap ,scene->devices_count);
 
 
 	return true;
@@ -78,6 +78,7 @@ bool  RUN_alloc_graph(RUN_graph_t *graph)
 
 bool RUN_build_graph_idmap(RUN_graph_t *graph)
 {
+	/*
 	const SCENE_scene_t *scene = graph->scene;
 
 	SIM_dkey_t dkeys[scene->devices_count];
@@ -91,7 +92,7 @@ bool RUN_build_graph_idmap(RUN_graph_t *graph)
 	RUN_build_idmap(&graph->idmap, dkeys, did, scene->devices_count);
 
 	return true;
-
+	*/
 }
 
 bool RUN_build_graph_pool(RUN_graph_t *graph)

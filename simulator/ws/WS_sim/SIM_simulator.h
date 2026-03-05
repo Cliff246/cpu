@@ -2,7 +2,7 @@
 #define __SIMULATOR_HEADER__
 
 #include "MANFST_manifest.h"
-#include "IO_configure.h"
+
 #include "MOD_description.h"
 #include "RES_pool.h"
 #include "RUN_graph.h"
@@ -20,6 +20,8 @@ typedef struct WS_SIM_simulator
 
 	RUN_graph_t *graph;
 	RES_pool_t *pool;
+	bool loaded;
+	bool assigned;
 }SIM_simulator_t;
 
 // WS_dev_t *SIM_simulator_t_get_device_from_id(SIM_simulator_t_t *sim,
@@ -30,19 +32,16 @@ typedef struct WS_SIM_simulator
 // static void SIM_simulator_sort_slots(SIM_simulator_t *sim);
 
 SIM_simulator_t *SIM_init_simulator(void);
-bool SIM_alloc_graph(SIM_simulator_t *sim);
-bool SIM_build_graph(SIM_simulator_t *sim);
 
+bool SIM_init_scene_simulator(SIM_simulator_t *sim);
 bool SIM_init_stage_simulator(SIM_simulator_t *sim);
+bool SIM_assign_scene_to_stage_simulator(SIM_simulator_t *sim);
 
-// add device to simulator
+bool SIM_start_simulator(SIM_simulator_t *sim);
 
-// advances a packet into from active forward
-// loads a group of devices from a config
+
 bool SIM_load_manifest_simulator(SIM_simulator_t *sim, MANFST_manifest_t *manifest);
-void SIM_update_simulator(SIM_simulator_t *sim);
-void SIM_simulator_print_slots(SIM_simulator_t *sim);
-void SIM_simulator_print_all_devices(SIM_simulator_t *sim);
-// todo
+
+
 
 #endif

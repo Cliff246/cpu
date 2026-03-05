@@ -7,6 +7,7 @@
 #include "SCENE_anchor.h"
 #include "SIM_commons.h"
 #include "SIM_handle.h"
+#include "STAGE_actor.h"
 #include "dynamic_lib.h"
 #include "hashmap.h"
 #include "SCENE_port.h"
@@ -18,17 +19,20 @@
 
 typedef struct SCENE_device
 {
-	p_hashtable_t tags;
-	//the preset tag assigned
-	SIM_dkey_t dkey;
-	//the index of the device
-	SIM_did_t id;
-	SIM_handle_t *handle;
-	RES_itrfc_t *interface;
 
-	SCENE_port_t port;
+	STAGE_actor_t *actor;
+	SIM_uid_t uid;
+	char *name;
+
 
 }SCENE_device_t;
+
+
+
+SCENE_device_t *SCENE_alloc_device(STAGE_actor_t *actor);
+bool SCENE_validate_device(SCENE_device_t *device);
+
+void SCENE_print_device(SCENE_device_t *device);
 
 /*
 //locals to the device

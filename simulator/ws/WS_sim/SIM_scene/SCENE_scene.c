@@ -2,6 +2,7 @@
 #include "SCENE_scene.h"
 
 
+#include "SCENE_context.h"
 #include "SIM_commons.h"
 #include "SCENE_anchor.h"
 #include "SCENE_device.h"
@@ -17,11 +18,10 @@
 #include <sys/types.h>
 
 
-//move all of this to scene
 
+
+//SCENE locals
 /*
-
-
 struct mapelm
 {
 	int64_t key;
@@ -30,18 +30,34 @@ struct mapelm
 struct mapelm *make_map(uint64_t size);
 void append_map(struct mapelm *map, uint64_t size, int64_t key);
 //generator stage
-bool SCENE_check_conflicts_stage_gen(SCENE_scene_gen_t *gen);
-void SCENE_rebuild_stage_gen(SCENE_scene_gen_t *gen);
-void SCENE_alloc_stage_gen(SCENE_scene_gen_t *gen);
-void SCENE_init_stage_gen(SCENE_scene_gen_t *gen);
-void SCENE_resolve_stage_gen(SCENE_scene_gen_t *gen);
-void SCENE_build_stage_gen(SCENE_scene_gen_t *gen);
+void SCENE_rebuild_stage_gen(SCENE_scene_t *gen);
+void SCENE_alloc_stage_gen(SCENE_scene_t *gen);
+void SCENE_init_stage_gen(SCENE_scene_t *gen);
+void SCENE_resolve_stage_gen(SCENE_scene_t *gen);
+void SCENE_build_stage_gen(SCENE_scene_t *gen);
+*/
+
+
+bool SCENE_check_conflicts_scene(SCENE_scene_t *scene);
+
 
 //----------------------------------------
 //
 //				SCENE
 //
 //----------------------------------------
+
+bool SCENE_check_conflicts_scene(SCENE_scene_t *scene)
+{
+	return false;
+}
+
+
+
+
+//move all of this to scene
+
+/*
 
 SCENE_scene_t *SCENE_init_stage(void)
 {
@@ -93,78 +109,6 @@ bool SCENE_fill_stage(SCENE_scene_t *stage, CFG_context_t *context)
 	return true;
 }
 
-
-bool SCENE_check_conflicts_stage_gen(SCENE_scene_gen_t *gen)
-{
-	SCENE_scene_t *stage = gen->stage;
-	CFG_context_t *context = gen->context;
-
-	const uint64_t cur_dev_count = stage->devices_count;
-	const uint64_t add_dev_count = context->deviceconfigs->count;
-	const uint64_t minimum_size1 = cur_dev_count + add_dev_count;
-
-
-	struct mapelm *map1 = make_map(minimum_size1);
-
-	for(uint64_t i1 = 0; i1 < cur_dev_count; ++i1)
-	{
-		int64_t tag = gen->stage->devices[i1]->dkey;
-		append_map(map1, minimum_size1, tag);
-	}
-
-	for(uint64_t i2 = 0; i2 < add_dev_count; ++i2)
-	{
-		int64_t tag = context->deviceconfigs->cfgs[i2].pretag;
-		append_map(map1, minimum_size1, tag);
-	}
-
-	bool passed1 = true;
-	for(uint64_t ic1 = 0; ic1 < minimum_size1; ++ic1)
-	{
-		if(map1[ic1].size > 1)
-		{
-			passed1 = false;
-			break;
-		}
-	}
-
-	free(map1);
-
-	const uint64_t cur_wire_count = stage->wires_count;
-	const uint64_t add_wire_count = context->wireconfigs->count;
-	const uint64_t minimum_size2 = cur_wire_count + add_wire_count;
-
-
-	struct mapelm *map2 = make_map(minimum_size2);
-
-	for(uint64_t i3 = 0; i3 < cur_wire_count; ++i3)
-	{
-		int64_t tag = stage->wires[i3]->wkey;
-		append_map(map2, minimum_size2, tag);
-	}
-
-	for(uint64_t i4 = 0; i4 < add_wire_count; ++i4)
-	{
-		int64_t tag = context->wireconfigs->cfgs[i4].id;
-		append_map(map2, minimum_size2, tag);
-	}
-
-	bool passed2 = true;
-	for(uint64_t ic2 = 0; ic2 < minimum_size2; ++ic2)
-	{
-
-		if(map2[ic2].size > 1)
-		{
-			passed2 = false;
-			break;
-		}
-	}
-
-	free(map2);
-
-	return passed1 && passed2;
-
-}
 
 void SCENE_alloc_stage_gen(SCENE_scene_gen_t *gen)
 {
@@ -231,3 +175,59 @@ void SCENE_rebuild_stage_gen(SCENE_scene_gen_t *gen)
 
 
 */
+
+SCENE_scene_t *SCENE_init_scene(void)
+{
+	SCENE_scene_t *scene = calloc(1, sizeof(SCENE_scene_t));
+	scene->filled = false;
+	return scene;
+}
+
+
+bool SCENE_fill_scene(SCENE_scene_t *scene, STAGE_stage_t *stage)
+{
+	if(scene->filled == false)
+	{
+		scene->stage = stage;
+		scene->filled = true;
+		return true;
+	}
+	assert(0 && "cannot fill existing scene");
+	return false;
+
+}
+
+bool SCENE_generate_scene(SCENE_scene_t *scene)
+{
+	assert(scene->filled && "scene must be filled");
+	SCENE_context_t *context = SCENE_alloc_context(scene);
+	scene->context = context;
+	SCENE_init_context(context);
+
+
+
+	return false;
+}
+
+bool SCENE_teardown_scene(SCENE_scene_t *scene)
+{
+	assert(scene->filled && "scene must be filled");
+	if(scene->filled == false)
+	{
+		return false;
+	}
+	return true;
+}
+
+void SCENE_free_scene(SCENE_scene_t *scene)
+{
+	assert(!scene->filled && "scene must not be filled");
+
+	if(scene->filled == true)
+	{
+		assert(0 && "todo error out that scene is free'd");
+	}
+
+	assert(0 && "todo free scene");
+	free(scene);
+}

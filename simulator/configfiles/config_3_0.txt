@@ -1,0 +1,110 @@
+device =
+{
+	name = "echo"
+	key = 3
+	module = "libdev_echo"
+	tag(t1) = "hello world"
+	resources = ["echo_resource", "busin", "busout"]
+	handle =
+	{
+		START = ["echo_input"]
+		END = ["echo_output"]
+	}
+
+	fn(echo_input) =
+	{
+		input = ["echo_resource", "busin"]
+		output = ["echo_resource"]
+		calls = ["echo_output"]
+	}
+	fn(echo_output) =
+	{
+		input = ["echo_resource", "busout"]
+		output  = ["busout"]
+	}
+	wires = [5,6,7]
+}
+
+device = {
+	name = "alpha"
+	wires = [0, 10, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+	module = "libsim_dev_ram"
+	tag(print_content) = true
+	tag(file_name) = "a.bin"
+	key = 2
+	mbase = 0
+	msize = 2000
+}
+
+device = {
+	name = "bravo"
+	module = "libsim_dev_ram"
+	wires = [0,10,2,3,5,6]
+	mbase = 2001
+	msize = 2000
+}
+
+device = {
+	name = "Charlie"
+	module = "libsim_dev_ram"
+	wires = [2,3,7]
+}
+
+device = {
+	name = "Delta"
+	module = "libsim_dev_ram"
+	wires = [4]
+}
+
+
+
+
+wire = {
+	id = 0
+	latency = 10
+	throughput = 10
+}
+
+
+wire = {
+	id = 10
+	latency = 1
+	throughput = 10
+}
+
+wire = {
+	id = 2
+	latency = 1
+	throughput = 10
+}
+
+wire = {
+	id = 3
+	latency = 1
+	throughput = 10
+}
+
+wire = {
+	id = 4
+	latency = 1
+	throughput = 10
+}
+
+wire = {
+	id = 5
+	latency = 1
+	throughput = 10
+}
+
+wire = {
+	id = 6
+	latency = 1
+	throughput = 10
+}
+
+
+wire = {
+	id = 7
+	latency = 1
+	throughput = 10
+}

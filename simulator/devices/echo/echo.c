@@ -10,6 +10,7 @@
 
 #include "MOD_description.h"
 #include "MOD_symmap.h"
+#include <stdio.h>
 
 
 static MOD_symmap_t echo_map =
@@ -61,7 +62,7 @@ const MOD_description_t *MOD_get_dev_desc(void)
 
 void echo_hook_input_fn(OBJ_hnd_t *hnd, OBJ_context_t *context, OBJ_local_t *local, OBJ_global_t *global, OBJ_state_t *state)
 {
-
+	printf("\n\n\nthis is the echo hook function\n\n\n");
 }
 
 char *echo_input_hook_inputs[] =

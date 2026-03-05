@@ -1,6 +1,6 @@
 
 
-
+#include "loader.h"
 #include "manager.h"
 //#include "core.h"
 //#include "coreutils.h"
@@ -24,50 +24,6 @@
 #include <string.h>
 #include <assert.h>
 
-//static cpu_t *global_cpu(void)
-//{
-	//return components.cpu;
-//}
-
-static size_t file_len(FILE *fp)
-{
-	assert(fp);
-
-	size_t current = ftell(fp);
-
-	fseek(fp, 0, SEEK_END);
-	size_t address = ftell(fp);
-
-	fseek(fp, current, SEEK_SET);
-	return address;
-}
-/*
-//returns true on change to size and false on no updated size
-static bool load_file(vima_t *vm, const char *file_name)
-{
-	FILE *fp = fopen(file_name, "rb");
-	if(fp == NULL)
-	{
-		printf("file: %s not openable\n", file_name);
-		exit(1);
-
-	}
-	size_t len = file_len(fp);
-	char *bytes = (char *)calloc(len, sizeof(char));
-	assert(bytes);
-	fread(bytes, 8, len / 8, fp);
-
-	bool changed = false;
-
-
-	uint64_t *bin = (uint64_t *)bytes;
-
-	vm_setmemory(vm,bin, len / sizeof(uint64_t));
-	free(bytes);
-	fclose(fp);
-	return changed;
-}
-*/
 
 globalstate_t globalstate =
 {
@@ -252,9 +208,6 @@ void parse_args(void)
 		exit(1);
 	}
 
-
-
-
 	for(int i = 0; i < ga.argc && i < MAX_EMUARGUMENTS; ++i)
 	{
 		char *tmp_arg = ga.argv[i];
@@ -307,52 +260,39 @@ void parse_args(void)
 void init(int argc, char **argv)
 {
 
-	sourcefile_t *sf = create_sourcefile("configfiles/basic_new_config.txt");
-	toklex_t *lex= lex_string(read_all_sourcefile(sf));
+	sourcefile_t *sf1 = create_sourcefile("configfiles/basic_new_config.txt");
+	toklex_t *lex1= lex_string(read_all_sourcefile(sf1));
 //	print_toklex(lex);
-	SYNTAX_ptree_t *tree = SYNTAX_ptree_create(lex);
-	SYNTAX_ptree_parse(tree);
+	SYNTAX_ptree_t *tree1 = SYNTAX_ptree_create(lex1);
+	SYNTAX_ptree_parse(tree1);
+
+
+	//sourcefile_t *sf2 = create_sourcefile("configfiles/config_3_0.txt");
+	//toklex_t *lex2= lex_string(read_all_sourcefile(sf2));
+//	print_toklex(lex);
+	//SYNTAX_ptree_t *tree2 = SYNTAX_ptree_create(lex2);
+	//SYNTAX_ptree_parse(tree2);
+
+
 	//SYNTAX_pnode_print(tree->head, 0);
 	//SYNTAX_ptree_free(tree);
 	//SYNTAX_pnode_print(tree->settings, 0);
-	MANFST_manifest_t *manifest =  MANFST_init_manifest(tree);
+	MANFST_manifest_t *manifest1 =  MANFST_init_manifest(tree1);
+	//MANFST_manifest_t *manifest2 =  MANFST_init_manifest(tree2);
 
 	SIM_simulator_t *sim = SIM_init_simulator();
-	SIM_load_manifest_simulator(sim, manifest);
-	MANFST_free_manifest(manifest);
-	STAGE_print_stage(sim->stage);
 
-	//SIM_init_stage_simulator(sim);
-	//SIM_alloc_graph(sim);
-	//SIM_build_graph(sim);
+	SIM_load_manifest_simulator(sim, manifest1);
+	MANFST_free_manifest(manifest1);
+	//SIM_load_manifest_simulator(sim, manifest2);
+	//MANFST_free_manifest(manifest2);
+
+	SIM_assign_scene_to_stage_simulator(sim);
+	SIM_start_simulator(sim);
+
+
+
 	parse_args();
-	/*
-	WS_cfg_file_t *file = WS_cfg_create_file("configfiles/basic_config.txt");
-	//printf("try\n");
-	SIM_simulator_t *sim = SIM_simulator_init();
-	SIM_simulator_load_config(sim, file);
-	WS_cfg_free_file(file);
-
-
-	for(int i = 0; i < 20000; ++i)
-	{
-		SIM_simulator_update(sim);
-		//printf("%d\n", i);
-	}
-
-	//printf("try\n");
-	SIM_simulator_print_all_devices(sim);
-
-	//create_cli_context(&globalstate.ctx);
-	*/
-
-
-
-
-
-
-
-
 
 
 	if(get_flag(FLAG_HAS_SOURCE))
@@ -362,8 +302,6 @@ void init(int argc, char **argv)
 
 	if(get_flag(FLAG_TESTING))
 	{
-		//testing();
-		//basic_export();
 
 	}
 	else
@@ -373,175 +311,3 @@ void init(int argc, char **argv)
 	}
 
 }
-
-//cmd_t *input(void)
-//{
-//	return pull_line(&globalstate.ctx);
-//}
-
-/*
-int on_breakpoint(void)
-{
-	//int pc = get_pc();
-	for(int i = 0; i < MAX_BREAKPOINTS; ++i)
-	{
-		int temp = globalstate.breakpoints[i];
-		if(temp < 0)
-		{
-			return -1;
-		}
-		else if(temp == pc)
-		{
-			return i;
-		}
-	}
-	return -1;
-}
-
-void step_handler(void)
-{
-
-	if(globalstate.runfor < 0)
-	{
-		clr_flag(FLAG_RUNNING);
-		return;
-	}
-	else
-	{
-		globalstate.runfor--;
-		//printf("%d\n",globalstate.runfor);
-	}
-	int brk = on_breakpoint();
-	if(brk != -1)
-	{
-		clr_flag(FLAG_RUNNING);
-		return;
-	}
-	for(int i = 0; i < 5; ++i)
-	{
-		//step_cpu();
-
-	}
-	//cpu_t *cpu = global_cpu();
-	//if(cpu->stop == true && get_flag(FLAG_IGNORE_BREAK) == false)
-	{
-		clr_flag(FLAG_RUNNING);
-
-		globalstate.runfor = 0;
-		//cpu->stop = false;
-	}
-
-}
-
-void print_cmd(cmd_t *cmd)
-{
-
-
-
-
-}
-
-void basic_export(void)
-{
-	if(!get_flag(FLAG_EXPORT))
-		return;
-
-	export_bundle_t *bnd = create_export_bundle(GLBST.export_path);
-
-	for(int i = 0; i < 64; ++i)
-	{
-		export_packet_t regexp = create_packet_register(i, 0, 0, get_reg(i), EXPORT_MODE_INT);
-		add_packet_to_bundle(bnd, regexp);
-	}
-
-	for(int im = 0; im < 100; ++im)
-	{
-		export_packet_t memexp = create_packet_memory(load(im), im);
-		add_packet_to_bundle(bnd, memexp);
-
-	}
-
-	export_dump(bnd);
-}
-
-
-
-void step_cmd(cmd_t *cmd)
-{
-
-}
-
-void break_cmd(cmd_t *cmd)
-{
-
-
-}
-
-void load_cmd(cmd_t *cmd)
-{
-
-
-}
-
-void run_cmd(cmd_t *cmd)
-{
-
-
-}
-
-
-bool basic_input_manager(cmd_t *cmd)
-{
-	bool run = hydra(cmd);
-	return run;
-}
-
-
-
-
-void update(void)
-{
-	bool running = true;
-
-
-	while(running)
-	{
-		cmd_t *inp = input();
-		bool skip = basic_input_manager(inp);
-		if(skip)
-		{
-			while(IS_RUNNING)
-			{
-				step_handler();
-
-			}
-
-		}
-
-	}
-
-
-
-
-}
-
-
-#define TEST_CYCLES 1000
-void testing(void)
-{
-	//TODO make this actually not like static
-	for(int i = 0; i < TEST_CYCLES; ++i)
-	{
-		for(int i = 0; i < 5; ++i)
-		{
-			//if(global_cpu()->program_over)
-			{
-				return;
-			}
-			//step_cpu();
-
-		}
-
-	}
-}
-*/
