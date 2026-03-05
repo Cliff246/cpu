@@ -23,29 +23,74 @@ struct mapkey_vtable mapkey_vtable_list[TAG_MAPKEY_TYPE_COUNT] =
 	TAG_MAPKEY_LIST(TAG_MAPKEY_VTABLE_LIST_FILL)
 };
 
+static TAG_ptr_t TAG_init_map(void);
+static bool TAG_set_key_string_map(TAG_tag_t *ptr, char *key, TAG_tag_t *tag);
+static TAG_tag_t *TAG_get_key_string_map(TAG_tag_t *ptr, char *key);
+static bool TAG_remove_key_string_map(TAG_tag_t *ptr, char *key);
+static bool TAG_set_key_int_map(TAG_tag_t *ptr, int64_t key, TAG_tag_t *tag);
+static TAG_tag_t *TAG_get_key_int_map(TAG_tag_t *ptr, int64_t key);
+static bool TAG_remove_key_int_map(TAG_tag_t *ptr, int64_t key);
+
+static bool TAG_iter_start_map(TAG_tag_t *tag);
+static bool TAG_iter_reset_map(TAG_tag_t *tag);
+static bool TAG_iter_up_map(TAG_tag_t *tag);
+static bool TAG_iter_down_map(TAG_tag_t *tag);
+static bool TAG_iter_is_end_map(TAG_tag_t *tag);
+static bool TAG_iter_end_map(TAG_tag_t *tag);
+
+static bool TAG_iter_is_key_str_map(TAG_tag_t *tag);
+static bool TAG_iter_is_key_int_map(TAG_tag_t *tag);
+static char *TAG_iter_get_key_str_map(TAG_tag_t *tag);
+static int64_t TAG_iter_get_key_int_map(TAG_tag_t *tag);
+static TAG_tag_t *TAG_iter_get_value(TAG_tag_t *tag);
+static uint64_t TAG_get_size(TAG_tag_t *tag);
+
+
 TAG_map_arg_t init_map =
 {
 	.init = TAG_init_map
 };
 
+//str keys
 TAG_map_arg_t set_key_string_map =
 {
 	.set_key_string = TAG_set_key_string_map
 };
 
-TAG_map_arg_t set_key_int_map =
-{
-	.set_key_int = TAG_set_key_int_map
-};
 
 TAG_map_arg_t get_key_string_map =
 {
 	.get_key_string = TAG_get_key_string_map
 };
 
+TAG_map_arg_t rem_key_string_map =
+{
+	.rem_key_string = TAG_remove_key_string_map
+};
+
+//int keys
+TAG_map_arg_t set_key_int_map =
+{
+	.set_key_int = TAG_set_key_int_map
+};
+
 TAG_map_arg_t get_key_int_map =
 {
 	.get_key_int =  TAG_get_key_int_map
+};
+
+TAG_map_arg_t rem_key_int_map =
+{
+	.rem_key_int= TAG_remove_key_int_map
+};
+
+//iter
+//
+//
+
+TAG_map_arg_t iter_start_map =
+{
+	.iter_start = TAG_iter_start_map
 };
 
 TAG_map_arg_t iter_reset_map =
@@ -65,6 +110,11 @@ TAG_map_arg_t iter_down_map =
 TAG_map_arg_t iter_is_end_map =
 {
 	.iter_is_end = TAG_iter_is_end_map
+};
+
+TAG_map_arg_t iter_end_map =
+{
+	.iter_end = TAG_iter_end_map
 };
 
 TAG_map_arg_t is_key_str_map =
@@ -489,6 +539,8 @@ bool TAG_set_key_map(TAG_ptr_t ptr, union TAG_mapkey key, enum TAG_mapkey_type t
 		int64_t tmp_hash = mapelm->hash;
 		if(tmp_hash == -1)
 		{
+			if(tag == NULL)
+				return true;
 			mapelm->hash = hash;
 			mapelm->key = TAG_mapkey_init(key, type);
 			mapelm->tag = tag;
@@ -505,7 +557,26 @@ bool TAG_set_key_map(TAG_ptr_t ptr, union TAG_mapkey key, enum TAG_mapkey_type t
 				if(same == true)
 				{
 					//should reset
-					assert(0 && "mapkey is the same");
+					if(tag == NULL)
+					{
+						map->count--;
+						mapelm->hash = -1;
+						TAG_mapkey_free(mapelm->key, mapelm->type);
+						mapelm->type = 0;
+						mapelm->key.INT = 0;
+
+						TAG_free(mapelm->tag);
+						mapelm->tag = NULL;
+						//printf("remove %d\n", i);
+
+						TAG_map_realloc(ptr);
+						TAG_map_print_entries(ptr);
+						return true;
+					}
+					else
+					{
+						assert(0 && "cannot replace element");
+					}
 				}
 			}
 			start = (start + 1) % map->allocated;
@@ -515,6 +586,8 @@ bool TAG_set_key_map(TAG_ptr_t ptr, union TAG_mapkey key, enum TAG_mapkey_type t
 			start = (start + 1) % map->allocated;
 		}
 	}
+	if(tag == NULL)
+		return true;
 	return false;
 }
 
@@ -561,6 +634,7 @@ TAG_tag_t *TAG_get_key_map(TAG_ptr_t ptr, union TAG_mapkey key, enum TAG_mapkey_
 
 
 
+//string key behaviour
 
 static bool TAG_set_key_string_map(TAG_tag_t *ptr, char *key, TAG_tag_t *tag)
 {
@@ -577,6 +651,20 @@ static TAG_tag_t *TAG_get_key_string_map(TAG_tag_t *ptr, char *key)
 	//printf("%s\n", key);
 	return TAG_get_key_map(ptr->ptr, mapkey, TAG_MAPKEY_STR);
 }
+
+static bool TAG_remove_key_string_map(TAG_tag_t *ptr, char *key)
+{
+
+	TAG_map_t *map = ptr->ptr.MAP;
+	union TAG_mapkey mapkey;
+	mapkey.STR = key;
+	printf("remove %s\n", key);
+	assert(map->iter_active == false);
+	return TAG_set_key_map(ptr->ptr, mapkey, TAG_MAPKEY_STR, NULL);
+
+}
+
+//int key behaviour
 
 static bool TAG_set_key_int_map(TAG_tag_t *ptr, int64_t key, TAG_tag_t *tag)
 {
@@ -595,18 +683,46 @@ static TAG_tag_t *TAG_get_key_int_map(TAG_tag_t *ptr, int64_t key)
 
 }
 
+static bool TAG_remove_key_int_map(TAG_tag_t *ptr, int64_t key)
+{
+	TAG_map_t *map = ptr->ptr.MAP;
+	assert(map->iter_active == false);
+	union TAG_mapkey mapkey;
+	mapkey.INT = key;
+	return TAG_set_key_map(ptr->ptr, mapkey, TAG_MAPKEY_INT, NULL);
+}
+
+static bool TAG_iter_start_map(TAG_tag_t *tag)
+{
+	TAG_map_t *map = tag->ptr.MAP;
+
+	if(map->iter_active == true)
+	{
+		return false;
+	}
+	else
+	{
+		map->iter_active = true;
+		return true;
+	}
+}
+
 static bool TAG_iter_reset_map(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
 	map->iter = 0;
 	map->scroll_iter = 0;
-	TAG_map_print_entries(tag->ptr);
+	assert(map->iter_active == true && "iter active must be true");
+
+	//TAG_map_print_entries(tag->ptr);
 	return true;
 }
 
 static bool TAG_iter_up_map(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
+	assert(map->iter_active == true && "iter active must be true");
+
 	map->iter = (map->iter < map->count)? map->iter + 1: map->iter;
 	TAG_map_scroll_up(tag);
 	return true;
@@ -615,6 +731,8 @@ static bool TAG_iter_up_map(TAG_tag_t *tag)
 static bool TAG_iter_down_map(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
+	assert(map->iter_active == true && "iter active must be true");
+
 	map->iter = (map->iter > 0)? map->iter - 1: 0;
 	TAG_map_scroll_down(tag);
 
@@ -624,14 +742,27 @@ static bool TAG_iter_down_map(TAG_tag_t *tag)
 static bool TAG_iter_is_end_map(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
+	assert(map->iter_active == true && "iter active must be true");
 
 	return (map->iter == map->count)? true : false;
 
 }
 
+static bool TAG_iter_end_map(TAG_tag_t *tag)
+{
+	TAG_map_t *map = tag->ptr.MAP;
+
+	map->iter = 0;
+	map->scroll_iter = 0;
+	map->iter_active = false;
+	return true;
+}
+
 static bool TAG_iter_is_key_str_map(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
+	assert(map->iter_active == true && "iter active must be true");
+
 	struct TAG_mapelm *elm = TAG_map_get_element_scroll(tag);
 	if(elm == NULL)
 		return false;
@@ -645,6 +776,8 @@ static bool TAG_iter_is_key_str_map(TAG_tag_t *tag)
 static bool TAG_iter_is_key_int_map(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
+	assert(map->iter_active == true && "iter active must be true");
+
 	struct TAG_mapelm *elm = TAG_map_get_element_scroll(tag);
 
 	if(elm == NULL)
@@ -659,6 +792,8 @@ static bool TAG_iter_is_key_int_map(TAG_tag_t *tag)
 static char *TAG_iter_get_key_str_map(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
+	assert(map->iter_active == true && "iter active must be true");
+
 		struct TAG_mapelm *elm = TAG_map_get_element_scroll(tag);
 
 	if(elm == NULL)
@@ -674,6 +809,8 @@ static char *TAG_iter_get_key_str_map(TAG_tag_t *tag)
 static int64_t TAG_iter_get_key_int_map(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
+	assert(map->iter_active == true && "iter active must be true");
+
 	struct TAG_mapelm *elm = TAG_map_get_element_scroll(tag);
 
 	if(elm == NULL)
@@ -688,6 +825,8 @@ static int64_t TAG_iter_get_key_int_map(TAG_tag_t *tag)
 static TAG_tag_t *TAG_iter_get_value(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
+	assert(map->iter_active == true && "iter active must be true");
+
 	struct TAG_mapelm *elm = TAG_map_get_element_scroll(tag);
 
 	if(elm == NULL)
@@ -711,18 +850,27 @@ TAG_prototype_vtable_t TAG_map_vtable =
 	.free = TAG_map_free,
 	.print = TAG_map_print,
 	.copy = TAG_map_copy,
-	.size = 15,
+	.size = 19,
 	.fn =
 	{
 		[TAG_FN_MAP_INIT].MAP = &init_map,
 		[TAG_FN_MAP_SET_KEY_STRING].MAP = &set_key_string_map,
 		[TAG_FN_MAP_GET_KEY_STRING].MAP = &get_key_string_map,
+		[TAG_FN_MAP_REM_KEY_STRING].MAP = &rem_key_string_map,
+
 		[TAG_FN_MAP_SET_KEY_INT].MAP = &set_key_int_map,
 		[TAG_FN_MAP_GET_KEY_INT].MAP = &get_key_int_map,
+		[TAG_FN_MAP_REM_KEY_INT].MAP = &rem_key_int_map,
+
+
+		[TAG_FN_MAP_ITER_START].MAP = &iter_start_map,
 		[TAG_FN_MAP_ITER_RESET].MAP = &iter_reset_map,
 		[TAG_FN_MAP_ITER_UP].MAP = &iter_up_map,
 		[TAG_FN_MAP_ITER_DOWN].MAP = &iter_down_map,
-		[TAG_FN_MAP_ITER_END].MAP = &iter_is_end_map,
+		[TAG_FN_MAP_ITER_IS_END].MAP = &iter_is_end_map,
+		[TAG_FN_MAP_ITER_END].MAP = &iter_end_map,
+
+
 		[TAG_FN_MAP_ITER_IS_KEY_INT].MAP = &is_key_int_map,
 		[TAG_FN_MAP_ITER_IS_KEY_STR].MAP = &is_key_str_map,
 		[TAG_FN_MAP_ITER_GET_KEY_STR].MAP = &get_iter_str_map,

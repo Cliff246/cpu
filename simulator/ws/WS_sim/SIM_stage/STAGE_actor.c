@@ -11,17 +11,19 @@
 
 void STAGE_init_actor_costumes(STAGE_actor_t *actor)
 {
-
+	TAG_argptr_t arg_start = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_START);
 	TAG_argptr_t arg_get_size = TAG_get_fn(TAG_MAP, TAG_FN_MAP_GET_SIZE);
 	TAG_argptr_t arg_reset_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_RESET);
 	TAG_argptr_t arg_up_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_UP);
-	TAG_argptr_t arg_end_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_END);
+	TAG_argptr_t arg_is_end_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_IS_END);
+	TAG_argptr_t arg_end = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_END);
+
 	TAG_argptr_t arg_is_int_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_IS_KEY_INT);
 	TAG_argptr_t arg_is_str_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_IS_KEY_STR);
 	TAG_argptr_t arg_get_str_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_GET_KEY_STR);
 	TAG_argptr_t arg_get_int_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_GET_KEY_INT);
 
-
+	arg_start.MAP->iter_start(actor->tags);
 	uint64_t size = arg_get_size.MAP->get_size(actor->tags);
 	//printf("size: %ld\n", size);
 	arg_reset_iter.MAP->iter_reset(actor->tags);
@@ -29,7 +31,7 @@ void STAGE_init_actor_costumes(STAGE_actor_t *actor)
 
 	for(uint64_t i = 0; i < size; ++i)
 	{
-		if(arg_end_iter.MAP->iter_is_end(actor->tags) == true)
+		if(arg_is_end_iter.MAP->iter_is_end(actor->tags) == true)
 		{
 
 			break;
@@ -61,6 +63,7 @@ void STAGE_init_actor_costumes(STAGE_actor_t *actor)
 		//printf("%ld\n", i);
 	}
 	arg_reset_iter.MAP->iter_reset(actor->tags);
+	arg_end.MAP->iter_end(actor->tags);
 
 
 }

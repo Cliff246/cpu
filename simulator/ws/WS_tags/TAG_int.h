@@ -10,6 +10,7 @@ enum WS_SIM_TAG_int_fn_type
 {
 	WS_SIM_TAG_FN_TYPE(INT, INIT)
 	WS_SIM_TAG_FN_TYPE(INT, GET)
+	WS_SIM_TAG_FN_TYPE(INT, SET)
 };
 
 struct WS_SIM_TAG_int
@@ -23,6 +24,7 @@ TAG_ptr_t TAG_int_copy(TAG_ptr_t ptr);
 
 static TAG_ptr_t TAG_init_int(int64_t integer);
 static int64_t TAG_get_int(TAG_tag_t *tag);
+static void TAG_set_int(TAG_tag_t *tag, int64_t integer);
 
 
 extern TAG_prototype_vtable_t TAG_int_vtable;
@@ -31,6 +33,7 @@ union WS_SIM_TAG_int_arg
 {
 	TAG_ptr_t (*init)(int64_t integer);
 	int64_t (*get)(TAG_tag_t *tag);
+	void (*set)(TAG_tag_t *tag, int64_t integer);
 };
 
 
