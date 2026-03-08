@@ -23,6 +23,19 @@ struct mapkey_vtable mapkey_vtable_list[TAG_MAPKEY_TYPE_COUNT] =
 	TAG_MAPKEY_LIST(TAG_MAPKEY_VTABLE_LIST_FILL)
 };
 
+//key functions
+void TAG_mapkey_free(union TAG_mapkey key, enum TAG_mapkey_type type);
+int64_t TAG_mapkey_hash(union TAG_mapkey key, enum TAG_mapkey_type type);
+union TAG_mapkey TAG_mapkey_init(union TAG_mapkey key, enum TAG_mapkey_type type);
+bool TAG_mapkey_cmp(union TAG_mapkey key1, union TAG_mapkey key2, enum TAG_mapkey_type type);
+
+//helpers
+void TAG_map_realloc(TAG_ptr_t ptr);
+
+void TAG_map_print_entries(TAG_ptr_t ptr);
+
+struct TAG_mapelm *TAG_map_get_element(TAG_tag_t *tag, uint64_t i);
+
 static TAG_ptr_t TAG_init_map(void);
 static bool TAG_set_key_string_map(TAG_tag_t *ptr, char *key, TAG_tag_t *tag);
 static TAG_tag_t *TAG_get_key_string_map(TAG_tag_t *ptr, char *key);
@@ -250,6 +263,9 @@ bool TAG_mapkey_cmp(union TAG_mapkey key1, union TAG_mapkey key2, enum TAG_mapke
 
 }
 
+
+
+
 //helper functions
 void TAG_map_realloc(TAG_ptr_t ptr)
 {
@@ -300,7 +316,9 @@ void TAG_map_realloc(TAG_ptr_t ptr)
 	free(map->map);
 	map->map = new_elms;
 	map->allocated = new_max;
-
+	map->iter = 0;
+	map->iter_active = 0;
+	map->scroll_iter = 0;
 }
 
 void TAG_map_print_entries(TAG_ptr_t ptr)
@@ -405,6 +423,54 @@ void TAG_map_scroll_down(TAG_tag_t *tag)
 	}
 }
 
+void TAG_map_balance_remove(TAG_ptr_t ptr, uint64_t index)
+{
+	TAG_map_t *map = ptr.MAP;
+
+	const uint64_t max = map->allocated;
+	assert(index < max);
+	struct TAG_mapelm *remptr = &map->map[index];
+
+	uint64_t hole = index;
+	uint64_t pos = (hole + 1) % max;
+
+
+
+	map->count--;
+	remptr->hash = -1;
+	TAG_mapkey_free(remptr->key, remptr->type);
+	remptr->type = 0;
+	remptr->key.INT = 0;
+	TAG_free(remptr->tag);
+	remptr->tag = NULL;
+
+
+	for(uint64_t i = 1; i < max; ++i)
+	{
+
+
+
+		struct TAG_mapelm *elm = &map->map[pos];
+		if(elm->hash == -1)
+			break;
+		uint64_t base = elm->hash % max;
+
+
+		if((pos > hole && (base <= hole || base > pos)) || (pos < hole && (base <= hole && base > pos)))
+		{
+			map->map[hole] = map->map[pos];
+			map->map[pos].hash = -1;
+			map->map[pos].type = 0;
+			map->map[pos].tag = NULL;
+			map->map[pos].key.INT = 0;
+			hole = pos;
+		}
+
+		pos = (pos + 1) % max;
+	}
+
+}
+
 //default functions
 
 
@@ -501,7 +567,7 @@ static TAG_ptr_t TAG_init_map(void)
 {
 	TAG_map_t *map = calloc(1, sizeof(TAG_map_t));
 	assert(map);
-	map->allocated = 10;
+	map->allocated = 8;
 	map->map = calloc(map->allocated, sizeof(struct TAG_mapelm));
 
 	for(uint64_t i = 0; i < map->allocated; ++i)
@@ -559,18 +625,13 @@ bool TAG_set_key_map(TAG_ptr_t ptr, union TAG_mapkey key, enum TAG_mapkey_type t
 					//should reset
 					if(tag == NULL)
 					{
-						map->count--;
-						mapelm->hash = -1;
-						TAG_mapkey_free(mapelm->key, mapelm->type);
-						mapelm->type = 0;
-						mapelm->key.INT = 0;
+						TAG_map_balance_remove(ptr, start);
 
-						TAG_free(mapelm->tag);
-						mapelm->tag = NULL;
-						//printf("remove %d\n", i);
 
-						TAG_map_realloc(ptr);
-						TAG_map_print_entries(ptr);
+
+
+						//TAG_map_realloc(ptr);
+						//TAG_map_print_entries(ptr);
 						return true;
 					}
 					else
@@ -658,7 +719,7 @@ static bool TAG_remove_key_string_map(TAG_tag_t *ptr, char *key)
 	TAG_map_t *map = ptr->ptr.MAP;
 	union TAG_mapkey mapkey;
 	mapkey.STR = key;
-	printf("remove %s\n", key);
+	//printf("remove %s\n", key);
 	assert(map->iter_active == false);
 	return TAG_set_key_map(ptr->ptr, mapkey, TAG_MAPKEY_STR, NULL);
 
@@ -794,7 +855,7 @@ static char *TAG_iter_get_key_str_map(TAG_tag_t *tag)
 	TAG_map_t *map = tag->ptr.MAP;
 	assert(map->iter_active == true && "iter active must be true");
 
-		struct TAG_mapelm *elm = TAG_map_get_element_scroll(tag);
+	struct TAG_mapelm *elm = TAG_map_get_element_scroll(tag);
 
 	if(elm == NULL)
 		return NULL;
@@ -812,11 +873,13 @@ static int64_t TAG_iter_get_key_int_map(TAG_tag_t *tag)
 	assert(map->iter_active == true && "iter active must be true");
 
 	struct TAG_mapelm *elm = TAG_map_get_element_scroll(tag);
-
 	if(elm == NULL)
 		return INT64_MIN;
+
 	if(elm->type == TAG_MAPKEY_INT)
 	{
+		//printf("get elm %ld\n", elm->key.INT);
+
 		return elm->key.INT;
 	}
 	return INT64_MIN;

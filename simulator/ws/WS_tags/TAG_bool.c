@@ -7,6 +7,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+TAG_ptr_t TAG_init_bool(bool boolean);
+bool TAG_get_bool(TAG_tag_t *tag);
+
+TAG_bool_arg_t init_bool;
+TAG_bool_arg_t get_bool;
 
 void TAG_bool_free(TAG_ptr_t ptr)
 {
@@ -25,7 +30,7 @@ TAG_ptr_t TAG_bool_copy(TAG_ptr_t ptr)
 	return TAG_init_bool(ptr.BOOL->boolean);
 }
 
-static TAG_ptr_t TAG_init_bool(bool boolean)
+TAG_ptr_t TAG_init_bool(bool boolean)
 {
 	TAG_bool_t *ptr = calloc(1, sizeof(TAG_bool_t));
 	ptr->boolean = boolean;
@@ -34,17 +39,17 @@ static TAG_ptr_t TAG_init_bool(bool boolean)
 	return ret;
 }
 
-static bool TAG_get_bool(TAG_tag_t *tag)
+bool TAG_get_bool(TAG_tag_t *tag)
 {
 	return tag->ptr.BOOL->boolean;
 }
 
-static TAG_bool_arg_t init_bool =
+TAG_bool_arg_t init_bool =
 {
 	.init = TAG_init_bool
 };
 
-static TAG_bool_arg_t get_bool =
+TAG_bool_arg_t get_bool =
 {
 	.get = TAG_get_bool
 };

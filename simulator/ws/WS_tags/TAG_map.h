@@ -104,28 +104,13 @@ struct WS_SIM_TAG_map
 };
 
 
-//key functions
-void TAG_mapkey_free(union TAG_mapkey key, enum TAG_mapkey_type type);
-int64_t TAG_mapkey_hash(union TAG_mapkey key, enum TAG_mapkey_type type);
-union TAG_mapkey TAG_mapkey_init(union TAG_mapkey key, enum TAG_mapkey_type type);
-bool TAG_mapkey_cmp(union TAG_mapkey key1, union TAG_mapkey key2, enum TAG_mapkey_type type);
 
-//helpers
-void TAG_map_realloc(TAG_ptr_t ptr);
-
-void TAG_map_print_entries(TAG_ptr_t ptr);
-
-struct TAG_mapelm *TAG_map_get_element(TAG_tag_t *tag, uint64_t i);
 
 //generic map functions required by tag
 void TAG_map_free(TAG_ptr_t ptr);
 void TAG_map_print(TAG_ptr_t ptr, uint64_t tab);
 
 TAG_ptr_t TAG_map_copy(TAG_ptr_t ptr);
-
-
-
-
 
 
 

@@ -22,8 +22,6 @@ TAG_ptr_t TAG_string_copy(TAG_ptr_t ptr);
 
 extern TAG_prototype_vtable_t TAG_string_vtable;
 
-static TAG_ptr_t TAG_init_string(char *string);
-static char *TAG_get_string(TAG_tag_t *tag);
 
 
 union WS_SIM_TAG_string_arg

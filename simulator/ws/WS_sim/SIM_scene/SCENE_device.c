@@ -8,7 +8,7 @@
 #include "TAG_string.h"
 #include "dynamic_lib.h"
 #include "hashmap.h"
-
+#include "SCENE_keywords.h"
 #include "TAG_tag.h"
 #include <assert.h>
 #include <stdint.h>
@@ -36,7 +36,7 @@ TAG_tag_t *has_tag(TAG_tag_t *base, char *key);
 
 
 int64_t get_mono_map(TAG_tag_t *base);
-
+uint64_t get_keywords_size(char **string);
 
 
 //-----------------------------------------
@@ -50,31 +50,15 @@ int64_t get_mono_map(TAG_tag_t *base);
 //---------------------
 
 
-char *device_port_keywords[] =
-{
-	"port"
-};
 
-char *device_common_keywords[] =
-{
-	"key",
-	"module",
-	"id"
-};
 
-char *device_handle_keywords[] =
-{
-	"handle",
-};
+
+
 
 //----------------------
 //device validation functions
 //----------------------
-bool SCENE_validate_device_strings(SCENE_device_t *device, char **strings, uint64_t size, bool *buffer);
-
-bool SCENE_validate_device_port(SCENE_device_t *device);
-bool SCENE_validate_device_commons(SCENE_device_t *device);
-bool SCENE_validate_device_handle(SCENE_device_t *device);
+int SCENE_validate_device_strings(SCENE_device_t *device, char **strings, uint64_t size, bool *buffer);
 
 
 
@@ -92,14 +76,35 @@ TAG_tag_t *has_tag(TAG_tag_t *base, char *key)
 }
 
 
+uint64_t get_keywords_size(char **string)
+{
+	uint64_t i = 0;
+
+	while(string[i] != NULL)
+	{
+		++i;
+	}
+	return i;
+}
+
 
 //SCENE validate
 
-bool SCENE_validate_device_strings(SCENE_device_t *device, char **strings, uint64_t size, bool *buffer)
+int SCENE_validate_device_strings(SCENE_device_t *device, char **strings, uint64_t size, bool *buffer)
 {
 	TAG_tag_t *base = device->actor->tags;
 	TAG_argptr_t get_key = TAG_get_fn(TAG_MAP, TAG_FN_MAP_GET_KEY_STRING);
 	TAG_argptr_t rem_key = TAG_get_fn(TAG_MAP, TAG_FN_MAP_REM_KEY_STRING);
+	TAG_argptr_t start_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_START);
+	TAG_argptr_t reset_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_RESET);
+	TAG_argptr_t up_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_UP);
+	TAG_argptr_t is_end_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_IS_END);
+	TAG_argptr_t end_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_END);
+	TAG_argptr_t is_int_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_IS_KEY_INT);
+	TAG_argptr_t is_str_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_IS_KEY_STR);
+	TAG_argptr_t get_str_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_GET_KEY_STR);
+	TAG_argptr_t get_int_iter = TAG_get_fn(TAG_MAP, TAG_FN_MAP_ITER_GET_KEY_INT);
+	TAG_argptr_t get_size = TAG_get_fn(TAG_MAP, TAG_FN_MAP_GET_SIZE);
 
 	TAG_tag_t *copy = TAG_copy(base);
 	bool passed = true;
@@ -112,43 +117,42 @@ bool SCENE_validate_device_strings(SCENE_device_t *device, char **strings, uint6
 		buffer[i] = test;
 		passed = passed && test;
 	}
-	printf("copy\n");
-	TAG_map_print_entries(copy->ptr);
-	TAG_print(copy);
-	if(passed == false)
+	//printf("copy\n");
+	//TAG_map_print_entries(copy->ptr);
+	//TAG_print(copy);
+
+	uint64_t excess = get_size.MAP->get_size(copy);
+	if(excess > 0)
 	{
-		for(uint64_t i = 0; i < size; ++i)
+
+		start_iter.MAP->iter_start(copy);
+		reset_iter.MAP->iter_reset(copy);
+		while(is_end_iter.MAP->iter_is_end(copy) == false)
 		{
-			printf("[%s] = %d\n", strings[i], buffer[i]);
+			bool is_str = is_str_iter.MAP->iter_is_key_str(copy);
+			if(is_str)
+			{
+				char *strkey = get_str_iter.MAP->iter_get_key_str(copy);
+				printf("extra key %s\n", strkey);
+			}
+
+			up_iter.MAP->iter_up(copy);
 		}
-		printf("\n");
+		end_iter.MAP->iter_end(copy);
+		assert(0);
 	}
-	return passed;
+
+	for(uint64_t i = 0; i < size; ++i)
+	{
+		printf("[%s] = %d\n", strings[i], buffer[i]);
+	}
+	printf("\n");
+	TAG_free(copy);
+	return excess;
+
 }
 
-bool SCENE_validate_device_port(SCENE_device_t *device)
-{
-	const uint64_t size = sizeof(device_port_keywords)/sizeof(device_port_keywords[0]);
-	bool buffer[size];
-	bool passed = SCENE_validate_device_strings(device, device_port_keywords, size, buffer);
-	return passed;
-}
 
-bool SCENE_validate_device_commons(SCENE_device_t *device)
-{
-	const uint64_t size = sizeof(device_common_keywords)/sizeof(device_common_keywords[0]);
-	bool buffer[size];
-	bool passed = SCENE_validate_device_strings(device, device_common_keywords, size, buffer);
-	return passed;
-}
-
-bool SCENE_validate_device_handle(SCENE_device_t *device)
-{
-	const uint64_t size = sizeof(device_handle_keywords)/sizeof(device_handle_keywords[0]);
-	bool buffer[size];
-	bool passed = SCENE_validate_device_strings(device, device_handle_keywords, size, buffer);
-	return passed;
-}
 
 
 
@@ -202,10 +206,13 @@ SCENE_device_t *SCENE_alloc_device(STAGE_actor_t *actor)
 
 bool SCENE_validate_device(SCENE_device_t *device)
 {
-	SCENE_validate_device_commons(device);
-	SCENE_validate_device_handle(device);
- 	SCENE_validate_device_port(device);
 
+	const uint64_t count_keywords = sizeof(keywords_strings) / sizeof(keywords_strings[0]);
+
+	bool buffer[count_keywords];
+
+	int excess = SCENE_validate_device_strings(device, keywords_strings, count_keywords, buffer);
+	printf("excess %d\n", excess);
 
 	return false;
 }

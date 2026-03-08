@@ -1,11 +1,10 @@
 device =
 {
 	name = "alpha"
-	key = 3
 	module = "libdev_echo"
 	tag(t1) = "hello world"
 	resources = ["echo_resource", "busin", "busout"]
-	monolith =
+	handle =
 	{
 		handle =
 		{
@@ -49,9 +48,8 @@ device = {
 	module = "libsim_dev_ram"
 	tag(print_content) = true
 	tag(file_name) = "a.bin"
-	key = 2
-	mbase = 0
-	msize = 2000
+	tag(mbase) = 0
+	tag(msize) = 2000
 
 	port =
 	{
@@ -76,8 +74,8 @@ device = {
 device = {
 	name = "charlie"
 	module = "libsim_dev_ram"
-	mbase = 2001
-	msize = 2000
+	tag(mbase) = 2001
+	tag(msize) = 2000
 
 	port =
 	{
@@ -141,8 +139,8 @@ device = {
 
 bus = {
     id = 0
-    latency = 10
-    throughput = 10
+    tag(latency) = 10
+    tag(throughput) = 10
     name = "I0"
     port =
 	{
@@ -164,8 +162,8 @@ bus = {
 bus = {
 	name = "I1"
 	id = 1
-	latency = 1
-	throughput = 10
+    tag(latency) = 10
+    tag(throughput) = 10
 	port =
 	{
 		class = "mem"
@@ -187,8 +185,8 @@ bus = {
 	name = "I2"
 
 	id = 2
-	latency = 1
-	throughput = 10
+    tag(latency) = 10
+    tag(throughput) = 10
 	port =
 	{
 		channels = 2
@@ -211,8 +209,8 @@ bus = {
 	name = "I3"
 
 	id = 3
-	latency = 1
-	throughput = 10
+    tag(latency) = 10
+    tag(throughput) = 10
 	port =
 	{
 		class = "mem"
@@ -236,8 +234,8 @@ bus = {
 	name = "I4"
 
 	id = 4
-	latency = 1
-	throughput = 10
+    tag(latency) = 10
+    tag(throughput) = 10
 	port =
 	{
 		class = "mem"
@@ -258,8 +256,8 @@ bus = {
 	id = 5
 	name = "I5"
 
-	latency = 1
-	throughput = 10
+    tag(latency) = 10
+    tag(throughput) = 10
 	port =
 	{
 		class = "mem"

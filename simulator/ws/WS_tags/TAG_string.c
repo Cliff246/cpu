@@ -5,6 +5,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+ TAG_ptr_t TAG_init_string(char *string);
+ char *TAG_get_string(TAG_tag_t *tag);
+
+
+
+
 TAG_string_arg_t init_string;
 TAG_string_arg_t get_string;
 
@@ -39,7 +45,7 @@ TAG_ptr_t TAG_string_copy(TAG_ptr_t ptr)
 	return TAG_init_string(str);
 }
 
-static TAG_ptr_t TAG_init_string(char *string)
+TAG_ptr_t TAG_init_string(char *string)
 {
 	TAG_string_t *ptr = calloc(1, sizeof(TAG_string_t));
 	assert(ptr);
@@ -50,10 +56,11 @@ static TAG_ptr_t TAG_init_string(char *string)
 	return ret;
 }
 
-static char *TAG_get_string(TAG_tag_t *tag)
+char *TAG_get_string(TAG_tag_t *tag)
 {
 	return tag->ptr.STRING->string;
 }
+
 
 TAG_prototype_vtable_t TAG_string_vtable =
 {

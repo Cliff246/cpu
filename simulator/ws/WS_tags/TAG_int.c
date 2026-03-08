@@ -2,6 +2,14 @@
 #include "TAG_tag.h"
 #include <stdio.h>
 
+TAG_int_arg_t init_int;
+TAG_int_arg_t get_int;
+TAG_int_arg_t set_int;
+
+TAG_ptr_t TAG_init_int(int64_t integer);
+int64_t TAG_get_int(TAG_tag_t *tag);
+void TAG_set_int(TAG_tag_t *tag, int64_t integer);
+
 void TAG_int_free(TAG_ptr_t ptr)
 {
 	TAG_int_t *integer = ptr.INT;
@@ -17,7 +25,7 @@ TAG_ptr_t TAG_int_copy(TAG_ptr_t ptr)
 	return TAG_init_int(ptr.INT->integer);
 }
 
-static TAG_ptr_t TAG_init_int(int64_t integer)
+TAG_ptr_t TAG_init_int(int64_t integer)
 {
 	TAG_int_t *ptr = calloc(1, sizeof(TAG_int_t));
 	ptr->integer = integer;
@@ -26,27 +34,27 @@ static TAG_ptr_t TAG_init_int(int64_t integer)
 	return ret;
 }
 
-static int64_t TAG_get_int(TAG_tag_t *tag)
+int64_t TAG_get_int(TAG_tag_t *tag)
 {
 	return tag->ptr.INT->integer;
 }
 
-static void TAG_set_int(TAG_tag_t *tag, int64_t integer)
+void TAG_set_int(TAG_tag_t *tag, int64_t integer)
 {
 	tag->ptr.INT->integer = integer;
 }
 
-static TAG_int_arg_t init_int =
+TAG_int_arg_t init_int =
 {
 	.init = TAG_init_int
 };
 
-static TAG_int_arg_t get_int =
+TAG_int_arg_t get_int =
 {
 	.get = TAG_get_int
 };
 
-static TAG_int_arg_t set_int =
+TAG_int_arg_t set_int =
 {
 	.set = TAG_set_int
 };

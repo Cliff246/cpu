@@ -8,6 +8,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+TAG_ptr_t TAG_init_list_empty(void);
+TAG_ptr_t TAG_init_list_bools(uint64_t size, bool *bools);
+TAG_ptr_t TAG_init_list_strings(uint64_t size, char **strings);
+TAG_ptr_t TAG_init_list_ints(uint64_t size, int64_t *integer);
+TAG_ptr_t TAG_init_list_tags(uint64_t size, TAG_tag_t **tags);
+TAG_tag_t *TAG_get_list(TAG_tag_t *tag, uint64_t pos);
+uint64_t TAG_get_list_size(TAG_tag_t *tag);
+void TAG_append_list(TAG_tag_t *tag, TAG_tag_t *add);
+
+
 TAG_list_arg_t init_list_empty;
 TAG_list_arg_t init_list_bools;
 TAG_list_arg_t init_list_strings;
@@ -108,7 +118,7 @@ void TAG_list_expand(TAG_list_t *list, uint64_t minimum)
 
 
 
-static TAG_ptr_t TAG_init_list_empty(void)
+TAG_ptr_t TAG_init_list_empty(void)
 {
 	TAG_list_t *list = TAG_init_list(0);
 
@@ -118,12 +128,12 @@ static TAG_ptr_t TAG_init_list_empty(void)
 }
 
 
-static TAG_ptr_t TAG_init_list_bools(uint64_t size, bool *bools)
+TAG_ptr_t TAG_init_list_bools(uint64_t size, bool *bools)
 {
 	assert(0);
 }
 
-static TAG_ptr_t TAG_init_list_strings(uint64_t size, char **strings)
+TAG_ptr_t TAG_init_list_strings(uint64_t size, char **strings)
 {
 	TAG_list_t *list = TAG_init_list(size);
 	TAG_argptr_t string_init = TAG_get_fn(TAG_STRING, TAG_FN_STRING_INIT);
@@ -140,7 +150,7 @@ static TAG_ptr_t TAG_init_list_strings(uint64_t size, char **strings)
 
 
 
-static TAG_ptr_t TAG_init_list_ints(uint64_t size, int64_t *integer)
+TAG_ptr_t TAG_init_list_ints(uint64_t size, int64_t *integer)
 {
 	TAG_list_t *list = TAG_init_list(size);
 	TAG_argptr_t int_init = TAG_get_fn(TAG_INT, TAG_FN_INT_INIT);
@@ -156,7 +166,7 @@ static TAG_ptr_t TAG_init_list_ints(uint64_t size, int64_t *integer)
 
 }
 
-static TAG_ptr_t TAG_init_list_tags(uint64_t size, TAG_tag_t **tags)
+TAG_ptr_t TAG_init_list_tags(uint64_t size, TAG_tag_t **tags)
 {
 	TAG_list_t *list = TAG_init_list(size);
 	assert(list);
@@ -172,19 +182,19 @@ static TAG_ptr_t TAG_init_list_tags(uint64_t size, TAG_tag_t **tags)
 	return ptr;
 }
 
-static TAG_tag_t *TAG_get_list(TAG_tag_t *tag, uint64_t pos)
+TAG_tag_t *TAG_get_list(TAG_tag_t *tag, uint64_t pos)
 {
 	if(tag->ptr.LIST->size < pos)
 		return NULL;
 	return tag->ptr.LIST->list[pos];
 }
 
-static uint64_t TAG_get_list_size(TAG_tag_t *tag)
+uint64_t TAG_get_list_size(TAG_tag_t *tag)
 {
 	return tag->ptr.LIST->size;
 }
 
-static void TAG_append_list(TAG_tag_t *tag, TAG_tag_t *add)
+void TAG_append_list(TAG_tag_t *tag, TAG_tag_t *add)
 {
 	TAG_list_t *list = tag->ptr.LIST;
 

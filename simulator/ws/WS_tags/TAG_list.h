@@ -31,18 +31,6 @@ void TAG_list_free(TAG_ptr_t ptr);
 void TAG_list_print(TAG_ptr_t ptr, uint64_t tab);
 TAG_ptr_t TAG_list_copy(TAG_ptr_t ptr);
 
-static TAG_ptr_t TAG_init_list_empty(void);
-static TAG_ptr_t TAG_init_list_bools(uint64_t size, bool *bools);
-static TAG_ptr_t TAG_init_list_strings(uint64_t size, char **strings);
-static TAG_ptr_t TAG_init_list_ints(uint64_t size, int64_t *integer);
-static TAG_ptr_t TAG_init_list_tags(uint64_t size, TAG_tag_t **tags);
-static TAG_tag_t *TAG_get_list(TAG_tag_t *tag, uint64_t pos);
-static uint64_t TAG_get_list_size(TAG_tag_t *tag);
-static void TAG_append_list(TAG_tag_t *tag, TAG_tag_t *add);
-
-
-
-
 extern TAG_prototype_vtable_t TAG_list_vtable;
 
 union WS_SIM_TAG_list_arg

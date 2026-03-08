@@ -21,8 +21,7 @@ TAG_ptr_t TAG_bool_copy(TAG_ptr_t ptr);
 
 extern TAG_prototype_vtable_t TAG_bool_vtable;
 
-static TAG_ptr_t TAG_init_bool(bool boolean);
-static bool TAG_get_bool(TAG_tag_t *tag);
+
 
 union WS_SIM_TAG_bool_arg
 {

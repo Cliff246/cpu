@@ -22,9 +22,7 @@ void TAG_int_free(TAG_ptr_t ptr);
 void TAG_int_print(TAG_ptr_t ptr, uint64_t tab);
 TAG_ptr_t TAG_int_copy(TAG_ptr_t ptr);
 
-static TAG_ptr_t TAG_init_int(int64_t integer);
-static int64_t TAG_get_int(TAG_tag_t *tag);
-static void TAG_set_int(TAG_tag_t *tag, int64_t integer);
+
 
 
 extern TAG_prototype_vtable_t TAG_int_vtable;
