@@ -54,11 +54,6 @@ void SCENE_get_ints_port(SCENE_port_t *port, TAG_tag_t *tag)
 	TAG_tag_t *lanes = get_key.MAP->get_key_string(tag, "lanes");
 	TAG_tag_t *channels = get_key.MAP->get_key_string(tag, "channels");
 
-
-	get_size.MAP->get_size(lanes);
-	get_size.MAP->get_size(channels);
-
-
 	TAG_tag_t *buffer[10];
 
 	int64_t lanes_count = SCENE_get_all_tags_map(lanes, buffer, 10);
@@ -95,29 +90,30 @@ void SCENE_get_channels_port(SCENE_port_t *port, TAG_tag_t *tag)
 
 	TAG_argptr_t get_string = TAG_get_fn(TAG_STRING, TAG_FN_STRING_GET);
 
-	TAG_tag_t *postive = get_key.MAP->get_key_string(tag, "channels_positive");
+	TAG_tag_t *positive = get_key.MAP->get_key_string(tag, "channels_positive");
 	TAG_tag_t *negative = get_key.MAP->get_key_string(tag, "channels_negative");
 
 
 	TAG_tag_t *buffer[10];
 
-	int64_t postive_count = SCENE_get_all_tags_map(postive, buffer, 10);
-	assert(postive_count == 1);
-	TAG_tag_t *postive_tag = buffer[0];
+	int64_t positive_count = SCENE_get_all_tags_map(positive, buffer, 10);
+	assert(positive_count == 1);
+	TAG_tag_t *positive_tag = buffer[0];
 
-	uint64_t postive_list_count = get_size_list.LIST->get_size(postive_tag);
 
-	char **postive_channels = calloc(postive_list_count, sizeof(char *));
-	assert(postive_channels);
+	uint64_t positive_list_count = get_size_list.LIST->get_size(positive_tag);
 
-	for(uint64_t i = 0; i < postive_list_count; ++i)
+	char **positive_channels = calloc(positive_list_count, sizeof(char *));
+	assert(positive_channels);
+
+	for(uint64_t i = 0; i < positive_list_count; ++i)
 	{
 
-		char *str = get_string.STRING->get(	get_pos_list.LIST->get(postive_tag, i));
-		postive_channels[i] = str;
+		char *str = get_string.STRING->get(	get_pos_list.LIST->get(positive_tag, i));
+		positive_channels[i] = str;
 	}
 
-	port->postive = postive_channels;
+	port->positive = positive_channels;
 
 	int64_t negative_count = SCENE_get_all_tags_map(negative, buffer, 10);
 	assert(negative_count == 1);
@@ -139,8 +135,12 @@ void SCENE_get_channels_port(SCENE_port_t *port, TAG_tag_t *tag)
 
 	port->negative = negative_channels;
 
-	assert(negative_list_count == postive_list_count && "postive must match negatives but this is the basic test");
+	assert(negative_list_count == positive_list_count && "postive must match negatives but this is the basic test");
+	assert(positive_list_count == negative_list_count &&
+       "channels_positive and channels_negative must match");
 
+	assert(positive_list_count == port->channels_count &&
+       "channel count must match list size");
 }
 
 void SCENE_get_links_port(SCENE_port_t *port, TAG_tag_t *tag)
@@ -217,7 +217,7 @@ void SCENE_print_port(SCENE_port_t *port)
 	printf("port: lanes %d channels %d links_size %d\n", port->lanes, port->channels_count, port->links_size);
 	for(uint64_t i = 0; i < port->channels_count; ++i)
 	{
-		printf("postive[%s] - negative[%s]\n", port->postive[i], port->negative[i]);
+		printf("postive[%s] - negative[%s]\n", port->positive[i], port->negative[i]);
 	}
 
 	for(uint64_t j = 0; j < port->links_size; ++j)

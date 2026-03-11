@@ -371,9 +371,10 @@ struct TAG_mapelm *TAG_map_get_element(TAG_tag_t *tag, uint64_t i)
 struct TAG_mapelm *TAG_map_get_element_scroll(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
-	if (map->scroll_iter > map->allocated)
+	if (map->scroll_iter >= map->allocated)
 	{
 		//printf("done\n");
+		
     	return NULL;
 	}
 	//printf("scroll iter %ld\n", map->scroll_iter);

@@ -28,7 +28,7 @@ typedef struct SCENE_port
 	uint64_t lanes;
 	uint64_t channels_count;
 
-	char **postive;
+	char **positive;
 	char **negative;
 
 	uint64_t links_size;
