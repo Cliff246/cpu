@@ -101,7 +101,7 @@ bool SCENE_validate_step_context(SCENE_context_t *context)
 	{
 		SCENE_device_t *device = SCENE_get_scope(context->scope, i);
 
-		SCENE_validate_device(device);
+		assert(SCENE_validate_device(device));
 
 	}
 
@@ -119,6 +119,16 @@ bool SCENE_validate_step_context(SCENE_context_t *context)
 
 bool SCENE_assign_step_context(SCENE_context_t *context)
 {
+	uint64_t size = SCENE_get_count_scope(context->scope);
+
+	for(uint64_t i = 0; i < size; ++i)
+	{
+		SCENE_device_t *device = SCENE_get_scope(context->scope, i);
+
+		SCENE_assign_device(device);
+
+	}
+
 	return true;
 }
 

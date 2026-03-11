@@ -3,7 +3,9 @@
 
 typedef struct SCENE_link
 {
-
+	char *postive;
+	char *negative;
+	
 }SCENE_link_t;
 
 

@@ -333,11 +333,11 @@ void TAG_map_print_entries(TAG_ptr_t ptr)
 
 			if(elm->type == TAG_MAPKEY_STR)
 			{
-				printf("[%ld] = %s\n", k, elm->key.STR);
+				printf("[%ld] = %s<%ld>\n", k, elm->key.STR, elm->hash);
 			}
 			else
 			{
-				printf("[%ld] = %ld\n", k, elm->key.INT);
+				printf("[%ld] = %ld<%ld>\n", k, elm->key.INT, elm->hash);
 
 			}
 		}
@@ -371,21 +371,31 @@ struct TAG_mapelm *TAG_map_get_element(TAG_tag_t *tag, uint64_t i)
 struct TAG_mapelm *TAG_map_get_element_scroll(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
-	if (map->scroll_iter >= map->allocated)
+	if (map->scroll_iter > map->allocated)
+	{
+		//printf("done\n");
     	return NULL;
+	}
 	//printf("scroll iter %ld\n", map->scroll_iter);
 	struct TAG_mapelm *elm = &map->map[map->scroll_iter];
 	if(elm->hash == -1)
 	{
-		//printf("get elment scroll\n");
 		for(uint64_t j = map->scroll_iter; j < map->allocated; ++j)
 		{
+			//printf("[%ld]=%ld\n", j,map->map[j].hash);
+
 			if(map->map[j].hash != -1)
 			{
 				map->scroll_iter = j;
 				elm = &map->map[map->scroll_iter];
+				break;
 			}
 		}
+	}
+	else
+	{
+		//TAG_map_print_entries(tag->ptr);
+		//printf("get nothing %ld\n", elm->hash);
 
 	}
 	return elm;
@@ -889,11 +899,19 @@ static TAG_tag_t *TAG_iter_get_value(TAG_tag_t *tag)
 {
 	TAG_map_t *map = tag->ptr.MAP;
 	assert(map->iter_active == true && "iter active must be true");
+	//printf("\n\n");
+	//TAG_map_print_entries(tag->ptr);
 
 	struct TAG_mapelm *elm = TAG_map_get_element_scroll(tag);
 
 	if(elm == NULL)
+	{
+		//TAG_map_print_entries(tag->ptr);
+		assert(0);
+
 		return NULL;
+
+	}
 	return elm->tag;
 }
 

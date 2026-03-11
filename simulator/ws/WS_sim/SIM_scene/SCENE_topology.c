@@ -1,31 +1,16 @@
 #include "SCENE_topology.h"
+#include <stdlib.h>
 
-/*
 
-static void CFG_init_stage1_context(CFG_context_t *ctx, MANFST_manifest_t *manifest)
+SCENE_topology_t *SCENE_init_topology(void)
 {
+	SCENE_topology_t *topology = calloc(1, sizeof(SCENE_topology_t));
 
-
-
-	ctx->channelbuf = CFG_init_link_buf(10);
-	assert(ctx->channelbuf);
-
-	ctx->deviceconfigs = CFG_init_node_ctx(manifest, ctx);
-	//set up wires
-	ctx->wireconfigs = CFG_init_edge_ctx(manifest, ctx);
-
-
-	const uint64_t wctx_count = ctx->wireconfigs->count;
-
-
-	//sort the wires based on id
-	CFG_qsort_edge_ctx(ctx->wireconfigs, 0, wctx_count - 1);
-
-	//free the manifest
-	MANFST_free_manifest(manifest);
-
+	return topology;
 
 }
+
+/*
 
 static void CFG_init_stage2_context(CFG_context_t *ctx)
 

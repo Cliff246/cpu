@@ -8,13 +8,13 @@
 #define SCENE_KEYWORDS_SIZE 6
 //name, group, required
 #define SCENE_KEYWORDS_LIST(X)\
-	X(tag		, 0, 1)		\
+	X(tag		, 0, 0)		\
 	X(port		, 1, 1)		\
 	X(id		, 2, 0)		\
 	X(name		, 2, 1)		\
-	X(handle	, 3, 1)		\
-	X(resources	, 3, 1)		\
-	X(module	, 3, 1)		\
+	X(handle	, 3, 0)		\
+	X(resources	, 3, 0)		\
+	X(module	, 3, 0)		\
 
 #define SCENE_KEYWORD_ENUM(X, Y, Z) SCENE_keyword_ ## X,
 

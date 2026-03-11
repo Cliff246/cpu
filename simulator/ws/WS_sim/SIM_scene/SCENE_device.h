@@ -24,15 +24,19 @@ typedef struct SCENE_device
 	SIM_uid_t uid;
 	char *name;
 
-
+	uint64_t ports_count;
+	SCENE_port_t **ports;
 }SCENE_device_t;
 
 
 
 SCENE_device_t *SCENE_alloc_device(STAGE_actor_t *actor);
 bool SCENE_validate_device(SCENE_device_t *device);
-
+bool SCENE_assign_device(SCENE_device_t *device);
 void SCENE_print_device(SCENE_device_t *device);
+
+//not done yet
+void SCENE_free_device(SCENE_device_t *device);
 
 /*
 //locals to the device
