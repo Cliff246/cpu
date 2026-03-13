@@ -1,5 +1,4 @@
 
-add_subdirectory(inputs)
 
 
 set(WS_HELPERS_CFILES

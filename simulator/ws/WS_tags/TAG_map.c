@@ -310,7 +310,6 @@ void TAG_map_realloc(TAG_ptr_t ptr)
 		}
 		assert(found == true && "how did you manage to do this");
 
-
 	}
 
 	free(map->map);
@@ -346,8 +345,6 @@ void TAG_map_print_entries(TAG_ptr_t ptr)
 			printf("[%ld] = empty\n", k );
 		}
 	}
-
-
 }
 
 struct TAG_mapelm *TAG_map_get_element(TAG_tag_t *tag, uint64_t i)
@@ -374,7 +371,7 @@ struct TAG_mapelm *TAG_map_get_element_scroll(TAG_tag_t *tag)
 	if (map->scroll_iter >= map->allocated)
 	{
 		//printf("done\n");
-		
+
     	return NULL;
 	}
 	//printf("scroll iter %ld\n", map->scroll_iter);
@@ -445,8 +442,6 @@ void TAG_map_balance_remove(TAG_ptr_t ptr, uint64_t index)
 	uint64_t hole = index;
 	uint64_t pos = (hole + 1) % max;
 
-
-
 	map->count--;
 	remptr->hash = -1;
 	TAG_mapkey_free(remptr->key, remptr->type);
@@ -458,8 +453,6 @@ void TAG_map_balance_remove(TAG_ptr_t ptr, uint64_t index)
 
 	for(uint64_t i = 1; i < max; ++i)
 	{
-
-
 
 		struct TAG_mapelm *elm = &map->map[pos];
 		if(elm->hash == -1)
@@ -562,8 +555,6 @@ TAG_ptr_t TAG_map_copy(TAG_ptr_t ptr)
 	TAG_ptr_t rptr;
 	rptr.MAP = new;
 
-
-
 	return rptr;
 }
 
@@ -637,9 +628,6 @@ bool TAG_set_key_map(TAG_ptr_t ptr, union TAG_mapkey key, enum TAG_mapkey_type t
 					if(tag == NULL)
 					{
 						TAG_map_balance_remove(ptr, start);
-
-
-
 
 						//TAG_map_realloc(ptr);
 						//TAG_map_print_entries(ptr);

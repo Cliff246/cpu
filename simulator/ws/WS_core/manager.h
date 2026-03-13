@@ -2,7 +2,6 @@
 #define __MANAGER_HEADER__
 
 
-#include "cli.h"
 #include "SIM_simulator.h"
 #include "dynamic_lib.h"
 
