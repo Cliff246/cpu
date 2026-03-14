@@ -24,7 +24,6 @@ target_include_directories(ws_run
 	PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}
 	wcpu_commons
-	wcpu_emu_inputs
 	ws_io
 	ws_sim
 	ws_tag
@@ -34,8 +33,6 @@ target_include_directories(ws_run
 
 target_link_libraries(ws_run PUBLIC
 	wcpu_commons
-	wcpu_commons
-	wcpu_emu_inputs
 	ws_io
 	ws_sim
 	ws_tag

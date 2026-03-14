@@ -129,7 +129,11 @@ void MANFST_init_scope(MANFST_scope_t *scope, SYNTAX_pnode_t *head)
 
 }
 
-
+void MANFST_print_scope(MANFST_scope_t *scope)
+{
+	printf("scope: %s\n", scope->code);
+	TAG_print(scope->scope);
+}
 
 void MANFST_free_scope(MANFST_scope_t *scope)
 {

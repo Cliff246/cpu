@@ -409,7 +409,7 @@ void free_tokstring(tok_t *token)
 }
 void free_toklex(toklex_t *toklex)
 {
-	printf("free toklex\n");
+	//printf("free toklex\n");
 
 	for(int i = 0; i < toklex->tcount; ++i)
 	{

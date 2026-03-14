@@ -15,7 +15,6 @@ target_include_directories(ws_core
 	PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/
 	wcpu_commons
-	wcpu_emu_inputs
 	ws_sim
 	sim_shared_interface
 	ws_cfg
@@ -24,7 +23,6 @@ target_include_directories(ws_core
 )
 target_link_libraries(ws_core PUBLIC
 	wcpu_commons
-	wcpu_emu_inputs
 	ws_sim
 	sim_shared_interface
 	ws_cfg

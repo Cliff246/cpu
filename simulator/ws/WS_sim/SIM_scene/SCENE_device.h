@@ -32,8 +32,8 @@ typedef struct SCENE_device
 
 SCENE_device_t *SCENE_alloc_device(STAGE_actor_t *actor);
 bool SCENE_validate_device(SCENE_device_t *device);
-bool SCENE_assign_device(SCENE_device_t *device);
 void SCENE_print_device(SCENE_device_t *device);
+bool SCENE_assign_device(SCENE_device_t *device, SCENE_topology_t *topology);
 
 //not done yet
 void SCENE_free_device(SCENE_device_t *device);

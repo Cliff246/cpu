@@ -541,7 +541,7 @@ TAG_ptr_t TAG_map_copy(TAG_ptr_t ptr)
 		elms[i] = elm_copy;
 	}
 	TAG_map_t *new = calloc(1, sizeof(TAG_map_t));
-	assert(map);
+	assert(new);
 	new->allocated = map->allocated;
 	new->count = map->count;
 	new->map = calloc(map->allocated, sizeof(struct TAG_mapelm));
@@ -591,7 +591,7 @@ bool TAG_set_key_map(TAG_ptr_t ptr, union TAG_mapkey key, enum TAG_mapkey_type t
 
 	//TODO fix this
 	TAG_map_t *map = ptr.MAP;
-	if(map->allocated <= map->count)
+	if(map->count * 4 >= map->allocated * 3)
 	{
 		TAG_map_realloc(ptr);
 	}

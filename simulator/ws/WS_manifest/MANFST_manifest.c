@@ -12,6 +12,11 @@
 #include <stdio.h>
 #include <string.h>
 
+uint64_t MANFST_get_size_manifest(MANFST_manifest_t *manifest)
+{
+	return manifest->scopes_size;
+}
+
 MANFST_manifest_t *MANFST_init_manifest(SYNTAX_ptree_t *tree)
 {
 
@@ -34,6 +39,9 @@ MANFST_manifest_t *MANFST_init_manifest(SYNTAX_ptree_t *tree)
 
 	return manifest;
 }
+
+
+
 void MANFST_free_manifest(MANFST_manifest_t *manifest)
 {
 	for(uint64_t i = 0; i <manifest->scopes_size; ++i)
@@ -45,4 +53,15 @@ void MANFST_free_manifest(MANFST_manifest_t *manifest)
 	free(manifest);
 
 
+}
+
+
+void MANFST_print_manifest(MANFST_manifest_t *manifest)
+{
+	printf("manifest\n");
+	uint64_t count = MANFST_get_size_manifest(manifest);
+	for(uint64_t i = 0; i < count; ++i)
+	{
+		MANFST_print_scope(&manifest->scopes[i]);
+	}
 }

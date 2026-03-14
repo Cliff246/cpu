@@ -17,7 +17,6 @@ target_include_directories(ws_manfst
 	PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/
 	wcpu_commons
-	wcpu_emu_inputs
 	ws_io
 	ws_sim
 	ws_tag
@@ -26,7 +25,6 @@ target_include_directories(ws_manfst
 )
 target_link_libraries(ws_manfst PUBLIC
 	wcpu_commons
-	wcpu_emu_inputs
 	ws_io
 	ws_sim
 	ws_tag

@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 
+
 int64_t SCENE_get_size_tags_map(TAG_tag_t *map);
 int64_t SCENE_get_all_tags_map(TAG_tag_t *map, TAG_tag_t **buffer, uint64_t bsize);
 

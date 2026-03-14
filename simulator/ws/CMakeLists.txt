@@ -38,7 +38,6 @@ add_executable(ws
 set(CMAKE_BUILD_TYPE Debug)
 target_link_libraries(ws
 	wcpu_commons
-	wcpu_emu_inputs
 	sim_shared_interface
 
 	ws_io
@@ -56,7 +55,6 @@ target_link_libraries(ws
 
 target_include_directories(ws PUBLIC
 	wcpu_commons
-	wcpu_emu_inputs
 	sim_shared_interface
 
 	ws_io

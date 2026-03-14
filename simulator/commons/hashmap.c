@@ -303,10 +303,10 @@ void *getdata_from_hash_table(p_hashtable_t table, const char *key)
 int64_t hash(const char *key)
 {
 	int64_t result = 0x0123456789abcdef;
-	while (*key)
+	char *keystr = (char *)key;
+	while (*keystr)
 	{
-		result ^= *(key++);
-		result = result << 5;
+ 		result = (result << 5) - result + *keystr++;
 	}
 	return result;
 }

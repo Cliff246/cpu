@@ -1,14 +1,140 @@
 #include "SCENE_topology.h"
+#include "SCENE_link.h"
+#include "commons.h"
+#include "hashmap.h"
+#include <assert.h>
+#include <stdint.h>
 #include <stdlib.h>
 
+//---------------------------
+//
+//-------------------------
+void free_linkset(void *linkset);
+
+//-------------------------------
+//
+//-------------------------------
+
+
+void free_linkset(void *linkset)
+{
+	return;
+}
+
+//--------------------------------------------
+//commons
+//--------------------------------------------
 
 SCENE_topology_t *SCENE_init_topology(void)
 {
 	SCENE_topology_t *topology = calloc(1, sizeof(SCENE_topology_t));
 
+
+	topology->links_alloc = 100;
+	topology->links_count = 0;
+	topology->links_list = calloc(topology->links_alloc, sizeof(SCENE_link_t *));
+	topology->links_table_positive = NULL;
+	topology->links_table_negative = NULL;
 	return topology;
 
 }
+
+uint64_t SCENE_append_topology(SCENE_topology_t *topology, SCENE_link_t *link)
+{
+
+	if(topology->links_alloc <= topology->links_count)
+	{
+		topology->links_alloc = (topology->links_alloc + 1) * 2;
+		topology->links_list = realloc_safe(topology->links_list, topology->links_alloc, sizeof(SCENE_link_t *));
+	}
+	uint64_t pos = topology->links_count++;
+	topology->links_list[pos] = link;
+
+
+	return pos;
+
+}
+void SCENE_finalize_links_topology(SCENE_topology_t *topology)
+{
+	topology->links_finished = true;
+}
+
+void SCENE_symbolize_topology(SCENE_topology_t *topology)
+{
+	if(topology->links_finished == false)
+	{
+		assert(0 && "links finished is false");
+		exit(EXIT_FAILURE);
+	}
+	p_hashtable_t table_positive = new_hash_table(topology->links_count * 3, free_linkset);
+
+	for(uint64_t i = 0; i < topology->links_count; ++i)
+	{
+		SCENE_link_t *link = topology->links_list[i];
+		char *positive = SCENE_get_positive_link(link);
+		if(getdata_from_hash_table(table_positive, positive ) != NULL)
+		{
+			assert(0 && "already had key in table");
+		}
+
+
+		addto_hash_table(table_positive, positive, link);
+
+	}
+	topology->links_table_positive = table_positive;
+
+
+	p_hashtable_t table_negative = new_hash_table(topology->links_count * 3, free_linkset);
+
+
+	for(uint64_t j = 0; j < topology->links_count; ++j)
+	{
+		SCENE_link_t *link = topology->links_list[j];
+
+		char *negative = SCENE_get_negative_link(link);
+
+		if(getdata_from_hash_table(table_negative, negative) != NULL)
+		{
+			printf("%s\n", negative);
+			assert(0 && "already had key in table");
+		}
+
+
+		addto_hash_table(table_negative, negative, link);
+	}
+
+	topology->links_table_negative = table_negative;
+
+
+	for(uint64_t k = 0; k < topology->links_count; ++k)
+	{
+		SCENE_link_t *link = topology->links_list[k];
+
+		
+	}
+
+	topology->links_symbolized = true;
+
+}
+
+void SCENE_print_topology(SCENE_topology_t *topology)
+{
+
+	if(topology->links_finished)
+	{
+		for(uint64_t i = 0; i < topology->links_count; ++i)
+		{
+			SCENE_print_link(topology->links_list[i]);
+		}
+	}
+	if(topology->links_symbolized)
+	{
+		print_hash_table(topology->links_table_positive);
+		print_hash_table(topology->links_table_negative);
+	}
+}
+
+
 
 /*
 

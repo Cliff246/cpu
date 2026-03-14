@@ -265,19 +265,19 @@ void init(int argc, char **argv)
 	SYNTAX_ptree_t *tree1 = SYNTAX_ptree_create(lex1);
 	SYNTAX_ptree_parse(tree1);
 
-
 	//sourcefile_t *sf2 = create_sourcefile("configfiles/config_3_0.txt");
 	//toklex_t *lex2= lex_string(read_all_sourcefile(sf2));
 //	print_toklex(lex);
 	//SYNTAX_ptree_t *tree2 = SYNTAX_ptree_create(lex2);
-	//SYNTAX_ptree_parse(tree2);
 
 
 	//SYNTAX_pnode_print(tree->head, 0);
 	//SYNTAX_ptree_free(tree);
 	//SYNTAX_pnode_print(tree->settings, 0);
+
 	MANFST_manifest_t *manifest1 =  MANFST_init_manifest(tree1);
 	//MANFST_manifest_t *manifest2 =  MANFST_init_manifest(tree2);
+	//MANFST_print_manifest(manifest1);
 
 	SIM_simulator_t *sim = SIM_init_simulator();
 

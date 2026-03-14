@@ -4,6 +4,7 @@
 #include "SCENE_keywords.h"
 #include "SCENE_commons.h"
 
+#include "SCENE_topology.h"
 #include "STAGE_actor.h"
 #include "SIM_handle.h"
 
@@ -137,7 +138,7 @@ int SCENE_validate_device_strings(SCENE_device_t *device, char **strings, uint64
 			if(is_str)
 			{
 				char *strkey = get_str_iter.MAP->iter_get_key_str(copy);
-				printf("extra key %s\n", strkey);
+				//printf("extra key %s\n", strkey);
 			}
 
 			up_iter.MAP->iter_up(copy);
@@ -148,11 +149,8 @@ int SCENE_validate_device_strings(SCENE_device_t *device, char **strings, uint64
 		assert(0);
 	}
 
-	for(uint64_t i = 0; i < size; ++i)
-	{
-		printf("[%s] = %d\n", strings[i], buffer[i]);
-	}
-	printf("\n");
+
+//	printf("\n");
 	TAG_free(copy);
 	return excess;
 
@@ -169,9 +167,7 @@ SCENE_device_t *SCENE_alloc_device(STAGE_actor_t *actor)
 {
 
 	SCENE_device_t *device = calloc(1, sizeof(SCENE_device_t));
-
 	device->actor = actor;
-
 
 	return device;
 
@@ -217,7 +213,7 @@ bool SCENE_validate_device(SCENE_device_t *device)
 	return all_pass;
 }
 
-bool SCENE_assign_device(SCENE_device_t *device)
+bool SCENE_assign_device(SCENE_device_t *device, SCENE_topology_t *topology)
 {
 	TAG_tag_t *base = device->actor->tags;
 
@@ -237,7 +233,7 @@ bool SCENE_assign_device(SCENE_device_t *device)
 
 	for(uint64_t i = 0; i < used; ++i)
 	{
-		SCENE_port_t *port = SCENE_init_port(port_tags_buffer[i]);
+		SCENE_port_t *port = SCENE_init_port(port_tags_buffer[i], topology, device->uid);
 		SCENE_print_port(port);
 		ports[i] = port;
 

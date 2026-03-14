@@ -3,6 +3,7 @@
 #include "SCENE_device.h"
 #include "SCENE_scene.h"
 #include "SCENE_scope.h"
+#include "SCENE_topology.h"
 #include "STAGE_stage.h"
 
 
@@ -32,11 +33,10 @@ bool SCENE_validate_step_context(SCENE_context_t *context);
 bool SCENE_assign_step_context(SCENE_context_t *context);
 
 
-//allocate the devices
 
-//stage 2
-//fill with locals
-
+//stage 4
+//scene symbolize
+bool SCENE_symbolize_step_context(SCENE_context_t *context);
 
 //stage 3
 //fill with globals
@@ -51,6 +51,7 @@ bool (*scene_steps[])(SCENE_context_t *context) =
 	[SCENE_CONTEXT_STEP_ALLOC] = SCENE_alloc_step_context,
 	[SCENE_CONTEXT_STEP_VALIDATE] = SCENE_validate_step_context,
 	[SCENE_CONTEXT_STEP_ASSIGN] = SCENE_assign_step_context,
+	[SCENE_CONTEXT_STEP_SYMBOLIZE] = SCENE_symbolize_step_context,
 };
 
 #define SCENE_CONTEXT_STEP_LIST_STRING(X) [SCENE_CONTEXT_STEP_LIST_NAME(X)] = #X,
@@ -75,7 +76,9 @@ bool SCENE_alloc_step_context(SCENE_context_t *context)
 	//allocate devices
 	for(uint64_t i = 0; i < size; ++i)
 	{
-		devices[i] = SCENE_alloc_device(stage->actors[i]);
+		SCENE_device_t *device = SCENE_alloc_device(stage->actors[i]);
+		device->uid = i;
+		devices[i] = device;
 	}
 
 	SCENE_scope_t *scope = SCENE_init_scope(size);
@@ -101,7 +104,7 @@ bool SCENE_validate_step_context(SCENE_context_t *context)
 	{
 		SCENE_device_t *device = SCENE_get_scope(context->scope, i);
 
-		assert(SCENE_validate_device(device));
+		assert(SCENE_validate_device(device) == true);
 
 	}
 
@@ -120,16 +123,34 @@ bool SCENE_validate_step_context(SCENE_context_t *context)
 bool SCENE_assign_step_context(SCENE_context_t *context)
 {
 	uint64_t size = SCENE_get_count_scope(context->scope);
+	context->topology = SCENE_init_topology();
 
 	for(uint64_t i = 0; i < size; ++i)
 	{
 		SCENE_device_t *device = SCENE_get_scope(context->scope, i);
 
-		SCENE_assign_device(device);
+		SCENE_assign_device(device, context->topology);
 
 	}
+	//SCENE_print_topology(context->topology);
+	return true;
+}
+
+
+//----------------------------------------
+//
+//				SCENE SYMBOLIZE
+//
+//----------------------------------------
+
+bool SCENE_symbolize_step_context(SCENE_context_t *context)
+{
+	SCENE_finalize_links_topology(context->topology);
+	SCENE_symbolize_topology(context->topology);
+	SCENE_print_topology(context->topology);
 
 	return true;
+
 }
 
 
@@ -193,12 +214,12 @@ void SCENE_init_context(SCENE_context_t *context)
 	{
 		assert(0 && "cannot init context that's not at start step");
 	}
-	bool pass1 = SCENE_step_context(context, SCENE_CONTEXT_STEP_ALLOC);
-	assert(pass1);
-	bool pass2 = SCENE_step_context(context, SCENE_CONTEXT_STEP_VALIDATE);
-	assert(pass2);
-	bool pass3 = SCENE_step_context(context, SCENE_CONTEXT_STEP_ASSIGN);
-	assert(pass3);
+
+	for(SCENE_ctx_step_t step = SCENE_CONTEXT_STEP_ALLOC; step <= SCENE_CONTEXT_STEP_SYMBOLIZE; ++step)
+	{
+		bool passes = SCENE_step_context(context, step);
+
+	}
 }
 
 
@@ -214,6 +235,11 @@ void SCENE_print_context(SCENE_context_t *context)
 	switch(context->step)
 	{
 		default:
+
+		case SCENE_CONTEXT_STEP_ASSIGN:
+
+		case SCENE_CONTEXT_STEP_VALIDATE:
+
 
 		case SCENE_CONTEXT_STEP_ALLOC:
 			SCENE_print_scope(context->scope);
