@@ -163,6 +163,7 @@ void SCENE_symbolize_topology(SCENE_topology_t *topology, SCENE_context_t *conte
 		char *negative = SCENE_get_negative_link(link);
 
 		struct port_uid *port_uid = getdata_from_hash_table(table_negative, negative);
+		assert(port_uid);
 		link->nuid = port_uid->port_uid;
 		//SCENE_print_link(link);
 	}
