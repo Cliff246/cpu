@@ -4,9 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-SCENE_link_t *SCENE_init_link(SIM_uid_t uid, char *positive, char *negative)
+SCENE_link_t *SCENE_init_link(SIM_uid_t puid, char *positive, char *negative)
 {
-
 
 	SCENE_link_t *link = calloc(1, sizeof(SCENE_link_t));
 	assert(link);
@@ -16,7 +15,7 @@ SCENE_link_t *SCENE_init_link(SIM_uid_t uid, char *positive, char *negative)
 	char *neg_copy = strdup(negative);
 	assert(neg_copy);
 
-	link->uid = uid;
+	link->puid = puid;
 	link->pos = pos_copy;
 	link->neg = neg_copy;
 
@@ -42,5 +41,5 @@ void SCENE_free_link(SCENE_link_t *link)
 
 void SCENE_print_link(SCENE_link_t *link)
 {
-	printf("link %ld:[+<%s>] [-<%s>]\n",link->uid, link->pos, link->neg);
+	printf("link %ld:[+<%s>] |%ld:[-<%s>]\n",link->puid, link->pos, link->nuid, link->neg);
 }

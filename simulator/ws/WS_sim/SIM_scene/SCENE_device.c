@@ -229,13 +229,15 @@ bool SCENE_assign_device(SCENE_device_t *device, SCENE_topology_t *topology)
 
 	int64_t used = SCENE_get_all_tags_map(port, port_tags_buffer, size + 1);
 
-	SCENE_port_t **ports = calloc(used, sizeof(SCENE_port_t *));
+
+	uint64_t *ports = calloc(used, sizeof(uint64_t));
+
 
 	for(uint64_t i = 0; i < used; ++i)
 	{
-		SCENE_port_t *port = SCENE_init_port(port_tags_buffer[i], topology, device->uid);
-		SCENE_print_port(port);
-		ports[i] = port;
+		uint64_t index = SCENE_init_port(port_tags_buffer[i], topology, device->uid);
+		//SCENE_print_port(port);
+		ports[i] = index;
 
 	}
 
@@ -257,10 +259,7 @@ void SCENE_print_device(SCENE_device_t *device)
 
 void SCENE_free_device(SCENE_device_t *device)
 {
-	for(uint64_t i = 0; i < device->ports_count; ++i)
-	{
-		SCENE_free_port(device->ports[i]);
-	}
+
 	free(device->ports);
 	free(device->name);
 	free(device);
@@ -286,29 +285,6 @@ static p_hashtable_t SCENE_copy_hashtable(p_hashtable_t old)
 	return copy;
 }
 
-
-void SCENE_resolve_device(SCENE_device_t *device)
-{
-	assert(0 && "TODO");
-}
-
-void SCENE_build_device(SCENE_device_t *device)
-{
-	assert(0 && "TODO");
-
-}
-
-
-void SCENE_device_print(SCENE_device_t *device)
-{
-
-}
-
-
-void SCENE_free_device(SCENE_device_t *device)
-{
-	assert(0 && "lol imagine freeing this ");
-}
 
 
 */

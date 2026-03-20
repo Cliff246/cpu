@@ -1,24 +1,55 @@
 #include "SCENE_topology.h"
 #include "SCENE_link.h"
+#include "SCENE_scope.h"
+#include "SCENE_context.h"
+#include "SCENE_port.h"
+#include "SIM_commons.h"
 #include "commons.h"
 #include "hashmap.h"
 #include <assert.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+
+
+
 
 //---------------------------
-//
-//-------------------------
-void free_linkset(void *linkset);
+//protosypes
+//---------------------------
 
+struct port_uid
+{
+	SIM_uid_t port_uid;
+};
+
+void free_linkset(void *linkset);
+void free_port_uid(void *port_uid);
+
+struct port_uid *init_port_uid(SIM_uid_t uid);
 //-------------------------------
-//
+//implements
 //-------------------------------
+
 
 
 void free_linkset(void *linkset)
 {
 	return;
+}
+
+void free_port_uid(void *port_uid)
+{
+	free(port_uid);
+}
+
+struct port_uid *init_port_uid(SIM_uid_t uid)
+{
+	struct port_uid *port_uid = calloc(1, sizeof(struct port_uid));
+	port_uid->port_uid = uid;
+	return port_uid;
 }
 
 //--------------------------------------------
@@ -32,14 +63,15 @@ SCENE_topology_t *SCENE_init_topology(void)
 
 	topology->links_alloc = 100;
 	topology->links_count = 0;
+	topology->ports_alloc = 10;
+	topology->ports_count = 0;
+	topology->ports_list = calloc(topology->ports_alloc, sizeof(SCENE_port_t *));
 	topology->links_list = calloc(topology->links_alloc, sizeof(SCENE_link_t *));
 	topology->links_table_positive = NULL;
-	topology->links_table_negative = NULL;
 	return topology;
 
 }
-
-uint64_t SCENE_append_topology(SCENE_topology_t *topology, SCENE_link_t *link)
+uint64_t SCENE_append_link_topology(SCENE_topology_t *topology, SCENE_link_t *link)
 {
 
 	if(topology->links_alloc <= topology->links_count)
@@ -50,16 +82,30 @@ uint64_t SCENE_append_topology(SCENE_topology_t *topology, SCENE_link_t *link)
 	uint64_t pos = topology->links_count++;
 	topology->links_list[pos] = link;
 
+	return pos;
+}
+
+uint64_t SCENE_append_port_topology(SCENE_topology_t *topology, SCENE_port_t *port)
+{
+	if(topology->ports_alloc <= topology->ports_count)
+	{
+		topology->ports_alloc = (topology->ports_alloc + 1) * 2;
+		topology->ports_list = realloc_safe(topology->ports_list, topology->ports_alloc, sizeof(SCENE_port_t *));
+	}
+	uint64_t pos = topology->ports_count++;
+	topology->ports_list[pos] = port;
 
 	return pos;
-
 }
+
+
 void SCENE_finalize_links_topology(SCENE_topology_t *topology)
 {
 	topology->links_finished = true;
 }
 
-void SCENE_symbolize_topology(SCENE_topology_t *topology)
+
+void SCENE_symbolize_topology(SCENE_topology_t *topology, SCENE_context_t *context)
 {
 	if(topology->links_finished == false)
 	{
@@ -77,42 +123,54 @@ void SCENE_symbolize_topology(SCENE_topology_t *topology)
 			assert(0 && "already had key in table");
 		}
 
-
 		addto_hash_table(table_positive, positive, link);
 
 	}
 	topology->links_table_positive = table_positive;
 
+	p_hashtable_t table_negative = new_hash_table(topology->links_count * 3, free_port_uid);
 
-	p_hashtable_t table_negative = new_hash_table(topology->links_count * 3, free_linkset);
-
-
-	for(uint64_t j = 0; j < topology->links_count; ++j)
+	for(uint64_t j = 0; j < topology->ports_count; ++j)
 	{
-		SCENE_link_t *link = topology->links_list[j];
 
-		char *negative = SCENE_get_negative_link(link);
+		SCENE_port_t *port = topology->ports_list[j];
 
-		if(getdata_from_hash_table(table_negative, negative) != NULL)
+		for(uint64_t port_negative = 0; port_negative < port->channels_count; ++port_negative)
 		{
-			printf("%s\n", negative);
-			assert(0 && "already had key in table");
+			char *negative = port->negative[port_negative];
+
+			if(getdata_from_hash_table(table_negative, negative) != NULL)
+			{
+				printf("%s\n", negative);
+				assert(0 && "already had key in table");
+			}
+			struct port_uid *port_uid = init_port_uid(port->uid);
+			addto_hash_table(table_negative, negative, port_uid);
 		}
 
 
-		addto_hash_table(table_negative, negative, link);
 	}
 
-	topology->links_table_negative = table_negative;
 
+
+
+	uint64_t count = SCENE_get_count_scope(context->scope);
 
 	for(uint64_t k = 0; k < topology->links_count; ++k)
 	{
 		SCENE_link_t *link = topology->links_list[k];
 
-		
-	}
+		char *negative = SCENE_get_negative_link(link);
 
+		struct port_uid *port_uid = getdata_from_hash_table(table_negative, negative);
+		link->nuid = port_uid->port_uid;
+		//SCENE_print_link(link);
+	}
+	free_hash_table(table_negative);
+	for(uint64_t x = 0; x < count; ++x)
+	{
+	 	//printf("[%ld] = %d\n", x, devices[x]);
+	}
 	topology->links_symbolized = true;
 
 }
@@ -130,7 +188,6 @@ void SCENE_print_topology(SCENE_topology_t *topology)
 	if(topology->links_symbolized)
 	{
 		print_hash_table(topology->links_table_positive);
-		print_hash_table(topology->links_table_negative);
 	}
 }
 

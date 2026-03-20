@@ -132,7 +132,7 @@ bool SCENE_assign_step_context(SCENE_context_t *context)
 		SCENE_assign_device(device, context->topology);
 
 	}
-	//SCENE_print_topology(context->topology);
+	SCENE_print_topology(context->topology);
 	return true;
 }
 
@@ -146,7 +146,7 @@ bool SCENE_assign_step_context(SCENE_context_t *context)
 bool SCENE_symbolize_step_context(SCENE_context_t *context)
 {
 	SCENE_finalize_links_topology(context->topology);
-	SCENE_symbolize_topology(context->topology);
+	SCENE_symbolize_topology(context->topology, context);
 	SCENE_print_topology(context->topology);
 
 	return true;

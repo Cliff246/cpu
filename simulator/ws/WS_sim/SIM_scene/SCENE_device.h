@@ -25,7 +25,7 @@ typedef struct SCENE_device
 	char *name;
 
 	uint64_t ports_count;
-	SCENE_port_t **ports;
+	uint64_t *ports;
 }SCENE_device_t;
 
 

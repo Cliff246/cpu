@@ -198,7 +198,7 @@ void SCENE_get_links_port(SCENE_port_t *port, TAG_tag_t *tag, SCENE_topology_t *
 
 		SCENE_link_t *link = SCENE_init_link(port->uid,pos, neg);
 
-		links_locations[i] = SCENE_append_topology(topology, link);
+		links_locations[i] = SCENE_append_link_topology(topology, link);
 
 		assert(pos && neg);
 
@@ -209,8 +209,8 @@ void SCENE_get_links_port(SCENE_port_t *port, TAG_tag_t *tag, SCENE_topology_t *
 }
 
 
-
-SCENE_port_t *SCENE_init_port(TAG_tag_t *port_map, SCENE_topology_t *topology, SIM_uid_t uid)
+//returns index into topology
+uint64_t SCENE_init_port(TAG_tag_t *port_map, SCENE_topology_t *topology, SIM_uid_t uid)
 {
 	SCENE_port_t *port = calloc(1, sizeof(SCENE_port_t));
 
@@ -226,9 +226,9 @@ SCENE_port_t *SCENE_init_port(TAG_tag_t *port_map, SCENE_topology_t *topology, S
 	uint64_t channel_count = port->channels_count;
 	uint64_t link_count = port->links_count;
 	assert(channel_count == link_count);
-
-
-	return port;
+	//SCENE_print_port(port);
+	uint64_t pos = SCENE_append_port_topology(topology, port);
+	return pos;
 }
 
 void SCENE_print_port(SCENE_port_t *port)

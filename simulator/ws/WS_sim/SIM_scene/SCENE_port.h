@@ -41,9 +41,14 @@ typedef struct SCENE_port
 	int64_t links_count;
 	uint64_t *links;
 
+	
+
 }SCENE_port_t;
 
-SCENE_port_t *SCENE_init_port(TAG_tag_t *port_map, SCENE_topology_t *topology, SIM_uid_t uid);
+
+
+//returns index into
+uint64_t SCENE_init_port(TAG_tag_t *port_map, SCENE_topology_t *topology, SIM_uid_t uid);
 
 void SCENE_print_port(SCENE_port_t *port);
 void SCENE_free_port(SCENE_port_t *port);
