@@ -13,7 +13,9 @@ typedef struct SCENE_scene SCENE_scene_t;
 	X(ALLOC)					  \
 	X(VALIDATE)					  \
 	X(ASSIGN)					  \
-	X(SYMBOLIZE)					  \
+	X(SYMBOLIZE)				  \
+	X(BUILD)					  \
+	
 
 #define SCENE_CONTEXT_STEP_LIST_NAME(X) SCENE_CONTEXT_STEP_ ## X
 #define SCENE_CONTEXT_STEP_LIST_ENUM(X) SCENE_CONTEXT_STEP_LIST_NAME(X),

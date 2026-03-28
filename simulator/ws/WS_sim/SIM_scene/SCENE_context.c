@@ -38,8 +38,10 @@ bool SCENE_assign_step_context(SCENE_context_t *context);
 //scene symbolize
 bool SCENE_symbolize_step_context(SCENE_context_t *context);
 
-//stage 3
+//stage 5
 //fill with globals
+
+bool SCENE_build_step_context(SCENE_context_t *context);
 
 
 //stage 4
@@ -52,6 +54,7 @@ bool (*scene_steps[])(SCENE_context_t *context) =
 	[SCENE_CONTEXT_STEP_VALIDATE] = SCENE_validate_step_context,
 	[SCENE_CONTEXT_STEP_ASSIGN] = SCENE_assign_step_context,
 	[SCENE_CONTEXT_STEP_SYMBOLIZE] = SCENE_symbolize_step_context,
+	[SCENE_CONTEXT_STEP_BUILD] = SCENE_build_step_context
 };
 
 #define SCENE_CONTEXT_STEP_LIST_STRING(X) [SCENE_CONTEXT_STEP_LIST_NAME(X)] = #X,
@@ -154,11 +157,6 @@ bool SCENE_symbolize_step_context(SCENE_context_t *context)
 }
 
 
-//----------------------------------------
-//
-//				INIT STAGE
-//
-//----------------------------------------
 
 
 
@@ -176,7 +174,19 @@ bool SCENE_symbolize_step_context(SCENE_context_t *context)
 //
 //----------------------------------------
 
+bool SCENE_build_step_context(SCENE_context_t *context)
+{
 
+	SCENE_build_topology(context->topology);
+
+	return true;
+}
+
+//----------------------------------------
+//
+//				INIT STAGE
+//
+//----------------------------------------
 
 
 SCENE_context_t *SCENE_alloc_context(SCENE_scene_t *scene)

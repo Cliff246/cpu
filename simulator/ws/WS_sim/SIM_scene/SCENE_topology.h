@@ -28,7 +28,6 @@ typedef struct SCENE_topology
 
 	bool links_finished;
 	bool links_symbolized;
-	p_hashtable_t links_table_positive;
 }SCENE_topology_t;
 
 SCENE_topology_t *SCENE_init_topology(void);
@@ -40,5 +39,6 @@ void SCENE_print_topology(SCENE_topology_t *topology);
 void SCENE_finalize_links_topology(SCENE_topology_t *topology);
 
 void SCENE_symbolize_topology(SCENE_topology_t *topology, SCENE_context_t *context);
+void SCENE_build_topology(SCENE_topology_t *topology);
 
 #endif

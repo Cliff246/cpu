@@ -67,7 +67,6 @@ SCENE_topology_t *SCENE_init_topology(void)
 	topology->ports_count = 0;
 	topology->ports_list = calloc(topology->ports_alloc, sizeof(SCENE_port_t *));
 	topology->links_list = calloc(topology->links_alloc, sizeof(SCENE_link_t *));
-	topology->links_table_positive = NULL;
 	return topology;
 
 }
@@ -112,24 +111,9 @@ void SCENE_symbolize_topology(SCENE_topology_t *topology, SCENE_context_t *conte
 		assert(0 && "links finished is false");
 		exit(EXIT_FAILURE);
 	}
-	p_hashtable_t table_positive = new_hash_table(topology->links_count * 3, free_linkset);
-
-	for(uint64_t i = 0; i < topology->links_count; ++i)
-	{
-		SCENE_link_t *link = topology->links_list[i];
-		char *positive = SCENE_get_positive_link(link);
-		if(getdata_from_hash_table(table_positive, positive ) != NULL)
-		{
-			assert(0 && "already had key in table");
-		}
-
-		addto_hash_table(table_positive, positive, link);
-
-	}
-	topology->links_table_positive = table_positive;
 
 	p_hashtable_t table_negative = new_hash_table(topology->links_count * 3, free_port_uid);
-
+	//printf("%x\n", 's');
 	for(uint64_t j = 0; j < topology->ports_count; ++j)
 	{
 
@@ -141,7 +125,7 @@ void SCENE_symbolize_topology(SCENE_topology_t *topology, SCENE_context_t *conte
 
 			if(getdata_from_hash_table(table_negative, negative) != NULL)
 			{
-				printf("%s\n", negative);
+	//			printf("%s\n", negative);
 				assert(0 && "already had key in table");
 			}
 			struct port_uid *port_uid = init_port_uid(port->uid);
@@ -188,7 +172,6 @@ void SCENE_print_topology(SCENE_topology_t *topology)
 	}
 	if(topology->links_symbolized)
 	{
-		print_hash_table(topology->links_table_positive);
 	}
 }
 
@@ -259,10 +242,21 @@ static void CFG_init_stage3_context(CFG_context_t *ctx)
 
 	}
 }
+*/
 
-static void CFG_init_stage4_context(CFG_context_t *ctx)
+void SCENE_build_topology(SCENE_topology_t *topology)
 {
-	uint64_t devcfg_count = ctx->deviceconfigs->count;
+
+	uint64_t links_count = topology->links_count;
+	uint64_t ports_count = topology->ports_count;
+
+
+	bool links_seen[links_count][ports_count];
+	bool ports_seen[ports_count][links_count];
+
+	memset(links_seen, 0, sizeof(links_seen));
+	memset(ports_seen, 0, sizeof(ports_seen));
+	/*uint64_t devcfg_count = ctx->deviceconfigs->count;
 	uint64_t wirecfg_count = ctx->wireconfigs->count;
 
 
@@ -430,23 +424,5 @@ static void CFG_init_stage4_context(CFG_context_t *ctx)
 	free(first_wire_to_dev);
 	free(first_wire_to_wire);
 
-
+	*/
 }
-CFG_context_t *CFG_init_context(MANFST_manifest_t *manifest)
-{
-	CFG_context_t *ctx = calloc(1, sizeof(CFG_context_t));
-	assert(ctx);
-	CFG_init_stage1_context(ctx, manifest);
-	CFG_init_stage2_context(ctx);
-	CFG_init_stage3_context(ctx);
-	CFG_init_stage4_context(ctx);
-	for(uint64_t k = 0; k < ctx->deviceconfigs->count; ++k)
-	{
-		CFG_print_node(&ctx->deviceconfigs->cfgs[k]);
-	}
-
-
-	return ctx;
-}
-
-*/
