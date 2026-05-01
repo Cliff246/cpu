@@ -251,11 +251,26 @@ void SCENE_build_topology(SCENE_topology_t *topology)
 	uint64_t ports_count = topology->ports_count;
 
 
-	bool links_seen[links_count][ports_count];
-	bool ports_seen[ports_count][links_count];
+	bool *links_seen = calloc(links_count * ports_count, sizeof(bool));
+	bool *ports_seen = calloc(links_count * ports_count, sizeof(bool));
 
-	memset(links_seen, 0, sizeof(links_seen));
-	memset(ports_seen, 0, sizeof(ports_seen));
+
+
+	for(uint64_t i = 0; i < ports_count; ++i)
+	{
+		SCENE_port_t *port = topology->ports_list[i];
+		for(uint64_t l = 0; l < port->links_count; ++l)
+		{
+			uint64_t index = port->links[l];
+
+			printf("index %ld\n", index);
+			SCENE_link_t *link = topology->links_list[index];
+			printf("%s %s\n", link->pos, link->neg);
+		}
+
+	}
+
+
 	/*uint64_t devcfg_count = ctx->deviceconfigs->count;
 	uint64_t wirecfg_count = ctx->wireconfigs->count;
 
@@ -425,4 +440,7 @@ void SCENE_build_topology(SCENE_topology_t *topology)
 	free(first_wire_to_wire);
 
 	*/
+
+	free(ports_seen);
+	free(links_seen);
 }

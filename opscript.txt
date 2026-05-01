@@ -1,0 +1,121 @@
+
+//
+// %number NUM +0-9
+// %token LET "let"
+// %token INT "int"
+// %token CALLABLE "callable"
+// %token PORT "port"
+// %token BIT "bit"
+// %token CHNL "chnl"
+// %token ARY_START "["
+// %token ARY_STOP "]"
+// %token PREDEF "@"
+// %token TYPE_START "<"
+// %token TYPE_END ">"
+//
+//
+
+//ary:
+//| ARY_START NUM ARY_STOP
+//| ARY_START ARY_STOP
+//| ary
+//;
+
+
+//typedef:
+//| TYPE_START type TYPE_END
+//| TYPE_START type typedef TYPE_END
+//|
+//;
+
+//type:
+//| typename
+//| typename ary
+//;
+
+//typename:
+//| INT
+//| BIT
+//|	PORT
+//| CALLABLE
+//| CHNL
+//;
+
+
+
+
+//predef:
+//|	PREDEF LET type
+//|	PREDEF LET
+//;
+
+
+
+let<dag> dag;
+let<resource> bus_out;
+
+fn unwrap2to1(<bits[][]> unwrap, <int> n, <int[]> bits_sizes, <bits[]> buffer) -> <int>
+{
+	let<int> count = 0;
+	for(let<int> i = 0; i < n; ++i)
+	{
+		for(let<int> j = 0; j < bits_sizes[i]; ++j)
+		{
+			buffer[count++] = unwrap[i][j];
+		}
+	}
+	return count;
+}
+
+
+fn listen_to(port_intake intake)
+{
+	let<int> n = intake.cp_n;
+
+	let<chnl[*][]> chnls = intake.cp;
+
+	let<bit[][]> holder = [n];
+	let<int[]> bits_counter = [n];
+	let<int> count = 0;
+	for(let<int> i = 0; i < n; ++i)
+	{
+		let<bit[]> bits = chnls[i].buffer;
+
+		let<int> bits_count = chnls[i].buffer_size;
+		bits_counter[i] = bits_count;
+		count = count + bits_count;
+		for(let<int> j = 0; j < bits_count/2; ++j)
+		{
+			let<bit> tmp = bits[j];
+			bits[j] = bits[bits_count - 1- j];
+			bits[bits_count - 1 - j] = tmp;
+		}
+
+		holder[i] = bits;
+	}
+	let<bit[]> buffer = [count];
+	let<int> total = unwrap2to1(holder, n, bits_counter, buffer);
+
+
+	bus_out.buffer = buffer;
+	bus_out.bits = total;
+}
+
+let<port> port;
+
+let<callable<port_intake>> listen_fn = listen_to;
+
+#use:port [local<port<mono>>]("echo_main") = port
+#use:dag [local<dag<mono>>]() = dag
+
+//uneeded right now
+//#bind:fn !intake (port) = listen_fn
+//#bind:rsrc !intake (
+
+
+
+
+
+
+
+

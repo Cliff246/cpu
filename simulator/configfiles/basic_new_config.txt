@@ -28,6 +28,7 @@ device =
 
 	port =
 	{
+		name = "echo_main"
 		class = "mem"
 		lanes = 2
 		channels = 4

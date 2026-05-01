@@ -225,7 +225,7 @@ void SCENE_init_context(SCENE_context_t *context)
 		assert(0 && "cannot init context that's not at start step");
 	}
 
-	for(SCENE_ctx_step_t step = SCENE_CONTEXT_STEP_ALLOC; step <= SCENE_CONTEXT_STEP_SYMBOLIZE; ++step)
+	for(SCENE_ctx_step_t step = SCENE_CONTEXT_STEP_ALLOC; step <= SCENE_CONTEXT_STEP_BUILD; ++step)
 	{
 		bool passes = SCENE_step_context(context, step);
 
