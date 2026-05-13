@@ -49,10 +49,44 @@ TAG_tag_t *MANFST_init_scope_mono(SYNTAX_pnode_t *head)
 
 
 
+TAG_tag_t *MANFST_init_scope_list(SYNTAX_pnode_t *head)
+{
+	SYNTAX_pnode_t *third = head->nodes[2];
+	
+	
+	TAG_argptr_t argptr = TAG_get_fn(TAG_LIST, TAG_FN_LIST_APPEND);	
+
+	TAG_tag_t *tag = MANFST_init_tag_list();
+	for(uint64_t i = 0; i < third->size; ++i)
+	{
+
+		SYNTAX_pnode_t *element = third->nodes[i];
+			
+			
+		TAG_tag_t *tag_element;			
+		
+		if(element->type == SYNTAX_PNODE_LIST)
+		{
+			SYNTAX_pnode_t *list_start = element->nodes[0];
+			tag_element = MANFST_init_scope_list(list_start);
+		}
+		else if(element->type == SYNTAX_PNODE_MAP)
+		{
+			SYNTAX_pnode_t *map_start = element->nodes[0];
+			tag_element = MANFST_init_scope_map(map_start);
+		}
+		else
+		{
+			tag_element = MANFST_init_scope_mono(element);
+		}
+
+		argptr.LIST->append(tag, tag_element);
+	}	
+	return tag;
+}
 
 TAG_tag_t *MANFST_init_scope_map(SYNTAX_pnode_t *head)
 {
-	//printf("\n\n");
 	TAG_tag_t *tag = NULL;
 	SYNTAX_pnode_t *third = head->nodes[2];
 	if(third->type == SYNTAX_PNODE_MONO)
@@ -62,17 +96,8 @@ TAG_tag_t *MANFST_init_scope_map(SYNTAX_pnode_t *head)
 	}
 	else if(third->type == SYNTAX_PNODE_LIST)
 	{
-		tag = MANFST_init_tag_list();
-		TAG_argptr_t argptr = TAG_get_fn(TAG_LIST, TAG_FN_LIST_APPEND);
-
-
-		for(uint64_t i = 0; i < third->size; ++i)
-		{
-			SYNTAX_pnode_t *cur = third->nodes[i];
-
-			TAG_tag_t *tmp = MANFST_init_scope_mono(cur);
-			argptr.LIST->append(tag, tmp);
-		}
+		
+		tag = MANFST_init_scope_list(head);
 	}
 	else
 	{

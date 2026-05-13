@@ -256,6 +256,7 @@ void SCENE_build_topology(SCENE_topology_t *topology)
 
 
 
+
 	for(uint64_t i = 0; i < ports_count; ++i)
 	{
 		SCENE_port_t *port = topology->ports_list[i];
@@ -263,12 +264,36 @@ void SCENE_build_topology(SCENE_topology_t *topology)
 		{
 			uint64_t index = port->links[l];
 
-			printf("index %ld\n", index);
 			SCENE_link_t *link = topology->links_list[index];
-			printf("%s %s\n", link->pos, link->neg);
+			//SCENE_print_link(link);	
+			links_seen[(i * links_count) + index] = true ;
+			ports_seen[(index * ports_count) + i] = true;			
 		}
 
 	}
+
+	
+	for(uint64_t x = 0; x < ports_count; ++x)
+	{
+		for(uint64_t y = 0; y < links_count; ++y)
+		{
+			printf("%d ", (int)links_seen[(x * links_count) + y]);
+		}
+		printf("\n");
+	}
+	printf("\n-------\n");
+	for(uint64_t x = 0; x < links_count; ++x)
+	{
+		for(uint64_t y = 0; y < ports_count; ++y)
+		{
+			printf("%d ", (int)ports_seen[(x * ports_count) + y]);
+		}
+		printf("\n");
+	}
+	//
+	//[a->c]
+	//[a->b]
+
 
 
 	/*uint64_t devcfg_count = ctx->deviceconfigs->count;

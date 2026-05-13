@@ -153,6 +153,7 @@ p_hashelem_t new_hash_element(const char *str, void *data)
 			else
 			{
 				printf("copy failed at hashmap %d\n", __LINE__);
+				exit(1);
 			}
 		}
 	}

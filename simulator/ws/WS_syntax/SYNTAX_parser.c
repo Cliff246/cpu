@@ -166,16 +166,50 @@ static SYNTAX_pnode_t *SYNTAX_ptree_list(SYNTAX_ptree_t *tree)
 	while(true)
 	{
 		SYNTAX_ptree_next_tok(tree);
+		
+		tok_t *next = SYNTAX_ptree_peek_tok(tree);	
+		SYNTAX_pnode_t *element;
+		if(next->type == TOK_NEWLINE)
+		{
+			continue;
+		}
+		else if(next->type == TOK_SQUARE)
+		{
+			if(!strcmp(next->token, "]"))
+			{
+				break;					
+			}	
+			else
+			{
+				//open new
+			 	element = SYNTAX_ptree_list(tree);
+			}
+		}		
+		else if(next->type == TOK_CURL)
+		{
+			if(!strcmp(next->token, "}"))
+			{
+				printf("failure at parsing list\n");
+				exit(1);
+			}
+			else
+			{
+				element = SYNTAX_ptree_map(tree);
+			}
+		}
+		else
+		{
 
-		SYNTAX_pnode_t *value = SYNTAX_ptree_value(tree);
+			element = SYNTAX_ptree_value(tree);
+		}
 
-		SYNTAX_pnode_append(list, value);
+		SYNTAX_pnode_append(list, element);
 		SYNTAX_ptree_next_tok(tree);
-
 		tok_t *sep = SYNTAX_ptree_peek_tok(tree);
+
 		if(sep->type == TOK_NEWLINE)
 		{
-			assert(0);
+			continue;
 		}
 		if(sep->type == TOK_SQUARE)
 		{
@@ -194,6 +228,7 @@ static SYNTAX_pnode_t *SYNTAX_ptree_map(SYNTAX_ptree_t *tree)
 {
 	//printf("map\n");
 
+	
 	SYNTAX_pnode_t *map = SYNTAX_pnode_create(&empty_tok, SYNTAX_PNODE_MAP);
 
 
@@ -217,21 +252,15 @@ static SYNTAX_pnode_t *SYNTAX_ptree_map(SYNTAX_ptree_t *tree)
 		{
 			SYNTAX_pnode_t *entry = SYNTAX_ptree_entry(tree);
 			SYNTAX_pnode_append(map, entry);
-
 		}
-
-
-
 	}
 	SYNTAX_ptree_next_tok(tree);
 
-	//printf("end map\n");
 	return map;
 }
 
 static SYNTAX_pnode_t *SYNTAX_ptree_init(SYNTAX_ptree_t *tree)
 {
-	//printf("init\n");
 	SYNTAX_pnode_t *init = NULL;
 
 
@@ -362,9 +391,6 @@ void SYNTAX_pnode_free(SYNTAX_pnode_t *node)
 {
 	if(!node)
 		return;
-
-
-
 
 	for(int i = 0; i < node->size; ++i)
 	{

@@ -96,7 +96,6 @@ p_hashelem_t remove_from_hash_table(p_hashtable_t table, const char *key)
 				p_hashelem_t prev  = NULL;
 				for (; current; current = current->p_next)
 				{
-					prev = current;
 					if (strcmp(key, current->p_key) == 0)
 					{
 						if (current->p_next != NULL)
@@ -153,6 +152,8 @@ p_hashelem_t new_hash_element(const char *str, void *data)
 			else
 			{
 				printf("copy failed at hashmap %d\n", __LINE__);
+				free(elem);
+				exit(1);
 			}
 		}
 	}

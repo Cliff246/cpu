@@ -264,7 +264,7 @@ void init(int argc, char **argv)
 //	print_toklex(lex);
 	SYNTAX_ptree_t *tree1 = SYNTAX_ptree_create(lex1);
 	SYNTAX_ptree_parse(tree1);
-
+	SYNTAX_pnode_print(tree1->head, 0);
 	//sourcefile_t *sf2 = create_sourcefile("configfiles/config_3_0.txt");
 	//toklex_t *lex2= lex_string(read_all_sourcefile(sf2));
 //	print_toklex(lex);
@@ -286,6 +286,7 @@ void init(int argc, char **argv)
 	//SIM_load_manifest_simulator(sim, manifest2);
 	//MANFST_free_manifest(manifest2);
 
+	STAGE_print_stage(sim->stage);
 	SIM_assign_scene_to_stage_simulator(sim);
 	SIM_start_simulator(sim);
 

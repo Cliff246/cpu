@@ -172,6 +172,27 @@ memset_loop:
 
 
 
+;a0 src
+reverse_word:
+	alu.sll a1, a0, #0
+	alu.sll a2, a0, #8
+	alu.sll a3, a0, #16
+	alu.sll a4, a0, #24
+	alu.sll a5, a0, #32
+	alu.sll a6, a0, #40
+	alu.sll a7, a0, #48
+	alu.sll a8, a0, #56
+
+	alu.add t0, nil, nil, 0xff
+
+	alu.and a1, a1, t0
+	alu.and a2, a2, t0
+	alu.and a3, a3, t0
+	alu.and a4, a4, t0
+	alu.and a5, a5, t0
+	alu.and a6, a6, t0
+	alu.and a7, a7, t0
+	alu.and a8, a8, t0
 
 ;---------------------------------
 ;[abcdef]

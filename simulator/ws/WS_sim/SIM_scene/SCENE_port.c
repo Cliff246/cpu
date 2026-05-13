@@ -240,7 +240,7 @@ void SCENE_print_port(SCENE_port_t *port)
 	}
 	for(uint64_t j = 0; j < port->channels_count; ++j)
 	{
-		printf("-<%s>\n", port->positive[j]);
+		printf("-<%s>\n", port->negative[j]);
 	}
 
 	for(uint64_t k = 0; k < port->links_count; ++k)

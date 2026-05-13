@@ -13,7 +13,6 @@ typedef enum CFG_stackop
 
 typedef struct CFG_config
 {
-	CFG_op_t op;
 
 }CFG_config_t;
 

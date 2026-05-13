@@ -100,7 +100,7 @@ void TAG_print_tab_index_str(TAG_tag_t *tag, uint64_t tab,char *index)
 }
 void TAG_print_tab_index_int(TAG_tag_t *tag, uint64_t tab,uint64_t i)
 {
-	for(uint64_t i = 0; i < tab; ++i)
+	for(uint64_t in = 0; in < tab; ++in)
 	{
 		printf("\t");
 	}

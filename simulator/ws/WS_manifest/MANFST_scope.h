@@ -12,6 +12,11 @@ typedef struct MANFST_scope
 	char *code;
 }MANFST_scope_t;
 
+
+TAG_tag_t *MANFST_init_scope_mono(SYNTAX_pnode_t *head);
+TAG_tag_t *MANFST_init_scope_list(SYNTAX_pnode_t *head);
+TAG_tag_t *MANFST_init_scope_map(SYNTAX_pnode_t *head);
+
 void MANFST_init_scope(MANFST_scope_t *scope, SYNTAX_pnode_t *head);
 void MANFST_print_scope(MANFST_scope_t *scope);
 void MANFST_free_scope(MANFST_scope_t *scope);
