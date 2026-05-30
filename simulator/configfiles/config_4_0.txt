@@ -1,0 +1,66 @@
+
+
+
+
+
+
+device =
+{
+	name = "echo"
+
+
+	resources =
+	{
+		channel(echo_channel_0) =
+		{
+			channel_id = 0
+			link = 2
+			postive = true
+		}
+		channel(echo_channel_1) =
+		{
+			channel_id = 1
+			link = 3
+			positive = true
+		}
+	}
+
+	handle =
+	{
+		hooks = [
+			{
+				test = "0"
+			},
+			{
+
+			},
+			{
+
+			}
+		]
+	}
+}
+
+
+device =
+{
+	name = "wire1"
+
+	resources =
+	{
+		channel(wire_1_intake1) =
+		{
+			channel_id = 2
+
+			pub = "c-0"
+			pos = false
+		}
+		channel(wire_1_intake2) =
+		{
+			channel_id = 3
+
+			pub = "c-1"
+			pos = false
+		}
+	}
+}
