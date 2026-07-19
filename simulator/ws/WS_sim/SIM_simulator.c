@@ -68,7 +68,7 @@ bool SIM_assign_scene_to_stage_simulator(SIM_simulator_t *sim)
 
 bool SIM_start_simulator(SIM_simulator_t *sim)
 {
-	SCENE_generate_scene(sim->scene);
+	//SCENE_generate_scene(sim->scene);
 	return true;
 }
 

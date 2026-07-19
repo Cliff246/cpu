@@ -1,9 +1,7 @@
 #include "SCENE_context.h"
-#include "SCENE_anchor.h"
 #include "SCENE_device.h"
 #include "SCENE_scene.h"
 #include "SCENE_scope.h"
-#include "SCENE_topology.h"
 #include "STAGE_stage.h"
 
 
@@ -126,16 +124,15 @@ bool SCENE_validate_step_context(SCENE_context_t *context)
 bool SCENE_assign_step_context(SCENE_context_t *context)
 {
 	uint64_t size = SCENE_get_count_scope(context->scope);
-	context->topology = SCENE_init_topology();
 
 	for(uint64_t i = 0; i < size; ++i)
 	{
 		SCENE_device_t *device = SCENE_get_scope(context->scope, i);
 
-		SCENE_assign_device(device, context->topology);
+		SCENE_assign_device(device);
 
 	}
-	SCENE_print_topology(context->topology);
+
 	return true;
 }
 
@@ -148,9 +145,6 @@ bool SCENE_assign_step_context(SCENE_context_t *context)
 
 bool SCENE_symbolize_step_context(SCENE_context_t *context)
 {
-	SCENE_finalize_links_topology(context->topology);
-	SCENE_symbolize_topology(context->topology, context);
-	SCENE_print_topology(context->topology);
 
 	return true;
 
@@ -177,7 +171,6 @@ bool SCENE_symbolize_step_context(SCENE_context_t *context)
 bool SCENE_build_step_context(SCENE_context_t *context)
 {
 
-	SCENE_build_topology(context->topology);
 
 	return true;
 }

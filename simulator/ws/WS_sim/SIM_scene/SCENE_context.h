@@ -4,8 +4,9 @@
 //scene
 
 #include "SCENE_scope.h"
-#include "SCENE_topology.h"
 #include <stdint.h>
+#include <stdbool.h>
+
 typedef struct SCENE_scene SCENE_scene_t;
 
 #define SCENE_CONTEXT_STEP_LIST(X)\
@@ -15,7 +16,7 @@ typedef struct SCENE_scene SCENE_scene_t;
 	X(ASSIGN)					  \
 	X(SYMBOLIZE)				  \
 	X(BUILD)					  \
-	
+
 
 #define SCENE_CONTEXT_STEP_LIST_NAME(X) SCENE_CONTEXT_STEP_ ## X
 #define SCENE_CONTEXT_STEP_LIST_ENUM(X) SCENE_CONTEXT_STEP_LIST_NAME(X),
@@ -30,7 +31,6 @@ typedef struct SCENE_context
 	SCENE_ctx_step_t step;
 	SCENE_scene_t *scene;
 	SCENE_scope_t *scope;
-	SCENE_topology_t *topology;
 
 	//CFG_context_t *context;
 }SCENE_context_t;

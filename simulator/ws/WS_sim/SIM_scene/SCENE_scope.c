@@ -1,5 +1,4 @@
 #include "SCENE_scope.h"
-#include "SCENE_anchor.h"
 #include "SCENE_device.h"
 #include <assert.h>
 #include <stdint.h>

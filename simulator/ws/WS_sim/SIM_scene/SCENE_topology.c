@@ -1,3 +1,4 @@
+/*
 #include "SCENE_topology.h"
 #include "SCENE_link.h"
 #include "SCENE_scope.h"
@@ -242,7 +243,6 @@ static void CFG_init_stage3_context(CFG_context_t *ctx)
 
 	}
 }
-*/
 
 void SCENE_build_topology(SCENE_topology_t *topology)
 {
@@ -265,14 +265,14 @@ void SCENE_build_topology(SCENE_topology_t *topology)
 			uint64_t index = port->links[l];
 
 			SCENE_link_t *link = topology->links_list[index];
-			//SCENE_print_link(link);	
+			//SCENE_print_link(link);
 			links_seen[(i * links_count) + index] = true ;
-			ports_seen[(index * ports_count) + i] = true;			
+			ports_seen[(index * ports_count) + i] = true;
 		}
 
 	}
 
-	
+
 	for(uint64_t x = 0; x < ports_count; ++x)
 	{
 		for(uint64_t y = 0; y < links_count; ++y)
@@ -464,8 +464,8 @@ void SCENE_build_topology(SCENE_topology_t *topology)
 	free(first_wire_to_dev);
 	free(first_wire_to_wire);
 
-	*/
 
 	free(ports_seen);
 	free(links_seen);
 }
+*/

@@ -63,4 +63,14 @@ device =
 			pos = false
 		}
 	}
+
+	hook = [
+		{
+			handle = 1
+			as = 1
+		},
+		{
+			handle = 2
+		}
+	]
 }

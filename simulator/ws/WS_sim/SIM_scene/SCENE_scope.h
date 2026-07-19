@@ -1,9 +1,9 @@
 #ifndef __SCENE_SCOPE_HEADER__
 #define __SCENE_SCOPE_HEADER__
 
-#include "SCENE_anchor.h"
 #include <stdint.h>
-
+#include <stdbool.h>
+#include "SCENE_device.h"
 
 typedef struct SCENE_scope
 {

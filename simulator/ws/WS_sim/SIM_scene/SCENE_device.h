@@ -4,13 +4,11 @@
 #include "MOD_description.h"
 #include "RES_interface.h"
 #include "RES_pool.h"
-#include "SCENE_anchor.h"
 #include "SIM_commons.h"
 #include "SIM_handle.h"
 #include "STAGE_actor.h"
 #include "dynamic_lib.h"
 #include "hashmap.h"
-#include "SCENE_port.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -33,7 +31,7 @@ typedef struct SCENE_device
 SCENE_device_t *SCENE_alloc_device(STAGE_actor_t *actor);
 bool SCENE_validate_device(SCENE_device_t *device);
 void SCENE_print_device(SCENE_device_t *device);
-bool SCENE_assign_device(SCENE_device_t *device, SCENE_topology_t *topology);
+bool SCENE_assign_device(SCENE_device_t *device);
 
 //not done yet
 void SCENE_free_device(SCENE_device_t *device);

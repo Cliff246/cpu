@@ -4,9 +4,7 @@
 
 #include "SCENE_context.h"
 #include "SIM_commons.h"
-#include "SCENE_anchor.h"
 #include "SCENE_device.h"
-#include "SCENE_wire.h"
 #include "commons.h"
 
 #include <stdlib.h>

@@ -375,7 +375,10 @@ toklex_t *lex_string(const char *string)
 		advance(tl);
 	}
 	emit(tl, TOK_END, to_string('%'));
+	print_toklex(tl);
+
 	tl->index = 0;
+
 	return tl;
 }
 

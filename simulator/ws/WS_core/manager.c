@@ -259,7 +259,7 @@ void parse_args(void)
 void init(int argc, char **argv)
 {
 
-	sourcefile_t *sf1 = create_sourcefile("configfiles/basic_new_config.txt");
+	sourcefile_t *sf1 = create_sourcefile("configfiles/config_4_0.txt");
 	toklex_t *lex1= lex_string(read_all_sourcefile(sf1));
 //	print_toklex(lex);
 	SYNTAX_ptree_t *tree1 = SYNTAX_ptree_create(lex1);

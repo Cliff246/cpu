@@ -1,10 +1,7 @@
 #include "SCENE_device.h"
-#include "SCENE_anchor.h"
-#include "SCENE_port.h"
 #include "SCENE_keywords.h"
 #include "SCENE_commons.h"
 
-#include "SCENE_topology.h"
 #include "STAGE_actor.h"
 #include "SIM_handle.h"
 
@@ -209,11 +206,11 @@ bool SCENE_validate_device(SCENE_device_t *device)
 			all_pass = false;
 		}
 	}
-	assert(all_pass);
+	//assert(all_pass);
 	return all_pass;
 }
 
-bool SCENE_assign_device(SCENE_device_t *device, SCENE_topology_t *topology)
+bool SCENE_assign_device(SCENE_device_t *device)
 {
 	TAG_tag_t *base = device->actor->tags;
 
@@ -235,9 +232,7 @@ bool SCENE_assign_device(SCENE_device_t *device, SCENE_topology_t *topology)
 
 	for(uint64_t i = 0; i < used; ++i)
 	{
-		uint64_t index = SCENE_init_port(port_tags_buffer[i], topology, device->uid);
 		//SCENE_print_port(port);
-		ports[i] = index;
 
 	}
 
